@@ -1,24 +1,28 @@
-<footer class="footer mt-auto py-3 border-top border-black bg-white">
+<footer class="footer mx-5 mt-auto py-3 bg-white">
   <div class="d-flex flex-lg-row justify-content-between flex-column">
     <div class="center text-center">
       <p class="d-none d-md-block">
         <%= image_tag 'LSA_Technology_logo.svg', alt: 'LSA Technology Logo', class: "img-fluid" %>
       </p>
-      <p class="body_bold d-md-none">
+      <p class="text-center footer-bold d-md-none">
         LSA Technology Services
       </p><!-- Left column content for small viewports -->
     </div>
     <div>
-      <p class="text-center mb-0 small" style="font-family: Montserrat; font-weight: 400;">
+      <p class="text-center mb-0 small">
         <a href="https://umich.edu/about/privacy/" class="um-blue text-um-blue" style="text-decoration: none;">Privacy Notice</a> |
         <a href="https://umich.edu/about/privacy/" class="um-blue text-um-blue" style="text-decoration: none;">Report an Issue</a> |
         <span class="um-blue">734.615.0100</span>
       </p>
     </div>
     <div>
-      <p class="text-center mb-0 um-blue small" style="font-family: Montserrat; font-weight: 400;">
+      <p class="d-none d-md-block text-center mb-0 um-blue small">
         ©<%= Time.now.year %>
         <a href="https://regents.umich.edu/" class="um-blue text-um-blue" style="text-decoration: none;">|The Regents of the University of Michigan</a>
+      </p>
+      <p class="d-md-none text-center mb-0 um-blue small">
+        <a href="https://regents.umich.edu/" class="um-blue text-um-blue" style="text-decoration: none;">The Regents of the University of Michigan</a>
+        <br>©<%= Time.now.year %>
       </p><!-- Right column content -->
     </div>
   </div>

@@ -1,0 +1,21 @@
+// app/assets/stylesheets/_custom.scss or app/javascript/stylesheets/_custom.scss
+
+// Import Bootstrap's functions and variables
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+// Extend the $spacers map
+$spacers: map-merge(
+  (
+    "6": 4rem,
+    "7": 5rem,
+    // more custom spacers as needed
+  ),
+  $spacers
+);
+
+// Import the rest of Bootstrap now that variables are overridden
+@import "bootstrap/scss/bootstrap";
+
+// Import Bootstrap icons if needed
+@import 'bootstrap-icons/font/bootstrap-icons';
