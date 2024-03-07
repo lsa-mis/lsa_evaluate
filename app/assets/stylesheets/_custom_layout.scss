@@ -1,0 +1,129 @@
+html, body {
+  height: 100%;
+  font-family: Noto Sans;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0em;
+  color: #212529;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer {
+  flex-shrink: 0;
+  border-top: 1px solid $um_blue;
+}
+
+.footer-text-bold {
+  font-weight: 700;
+  color: $um_blue;
+}
+.footer-text {
+  color: #212529;
+  font-family: Noto Sans;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  letter-spacing: 0em;
+}
+
+.footer-link {
+  text-decoration: none;
+}
+
+h1 {
+  font-family: Roboto;
+  font-size: 45px;
+  font-weight: 900;
+  line-height: 54px;
+  letter-spacing: 0em;
+}
+
+/* Custom CSS to center-align h1 on small screens, considering Bootstrap's small breakpoint */
+@media (max-width: 576px) {
+  h1 {
+    text-align: center;
+    font-family: Roboto;
+    font-size: 28px;
+    line-height: 33px;
+  }
+}
+
+.navbar-brand {
+  background-color: $um_blue;
+  padding: 5px;
+  border-radius: 2px;
+}
+
+.nav-title {
+  font-family: Noto Sans;
+  font-size: 60px;
+  font-weight: 300;
+  line-height: 60px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: white;
+}
+
+#LSAlogo {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+}
+
+.dropdown {
+  border: $um_maize 2px outset;
+  border-radius: 7px;
+}
+
+.bold{
+  font-weight: 700;
+}
+/* FORMS */
+
+form label.required:after {
+  color: red;
+  content: " *";
+}
+
+#error_explanation {
+  background-color: $warning;
+  border: solid $rigorous_red 1px;
+  border-radius: 4px;
+  padding: 20px;
+  li {
+    color: $rigorous_red;
+    font-size: 1rem;
+    padding-bottom: 2px;
+  }
+}
+
+.field_with_errors {
+  display: inline;
+  label {
+    color: $rigorous_red;
+    max-width: 160px;
+  }
+  input, textarea, select {
+    background: $warning;
+  }
+}
+
+.flash {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 20px;
+}
+
+.flash.notice {
+  background-color: $flash-notice-color;
+}
+
+.flash.alert {
+  background-color: $flash-alert-color;
+}

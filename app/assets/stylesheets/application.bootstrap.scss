@@ -1,6 +1,6 @@
-// Custom overrides should come first
-@import "custom";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
 
-// Then import Bootstrap and other dependencies
-@import 'bootstrap/scss/bootstrap';
-@import 'bootstrap-icons/font/bootstrap-icons';
+@import "custom";
+@import "custom_layout";

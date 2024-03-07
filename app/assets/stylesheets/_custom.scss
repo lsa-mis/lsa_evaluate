@@ -1,9 +1,37 @@
 // app/assets/stylesheets/_custom.scss or app/javascript/stylesheets/_custom.scss
+// After editing this file:
+// run $ rails assets:clobber
+// restart the server
+
+// Define your custom colors
+$um_blue: #00274c;
+$um_maize: #ffcb05;
+$bone: #E4DCD3;
+$rigorous_red: #C61A1D;
+$michigan_summer_blue: #005499;
+$lsa_success: #00664D;
+$lsa_cyan: #00AEEF;
+$flash-notice-color: #DBFFDD;
+$flash-alert-color:  #FFE1DE;
 
 // Import Bootstrap's functions and variables
 @import "bootstrap/scss/functions";
 @import "bootstrap/scss/variables";
 
+// Override Bootstrap's default variables
+$theme-colors: (
+  "um-blue":    $um_blue,
+  "bone":       $bone,
+  "primary":    $um_blue,
+  "secondary":  $michigan_summer_blue,
+  "success":    $lsa_success,
+  "info":       $lsa_cyan,
+  "warning":    $um_maize,
+  "danger":     $rigorous_red,
+   // Add more custom colors or override existing ones here
+);
+
+// Optionally, override other Bootstrap variables here
 // Extend the $spacers map
 $spacers: map-merge(
   (
