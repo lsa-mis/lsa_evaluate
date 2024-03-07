@@ -4,12 +4,12 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gem "rails", "~> 7.1.3"
 ruby "3.3.0"
 
-
+gem "bootsnap", require: false
 gem "cssbundling-rails"
 gem "jbuilder"
 gem "jsbundling-rails"
 gem "pg", "~> 1.1"
-gem "puma", "~> 5.0"
+gem "puma"
 gem "redis", "~> 4.0"
 gem 'sassc-rails'
 gem "stimulus-rails"
