@@ -41,3 +41,7 @@ group :development, :staging, :test do
   gem "faker"
 end
 gem "devise", "~> 4.9"
+
+gem "omniauth-saml", "~> 2.1"
+
+gem "omniauth-rails_csrf_protection", "~> 1.0"
