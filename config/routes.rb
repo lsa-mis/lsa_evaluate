@@ -7,4 +7,9 @@ Rails.application.routes.draw do
 
 # Place this at the very end of the file to catch all undefined routes
   get '*path', to: 'application#render_404', via: :all
+
+  if Rails.env.development? || Rails.env.staging?
+    mount LetterOpenerWeb::Engine, at: "/letter_opener"
+  end
+
 end
