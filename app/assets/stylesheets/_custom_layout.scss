@@ -116,12 +116,25 @@ form label.required:after {
   font-weight: bold;
   text-align: center;
   padding: 20px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 1.5rem; // Customize this value
+  right: 0.5rem; // Customize this value
+  padding: 1rem 1.25rem; // Equivalent to py-3 px-5
+  border-radius: .5rem; // Similar to Bootstrap's rounded-lg
 }
 
-.flash.notice {
+.flash_notice {
   background-color: $flash-notice-color;
 }
 
-.flash.alert {
+.flash_alert {
   background-color: $flash-alert-color;
 }
+
+svg.wh6 {
+  width: 24px;
+  height: 24px;
+}
+
