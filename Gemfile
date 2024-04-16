@@ -40,3 +40,4 @@ end
 group :development, :staging, :test do
   gem "faker"
 end
+gem "devise", "~> 4.9"
