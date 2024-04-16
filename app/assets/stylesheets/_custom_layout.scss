@@ -43,34 +43,60 @@ h1 {
   letter-spacing: 0em;
 }
 
+h2 {
+  font-family: Roboto;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 38.4px;
+  letter-spacing: 0em;
+}
+
+p {
+  font-family: Noto Sans;
+  font-size: 1rem; // 16px
+  line-height: 1.5;
+  color: #212529;
+}
+
 /* Custom CSS to center-align h1 on small screens, considering Bootstrap's small breakpoint */
 @media (max-width: 576px) {
   h1 {
-    text-align: center;
-    font-family: Roboto;
-    font-size: 28px;
-    line-height: 33px;
+    font-size: 1.75rem; // 28px
   }
 }
 
-.navbar-brand {
-  background-color: $um_blue;
-  padding: 5px;
-  border-radius: 2px;
-}
-
-.nav-title {
-  font-family: Noto Sans;
-  font-size: 48px;
-  font-weight: 300;
-  line-height: 60px;
-  letter-spacing: 0em;
-  text-align: left;
-  color: white;
-}
-
 #LSAlogo {
+  display: flex;
+  align-items: start; // Align items to the top of the container
   padding-left: 82px;
+
+  .navbar-brand {
+    margin-right: auto; // Pushes all subsequent siblings to the end of the flex container
+  
+  }
+
+  .nav-title {
+    position: relative;
+    font-family: Noto Sans;
+    font-size: 48px;
+    font-weight: 300;
+    line-height: 60px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: white;
+  }
+}
+
+.avatar {
+  width: 50px; // 2 * radius for a diameter of 150px
+  height: 50px; // 2 * radius for a diameter of 150px
+  border-radius: 50%; // This creates the circular shape
+  object-fit: cover; // Ensures the image fits within the circle
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; // Ensures no part of the image leaks outside the circular boundary
+  // Optional: Add border, box-shadow, etc., as needed
 }
 
 .dropdown {
@@ -116,12 +142,24 @@ form label.required:after {
   font-weight: bold;
   text-align: center;
   padding: 20px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  top: 1.5rem; // Customize this value
+  right: 0.5rem; // Customize this value
+  padding: 1rem 1.25rem; // Equivalent to py-3 px-5
+  border-radius: .5rem; // Similar to Bootstrap's rounded-lg
 }
 
-.flash.notice {
+.flash_notice {
   background-color: $flash-notice-color;
 }
 
-.flash.alert {
+.flash_alert {
   background-color: $flash-alert-color;
+}
+
+svg.wh6 {
+  width: 24px;
+  height: 24px;
 }

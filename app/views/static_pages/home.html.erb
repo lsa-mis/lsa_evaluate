@@ -1,13 +1,30 @@
-<div class="container d-flex flex-column mt-7" style="width: 100%; max-width: 600px;">
-  <h1>Welcome to LSA Evaluate</h1>
-    <p>
-      Tiramisu dolor cookie cake sweet apple donut dolor cookie cookie. Sugar
-        dolor candy vanilla apple lollipop donut cookie tiramisu cookie. 
-        Croissant candy dolor ipsum muffin ipsum biscuit apple cookie dolor. 
-        Marzipan vanilla marzipan candy candy sugar ipsum cream muffin jelly. 
-    </p>
-  <div class="btn btn-warning btn-block" style="max-width: 100%; width: 600px; height: 31px; padding: 4px 8px; border-radius: 3.2px; border: 1px; gap: 8px;">Sign in using Weblogin</div>
-  <p style="color: #6C757D;" class="text-center">
-    Don’t have a U-M account?<a href="mailto:someone@yoursite.com" class="um-blue ps-1">Contact XX</a>
-  </p>
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-lg-6 w-100 bg-secondary-subtle">
+      <!-- Heading -->
+      <h1 class="text-start mt-6 ms-6">Welcome to LSA Evaluate</h1>
+
+      <!-- Content Paragraph -->
+      <p class="lead mt-4 ms-6">
+        Short paragraph explaining LSA Evaluate.
+      </p>
+
+      <!-- Button -->
+      <div class="d-grid w-25 ms-6 mt-6 mb-8">
+        <%= button_to "Login to LSA Evaluate", user_saml_omniauth_authorize_path, class: "btn btn-warning btn-sm mb-4" %>
+      </div>
+
+    </div>
+  </div>
+  <div class="row">
+  <h2 class="mt-4">How to use LSA Evaluate</h2>
+  <p class="mt-2 w-75">
+    Lorem ipsum dolor sit amet, vince adipiscing elit, 
+    sed do eiusmod tempor incididunt ut labore et dolore 
+    magna aliqua. Ut enim ad minim veniam, quis nostrud 
+    exercitation ullamco laboris nisi ut aliquip ex ea 
+    commodo consequat. Duis aute irure dolor in reprehenderit 
+    in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+</p>
+  </div>
 </div>
