@@ -67,7 +67,7 @@ p {
 
 #LSAlogo {
   display: flex;
-  align-items: start; // Align items to the top of the container
+  align-items: flex-start; // Align items to the top of the container
   padding-left: 82px;
 
   .navbar-brand {
