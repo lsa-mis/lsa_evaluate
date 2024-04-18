@@ -30,16 +30,16 @@ RSpec.describe "Shibboleth", type: :request do
     end
   end
 
-  # describe 'login failure - ' do
-  #   it 'displays welcome message on landing page' do
-  #     user = FactoryBot.create(:user)
-  #     mock_login({
-  #       email: "kielbasa",
-  #       name: user.display_name,
-  #       uniqname: user.uniqname
-  #     })
-  #     expect(response.body).not_to include("How to use LSA Evaluate")
-  #   end
-  # end
+  describe 'login failure - ' do
+    it 'displays welcome message on landing page' do
+      user = FactoryBot.create(:user)
+      mock_login({
+        email: "kielbasa",
+        name: user.display_name,
+        uniqname: user.uniqname
+      })
+      expect(response.body).not_to include("How to use LSA Evaluate")
+    end
+  end
 
 end

@@ -22,4 +22,7 @@
       in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
     </p>
   </div>
+  <% if user_signed_in? %>
+    <%= render 'opportunities' %>
+  <% end %>
 </div>
