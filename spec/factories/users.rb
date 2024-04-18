@@ -36,5 +36,6 @@ FactoryBot.define do
     uniqname { Faker::String.random(length: 3..8) }
     email { Faker::Internet.email }
     password { Faker::Internet.password(min_length: 15) }
+    display_name { Faker::Name.name }
   end
 end
