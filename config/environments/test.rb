@@ -57,4 +57,8 @@ Rails.application.configure do
 
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
+  config.log_formatter = ::Logger::Formatter.new
+
+  config.log_level = :debug # or :info, :warn, depending on your preference
+  config.logger = ActiveSupport::Logger.new(Rails.root.join("log", "test.log"))
 end
