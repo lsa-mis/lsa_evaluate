@@ -5,4 +5,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :trackable, :lockable, :timeoutable, 
          :omniauthable, omniauth_providers: [:saml]
+
+  def display_name
+    email
+  end
 end
