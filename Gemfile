@@ -1,47 +1,49 @@
-source "https://rubygems.org"
-git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+source 'https://rubygems.org'
+git_source(:github) { |repo| 'https://github.com/#{repo}.git' }
 
-gem "rails", "~> 7.1.3"
-ruby "3.3.0"
+gem 'rails', '~> 7.1.3'
+ruby '3.3.0'
 
-gem "bootsnap", require: false
-gem "cssbundling-rails"
-gem "jbuilder"
-gem "jsbundling-rails"
-gem "pg", "~> 1.1"
-gem "puma"
-gem "redis", "~> 4.0"
+gem 'bootsnap', require: false
+gem 'cssbundling-rails'
+gem 'devise', '~> 4.9'
+gem 'jbuilder'
+gem 'jsbundling-rails'
+gem 'omniauth-rails_csrf_protection', '~> 1.0'
+gem 'omniauth-saml', '~> 2.1'
+gem 'pg', '~> 1.1'
+gem 'puma'
+gem 'redis', '~> 4.0'
 gem 'sassc-rails'
-gem "stimulus-rails"
-gem "turbo-rails"
-gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
+gem 'stimulus-rails'
+gem 'turbo-rails'
+gem 'tzinfo-data', platforms: %i[ mingw mswin x64_mingw jruby ]
 
 group :development do
   gem 'annotate'
   gem 'better_errors'
   gem 'binding_of_caller'
-  gem "web-console"
+  gem 'web-console'
 end
 
-group :development, :test do
-  gem "capybara"
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
-  gem "factory_bot_rails"
-  gem "rspec-rails"
-  gem 'pry-rails'
-  gem "pry-byebug"
-  gem "webdrivers"
+group :test do
+  gem 'database_cleaner'
 end
 
 group :development, :staging do
-  gem "letter_opener_web"
+  gem 'letter_opener_web'
+end
+
+group :development, :test do
+  gem 'capybara'
+  gem 'debug', platforms: %i[ mri mingw x64_mingw ]
+  gem 'factory_bot_rails'
+  gem 'rspec-rails'
+  gem 'pry-rails'
+  gem 'pry-byebug'
+  gem 'webdrivers'
 end
 
 group :development, :staging, :test do
-  gem "faker"
+  gem 'faker'
 end
-gem "devise", "~> 4.9"
-
-gem "omniauth-saml", "~> 2.1"
-
-gem "omniauth-rails_csrf_protection", "~> 1.0"
