@@ -1,19 +1,20 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-um-blue">
   <div class="container-fluid d-flex justify-content-between align-items-center">
     <div id="LSAlogo">
-      <a class="navbar-brand" href="#"><%= image_tag 'LSA_Logo.svg', alt: 'LSA Logo' %></a>
+      <a class="navbar-brand" href="/"><%= image_tag 'LSA_Logo.svg', alt: 'LSA Logo' %></a>
       <div class="nav-title d-none d-lg-block">
         Evaluate
       </div>
     </div>
-    <div id="avatar" class="avatar bg-warning me-5">
-      <img
-        id="avatar"
-        src="https://upload.wikimedia.org/wikipedia/commons/4/4f/User_%2834476%29_-_The_Noun_Project.svg"
-        class="img-fluid"
-        alt="Avatar"
-      />
-      
-    </div>
+    <% if user_signed_in? %>
+      <div class="user-controls d-flex flex-column align-items-end" data-controller="dropdown">
+        <div id="avatar" class="avatar bg-warning mb-2" data-action="click->dropdown#toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span><%= current_user.display_initials_or_email %></span>
+        </div>
+        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="avatar">
+          <%= button_to "Logout", destroy_user_session_path, method: :delete, class: 'dropdown-item btn-as-link' %>
+        </div>
+      </div>
+    <% end %>
   </div>
 </nav>

@@ -39,4 +39,12 @@ class User < ApplicationRecord
          :trackable, :lockable, :timeoutable, 
          :omniauthable, omniauth_providers: [:saml]
 
+  def display_initials_or_email
+    if display_name.present?
+      display_name.split.map { |name| name[0].upcase }.join
+    else
+      email.split('@').first
+    end
+  end
+
 end

@@ -87,6 +87,12 @@ p {
   }
 }
 
+.user-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 .avatar {
   width: 50px; // 2 * radius for a diameter of 150px
   height: 50px; // 2 * radius for a diameter of 150px
@@ -141,14 +147,13 @@ form label.required:after {
   font-size: 1.5rem;
   font-weight: bold;
   text-align: center;
-  padding: 20px;
   display: flex;
   align-items: center;
   position: fixed;
-  top: 1.5rem; // Customize this value
-  right: 0.5rem; // Customize this value
-  padding: 1rem 1.25rem; // Equivalent to py-3 px-5
-  border-radius: .5rem; // Similar to Bootstrap's rounded-lg
+  top: 1.5rem;
+  right: 0.5rem;
+  padding: 1rem 1.25rem; // Note: This line overrides the previous 'padding: 20px'
+  border-radius: 0.5rem;
 }
 
 .flash_notice {
@@ -162,4 +167,14 @@ form label.required:after {
 svg.wh6 {
   width: 24px;
   height: 24px;
+}
+
+.btn-as-link {
+  background: none;
+  color: blue;
+  border: none;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }

@@ -1,3 +1,56 @@
-<div id="opportunity-partial">
-  Stuff here
+<div id="opportunity-partial" class="container my-4">
+  <h2>Explore Opportunities</h2>
+  
+  <div class="row g-4 align-items-end">
+    <!-- Department Selection -->
+    <div class="col">
+      <label for="department-select" class="form-label visually-hidden">Select Department</label>
+      <select class="form-select" id="department-select">
+        <option value="">Select Department</option>
+        <option value="1">Butterfly Science</option>
+        <option value="2">English</option>
+        <option value="3">Math</option>
+      </select>
+    </div>
+
+    <!-- Class Rank Selection -->
+    <div class="col">
+      <label for="class-rank-select" class="form-label visually-hidden">Open to Class Rank</label>
+      <select class="form-select" id="class-rank-select">
+        <option value="">Open to Class Rank</option>
+        <option value="1">Freshman</option>
+        <option value="2">Sophomore</option>
+        <option value="3">Junior</option>
+        <option value="4">Senior</option>
+      </select>
+    </div>
+
+    <!-- Shoe Size Selection -->
+    <div class="col">
+      <label for="class-rank-select" class="form-label visually-hidden">Open to Shoe Size</label>
+      <select class="form-select" id="class-rank-select">
+        <option value="">Open to Shoe Size</option>
+        <option value="1">5</option>
+        <option value="2">6</option>
+        <option value="3">7</option>
+        <option value="4">8</option>
+        <option value="5">9</option>>
+        <option value="6">10</option>
+        <option value="7">11</option>
+      </select>
+    </div>
+
+    <!-- Search Form -->
+    <div class="col">
+      <%= form_with(url: root_path, method: :get, local: true) do |form| %>
+        <label for="search" class="visually-hidden">Search</label>
+        <div class="input-group">
+          <%= form.text_field :search, id: "search", class: "form-control", placeholder: "Search...", aria: { label: 'Search' } %>
+          <button class="btn btn-primary" type="submit">
+            <i class="bi bi-search"></i> Search
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>
