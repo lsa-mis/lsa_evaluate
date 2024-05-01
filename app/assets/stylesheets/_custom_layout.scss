@@ -58,20 +58,19 @@ p {
   color: #212529;
 }
 
-/* Custom CSS to center-align h1 on small screens, considering Bootstrap's small breakpoint */
 @media (max-width: 576px) {
   h1 {
-    font-size: 1.75rem; // 28px
+    font-size: 1.75rem;
   }
 }
 
 #LSAlogo {
   display: flex;
-  align-items: flex-start; // Align items to the top of the container
+  align-items: flex-start;
   padding-left: 82px;
 
   .navbar-brand {
-    margin-right: auto; // Pushes all subsequent siblings to the end of the flex container
+    margin-right: auto;
   
   }
 
@@ -91,27 +90,79 @@ p {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  margin-right: 100px;
 }
 
 .avatar {
-  width: 50px; // 2 * radius for a diameter of 150px
-  height: 50px; // 2 * radius for a diameter of 150px
-  border-radius: 50%; // This creates the circular shape
-  object-fit: cover; // Ensures the image fits within the circle
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; // Ensures no part of the image leaks outside the circular boundary
-  // Optional: Add border, box-shadow, etc., as needed
+  overflow: hidden;
+
 }
 
-.dropdown {
-  border: $um_maize 2px outset;
-  border-radius: 7px;
+#avatar {
+  cursor: pointer;
+  background-color: #ffc107;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  width: auto;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+
+  background-color: #FFCB05;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: none;
+
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 4px, 16px;
+  clear: both;
+  font-weight: 400;
+  color: #212529;
+  text-align: inherit;
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  &:hover {
+    background-color: #f8f9fa;
+    color: #0056b3;
+  }
+}
+
+.show {
+  display: block;
 }
 
 .bold{
   font-weight: 700;
+}
+
+svg.wh6 {
+  width: 24px;
+  height: 24px;
+}
+
+.btn-as-link {
+  background: none;
+  border: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 /* FORMS */
 
@@ -162,19 +213,4 @@ form label.required:after {
 
 .flash_alert {
   background-color: $flash-alert-color;
-}
-
-svg.wh6 {
-  width: 24px;
-  height: 24px;
-}
-
-.btn-as-link {
-  background: none;
-  color: blue;
-  border: none;
-  padding: 0;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
 }
