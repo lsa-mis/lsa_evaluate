@@ -8,11 +8,16 @@
     </div>
     <% if user_signed_in? %>
       <div class="user-controls d-flex flex-column align-items-end" data-controller="dropdown">
-        <div id="avatar" class="avatar bg-warning mb-2" data-action="click->dropdown#toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span><%= current_user.display_initials_or_email %></span>
+        <div id="avatar" class="avatar bg-warning mb-2" data-action="click->dropdown#toggle" aria-haspopup="true" aria-expanded="false">
+          <span><%= current_user.display_initials_or_email %><i class="bi bi-caret-down-fill"></i></span>
         </div>
-        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="avatar">
-          <%= button_to "Logout", destroy_user_session_path, method: :delete, class: 'dropdown-item btn-as-link' %>
+        <div class="dropdown-menu" aria-labelledby="avatar-menu" data-dropdown-target="menu">
+          <%= button_to "Item 1", root_path, method: :delete, class: 'dropdown-item btn-as-link' %>
+          <%= button_to "Item One", root_path, method: :delete, class: 'dropdown-item btn-as-link' %>
+          <hr class='m-0' >
+          <%= button_to destroy_user_session_path, method: :delete, class: 'dropdown-item btn-as-link' do %>
+            <i class="bi bi-box-arrow-right"></i> Logout
+          <% end %>
         </div>
       </div>
     <% end %>
