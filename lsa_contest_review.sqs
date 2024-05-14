@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SQLContainer>
     <SQLTable>
-        <name><![CDATA[course_requirements]]></name>
+        <name><![CDATA[CourseRequirement]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>1688.00</x>
@@ -26,9 +26,9 @@
             <name><![CDATA[entry_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>entries</referencesTable>
+            <referencesTable>Entry</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[entries]]></referencesTable>
+            <referencesTable><![CDATA[Entry]]></referencesTable>
             <sourceCardinality>4</sourceCardinality>
             <destinationCardinality>5</destinationCardinality>
             <referencesFieldUID><![CDATA[BADFB08B-CA44-4B54-AFCB-57AD8B1820F0]]></referencesFieldUID>
@@ -63,7 +63,7 @@
         <uid><![CDATA[09FAC3D5-4EE6-4821-A2D5-0FFE185B2940]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[categories]]></name>
+        <name><![CDATA[Category]]></name>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
@@ -108,7 +108,7 @@
         <uid><![CDATA[1DAA46C9-C92B-4C2B-A4A8-C204CC516C7C]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[entry_files]]></name>
+        <name><![CDATA[EntryFile]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>2038.00</x>
@@ -129,9 +129,9 @@
             <name><![CDATA[entry_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>entries</referencesTable>
+            <referencesTable>Entry</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[entries]]></referencesTable>
+            <referencesTable><![CDATA[Entry]]></referencesTable>
             <sourceCardinality>3</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[BADFB08B-CA44-4B54-AFCB-57AD8B1820F0]]></referencesFieldUID>
@@ -150,7 +150,7 @@
         <uid><![CDATA[3236BED8-78CE-4F1F-9C0B-DBDED5632B14]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[campuses]]></name>
+        <name><![CDATA[Campus]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>363.00</x>
@@ -182,14 +182,14 @@
         <uid><![CDATA[39E702F1-328B-4624-830F-0B0F39C7330F]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[recommendation_letter_requests]]></name>
+        <name><![CDATA[RecommendationLetterRequest]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>1710.00</x>
             <y>753.00</y>
         </location>
         <size>
-            <width>201.00</width>
+            <width>206.00</width>
             <height>100.00</height>
         </size>
         <zorder>10</zorder>
@@ -204,9 +204,9 @@
             <name><![CDATA[entry_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>entries</referencesTable>
+            <referencesTable>Entry</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[entries]]></referencesTable>
+            <referencesTable><![CDATA[Entry]]></referencesTable>
             <sourceCardinality>4</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[BADFB08B-CA44-4B54-AFCB-57AD8B1820F0]]></referencesFieldUID>
@@ -232,7 +232,7 @@
         <uid><![CDATA[4799AFC1-CA22-4648-AB1E-3951535A17EF]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[schools]]></name>
+        <name><![CDATA[School]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>423.00</x>
@@ -259,7 +259,7 @@
         <uid><![CDATA[50A3FF01-8A80-4A3B-8699-9FF53821FCB3]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[statuses]]></name>
+        <name><![CDATA[Status]]></name>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
@@ -304,7 +304,7 @@
         <uid><![CDATA[5760D69B-4C17-4A39-9950-1E87EBDFCE5A]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[evaluations]]></name>
+        <name><![CDATA[Evaluation]]></name>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
@@ -331,9 +331,9 @@
             <name><![CDATA[judge_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>judges</referencesTable>
+            <referencesTable>Judge</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[judges]]></referencesTable>
+            <referencesTable><![CDATA[Judge]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[DF814C69-DF4D-4E9B-890B-7C689A284366]]></referencesFieldUID>
@@ -347,9 +347,9 @@
             <name><![CDATA[entry_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>entries</referencesTable>
+            <referencesTable>Entry</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[entries]]></referencesTable>
+            <referencesTable><![CDATA[Entry]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[BADFB08B-CA44-4B54-AFCB-57AD8B1820F0]]></referencesFieldUID>
@@ -385,7 +385,7 @@
         <uid><![CDATA[58ADCF93-01B5-4C98-8175-6C3A612620A9]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[contest_eligibilities (join tbl)]]></name>
+        <name><![CDATA[ContestEigibility (join tbl)]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>975.00</x>
@@ -409,9 +409,9 @@
             <name><![CDATA[contest_instance_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>contest_description_id</referencesField>
-            <referencesTable>contest_instances</referencesTable>
+            <referencesTable>ContestInstance</referencesTable>
             <referencesField><![CDATA[contest_description_id]]></referencesField>
-            <referencesTable><![CDATA[contest_instances]]></referencesTable>
+            <referencesTable><![CDATA[ContestInstance]]></referencesTable>
             <sourceCardinality>3</sourceCardinality>
             <destinationCardinality>3</destinationCardinality>
             <referencesFieldUID><![CDATA[ED5E4FE8-84F1-4775-AC5B-C8AFD21E42BD]]></referencesFieldUID>
@@ -424,9 +424,9 @@
             <name><![CDATA[class_level_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>class_levels</referencesTable>
+            <referencesTable>ClassLevel</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[class_levels]]></referencesTable>
+            <referencesTable><![CDATA[ClassLevel]]></referencesTable>
             <sourceCardinality>4</sourceCardinality>
             <destinationCardinality>3</destinationCardinality>
             <referencesFieldUID><![CDATA[F6CCFEDA-B1C1-4661-A7D0-B10F88FBAC0C]]></referencesFieldUID>
@@ -439,7 +439,7 @@
         <uid><![CDATA[6131E5D3-F25D-429B-A5E9-05BE4B8A6FF9]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[judging_rounds]]></name>
+        <name><![CDATA[JudgingRound]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>1617.00</x>
@@ -460,9 +460,9 @@
             <name><![CDATA[contest_instance_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>contest_instances</referencesTable>
+            <referencesTable>ContestInstance</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[contest_instances]]></referencesTable>
+            <referencesTable><![CDATA[ContestInstance]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>0</destinationCardinality>
             <referencesFieldUID><![CDATA[7BE88D0F-63DF-4DCF-BF06-E18EDD00AA72]]></referencesFieldUID>
@@ -493,7 +493,7 @@
         <uid><![CDATA[82C9F701-2674-48AE-903F-29F83598690A]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[class_levels]]></name>
+        <name><![CDATA[ClassLevel]]></name>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
@@ -539,7 +539,7 @@
         <uid><![CDATA[8A1C9582-07DF-49A0-B7AC-0A3B8CF4D299]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[visibilities]]></name>
+        <name><![CDATA[Visibility]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>207.00</x>
@@ -578,7 +578,7 @@
         <uid><![CDATA[9F7949DB-14C0-4EDA-BED3-1841E95CE9EC]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[assignments (join table)]]></name>
+        <name><![CDATA[Assignment (join table)]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>217.00</x>
@@ -598,9 +598,9 @@
             <name><![CDATA[role_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>roles</referencesTable>
+            <referencesTable>Role</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[roles]]></referencesTable>
+            <referencesTable><![CDATA[Role]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[A3F6314D-7326-40F8-8C17-855989897E1F]]></referencesFieldUID>
@@ -613,9 +613,9 @@
             <name><![CDATA[container_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>containers</referencesTable>
+            <referencesTable>Container</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[containers]]></referencesTable>
+            <referencesTable><![CDATA[Container]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[E49F91CF-3783-41DD-A6B6-4D79ADCA586C]]></referencesFieldUID>
@@ -628,9 +628,9 @@
             <name><![CDATA[user_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>users(Devise Tbl)</referencesTable>
+            <referencesTable>User (Devise Tbl)</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[users(Devise Tbl)]]></referencesTable>
+            <referencesTable><![CDATA[User (Devise Tbl)]]></referencesTable>
             <sourceCardinality>4</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[9C1094DD-6607-485F-ACC4-1E0318C7D0ED]]></referencesFieldUID>
@@ -649,7 +649,7 @@
         <uid><![CDATA[A74AC62A-12D9-4752-BA14-BA9785BB1157]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[containers]]></name>
+        <name><![CDATA[Container]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>608.00</x>
@@ -690,9 +690,9 @@
             <name><![CDATA[visibility_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>visibilities</referencesTable>
+            <referencesTable>Visibility</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[visibilities]]></referencesTable>
+            <referencesTable><![CDATA[Visibility]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[B91CC2E0-948F-4058-9404-172161AB24A9]]></referencesFieldUID>
@@ -705,7 +705,7 @@
         <uid><![CDATA[AAE1EBF5-0B5D-4FBC-A7AC-9A9FE514523A]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[contest_descriptions]]></name>
+        <name><![CDATA[ContestDescription]]></name>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
@@ -733,9 +733,9 @@
             <name><![CDATA[container_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>containers</referencesTable>
+            <referencesTable>Container</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[containers]]></referencesTable>
+            <referencesTable><![CDATA[Container]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[E49F91CF-3783-41DD-A6B6-4D79ADCA586C]]></referencesFieldUID>
@@ -826,9 +826,9 @@
             <name><![CDATA[status_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>statuses</referencesTable>
+            <referencesTable>Status</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[statuses]]></referencesTable>
+            <referencesTable><![CDATA[Status]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[1454E148-FF2C-465C-B569-D6A8731C111F]]></referencesFieldUID>
@@ -841,7 +841,7 @@
         <uid><![CDATA[B04F9D77-477B-444C-9C83-E1926819E8AC]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[entries]]></name>
+        <name><![CDATA[Entry]]></name>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
@@ -869,9 +869,9 @@
             <name><![CDATA[contest_instance_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>contest_instances</referencesTable>
+            <referencesTable>ContestInstance</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[contest_instances]]></referencesTable>
+            <referencesTable><![CDATA[ContestInstance]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[7BE88D0F-63DF-4DCF-BF06-E18EDD00AA72]]></referencesFieldUID>
@@ -889,9 +889,9 @@
             <name><![CDATA[profile_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>profiles</referencesTable>
+            <referencesTable>Profile</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[profiles]]></referencesTable>
+            <referencesTable><![CDATA[Profile]]></referencesTable>
             <sourceCardinality>4</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[C2023A54-7DAC-4922-85BA-AC556A5F1A03]]></referencesFieldUID>
@@ -905,9 +905,9 @@
             <name><![CDATA[status_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>statuses</referencesTable>
+            <referencesTable>Status</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[statuses]]></referencesTable>
+            <referencesTable><![CDATA[Status]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[1454E148-FF2C-465C-B569-D6A8731C111F]]></referencesFieldUID>
@@ -921,9 +921,9 @@
             <name><![CDATA[category_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>categories</referencesTable>
+            <referencesTable>Category</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[categories]]></referencesTable>
+            <referencesTable><![CDATA[Category]]></referencesTable>
             <sourceCardinality>4</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[F94787D3-1037-4E99-978D-49D8A9A94819]]></referencesFieldUID>
@@ -936,7 +936,7 @@
         <uid><![CDATA[B7C0D0B9-32F3-43D4-8CAC-922A61C7F35A]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[profiles]]></name>
+        <name><![CDATA[Profile]]></name>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
@@ -964,9 +964,9 @@
             <name><![CDATA[user_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>users(Devise Tbl)</referencesTable>
+            <referencesTable>User (Devise Tbl)</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[users(Devise Tbl)]]></referencesTable>
+            <referencesTable><![CDATA[User (Devise Tbl)]]></referencesTable>
             <sourceCardinality>2</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[9C1094DD-6607-485F-ACC4-1E0318C7D0ED]]></referencesFieldUID>
@@ -995,9 +995,9 @@
             <name><![CDATA[class_level_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>class_levels</referencesTable>
+            <referencesTable>ClassLevel</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[class_levels]]></referencesTable>
+            <referencesTable><![CDATA[ClassLevel]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[F6CCFEDA-B1C1-4661-A7D0-B10F88FBAC0C]]></referencesFieldUID>
@@ -1011,9 +1011,9 @@
             <name><![CDATA[school_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>schools</referencesTable>
+            <referencesTable>School</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[schools]]></referencesTable>
+            <referencesTable><![CDATA[School]]></referencesTable>
             <sourceCardinality>4</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[39C05D72-6B1F-407D-915B-A58EF6C0AC84]]></referencesFieldUID>
@@ -1027,9 +1027,9 @@
             <name><![CDATA[campus_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>campuses</referencesTable>
+            <referencesTable>Campus</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[campuses]]></referencesTable>
+            <referencesTable><![CDATA[Campus]]></referencesTable>
             <sourceCardinality>4</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[AAFF04A2-E625-49D3-9642-8A253BE45175]]></referencesFieldUID>
@@ -1108,11 +1108,11 @@
             <name><![CDATA[home_address_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>addresses</referencesTable>
+            <referencesTable>Address</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[addresses]]></referencesTable>
-            <sourceCardinality>2</sourceCardinality>
-            <destinationCardinality>1</destinationCardinality>
+            <referencesTable><![CDATA[Address]]></referencesTable>
+            <sourceCardinality>1</sourceCardinality>
+            <destinationCardinality>2</destinationCardinality>
             <referencesFieldUID><![CDATA[7037F8E4-F009-4014-A0DF-58E7F3177856]]></referencesFieldUID>
             <referencesTableUID><![CDATA[D54BE6AA-FFB6-4617-9240-B8375E76A95A]]></referencesTableUID>
             <forcedUnique><![CDATA[0]]></forcedUnique>
@@ -1124,11 +1124,11 @@
             <name><![CDATA[campus _address_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>addresses</referencesTable>
+            <referencesTable>Address</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[addresses]]></referencesTable>
-            <sourceCardinality>2</sourceCardinality>
-            <destinationCardinality>1</destinationCardinality>
+            <referencesTable><![CDATA[Address]]></referencesTable>
+            <sourceCardinality>1</sourceCardinality>
+            <destinationCardinality>2</destinationCardinality>
             <referencesFieldUID><![CDATA[7037F8E4-F009-4014-A0DF-58E7F3177856]]></referencesFieldUID>
             <referencesTableUID><![CDATA[D54BE6AA-FFB6-4617-9240-B8375E76A95A]]></referencesTableUID>
             <forcedUnique><![CDATA[0]]></forcedUnique>
@@ -1142,7 +1142,7 @@
         <uid><![CDATA[B95D4F4C-BC8C-4C85-A199-4FD562EC0F7D]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[recommendation_letters]]></name>
+        <name><![CDATA[RecommendationLetter]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>1679.00</x>
@@ -1162,9 +1162,9 @@
             <name><![CDATA[recommendation_letter_request_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>recommendation_letter_requests</referencesTable>
+            <referencesTable>RecommendationLetterRequest</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[recommendation_letter_requests]]></referencesTable>
+            <referencesTable><![CDATA[RecommendationLetterRequest]]></referencesTable>
             <sourceCardinality>1</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[9DD3F857-F684-4AFA-A1A2-9F0F85D54F0B]]></referencesFieldUID>
@@ -1182,7 +1182,7 @@
         <uid><![CDATA[C0145796-A288-4F3E-988A-AE8AA2C4D09E]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[roles]]></name>
+        <name><![CDATA[Role]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>179.00</x>
@@ -1221,7 +1221,7 @@
         <uid><![CDATA[CF6E089E-E5E4-4383-BF2A-817309BABBDF]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[contest_instances]]></name>
+        <name><![CDATA[ContestInstance]]></name>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
@@ -1249,9 +1249,9 @@
             <name><![CDATA[contest_description_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>contest_descriptions</referencesTable>
+            <referencesTable>ContestDescription</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[contest_descriptions]]></referencesTable>
+            <referencesTable><![CDATA[ContestDescription]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[7C4D3095-9461-4BB3-B193-198BAF79B24D]]></referencesFieldUID>
@@ -1295,9 +1295,9 @@
             <name><![CDATA[status_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>statuses</referencesTable>
+            <referencesTable>Status</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[statuses]]></referencesTable>
+            <referencesTable><![CDATA[Status]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[1454E148-FF2C-465C-B569-D6A8731C111F]]></referencesFieldUID>
@@ -1316,9 +1316,9 @@
             <name><![CDATA[category_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>categories</referencesTable>
+            <referencesTable>Category</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[categories]]></referencesTable>
+            <referencesTable><![CDATA[Category]]></referencesTable>
             <sourceCardinality>4</sourceCardinality>
             <destinationCardinality>3</destinationCardinality>
             <referencesFieldUID><![CDATA[F94787D3-1037-4E99-978D-49D8A9A94819]]></referencesFieldUID>
@@ -1331,7 +1331,7 @@
         <uid><![CDATA[CFB01490-75D6-4182-90C4-1E6ED622B397]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[addresses]]></name>
+        <name><![CDATA[Address]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>997.00</x>
@@ -1417,7 +1417,7 @@
         <uid><![CDATA[D54BE6AA-FFB6-4617-9240-B8375E76A95A]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[judges]]></name>
+        <name><![CDATA[Judge]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>1950.00</x>
@@ -1453,9 +1453,9 @@
             <name><![CDATA[judging_round_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
-            <referencesTable>judging_rounds</referencesTable>
+            <referencesTable>JudgingRound</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[judging_rounds]]></referencesTable>
+            <referencesTable><![CDATA[JudgingRound]]></referencesTable>
             <sourceCardinality>5</sourceCardinality>
             <destinationCardinality>5</destinationCardinality>
             <referencesFieldUID><![CDATA[BFEFCC0F-75E6-44F8-9DB2-E21F4D17F60A]]></referencesFieldUID>
@@ -1472,7 +1472,7 @@
         <uid><![CDATA[F1EAFA09-BDAB-489A-852D-719C0AB5BCEB]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[users(Devise Tbl)]]></name>
+        <name><![CDATA[User (Devise Tbl)]]></name>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
@@ -1566,17 +1566,17 @@
         <overviewPanelHidden><![CDATA[0]]></overviewPanelHidden>
         <pageBoundariesVisible><![CDATA[0]]></pageBoundariesVisible>
         <PageGridVisible><![CDATA[0]]></PageGridVisible>
-        <RightSidebarWidth><![CDATA[2327.000000]]></RightSidebarWidth>
+        <RightSidebarWidth><![CDATA[1451.000000]]></RightSidebarWidth>
         <sidebarIndex><![CDATA[0]]></sidebarIndex>
         <snapToGrid><![CDATA[0]]></snapToGrid>
         <SourceSidebarWidth><![CDATA[312.000000]]></SourceSidebarWidth>
         <SQLEditorFileFormatVersion><![CDATA[4]]></SQLEditorFileFormatVersion>
         <uid><![CDATA[E2FE8E50-306B-4494-BAFB-41EE3761C01D]]></uid>
-        <windowHeight><![CDATA[1298.000000]]></windowHeight>
-        <windowLocationX><![CDATA[2564.000000]]></windowLocationX>
-        <windowLocationY><![CDATA[-268.000000]]></windowLocationY>
-        <windowScrollOrigin><![CDATA[{0, 7}]]></windowScrollOrigin>
-        <windowWidth><![CDATA[2604.000000]]></windowWidth>
+        <windowHeight><![CDATA[1079.000000]]></windowHeight>
+        <windowLocationX><![CDATA[0.000000]]></windowLocationX>
+        <windowLocationY><![CDATA[0.000000]]></windowLocationY>
+        <windowScrollOrigin><![CDATA[{70, 130.5}]]></windowScrollOrigin>
+        <windowWidth><![CDATA[1728.000000]]></windowWidth>
     </SQLDocumentInfo>
     <AllowsIndexRenamingOnInsert><![CDATA[1]]></AllowsIndexRenamingOnInsert>
     <defaultLabelExpanded><![CDATA[1]]></defaultLabelExpanded>
