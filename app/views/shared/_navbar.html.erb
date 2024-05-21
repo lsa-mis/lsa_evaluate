@@ -15,7 +15,7 @@
           <%= button_to "Item 1", root_path, method: :delete, class: 'dropdown-item btn-as-link' %>
           <%= button_to "Item One", root_path, method: :delete, class: 'dropdown-item btn-as-link' %>
           <hr class='m-0' >
-          <%= button_to destroy_user_session_path, method: :delete, class: 'dropdown-item btn-as-link' do %>
+          <%= button_to destroy_user_session_path, method: :delete, class: 'dropdown-item btn-as-link', data: {turbo: "false"} do %>
             <i class="bi bi-box-arrow-right"></i> Logout
           <% end %>
         </div>
