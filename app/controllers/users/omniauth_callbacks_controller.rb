@@ -4,7 +4,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   attr_reader :user, :service
 
   def saml
-    handle_auth "Saml"
+    handle_auth "SAML"
   end
 
   private
@@ -15,7 +15,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to edit_user_registration_path
     else
       sign_in_and_redirect @user, event: :authentication
-      $baseURL = ''
       set_flash_message :notice, :success, kind: kind
     end
   end
