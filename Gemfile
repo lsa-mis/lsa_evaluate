@@ -15,6 +15,7 @@ gem 'pg', '~> 1.1'
 gem 'puma'
 gem 'redis', '~> 4.0'
 gem 'sassc-rails'
+gem "simple_form", "~> 5.3"
 gem 'stimulus-rails'
 gem 'turbo-rails'
 gem 'tzinfo-data', platforms: %i[ mingw mswin x64_mingw jruby ]
@@ -23,6 +24,7 @@ group :development do
   gem 'annotate'
   gem 'better_errors'
   gem 'binding_of_caller'
+  gem 'rubocop', require: false
   gem 'web-console'
 end
 
@@ -47,4 +49,3 @@ end
 group :development, :staging, :test do
   gem 'faker'
 end
-gem "simple_form", "~> 5.3"
