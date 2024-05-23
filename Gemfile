@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
-git_source(:github) { |repo| 'https://github.com/#{repo}.git' }
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'rails', '~> 7.1.3'
 ruby '3.3.0'
@@ -15,16 +17,15 @@ gem 'pg', '~> 1.1'
 gem 'puma'
 gem 'redis', '~> 4.0'
 gem 'sassc-rails'
-gem "simple_form", "~> 5.3"
+gem 'simple_form', '~> 5.3'
 gem 'stimulus-rails'
 gem 'turbo-rails'
-gem 'tzinfo-data', platforms: %i[ mingw mswin x64_mingw jruby ]
+gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 group :development do
   gem 'annotate'
   gem 'better_errors'
   gem 'binding_of_caller'
-  gem 'rubocop', require: false
   gem 'web-console'
 end
 
@@ -38,11 +39,17 @@ end
 
 group :development, :test do
   gem 'capybara'
-  gem 'debug', platforms: %i[ mri mingw x64_mingw ]
+  gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'factory_bot_rails'
-  gem 'rspec-rails'
-  gem 'pry-rails'
   gem 'pry-byebug'
+  gem 'pry-rails'
+  gem 'rspec-rails'
+  gem 'rubocop', require: false
+  gem 'rubocop-capybara', require: false
+  gem 'rubocop-factory_bot', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rspec_rails', require: false
   gem 'webdrivers'
 end
 

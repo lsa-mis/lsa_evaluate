@@ -1,0 +1,43 @@
+# .rubocop.yml
+require:
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-factory_bot
+  - rubocop-capybara
+  - rubocop-rspec_rails
+
+AllCops:
+  Exclude:
+    - 'db/schema.rb'
+    - 'bin/*'
+    - 'node_modules/**/*'
+    # - 'Gemfile'
+
+# String Literals Style
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+# Exclude specific cops for certain files
+Lint/UnusedBlockArgument:
+  Exclude:
+    - 'Gemfile'
+
+# RuboCop Rails settings
+Rails:
+  Enabled: true
+
+# RuboCop RSpec settings
+RSpec:
+  Enabled: true
+
+# FactoryBot settings
+FactoryBot:
+  Enabled: true
+
+# Capybara settings
+Capybara:
+  Enabled: true
+
+# RSpec Rails settings
+RSpecRails:
+  Enabled: true
