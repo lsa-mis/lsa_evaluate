@@ -47,3 +47,4 @@ end
 group :development, :staging, :test do
   gem 'faker'
 end
+gem "simple_form", "~> 5.3"
