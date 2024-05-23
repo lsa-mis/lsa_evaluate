@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
-RSpec.feature "OpportunityDisplay", type: :feature do
-  scenario "Opportunity partial is displayed only after user logs in" do
+RSpec.describe 'OpportunityDisplay', type: :feature do
+  it 'Opportunity partial is displayed only after user logs in' do
     visit root_path
     expect(page).not_to have_selector '#opportunity-partial', visible: true
 

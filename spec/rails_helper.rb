@@ -1,13 +1,14 @@
+# frozen_string_literal: true
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 require 'spec_helper'
 require 'database_cleaner'
-
 
 ENV['RAILS_ENV'] ||= 'test'
 
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
-abort("The Rails environment is running in production mode!") if Rails.env.production?
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'rspec/rails'
@@ -74,20 +75,18 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
   config.before(:each, type: :request) do
-    host! "localhost"
+    host! 'localhost'
   end
 
-  config.after(:each) do
+  config.after do
     Warden.test_reset!
   end
 
   # Add FactoryBot linting
   config.before(:suite) do
-    begin
-      DatabaseCleaner.start
-      FactoryBot.lint(traits: true)
-    ensure
-      DatabaseCleaner.clean
-    end
+    DatabaseCleaner.start
+    FactoryBot.lint(traits: true)
+  ensure
+    DatabaseCleaner.clean
   end
 end

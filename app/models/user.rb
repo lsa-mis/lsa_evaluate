@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: users
@@ -36,7 +38,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
-         :trackable, :lockable, :timeoutable, 
+         :trackable, :lockable, :timeoutable,
          :omniauthable, omniauth_providers: [:saml]
 
   def display_initials_or_email
@@ -46,5 +48,4 @@ class User < ApplicationRecord
       email.split('@').first
     end
   end
-
 end

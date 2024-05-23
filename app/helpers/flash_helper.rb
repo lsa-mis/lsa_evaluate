@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module FlashHelper
   def css_class_for_flash(type)
     case type.to_sym
     when :alert
-      "flash_alert"
+      'flash_alert'
     else
-      "flash_notice"
+      'flash_notice'
     end
   end
 end

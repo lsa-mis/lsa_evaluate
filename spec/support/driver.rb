@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 browser_options = Selenium::WebDriver::Chrome::Options.new
 browser_options.add_argument('--window-size=1920,1080')
@@ -7,9 +8,7 @@ webdriver_options = {
   options: browser_options
 }
 
-unless ENV['SHOW_TEST_BROWSER'].present?
-  browser_options.add_argument('--headless')
-end
+browser_options.add_argument('--headless') if ENV['SHOW_TEST_BROWSER'].blank?
 
 if ENV['TEST_SERVER_PORT'].present?
   Capybara.server_host = '0.0.0.0'

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :render_404
   rescue_from Exception, with: :render_500
@@ -9,7 +11,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def render_500(exception)
+  def render_500(_exception)
     # Log the error, send it to error tracking services, etc.
     respond_to do |format|
       format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
