@@ -15,11 +15,14 @@
 # gem "pg"
 #
 default: &default
-  adapter: postgresql
-  encoding: unicode
-  # For details on connection pooling, see Rails configuration guide
-  # https://guides.rubyonrails.org/configuring.html#database-pooling
+  adapter: mysql2
+  encoding: utf8mb4
+  collation: utf8mb4_unicode_ci
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: root
+  password: <%= ENV['LOCAL_MYSQL_DATABASE_PASSWORD'] %>
+  host: <your_mysql_host>
+  port: 3306
 
 development:
   <<: *default
@@ -82,5 +85,7 @@ test:
 production:
   <<: *default
   database: lsa_evaluate_production
-  username: lsa_evaluate
-  password: <%= ENV["LSA_EVALUATE_DATABASE_PASSWORD"] %>
+  username: <%= Rails.application.credentials.mysql[:prod_user] %>
+  password: <%= Rails.application.credentials.mysql[:prod_password] %>
+  host: <%= Rails.application.credentials.mysql[:prod_servername] %>
+  sslca: <%= Rails.application.credentials.mysql[:prod_sslca] %>
