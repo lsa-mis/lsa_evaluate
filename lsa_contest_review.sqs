@@ -371,8 +371,8 @@ Text-Image]]></comment>
             <referencesTable>EmailType</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
             <referencesTable><![CDATA[EmailType]]></referencesTable>
-            <sourceCardinality>0</sourceCardinality>
-            <destinationCardinality>0</destinationCardinality>
+            <sourceCardinality>5</sourceCardinality>
+            <destinationCardinality>1</destinationCardinality>
             <referencesFieldUID><![CDATA[20560A1A-7A97-4304-9ED1-BAE28F1A3491]]></referencesFieldUID>
             <referencesTableUID><![CDATA[92140D1C-A348-464C-8DB7-E2A175B48603]]></referencesTableUID>
             <connectorHidden><![CDATA[0]]></connectorHidden>
