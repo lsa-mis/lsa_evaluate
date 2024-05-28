@@ -13,7 +13,7 @@ browser_options.add_argument('--headless') if ENV['SHOW_TEST_BROWSER'].blank?
 if ENV['TEST_SERVER_PORT'].present?
   Capybara.server_host = '0.0.0.0'
   Capybara.server_port = ENV['TEST_SERVER_PORT']
-  webdriver_options[:url] = "http://#{ENV['HOST_MACHINE_IP']}:9515"
+  webdriver_options[:url] = "http://#{ENV.fetch('HOST_MACHINE_IP', nil)}:9515"
 end
 
 Capybara.register_driver :selenium_chrome_headless do |app|

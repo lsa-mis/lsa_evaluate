@@ -13,9 +13,9 @@ def mock_login(info)
 end
 
 RSpec.describe 'Shibboleth', type: :request do
-  describe 'login success - ' do
+  describe 'login success -' do
     it 'displays welcome message on landing page' do
-      user = FactoryBot.create(:user)
+      user = create(:user)
       mock_login({
                    email: user.email,
                    name: user.display_name,
@@ -28,9 +28,9 @@ RSpec.describe 'Shibboleth', type: :request do
     end
   end
 
-  describe 'login failure - ' do
+  describe 'login failure -' do
     it 'displays welcome message on landing page' do
-      user = FactoryBot.create(:user)
+      user = create(:user)
       mock_login({
                    email: 'kielbasa',
                    name: user.display_name,

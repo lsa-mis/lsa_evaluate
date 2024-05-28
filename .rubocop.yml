@@ -13,7 +13,13 @@ AllCops:
     - 'bin/*'
     - 'node_modules/**/*'
     # - 'Gemfile'
-
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - test
+    - production
+    - staging
+    
 # String Literals Style
 Style/StringLiterals:
   EnforcedStyle: single_quotes

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# The ApplicationController is the base class for all controllers in the application.
+# It provides common functionality and configuration options for all controllers.
 class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :render404
   rescue_from Exception, with: :render500

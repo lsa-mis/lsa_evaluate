@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Users
+  # The `OmniauthCallbacksController` class is responsible for handling callbacks from OmniAuth providers.
+  # It inherits from the `Devise::OmniauthCallbacksController` class, which is provided by the Devise gem.
   class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     skip_before_action :verify_authenticity_token, only: :saml
     before_action :set_user, only: :saml
