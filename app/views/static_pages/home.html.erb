@@ -3,7 +3,7 @@
     <div class="col-md-8 col-lg-6 w-100 bg-secondary-subtle">
       <h1 class="text-start mt-6 ms-6">Welcome to LSA Evaluate</h1>
       <p class="lead mt-4 ms-6">
-        Short paragraph explaining LSA Evaluate.
+        <%= @description.content.body %>
       </p>
       <div class="d-grid w-25 ms-6 mt-6 mb-8">
         <% if user_signed_in? %>
@@ -17,12 +17,7 @@
   <div class="row">
     <h2 class="mt-4">How to use LSA Evaluate</h2>
     <p class="mt-2 w-75">
-      Lorem ipsum dolor sit amet, vince adipiscing elit, 
-      sed do eiusmod tempor incididunt ut labore et dolore 
-      magna aliqua. Ut enim ad minim veniam, quis nostrud 
-      exercitation ullamco laboris nisi ut aliquip ex ea 
-      commodo consequat. Duis aute irure dolor in reprehenderit 
-      in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+      <%= @instructions.content.body %>
     </p>
   </div>
   <% if user_signed_in? %>

@@ -41,6 +41,9 @@ class User < ApplicationRecord
          :trackable, :lockable, :timeoutable,
          :omniauthable, omniauth_providers: [:saml]
 
+  validates :email, :encrypted_password, presence: true
+  validates :email, uniqueness: { case_sensitive: false }
+
   def display_initials_or_email
     if display_name.present?
       display_name.split.map { |name| name[0].upcase }.join
