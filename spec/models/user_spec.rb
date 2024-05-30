@@ -36,5 +36,87 @@
 require 'rails_helper'
 
 RSpec.describe User do
-  pending "add some examples to (or delete) #{__FILE__}"
+  subject { build(:user) } # Assuming you have a User factory set up
+
+  describe 'validations' do
+    it 'validates presence of email' do
+      user = build(:user, email: nil)
+      expect(user).not_to be_valid
+      expect(user.errors[:email]).to include("can't be blank")
+    end
+
+    it 'validates presence of encrypted_password' do
+      user = build(:user, encrypted_password: nil)
+      expect(user).not_to be_valid
+      expect(user.errors[:encrypted_password]).to include("can't be blank")
+    end
+
+    it 'validates uniqueness of email' do
+      create(:user, email: 'unique@example.com')
+      user = build(:user, email: 'unique@example.com')
+      expect(user).not_to be_valid
+      expect(user.errors[:email]).to include('has already been taken')
+    end
+  end
+
+  describe 'associations' do
+    # Add association tests here if there are any, for example:
+    # it { should have_many(:posts) }
+  end
+
+  describe 'devise modules' do
+    it 'includes database_authenticatable module' do
+      expect(described_class.ancestors).to include(Devise::Models::DatabaseAuthenticatable)
+    end
+
+    it 'includes registerable module' do
+      expect(described_class.ancestors).to include(Devise::Models::Registerable)
+    end
+
+    it 'includes recoverable module' do
+      expect(described_class.ancestors).to include(Devise::Models::Recoverable)
+    end
+
+    it 'includes rememberable module' do
+      expect(described_class.ancestors).to include(Devise::Models::Rememberable)
+    end
+
+    it 'includes validatable module' do
+      expect(described_class.ancestors).to include(Devise::Models::Validatable)
+    end
+
+    it 'includes trackable module' do
+      expect(described_class.ancestors).to include(Devise::Models::Trackable)
+    end
+
+    it 'includes lockable module' do
+      expect(described_class.ancestors).to include(Devise::Models::Lockable)
+    end
+
+    it 'includes timeoutable module' do
+      expect(described_class.ancestors).to include(Devise::Models::Timeoutable)
+    end
+
+    it 'includes omniauthable module' do
+      expect(described_class.ancestors).to include(Devise::Models::Omniauthable)
+    end
+  end
+
+  describe 'instance methods' do
+    describe '#display_initials_or_email' do
+      context 'when display_name is present' do
+        it 'returns initials of display_name' do
+          user = build(:user, display_name: 'John Doe')
+          expect(user.display_initials_or_email).to eq('JD')
+        end
+      end
+
+      context 'when display_name is not present' do
+        it 'returns the part of the email before @' do
+          user = build(:user, email: 'user@example.com', display_name: nil)
+          expect(user.display_initials_or_email).to eq('user')
+        end
+      end
+    end
+  end
 end
