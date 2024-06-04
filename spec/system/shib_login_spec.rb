@@ -14,7 +14,7 @@ end
 
 RSpec.describe 'Shibboleth', type: :request do
   describe 'login success -' do
-    it 'displays welcome message on landing page' do
+    it 'displays user avatar' do
       user = create(:user)
       mock_login({
                    email: user.email,
@@ -24,19 +24,19 @@ RSpec.describe 'Shibboleth', type: :request do
       raise "Expected a redirect but got #{response.status}" unless response.redirect?
 
       follow_redirect!
-      expect(response.body).to include('How to use LSA Evaluate')
+      expect(response.body).to include('id="avatar"')
     end
   end
 
   describe 'login failure -' do
-    it 'displays welcome message on landing page' do
+    it 'does not displays user avatar' do
       user = create(:user)
       mock_login({
                    email: 'kielbasa',
                    name: user.display_name,
                    uniqname: user.uniqname
                  })
-      expect(response.body).not_to include('How to use LSA Evaluate')
+      expect(response.body).not_to include('id="avatar"')
     end
   end
 end

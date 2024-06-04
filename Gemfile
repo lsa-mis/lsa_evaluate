@@ -31,7 +31,7 @@ group :development do
 end
 
 group :test do
-  gem 'database_cleaner'
+  gem 'database_cleaner-active_record'
 end
 
 group :development, :staging do

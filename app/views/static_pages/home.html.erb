@@ -3,8 +3,15 @@
     <div class="col-md-8 col-lg-6 w-100 bg-secondary-subtle">
       <h1 class="text-start mt-6 ms-6">Welcome to LSA Evaluate</h1>
       <p class="lead mt-4 ms-6">
-        <%= @description.content.body %>
+        <%= render_rich_text_without_outer_div(@description.content) %>
       </p>
+      <div>
+        <% if current_user && @description.present?%>
+          <%= link_to editable_content_path(@description) do %>
+            <i class="bi bi-pencil"></i>
+          <% end %>
+        <% end %>
+      </div>
       <div class="d-grid w-25 ms-6 mt-6 mb-8">
         <% if user_signed_in? %>
           <%= button_to "Explore Opportunities", root_path, class: "btn btn-primary btn-sm mb-4", method: :get, data: {turbo: "false"} %>
@@ -17,8 +24,15 @@
   <div class="row">
     <h2 class="mt-4">How to use LSA Evaluate</h2>
     <p class="mt-2 w-75">
-      <%= @instructions.content.body %>
+      <%= render_rich_text_without_outer_div(@instructions.content) %>
     </p>
+    <div>
+      <% if current_user && @instructions.present?%>
+        <%= link_to editable_content_path(@instructions) do %>
+          <i class="bi bi-pencil"></i>
+        <% end %>
+      <% end %>
+    </div>
   </div>
   <% if user_signed_in? %>
     <%= render 'opportunities' %>

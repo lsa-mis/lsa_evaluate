@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'database_cleaner'
+# require 'database_cleaner'
+require 'database_cleaner/active_record'
 
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
@@ -43,10 +44,21 @@ RSpec.configure do |config|
     Warden.test_reset!
   end
 
+  # config.before(:suite) do
+  #   DatabaseCleaner.start
+  #   FactoryBot.lint(traits: true)
+  # ensure
+  #   DatabaseCleaner.clean
+  # end
   config.before(:suite) do
-    DatabaseCleaner.start
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
     FactoryBot.lint(traits: true)
-  ensure
-    DatabaseCleaner.clean
+  end
+
+  config.around do |example|
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 end
