@@ -1014,7 +1014,7 @@ Disqualified]]></comment>
         <uid><![CDATA[9F7949DB-14C0-4EDA-BED3-1841E95CE9EC]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[ContainerAssignment (join table)]]></name>
+        <name><![CDATA[Assignment (join table)]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>12.00</x>
@@ -2317,6 +2317,56 @@ committee_viewable]]></comment>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[F75C1B2F-FA8C-43A7-93FA-C1A4B26B4E92]]></uid>
     </SQLTable>
+    <SQLTable>
+        <name><![CDATA[UserRole]]></name>
+        <schema><![CDATA[]]></schema>
+        <location>
+            <x>395.00</x>
+            <y>326.00</y>
+        </location>
+        <size>
+            <width>218.00</width>
+            <height>80.00</height>
+        </size>
+        <zorder>39</zorder>
+        <SQLField>
+            <name><![CDATA[id]]></name>
+            <type><![CDATA[integer]]></type>
+            <primaryKey>1</primaryKey>
+            <autoIncrement><![CDATA[1]]></autoIncrement>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[C09817E5-23E1-4DC7-B3D3-57387C708EB8]]></uid>
+            <unique><![CDATA[1]]></unique>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[role_id]]></name>
+            <type><![CDATA[integer]]></type>
+            <referencesField>id</referencesField>
+            <referencesTable>Role</referencesTable>
+            <referencesField><![CDATA[id]]></referencesField>
+            <referencesTable><![CDATA[Role]]></referencesTable>
+            <sourceCardinality>0</sourceCardinality>
+            <destinationCardinality>0</destinationCardinality>
+            <referencesFieldUID><![CDATA[A3F6314D-7326-40F8-8C17-855989897E1F]]></referencesFieldUID>
+            <referencesTableUID><![CDATA[CF6E089E-E5E4-4383-BF2A-817309BABBDF]]></referencesTableUID>
+            <forcedUnique><![CDATA[0]]></forcedUnique>
+            <uid><![CDATA[2FAA54C0-EB5A-4BC6-9C2F-EAF8C3C4700B]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[user_id]]></name>
+            <type><![CDATA[integer]]></type>
+            <referencesField>id</referencesField>
+            <referencesTable>User (Devise Tbl)</referencesTable>
+            <referencesField><![CDATA[id]]></referencesField>
+            <referencesTable><![CDATA[User (Devise Tbl)]]></referencesTable>
+            <sourceCardinality>0</sourceCardinality>
+            <destinationCardinality>0</destinationCardinality>
+            <referencesFieldUID><![CDATA[9C1094DD-6607-485F-ACC4-1E0318C7D0ED]]></referencesFieldUID>
+            <referencesTableUID><![CDATA[F75C1B2F-FA8C-43A7-93FA-C1A4B26B4E92]]></referencesTableUID>
+            <uid><![CDATA[89F742F1-6355-4C00-9168-352949CDEB16]]></uid>
+        </SQLField>
+        <uid><![CDATA[FA060CC9-868D-4460-A66D-9F0246AF9E3A]]></uid>
+    </SQLTable>
     <SQLComment>
         <name><![CDATA[Comment1_1]]></name>
         <comment><![CDATA[Profile updated (to User)
@@ -2363,7 +2413,7 @@ Evaluations submitted successfully(to Judge)
         <windowHeight><![CDATA[1415.000000]]></windowHeight>
         <windowLocationX><![CDATA[1816.000000]]></windowLocationX>
         <windowLocationY><![CDATA[-323.000000]]></windowLocationY>
-        <windowScrollOrigin><![CDATA[{6, 0}]]></windowScrollOrigin>
+        <windowScrollOrigin><![CDATA[{0, 20}]]></windowScrollOrigin>
         <windowWidth><![CDATA[3352.000000]]></windowWidth>
     </SQLDocumentInfo>
     <AllowsIndexRenamingOnInsert><![CDATA[1]]></AllowsIndexRenamingOnInsert>
