@@ -41,8 +41,26 @@ class User < ApplicationRecord
          :trackable, :lockable, :timeoutable,
          :omniauthable, omniauth_providers: [:saml]
 
+  has_many :user_roles, dependent: :destroy
+  has_many :roles, through: :user_roles
+  has_many :assignments, dependent: :destroy
+  has_many :containers, through: :assignments
+
   validates :email, :encrypted_password, presence: true
   validates :email, uniqueness: { case_sensitive: false }
+
+  # Method to check for a specific role
+  def role?(role_name)
+    roles.exists?(kind: role_name)
+  end
+
+  def editable_content_administrator?
+    role?('editable_content_administrator')
+  end
+
+  def admin_for_container?(container_id)
+    assignments.exists?(container_id:, role: Role.find_by(kind: 'administrator'))
+  end
 
   def display_initials_or_email
     if display_name.present?

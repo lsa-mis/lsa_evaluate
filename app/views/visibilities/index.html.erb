@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Visibilities</h1>
+
+<div id="visibilities">
+  <% @visibilities.each do |visibility| %>
+    <%= render visibility %>
+    <p>
+      <%= link_to "Show this visibility", visibility %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New visibility", new_visibility_path %>

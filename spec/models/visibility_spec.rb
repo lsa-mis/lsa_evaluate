@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: roles
+# Table name: visibilities
 #
 #  id          :bigint           not null, primary key
 #  description :text(65535)
@@ -8,10 +8,8 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-class Role < ApplicationRecord
-  has_many :containers, through: :assignments
+require 'rails_helper'
 
-  has_many :user_roles, dependent: :destroy
-  has_many :users, through: :user_roles
-  has_many :assignments, dependent: :destroy
+RSpec.describe Visibility, type: :model do
+  pending "add some examples to (or delete) #{__FILE__}"
 end

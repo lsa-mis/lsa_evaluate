@@ -1,6 +1,6 @@
 # == Schema Information
 #
-# Table name: roles
+# Table name: visibilities
 #
 #  id          :bigint           not null, primary key
 #  description :text(65535)
@@ -8,10 +8,9 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-class Role < ApplicationRecord
-  has_many :containers, through: :assignments
-
-  has_many :user_roles, dependent: :destroy
-  has_many :users, through: :user_roles
-  has_many :assignments, dependent: :destroy
+FactoryBot.define do
+  factory :visibility do
+    kind { "MyString" }
+    description { "MyText" }
+  end
 end

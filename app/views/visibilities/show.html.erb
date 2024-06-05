@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @visibility %>
+
+<div>
+  <%= link_to "Edit this visibility", edit_visibility_path(@visibility) %> |
+  <%= link_to "Back to visibilities", visibilities_path %>
+
+  <%= button_to "Destroy this visibility", @visibility, method: :delete %>
+</div>

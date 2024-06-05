@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  resources :containers
+  resources :visibilities
+  resources :departments
   resources :roles
   devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' } do
     delete 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
