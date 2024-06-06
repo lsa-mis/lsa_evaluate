@@ -2345,8 +2345,8 @@ committee_viewable]]></comment>
             <referencesTable>Role</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
             <referencesTable><![CDATA[Role]]></referencesTable>
-            <sourceCardinality>0</sourceCardinality>
-            <destinationCardinality>0</destinationCardinality>
+            <sourceCardinality>5</sourceCardinality>
+            <destinationCardinality>5</destinationCardinality>
             <referencesFieldUID><![CDATA[A3F6314D-7326-40F8-8C17-855989897E1F]]></referencesFieldUID>
             <referencesTableUID><![CDATA[CF6E089E-E5E4-4383-BF2A-817309BABBDF]]></referencesTableUID>
             <forcedUnique><![CDATA[0]]></forcedUnique>
@@ -2359,8 +2359,8 @@ committee_viewable]]></comment>
             <referencesTable>User (Devise Tbl)</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
             <referencesTable><![CDATA[User (Devise Tbl)]]></referencesTable>
-            <sourceCardinality>0</sourceCardinality>
-            <destinationCardinality>0</destinationCardinality>
+            <sourceCardinality>5</sourceCardinality>
+            <destinationCardinality>5</destinationCardinality>
             <referencesFieldUID><![CDATA[9C1094DD-6607-485F-ACC4-1E0318C7D0ED]]></referencesFieldUID>
             <referencesTableUID><![CDATA[F75C1B2F-FA8C-43A7-93FA-C1A4B26B4E92]]></referencesTableUID>
             <uid><![CDATA[89F742F1-6355-4C00-9168-352949CDEB16]]></uid>
