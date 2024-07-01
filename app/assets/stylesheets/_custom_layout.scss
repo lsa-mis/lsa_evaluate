@@ -35,6 +35,10 @@ body {
 
 .footer-link {
   text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 h1 {
