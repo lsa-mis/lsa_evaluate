@@ -18,3 +18,10 @@ EditableContent.create(
     { page: 'home', section: 'description', content: 'Short paragraph explaining LSA Evaluate.' }
   ]
 )
+
+Status.create([
+                { kind: 'Active', description: 'The entity is active and operational.' },
+                { kind: 'Deleted', description: 'The entity has been deleted.' },
+                { kind: 'Archived', description: 'The entity is archived.' },
+                { kind: 'Disqualified', description: 'The entity is disqualified.' }
+              ])

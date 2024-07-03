@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   root 'static_pages#home'
   resources :static_pages
   resources :editable_contents
+  resources :statuses
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
 
