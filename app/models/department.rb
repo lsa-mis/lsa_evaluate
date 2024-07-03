@@ -9,4 +9,5 @@
 #  dept_id          :integer
 #
 class Department < ApplicationRecord
+  has_many :containers, dependent: :destroy
 end
