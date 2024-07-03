@@ -34,3 +34,11 @@ Category.create([
                   { kind: 'Short Fiction', description: 'Category for short fiction works.' },
                   { kind: 'Text-Image', description: 'Category for text-image works.' }
                 ])
+
+ClassLevel.create([
+                    { level: 'Freshman', description: 'First year of high school.' },
+                    { level: 'Sophomore', description: 'Second year of high school.' },
+                    { level: 'Junior', description: 'Third year of high school.' },
+                    { level: 'Senior', description: 'Fourth year of high school.' },
+                    { level: 'Graduate', description: 'Post-secondary education.' }
+                  ])
