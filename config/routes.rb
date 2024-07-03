@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   resources :static_pages
   resources :editable_contents
   resources :statuses
+  resources :categories
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
 
