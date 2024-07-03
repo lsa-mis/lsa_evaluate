@@ -14,7 +14,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe EditableContent, type: :model do
+RSpec.describe EditableContent do
   subject { build(:editable_content) }
 
   describe 'factory' do

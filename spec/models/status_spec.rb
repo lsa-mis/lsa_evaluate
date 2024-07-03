@@ -10,7 +10,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe Status, type: :model do
+RSpec.describe Status do
   it { is_expected.to validate_presence_of(:kind) }
   it { is_expected.to validate_uniqueness_of(:kind) }
   it { is_expected.to validate_inclusion_of(:kind).in_array(%w[Active Deleted Archived Disqualified]) }

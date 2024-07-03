@@ -22,6 +22,6 @@
 #
 require 'rails_helper'
 
-RSpec.describe Container, type: :model do
+RSpec.describe Container do
   pending "add some examples to (or delete) #{__FILE__}"
 end
