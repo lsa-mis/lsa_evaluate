@@ -9,6 +9,7 @@
 #  updated_at  :datetime         not null
 #
 class Status < ApplicationRecord
+  has_many :contest_descriptions
   validates :kind, presence: true, uniqueness: true, inclusion: { in: %w[Active Deleted Archived Disqualified] }
   validates :description, presence: true
 end

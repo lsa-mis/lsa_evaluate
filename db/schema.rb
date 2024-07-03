@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_03_132111) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_03_154413) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -70,6 +70,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_03_132111) do
     t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_containers_on_department_id"
     t.index ["visibility_id"], name: "index_containers_on_visibility_id"
+  end
+
+  create_table "contest_descriptions", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "container_id", null: false
+    t.bigint "status_id", null: false
+    t.string "name", null: false
+    t.string "short_name"
+    t.text "eligibility_rules"
+    t.text "notes"
+    t.string "created_by", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["container_id"], name: "index_contest_descriptions_on_container_id"
+    t.index ["status_id"], name: "index_contest_descriptions_on_status_id"
   end
 
   create_table "departments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -152,6 +166,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_03_132111) do
   add_foreign_key "assignments", "users"
   add_foreign_key "containers", "departments"
   add_foreign_key "containers", "visibilities"
+  add_foreign_key "contest_descriptions", "containers"
+  add_foreign_key "contest_descriptions", "statuses"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
 end

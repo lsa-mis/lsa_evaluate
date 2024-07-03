@@ -26,4 +26,5 @@ class Container < ApplicationRecord
   has_many :assignments, dependent: :destroy
   has_many :users, through: :assignments
   has_many :roles, through: :assignments
+  has_many :contest_descriptions
 end
