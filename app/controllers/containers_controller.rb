@@ -1,5 +1,5 @@
 class ContainersController < ApplicationController
-  before_action :set_container, only: %i[ show edit update destroy ]
+  before_action :set_container, only: %i[show edit update destroy]
 
   # GET /containers or /containers.json
   def index
@@ -7,8 +7,7 @@ class ContainersController < ApplicationController
   end
 
   # GET /containers/1 or /containers/1.json
-  def show
-  end
+  def show; end
 
   # GET /containers/new
   def new
@@ -16,8 +15,7 @@ class ContainersController < ApplicationController
   end
 
   # GET /containers/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /containers or /containers.json
   def create
@@ -25,7 +23,7 @@ class ContainersController < ApplicationController
 
     respond_to do |format|
       if @container.save
-        format.html { redirect_to container_url(@container), notice: "Container was successfully created." }
+        format.html { redirect_to container_url(@container), notice: 'Container was successfully created.' }
         format.json { render :show, status: :created, location: @container }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -38,7 +36,7 @@ class ContainersController < ApplicationController
   def update
     respond_to do |format|
       if @container.update(container_params)
-        format.html { redirect_to container_url(@container), notice: "Container was successfully updated." }
+        format.html { redirect_to container_url(@container), notice: 'Container was successfully updated.' }
         format.json { render :show, status: :ok, location: @container }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,19 +50,20 @@ class ContainersController < ApplicationController
     @container.destroy!
 
     respond_to do |format|
-      format.html { redirect_to containers_url, notice: "Container was successfully destroyed." }
+      format.html { redirect_to containers_url, notice: 'Container was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_container
-      @container = Container.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def container_params
-      params.require(:container).permit(:name, :description, :department_id, :visibility_id)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_container
+    @container = Container.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def container_params
+    params.require(:container).permit(:name, :description, :department_id, :visibility_id)
+  end
 end
