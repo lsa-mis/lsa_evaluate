@@ -26,6 +26,7 @@
 class ContestDescription < ApplicationRecord
   belongs_to :container
   belongs_to :status
+  has_many :contest_instances
 
   validates :name, :created_by, presence: true
 end

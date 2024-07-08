@@ -42,3 +42,54 @@ ClassLevel.create([
                     { level: 'Senior', description: 'Fourth year of high school.' },
                     { level: 'Graduate', description: 'Post-secondary education.' }
                   ])
+
+# Seed data for Status
+status_active = Status.find_by(kind: 'Active')
+status_archived = Status.find_by(kind: 'Archived')
+
+# Seed data for ContestDescription
+contest_description1 = ContestDescription.create!(name: 'Contest 1', short_name: 'C1', eligibility_rules: 'Rules 1',
+                                                  notes: 'Notes 1', created_by: 'Admin')
+contest_description2 = ContestDescription.create!(name: 'Contest 2', short_name: 'C2', eligibility_rules: 'Rules 2',
+                                                  notes: 'Notes 2', created_by: 'Admin')
+
+# Seed data for Category
+category_drama = Category.find_by(kind: 'Drama')
+category_fiction = Category.find_by(kind: 'Fiction')
+
+# Seed data for ContestInstance
+ContestInstance.create!(
+  status: status_active,
+  contest_description: contest_description1,
+  date_open: DateTime.now - 30,
+  date_closed: DateTime.now + 30,
+  notes: 'First contest instance',
+  judging_open: false,
+  judging_rounds: 1,
+  category: category_drama,
+  has_course_requirement: false,
+  judge_evaluations_complete: false,
+  course_requirement_description: 'No course requirement',
+  recletter_required: false,
+  transcript_required: false,
+  maximum_number_entries_per_applicant: 1,
+  created_by: 'Admin'
+)
+
+ContestInstance.create!(
+  status: status_archived,
+  contest_description: contest_description2,
+  date_open: DateTime.now - 60,
+  date_closed: DateTime.now - 30,
+  notes: 'Second contest instance',
+  judging_open: true,
+  judging_rounds: 2,
+  category: category_fiction,
+  has_course_requirement: true,
+  judge_evaluations_complete: true,
+  course_requirement_description: 'Course required',
+  recletter_required: true,
+  transcript_required: true,
+  maximum_number_entries_per_applicant: 2,
+  created_by: 'Admin'
+)

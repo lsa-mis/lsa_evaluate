@@ -9,6 +9,9 @@
 #  updated_at  :datetime         not null
 #
 class ClassLevel < ApplicationRecord
+  has_many :class_level_requirements, dependent: :destroy
+  has_many :contest_instances, through: :class_level_requirements
+
   validates :name, presence: true, uniqueness: true
   validates :description, presence: true
 end

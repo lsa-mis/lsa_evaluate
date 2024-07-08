@@ -9,6 +9,7 @@
 #  updated_at  :datetime         not null
 #
 class Category < ApplicationRecord
+  has_many :contest_instances
   validates :kind, presence: true, uniqueness: true,
                    inclusion: { in: ['Drama', 'Screenplay', 'Non-Fiction', 'Fiction', 'Poetry', 'Novel', 'Short Fiction', 'Text-Image'] }
   validates :description, presence: true
