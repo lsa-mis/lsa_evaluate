@@ -12,6 +12,7 @@
 FactoryBot.define do
   factory :department do
     dept_id { 1 }
-    dept_description { "MyText" }
+    name { Faker::Department.name }
+    dept_description { Faker::Department.dept_description }
   end
 end
