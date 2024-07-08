@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   resources :categories
   resources :contest_descriptions
   resources :class_levels
+  resources :contest_instances
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
 

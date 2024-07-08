@@ -1,0 +1,77 @@
+<div id="<%= dom_id contest_instance %>">
+  <p>
+    <strong>Status:</strong>
+    <%= @contest_instance.status.kind %>
+  </p>
+
+  <p>
+    <strong>Contest Description:</strong>
+    <%= @contest_instance.contest_description.name %>
+  </p>
+
+  <p>
+    <strong>Date Open:</strong>
+    <%= @contest_instance.date_open %>
+  </p>
+
+  <p>
+    <strong>Date Closed:</strong>
+    <%= @contest_instance.date_closed %>
+  </p>
+
+  <p>
+    <strong>Notes:</strong>
+    <%= @contest_instance.notes %>
+  </p>
+
+  <p>
+    <strong>Judging Open:</strong>
+    <%= @contest_instance.judging_open %>
+  </p>
+
+  <p>
+    <strong>Judging Rounds:</strong>
+    <%= @contest_instance.judging_rounds %>
+  </p>
+
+  <p>
+    <strong>Category:</strong>
+    <%= @contest_instance.category.kind %>
+  </p>
+
+  <p>
+    <strong>Has Course Requirement:</strong>
+    <%= @contest_instance.has_course_requirement %>
+  </p>
+
+  <p>
+    <strong>Judge Evaluations Complete:</strong>
+    <%= @contest_instance.judge_evaluations_complete %>
+  </p>
+
+  <p>
+    <strong>Course Requirement Description:</strong>
+    <%= @contest_instance.course_requirement_description %>
+  </p>
+
+  <p>
+    <strong>Recommendation Letter Required:</strong>
+    <%= @contest_instance.recletter_required %>
+  </p>
+
+  <p>
+    <strong>Transcript Required:</strong>
+    <%= @contest_instance.transcript_required %>
+  </p>
+
+  <p>
+    <strong>Maximum Number of Entries per Applicant:</strong>
+    <%= @contest_instance.maximum_number_entries_per_applicant %>
+  </p>
+
+  <p>
+    <strong>Created By:</strong>
+    <%= @contest_instance.created_by %>
+  </p>
+
+</div>

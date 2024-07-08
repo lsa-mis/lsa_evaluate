@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @contest_instance %>
+
+<div>
+  <%= link_to "Edit this contest instance", edit_contest_instance_path(@contest_instance) %> |
+  <%= link_to "Back to contest instances", contest_instances_path %>
+
+  <%= button_to "Destroy this contest instance", @contest_instance, method: :delete %>
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_03_160652) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_08_142554) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -68,6 +68,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_03_160652) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "class_level_requirements", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "contest_instance_id", null: false
+    t.bigint "class_level_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["class_level_id"], name: "index_class_level_requirements_on_class_level_id"
+    t.index ["contest_instance_id", "class_level_id"], name: "index_clr_on_ci_and_cl", unique: true
+    t.index ["contest_instance_id"], name: "index_class_level_requirements_on_contest_instance_id"
+  end
+
   create_table "class_levels", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "description", null: false
@@ -98,6 +108,29 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_03_160652) do
     t.datetime "updated_at", null: false
     t.index ["container_id"], name: "index_contest_descriptions_on_container_id"
     t.index ["status_id"], name: "index_contest_descriptions_on_status_id"
+  end
+
+  create_table "contest_instances", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "status_id", null: false
+    t.bigint "contest_description_id", null: false
+    t.datetime "date_open", null: false
+    t.datetime "date_closed", null: false
+    t.text "notes"
+    t.boolean "judging_open", default: false, null: false
+    t.integer "judging_rounds", default: 1
+    t.bigint "category_id", null: false
+    t.boolean "has_course_requirement", default: false, null: false
+    t.boolean "judge_evaluations_complete", default: false, null: false
+    t.text "course_requirement_description"
+    t.boolean "recletter_required", default: false, null: false
+    t.boolean "transcript_required", default: false, null: false
+    t.integer "maximum_number_entries_per_applicant", default: 1, null: false
+    t.string "created_by"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_contest_instances_on_category_id"
+    t.index ["contest_description_id"], name: "index_contest_instances_on_contest_description_id"
+    t.index ["status_id"], name: "index_contest_instances_on_status_id"
   end
 
   create_table "departments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -178,10 +211,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_03_160652) do
   add_foreign_key "assignments", "containers"
   add_foreign_key "assignments", "roles"
   add_foreign_key "assignments", "users"
+  add_foreign_key "class_level_requirements", "class_levels"
+  add_foreign_key "class_level_requirements", "contest_instances"
   add_foreign_key "containers", "departments"
   add_foreign_key "containers", "visibilities"
   add_foreign_key "contest_descriptions", "containers"
   add_foreign_key "contest_descriptions", "statuses"
+  add_foreign_key "contest_instances", "categories"
+  add_foreign_key "contest_instances", "contest_descriptions"
+  add_foreign_key "contest_instances", "statuses"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
 end
