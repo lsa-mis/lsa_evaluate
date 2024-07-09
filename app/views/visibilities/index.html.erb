@@ -6,9 +6,9 @@
   <% @visibilities.each do |visibility| %>
     <%= render visibility %>
     <p>
-      <%= link_to "Show this visibility", visibility %>
+      <%= link_to "Show", visibility %>
     </p>
   <% end %>
 </div>
 
-<%= link_to "New visibility", new_visibility_path %>
+<%= link_to "New", new_visibility_path %>
