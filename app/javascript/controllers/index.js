@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import ConfirmController from "./confirm_controller"
+application.register("confirm", ConfirmController)
+
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
 
