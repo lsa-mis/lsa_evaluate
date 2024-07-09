@@ -33,7 +33,6 @@
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #  fk_rails_...  (status_id => statuses.id)
 #
-
 FactoryBot.define do
   factory :contest_instance do
     association :status

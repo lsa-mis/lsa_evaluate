@@ -33,7 +33,6 @@
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #  fk_rails_...  (status_id => statuses.id)
 #
-
 class ContestInstance < ApplicationRecord
   has_many :class_level_requirements, dependent: :destroy
   has_many :class_levels, through: :class_level_requirements

@@ -12,10 +12,6 @@
 #
 #  index_editable_contents_on_page_and_section  (page,section) UNIQUE
 #
-# spec/factories/editable_contents.rb
-
-# spec/factories/editable_contents.rb
-
 FactoryBot.define do
   factory :editable_content do
     page { Faker::Lorem.word }

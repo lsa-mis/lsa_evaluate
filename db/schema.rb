@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_09_194913) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_09_201039) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -59,6 +59,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_09_194913) do
     t.index ["role_id", "user_id", "container_id"], name: "index_assignments_on_role_user_container", unique: true
     t.index ["role_id"], name: "index_assignments_on_role_id"
     t.index ["user_id"], name: "index_assignments_on_user_id"
+  end
+
+  create_table "campuses", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "campus_descr", null: false
+    t.integer "campus_cd", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["campus_cd"], name: "campus_cd_unq_idx", unique: true
+    t.index ["campus_descr"], name: "campus_descr_idx"
+    t.index ["campus_descr"], name: "campus_descr_unq_idx", unique: true
+    t.index ["id"], name: "id_unq_idx", unique: true
   end
 
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
