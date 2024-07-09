@@ -1619,10 +1619,10 @@ committee_viewable]]></comment>
             <hidden><![CDATA[0]]></hidden>
             <indexed><![CDATA[1]]></indexed>
             <uid><![CDATA[FFA155D9-5099-4993-8F72-66FA02CD8FC2]]></uid>
-            <unique><![CDATA[1]]></unique>
+            <unique><![CDATA[0]]></unique>
         </SQLField>
         <SQLField>
-            <name><![CDATA[campus _address_id]]></name>
+            <name><![CDATA[campus_address_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
             <referencesTable>Address</referencesTable>
@@ -1637,7 +1637,7 @@ committee_viewable]]></comment>
             <hidden><![CDATA[0]]></hidden>
             <indexed><![CDATA[1]]></indexed>
             <uid><![CDATA[ACD52139-2FC0-42D8-A4F4-46E9F3431D64]]></uid>
-            <unique><![CDATA[1]]></unique>
+            <unique><![CDATA[0]]></unique>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
         <labelWindowIndex><![CDATA[35]]></labelWindowIndex>
@@ -2412,17 +2412,17 @@ Evaluations submitted successfully(to Judge)
         <overviewPanelHidden><![CDATA[0]]></overviewPanelHidden>
         <pageBoundariesVisible><![CDATA[0]]></pageBoundariesVisible>
         <PageGridVisible><![CDATA[0]]></PageGridVisible>
-        <RightSidebarWidth><![CDATA[1451.000000]]></RightSidebarWidth>
+        <RightSidebarWidth><![CDATA[2845.000000]]></RightSidebarWidth>
         <sidebarIndex><![CDATA[0]]></sidebarIndex>
         <snapToGrid><![CDATA[0]]></snapToGrid>
         <SourceSidebarWidth><![CDATA[312.000000]]></SourceSidebarWidth>
         <SQLEditorFileFormatVersion><![CDATA[4]]></SQLEditorFileFormatVersion>
         <uid><![CDATA[E2FE8E50-306B-4494-BAFB-41EE3761C01D]]></uid>
-        <windowHeight><![CDATA[1079.000000]]></windowHeight>
-        <windowLocationX><![CDATA[0.000000]]></windowLocationX>
-        <windowLocationY><![CDATA[0.000000]]></windowLocationY>
-        <windowScrollOrigin><![CDATA[{0, 208}]]></windowScrollOrigin>
-        <windowWidth><![CDATA[1728.000000]]></windowWidth>
+        <windowHeight><![CDATA[1415.000000]]></windowHeight>
+        <windowLocationX><![CDATA[2044.000000]]></windowLocationX>
+        <windowLocationY><![CDATA[-323.000000]]></windowLocationY>
+        <windowScrollOrigin><![CDATA[{426, 0}]]></windowScrollOrigin>
+        <windowWidth><![CDATA[3122.000000]]></windowWidth>
     </SQLDocumentInfo>
     <AllowsIndexRenamingOnInsert><![CDATA[1]]></AllowsIndexRenamingOnInsert>
     <defaultLabelExpanded><![CDATA[1]]></defaultLabelExpanded>
