@@ -44,10 +44,10 @@ Category.create([
 
 # Seed data for ClassLevel
 ClassLevel.create([
-                    { name: 'Freshman', description: 'First year of high school.' },
-                    { name: 'Sophomore', description: 'Second year of high school.' },
-                    { name: 'Junior', description: 'Third year of high school.' },
-                    { name: 'Senior', description: 'Fourth year of high school.' },
+                    { name: 'First year', description: 'First year of school.' },
+                    { name: 'Second year', description: 'Second year of school.' },
+                    { name: 'Junior', description: 'Third year of school.' },
+                    { name: 'Senior', description: 'Fourth year of school.' },
                     { name: 'Graduate', description: 'Post-secondary education.' }
                   ])
 
