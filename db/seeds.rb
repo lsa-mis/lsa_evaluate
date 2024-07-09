@@ -19,6 +19,13 @@ School.create([
                 { name: 'Rackham' }
               ])
 
+# Seed data for Campus
+Campus.create([
+                { campus_descr: 'AnnArbor', campus_cd: 1001 },
+                { campus_descr: 'Flint', campus_cd: 1002 },
+                { campus_descr: 'Dearborn', campus_cd: 1003 }
+              ])
+
 # Seed data for Status
 Status.create([
                 { kind: 'Active', description: 'The entity is active and operational.' },
