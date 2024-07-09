@@ -6,9 +6,9 @@
   <% @roles.each do |role| %>
     <%= render role %>
     <p>
-      <%= link_to "Show this role", role %>
+      <%= link_to "Show", role %>
     </p>
   <% end %>
 </div>
 
-<%= link_to "New role", new_role_path %>
+<%= link_to "New", new_role_path %>

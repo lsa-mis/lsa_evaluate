@@ -6,9 +6,9 @@
   <% @contest_instances.each do |contest_instance| %>
     <%= render contest_instance %>
     <p>
-      <%= link_to "Show this contest instance", contest_instance %>
+      <%= link_to "Show", contest_instance %>
     </p>
   <% end %>
 </div>
 
-<%= link_to "New contest instance", new_contest_instance_path %>
+<%= link_to "New", new_contest_instance_path %>

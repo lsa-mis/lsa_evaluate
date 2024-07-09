@@ -6,9 +6,9 @@
   <% @containers.each do |container| %>
     <%= render container %>
     <p>
-      <%= link_to "Show this container", container %>
+      <%= link_to "Show", container %>
     </p>
   <% end %>
 </div>
 
-<%= link_to "New container", new_container_path %>
+<%= link_to "New", new_container_path %>
