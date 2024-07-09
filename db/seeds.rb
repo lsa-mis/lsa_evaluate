@@ -10,6 +10,15 @@ EditableContent.create([
                          { page: 'home', section: 'description', content: 'Short paragraph explaining LSA Evaluate.' }
                        ])
 
+# Seed data for School
+School.create([
+                { name: 'LSA' },
+                { name: 'School of Nursing' },
+                { name: 'Ross Business School' },
+                { name: 'College of Engineering' },
+                { name: 'Rackham' }
+              ])
+
 # Seed data for Status
 Status.create([
                 { kind: 'Active', description: 'The entity is active and operational.' },
