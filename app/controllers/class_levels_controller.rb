@@ -42,6 +42,6 @@ class ClassLevelsController < ApplicationController
   end
 
   def class_level_params
-    params.require(:class_level).permit(:kind, :description)
+    params.require(:class_level).permit(:name, :description)
   end
 end

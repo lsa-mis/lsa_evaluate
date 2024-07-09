@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @class_level %>
+
+<div>
+  <%= link_to "Edit", edit_class_level_path(@class_level) %> |
+  <%= link_to "Back", class_levels_path %>
+
+  <%= button_to "Destroy", @class_level, method: :delete, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to delete this?' } %>
+</div>
