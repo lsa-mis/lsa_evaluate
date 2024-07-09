@@ -1,10 +1,10 @@
-<h1>Editing visibility</h1>
+<h1><%= action_name.capitalize %> visibility</h1>
 
 <%= render "form", visibility: @visibility %>
 
 <br>
 
 <div>
-  <%= link_to "Show this visibility", @visibility %> |
-  <%= link_to "Back to visibilities", visibilities_path %>
+  <%= link_to "Show", @visibility %> |
+  <%= link_to "Back", visibilities_path %>
 </div>

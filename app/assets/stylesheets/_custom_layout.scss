@@ -184,10 +184,10 @@ svg.wh6 {
 
 /* FORMS */
 
-form label.required:after {
-  color: red;
-  content: " *";
-}
+// form label.required:after {
+//   color: red;
+//   content: " *";
+// }
 
 #error_explanation {
   background-color: $warning;

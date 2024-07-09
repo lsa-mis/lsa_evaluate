@@ -1,0 +1,10 @@
+<h1><%= action_name.capitalize %> Contest Description</h1>
+
+<%= render 'form', contest_description: @contest_description %>
+
+<br>
+
+<div>
+  <%= link_to "Show", @contest_description %> |
+  <%= link_to 'Back', contest_descriptions_path %>
+</div>

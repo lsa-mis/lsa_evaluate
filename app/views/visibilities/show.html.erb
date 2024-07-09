@@ -3,8 +3,8 @@
 <%= render @visibility %>
 
 <div>
-  <%= link_to "Edit this visibility", edit_visibility_path(@visibility) %> |
-  <%= link_to "Back to visibilities", visibilities_path %>
+  <%= link_to "Edit", edit_visibility_path(@visibility) %> |
+  <%= link_to "Back", visibilities_path %>
 
-  <%= button_to "Destroy this visibility", @visibility, method: :delete %>
+  <%= button_to "Destroy", @visibility, method: :delete %>
 </div>
