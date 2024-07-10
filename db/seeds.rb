@@ -24,6 +24,40 @@ AddressType.create([
                      { kind: 'Campus', description: 'Campus address' }
                    ])
 
+# Create Addresses
+Address.create([
+                 {
+                   address1: Faker::Address.street_address,
+                   address2: Faker::Address.secondary_address,
+                   city: Faker::Address.city,
+                   state: Faker::Number.between(from: 1, to: 50),
+                   zip: Faker::Address.zip_code,
+                   phone: Faker::PhoneNumber.phone_number,
+                   country: Faker::Number.between(from: 1, to: 250),
+                   address_type: address_types.sample
+                 },
+                 {
+                   address1: Faker::Address.street_address,
+                   address2: Faker::Address.secondary_address,
+                   city: Faker::Address.city,
+                   state: Faker::Number.between(from: 1, to: 50),
+                   zip: Faker::Address.zip_code,
+                   phone: Faker::PhoneNumber.phone_number,
+                   country: Faker::Number.between(from: 1, to: 250),
+                   address_type: address_types.sample
+                 },
+                 {
+                   address1: Faker::Address.street_address,
+                   address2: Faker::Address.secondary_address,
+                   city: Faker::Address.city,
+                   state: Faker::Number.between(from: 1, to: 50),
+                   zip: Faker::Address.zip_code,
+                   phone: Faker::PhoneNumber.phone_number,
+                   country: Faker::Number.between(from: 1, to: 250),
+                   address_type: address_types.sample
+                 }
+               ])
+
 # Seed data for Campus
 Campus.create([
                 { campus_descr: 'AnnArbor', campus_cd: 1001 },

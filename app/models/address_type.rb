@@ -1,12 +1,19 @@
-class CreateAddressTypes < ActiveRecord::Migration[7.1]
-  def change
-    create_table :address_types do |t|
-      t.string :kind, null: false
-      t.text :description
-
-      t.timestamps
-    end
-    add_index :address_types, :id, unique: true, name: :id_unq_idx
-    add_index :address_types, :kind, unique: true, name: :kind_unq_idx
-  end
+# == Schema Information
+#
+# Table name: address_types
+#
+#  id          :bigint           not null, primary key
+#  description :text(65535)
+#  kind        :string(255)      not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+# Indexes
+#
+#  id_unq_idx    (id) UNIQUE
+#  kind_unq_idx  (kind) UNIQUE
+#
+class AddressType < ApplicationRecord
+  has_many :addresses
+  validates :kind, presence: true, uniqueness: true
 end

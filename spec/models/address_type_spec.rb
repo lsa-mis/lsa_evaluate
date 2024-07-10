@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: address_types
+#
+#  id          :bigint           not null, primary key
+#  description :text(65535)
+#  kind        :string(255)      not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+# Indexes
+#
+#  id_unq_idx    (id) UNIQUE
+#  kind_unq_idx  (kind) UNIQUE
+#
 require 'rails_helper'
 
 RSpec.describe AddressType, type: :model do
