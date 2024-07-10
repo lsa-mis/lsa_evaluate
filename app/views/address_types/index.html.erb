@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Address_types</h1>
+
+<div id="address_types">
+  <% @address_types.each do |address_type| %>
+    <%= render address_type %>
+    <p>
+      <%= link_to "Show", address_type %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New", new_address_type_path %>

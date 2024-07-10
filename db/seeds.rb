@@ -19,6 +19,11 @@ School.create([
                 { name: 'Rackham' }
               ])
 
+AddressType.create([
+                     { kind: 'Home', description: 'Home address' },
+                     { kind: 'Campus', description: 'Campus address' }
+                   ])
+
 # Seed data for Campus
 Campus.create([
                 { campus_descr: 'AnnArbor', campus_cd: 1001 },
