@@ -35,9 +35,9 @@
 #
 FactoryBot.define do
   factory :contest_instance do
-    association :status
-    association :contest_description
-    association :category
+    status
+    contest_description
+    category
     date_open { Faker::Date.backward(days: 14) }
     date_closed { Faker::Date.forward(days: 14) }
     notes { Faker::Lorem.paragraph }

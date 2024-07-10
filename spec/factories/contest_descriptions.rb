@@ -25,8 +25,8 @@
 #
 FactoryBot.define do
   factory :contest_description do
-    association :container
-    association :status
+    container
+    status
     name { Faker::Lorem.word }
     short_name { Faker::Lorem.word }
     eligibility_rules { Faker::Lorem.paragraph }
