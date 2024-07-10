@@ -21,6 +21,8 @@ Rails.application.routes.draw do
   resources :address_types
   resources :campuses
   resources :schools
+  resources :addresses
+  resources :profiles
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
 

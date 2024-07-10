@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_10_134724) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_10_214359) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -185,6 +185,39 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_10_134724) do
     t.index ["page", "section"], name: "index_editable_contents_on_page_and_section", unique: true
   end
 
+  create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "first_name", default: "", null: false
+    t.string "last_name", default: "", null: false
+    t.bigint "class_level_id"
+    t.bigint "school_id"
+    t.bigint "campus_id"
+    t.string "major"
+    t.bigint "department_id"
+    t.date "grad_date", null: false
+    t.string "degree", null: false
+    t.boolean "receiving_financial_aid", default: false, null: false
+    t.boolean "accepted_financial_aid_notice", default: false, null: false
+    t.text "financial_aid_description"
+    t.string "hometown_publication"
+    t.string "pen_name"
+    t.bigint "address_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["address_id"], name: "address_id_idx"
+    t.index ["address_id"], name: "index_profiles_on_address_id"
+    t.index ["campus_id"], name: "campus_id_idx"
+    t.index ["campus_id"], name: "index_profiles_on_campus_id"
+    t.index ["class_level_id"], name: "class_level_id_idx"
+    t.index ["class_level_id"], name: "index_profiles_on_class_level_id"
+    t.index ["department_id"], name: "index_profiles_on_department_id"
+    t.index ["id"], name: "id_unq_idx", unique: true
+    t.index ["school_id"], name: "index_profiles_on_school_id"
+    t.index ["school_id"], name: "school_id_idx"
+    t.index ["user_id"], name: "index_profiles_on_user_id"
+    t.index ["user_id"], name: "user_id_idx"
+  end
+
   create_table "roles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "kind"
     t.text "description"
@@ -266,6 +299,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_10_134724) do
   add_foreign_key "contest_instances", "categories"
   add_foreign_key "contest_instances", "contest_descriptions"
   add_foreign_key "contest_instances", "statuses"
+  add_foreign_key "profiles", "addresses"
+  add_foreign_key "profiles", "campuses"
+  add_foreign_key "profiles", "class_levels"
+  add_foreign_key "profiles", "departments"
+  add_foreign_key "profiles", "schools"
+  add_foreign_key "profiles", "users"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
 end

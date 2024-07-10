@@ -944,7 +944,7 @@ Disqualified]]></comment>
             <type><![CDATA[integer]]></type>
             <primaryKey>1</primaryKey>
             <autoIncrement><![CDATA[1]]></autoIncrement>
-            <forcedUnique><![CDATA[0]]></forcedUnique>
+            <forcedUnique><![CDATA[1]]></forcedUnique>
             <notNull><![CDATA[1]]></notNull>
             <uid><![CDATA[D15F3D60-C735-4E28-AF80-1EACC1BA8F07]]></uid>
             <unique><![CDATA[1]]></unique>
@@ -1436,7 +1436,7 @@ committee_viewable]]></comment>
         </location>
         <size>
             <width>384.00</width>
-            <height>380.00</height>
+            <height>360.00</height>
         </size>
         <zorder>4</zorder>
         <SQLField>
@@ -1466,6 +1466,7 @@ committee_viewable]]></comment>
             <forcedUnique><![CDATA[0]]></forcedUnique>
             <hidden><![CDATA[0]]></hidden>
             <indexed><![CDATA[1]]></indexed>
+            <notNull><![CDATA[1]]></notNull>
             <uid><![CDATA[33D3BD8E-38BB-4583-A1F4-A2CCD3894053]]></uid>
         </SQLField>
         <SQLField>
@@ -1499,7 +1500,7 @@ committee_viewable]]></comment>
             <forcedUnique><![CDATA[0]]></forcedUnique>
             <hidden><![CDATA[0]]></hidden>
             <indexed><![CDATA[1]]></indexed>
-            <notNull><![CDATA[0]]></notNull>
+            <notNull><![CDATA[1]]></notNull>
             <uid><![CDATA[C41FC287-AB9B-4E9F-9974-680C979B4C69]]></uid>
         </SQLField>
         <SQLField>
@@ -1546,16 +1547,24 @@ committee_viewable]]></comment>
             <uid><![CDATA[4194DB73-522E-44A7-94D1-339F17D924CB]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[department]]></name>
-            <type><![CDATA[string]]></type>
-            <defaultValue><![CDATA[NULL]]></defaultValue>
+            <name><![CDATA[department_id]]></name>
+            <type><![CDATA[integer]]></type>
+            <referencesField>id</referencesField>
+            <referencesTable>Department</referencesTable>
+            <referencesField><![CDATA[id]]></referencesField>
+            <referencesTable><![CDATA[Department]]></referencesTable>
+            <sourceCardinality>5</sourceCardinality>
+            <destinationCardinality>1</destinationCardinality>
+            <referencesFieldUID><![CDATA[D15F3D60-C735-4E28-AF80-1EACC1BA8F07]]></referencesFieldUID>
+            <referencesTableUID><![CDATA[9D519985-DBAE-4DF9-84FC-009752308FFE]]></referencesTableUID>
             <hidden><![CDATA[0]]></hidden>
-            <noQuoteDefault><![CDATA[1]]></noQuoteDefault>
+            <noQuoteDefault><![CDATA[0]]></noQuoteDefault>
+            <notNull><![CDATA[1]]></notNull>
             <uid><![CDATA[33BBB51B-8D25-48C1-84BE-FCF3FE72E2D3]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[gradYearMonth]]></name>
-            <type><![CDATA[integer]]></type>
+            <name><![CDATA[grad_date]]></name>
+            <type><![CDATA[date]]></type>
             <hidden><![CDATA[0]]></hidden>
             <notNull><![CDATA[1]]></notNull>
             <uid><![CDATA[57A0A8BF-EC8B-4726-819F-7B91CD431483]]></uid>
@@ -1576,7 +1585,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[859FDCC4-B1C1-4D68-A8AD-9E3635DC4111]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[accepted_finaincial_aid_noticy]]></name>
+            <name><![CDATA[accepted_financial_aid_notice]]></name>
             <type><![CDATA[boolean]]></type>
             <defaultValue><![CDATA[0]]></defaultValue>
             <hidden><![CDATA[0]]></hidden>
@@ -1604,14 +1613,14 @@ committee_viewable]]></comment>
             <uid><![CDATA[7DA66C3E-4B98-4349-B404-99F37B572D27]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[home_address_id]]></name>
+            <name><![CDATA[address_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>id</referencesField>
             <referencesTable>Address</referencesTable>
             <referencesField><![CDATA[id]]></referencesField>
             <referencesTable><![CDATA[Address]]></referencesTable>
             <sourceCardinality>1</sourceCardinality>
-            <destinationCardinality>2</destinationCardinality>
+            <destinationCardinality>3</destinationCardinality>
             <referencesFieldUID><![CDATA[7037F8E4-F009-4014-A0DF-58E7F3177856]]></referencesFieldUID>
             <referencesTableUID><![CDATA[D54BE6AA-FFB6-4617-9240-B8375E76A95A]]></referencesTableUID>
             <connectorHidden><![CDATA[0]]></connectorHidden>
@@ -1619,24 +1628,6 @@ committee_viewable]]></comment>
             <hidden><![CDATA[0]]></hidden>
             <indexed><![CDATA[1]]></indexed>
             <uid><![CDATA[FFA155D9-5099-4993-8F72-66FA02CD8FC2]]></uid>
-            <unique><![CDATA[0]]></unique>
-        </SQLField>
-        <SQLField>
-            <name><![CDATA[campus_address_id]]></name>
-            <type><![CDATA[integer]]></type>
-            <referencesField>id</referencesField>
-            <referencesTable>Address</referencesTable>
-            <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[Address]]></referencesTable>
-            <sourceCardinality>1</sourceCardinality>
-            <destinationCardinality>2</destinationCardinality>
-            <referencesFieldUID><![CDATA[7037F8E4-F009-4014-A0DF-58E7F3177856]]></referencesFieldUID>
-            <referencesTableUID><![CDATA[D54BE6AA-FFB6-4617-9240-B8375E76A95A]]></referencesTableUID>
-            <connectorHidden><![CDATA[0]]></connectorHidden>
-            <forcedUnique><![CDATA[0]]></forcedUnique>
-            <hidden><![CDATA[0]]></hidden>
-            <indexed><![CDATA[1]]></indexed>
-            <uid><![CDATA[ACD52139-2FC0-42D8-A4F4-46E9F3431D64]]></uid>
             <unique><![CDATA[0]]></unique>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
@@ -2412,17 +2403,17 @@ Evaluations submitted successfully(to Judge)
         <overviewPanelHidden><![CDATA[0]]></overviewPanelHidden>
         <pageBoundariesVisible><![CDATA[0]]></pageBoundariesVisible>
         <PageGridVisible><![CDATA[0]]></PageGridVisible>
-        <RightSidebarWidth><![CDATA[2845.000000]]></RightSidebarWidth>
+        <RightSidebarWidth><![CDATA[3155.000000]]></RightSidebarWidth>
         <sidebarIndex><![CDATA[0]]></sidebarIndex>
         <snapToGrid><![CDATA[0]]></snapToGrid>
-        <SourceSidebarWidth><![CDATA[312.000000]]></SourceSidebarWidth>
+        <SourceSidebarWidth><![CDATA[604.000000]]></SourceSidebarWidth>
         <SQLEditorFileFormatVersion><![CDATA[4]]></SQLEditorFileFormatVersion>
         <uid><![CDATA[E2FE8E50-306B-4494-BAFB-41EE3761C01D]]></uid>
         <windowHeight><![CDATA[1415.000000]]></windowHeight>
-        <windowLocationX><![CDATA[2044.000000]]></windowLocationX>
+        <windowLocationX><![CDATA[1734.000000]]></windowLocationX>
         <windowLocationY><![CDATA[-323.000000]]></windowLocationY>
-        <windowScrollOrigin><![CDATA[{426, 0}]]></windowScrollOrigin>
-        <windowWidth><![CDATA[3122.000000]]></windowWidth>
+        <windowScrollOrigin><![CDATA[{268, 83}]]></windowScrollOrigin>
+        <windowWidth><![CDATA[3432.000000]]></windowWidth>
     </SQLDocumentInfo>
     <AllowsIndexRenamingOnInsert><![CDATA[1]]></AllowsIndexRenamingOnInsert>
     <defaultLabelExpanded><![CDATA[1]]></defaultLabelExpanded>
