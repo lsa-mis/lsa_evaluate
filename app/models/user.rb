@@ -45,6 +45,7 @@ class User < ApplicationRecord
   has_many :roles, through: :user_roles
   has_many :assignments, dependent: :destroy
   has_many :containers, through: :assignments
+  has_one :profile, dependent: :destroy
 
   validates :email, :encrypted_password, presence: true
   validates :email, uniqueness: { case_sensitive: false }

@@ -14,7 +14,7 @@
 #
 FactoryBot.define do
   factory :visibility do
-    kind { "MyString" }
-    description { "MyText" }
+    kind { %w[Public Private].sample }
+    description { Faker::Lorem.paragraph }
   end
 end

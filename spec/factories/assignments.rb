@@ -24,8 +24,8 @@
 #
 FactoryBot.define do
   factory :assignment do
-    user { nil }
-    container { nil }
-    role { nil }
+    user
+    container
+    role
   end
 end

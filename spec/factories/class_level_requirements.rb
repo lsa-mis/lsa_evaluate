@@ -21,7 +21,7 @@
 #
 FactoryBot.define do
   factory :class_level_requirement do
-    contest_instance { nil }
-    class_level { nil }
+    contest_instance
+    class_level
   end
 end

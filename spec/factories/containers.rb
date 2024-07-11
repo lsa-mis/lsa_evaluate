@@ -22,9 +22,10 @@
 #
 FactoryBot.define do
   factory :container do
-    name { "MyString" }
-    description { "MyText" }
-    department { nil }
-    visibility { nil }
+    sequence(:name) { |n| "name_#{n}" }
+    name { Faker::Commerce.product_name }
+    description { Faker::Lorem.paragraph }
+    department
+    visibility
   end
 end

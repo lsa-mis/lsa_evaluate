@@ -17,7 +17,7 @@
 #
 FactoryBot.define do
   factory :campus do
-    campus_descr { Faker::Address.community }
-    campus_cd { Faker::Number.unique.number(digits: 4) }
+    campus_descr { ['Central Campus', 'UM-Flint', 'UM-Dearborn'].sample }
+    campus_cd { Faker::Number.unique.number(digits: 3) }
   end
 end

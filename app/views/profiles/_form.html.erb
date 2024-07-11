@@ -4,22 +4,24 @@
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
   <div class="form-inputs">
-    <%= f.association :user, collection: User.all, label_method: :name, value_method: :id, include_blank: false %>
+    <%= f.association :user, collection: User.all, label_method: :email, value_method: :id, include_blank: false %>
     <%= f.input :first_name %>
     <%= f.input :last_name %>
     <%= f.association :class_level, collection: ClassLevel.all, label_method: :name, value_method: :id, include_blank: true %>
     <%= f.association :school, collection: School.all, label_method: :name, value_method: :id, include_blank: true %>
-    <%= f.association :campus, collection: Campus.all, label_method: :name, value_method: :id, include_blank: true %>
+    <%= f.association :campus, collection: Campus.all, label_method: :campus_descr, value_method: :id, include_blank: true %>
     <%= f.input :major %>
     <%= f.association :department, collection: Department.all, label_method: :name, value_method: :id, include_blank: true %>
-    <%= f.input :grad_date, as: :date_picker %>
+    <%= f.input :grad_date, as: :date, start_year: Date.today.year - 2,
+                              end_year: Date.today.year + 10, discard_day: true,
+                              order: [:month, :year]  %>
     <%= f.input :degree %>
     <%= f.input :receiving_financial_aid, as: :boolean %>
     <%= f.input :accepted_financial_aid_notice, as: :boolean %>
     <%= f.input :financial_aid_description %>
     <%= f.input :hometown_publication %>
     <%= f.input :pen_name %>
-    <%= f.association :address, collection: Address.all, label_method: :full_address, value_method: :id, include_blank: true %>
+    <%= f.association :address, collection: Address.all, label_method: :zip, value_method: :id, include_blank: true %>
   </div>
 
   <div class="form-actions">

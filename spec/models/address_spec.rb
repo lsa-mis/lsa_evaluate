@@ -27,9 +27,9 @@
 
 require 'rails_helper'
 
-RSpec.describe Address, type: :model do
+RSpec.describe Address do
   before do
-    @address_type = AddressType.create(name: 'Home')
+    @address_type = AddressType.create(kind: 'Home')
   end
 
   it 'is valid with valid attributes' do

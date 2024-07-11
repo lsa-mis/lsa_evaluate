@@ -1028,7 +1028,7 @@ Disqualified]]></comment>
             <y>396.00</y>
         </location>
         <size>
-            <width>254.00</width>
+            <width>281.00</width>
             <height>120.00</height>
         </size>
         <zorder>17</zorder>
@@ -2412,7 +2412,7 @@ Evaluations submitted successfully(to Judge)
         <windowHeight><![CDATA[1415.000000]]></windowHeight>
         <windowLocationX><![CDATA[1734.000000]]></windowLocationX>
         <windowLocationY><![CDATA[-323.000000]]></windowLocationY>
-        <windowScrollOrigin><![CDATA[{268, 83}]]></windowScrollOrigin>
+        <windowScrollOrigin><![CDATA[{0, 0}]]></windowScrollOrigin>
         <windowWidth><![CDATA[3432.000000]]></windowWidth>
     </SQLDocumentInfo>
     <AllowsIndexRenamingOnInsert><![CDATA[1]]></AllowsIndexRenamingOnInsert>

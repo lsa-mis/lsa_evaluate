@@ -14,8 +14,21 @@
 #  kind_unq_idx  (kind) UNIQUE
 #
 FactoryBot.define do
+  sequence(:unique_kind) { |n| "Kind_#{n}" }
+
   factory :address_type do
-    kind { Faker::Address.unique.community }
+    kind { generate(:unique_kind) } # Use the unique sequence for kind
     description { Faker::Lorem.sentence }
+
+    trait :home do
+      kind { 'Home' }
+    end
+
+    trait :campus do
+      kind { 'Campus' }
+    end
+
+    factory :home_address_type, traits: [:home]
+    factory :campus_address_type, traits: [:campus]
   end
 end
