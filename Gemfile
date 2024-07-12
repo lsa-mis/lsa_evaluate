@@ -8,6 +8,7 @@ ruby '3.3.0'
 
 gem 'actiontext'
 gem 'bootsnap', require: false
+gem 'country_select'
 gem 'cssbundling-rails'
 gem 'devise', '~> 4.9'
 gem 'jbuilder'

@@ -12,6 +12,8 @@ class ProfilesController < ApplicationController
   # GET /profiles/new
   def new
     @profile = Profile.new
+    @profile.build_home_address
+    @profile.build_campus_address
   end
 
   # GET /profiles/1/edit
@@ -53,6 +55,10 @@ class ProfilesController < ApplicationController
   # Only allow a list of trusted parameters through.
   def profile_params
     params.require(:profile).permit(:user_id, :first_name, :last_name, :class_level_id, :school_id, :campus_id, :major,
-                                    :department_id, :grad_date, :degree, :receiving_financial_aid, :accepted_financial_aid_notice, :financial_aid_description, :hometown_publication, :pen_name, :address_id)
+                                    :department_id, :grad_date, :degree, :receiving_financial_aid,
+                                    :accepted_financial_aid_notice, :financial_aid_description,
+                                    :hometown_publication, :pen_name, :address_id,
+                                    home_address_attributes: %i[id address1 address2 city state zip phone country address_type_id],
+                                    campus_address_attributes: %i[id address1 address2 city state zip phone country address_type_id])
   end
 end

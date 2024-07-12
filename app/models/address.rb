@@ -27,6 +27,8 @@
 
 class Address < ApplicationRecord
   belongs_to :address_type
+  has_many :home_profiles, class_name: 'Profile', foreign_key: 'home_address_id'
+  has_many :campus_profiles, class_name: 'Profile', foreign_key: 'campus_address_id'
 
   validates :address1, :city, :state, :zip, :phone, :country, presence: true
 end

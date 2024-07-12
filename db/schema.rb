@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_10_214359) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_12_224939) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -204,13 +204,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_10_214359) do
     t.bigint "address_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "home_address_id"
+    t.bigint "campus_address_id"
     t.index ["address_id"], name: "address_id_idx"
     t.index ["address_id"], name: "index_profiles_on_address_id"
+    t.index ["campus_address_id"], name: "index_profiles_on_campus_address_id"
     t.index ["campus_id"], name: "campus_id_idx"
     t.index ["campus_id"], name: "index_profiles_on_campus_id"
     t.index ["class_level_id"], name: "class_level_id_idx"
     t.index ["class_level_id"], name: "index_profiles_on_class_level_id"
     t.index ["department_id"], name: "index_profiles_on_department_id"
+    t.index ["home_address_id"], name: "index_profiles_on_home_address_id"
     t.index ["id"], name: "id_unq_idx", unique: true
     t.index ["school_id"], name: "index_profiles_on_school_id"
     t.index ["school_id"], name: "school_id_idx"
@@ -300,6 +304,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_10_214359) do
   add_foreign_key "contest_instances", "contest_descriptions"
   add_foreign_key "contest_instances", "statuses"
   add_foreign_key "profiles", "addresses"
+  add_foreign_key "profiles", "addresses", column: "campus_address_id"
+  add_foreign_key "profiles", "addresses", column: "home_address_id"
   add_foreign_key "profiles", "campuses"
   add_foreign_key "profiles", "class_levels"
   add_foreign_key "profiles", "departments"
