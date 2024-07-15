@@ -8,10 +8,6 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-# Indexes
-#
-#  index_visibilities_on_kind  (kind) UNIQUE
-#
 require 'rails_helper'
 
 RSpec.describe Visibility do

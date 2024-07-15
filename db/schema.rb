@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_12_224939) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_15_143001) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -55,7 +55,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_12_224939) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "id_unq_idx", unique: true
-    t.index ["kind"], name: "kind_unq_idx", unique: true
   end
 
   create_table "addresses", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -69,7 +68,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_12_224939) do
     t.bigint "address_type_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["address_type_id"], name: "address_type_id_idx"
     t.index ["address_type_id"], name: "index_addresses_on_address_type_id"
     t.index ["id"], name: "id_unq_idx", unique: true
   end
@@ -243,6 +241,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_12_224939) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "testingrsmokes", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "user_roles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "role_id", null: false
@@ -285,7 +289,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_12_224939) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["kind"], name: "index_visibilities_on_kind", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

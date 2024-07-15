@@ -16,7 +16,6 @@
 #
 # Indexes
 #
-#  address_type_id_idx                 (address_type_id)
 #  id_unq_idx                          (id) UNIQUE
 #  index_addresses_on_address_type_id  (address_type_id)
 #

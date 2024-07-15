@@ -16,24 +16,32 @@ class AddressTypesController < ApplicationController
 
   def create
     @address_type = AddressType.new(address_type_params)
-    if @address_type.save
-      redirect_to @address_type, notice: 'Address type was successfully created.'
-    else
-      render :new
+
+    respond_to do |format|
+      if @address_type.save
+        format.html { redirect_to @address_type, notice: 'Address type was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @address_type.update(address_type_params)
-      redirect_to @address_type, notice: 'Address type was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @address_type.update(address_type_params)
+        format.html { redirect_to @address_type, notice: 'Address type was successfully updated.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @address_type.destroy
-    redirect_to address_types_url, notice: 'Address type was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to address_types_url, notice: 'Address type was successfully destroyed.' }
+    end
   end
 
   private

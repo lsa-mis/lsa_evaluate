@@ -10,8 +10,7 @@
 #
 # Indexes
 #
-#  id_unq_idx    (id) UNIQUE
-#  kind_unq_idx  (kind) UNIQUE
+#  id_unq_idx  (id) UNIQUE
 #
 FactoryBot.define do
   factory :address_type do

@@ -20,26 +20,34 @@ class ContestInstancesController < ApplicationController
   # POST /contest_instances
   def create
     @contest_instance = ContestInstance.new(contest_instance_params)
-    if @contest_instance.save
-      redirect_to @contest_instance, notice: 'Contest instance was successfully created.'
-    else
-      render :new
+
+    respond_to do |format|
+      if @contest_instance.save
+        format.html { redirect_to @contest_instance, notice: 'Contest instance was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   # PATCH/PUT /contest_instances/:id
   def update
-    if @contest_instance.update(contest_instance_params)
-      redirect_to @contest_instance, notice: 'Contest instance was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @contest_instance.update(contest_instance_params)
+        format.html { redirect_to @contest_instance, notice: 'Contest instance was successfully updated.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   # DELETE /contest_instances/:id
   def destroy
     @contest_instance.destroy
-    redirect_to contest_instances_url, notice: 'Contest instance was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to contest_instances_url, notice: 'Contest instance was successfully destroyed.' }
+    end
   end
 
   private

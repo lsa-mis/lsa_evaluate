@@ -15,24 +15,32 @@ class CampusesController < ApplicationController
 
   def create
     @campus = Campus.new(campus_params)
-    if @campus.save
-      redirect_to @campus, notice: 'Campus was successfully created.'
-    else
-      render :new
+
+    respond_to do |format|
+      if @campus.save
+        format.html { redirect_to @campus, notice: 'Campus was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @campus.update(campus_params)
-      redirect_to @campus, notice: 'Campus was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @campus.update(campus_params)
+        format.html { redirect_to @campus, notice: 'Campus was successfully updated.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @campus.destroy
-    redirect_to campuses_url, notice: 'Campus was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to campuses_url, notice: 'Campus was successfully destroyed.' }
+    end
   end
 
   private

@@ -15,24 +15,32 @@ class StatusesController < ApplicationController
 
   def create
     @status = Status.new(status_params)
-    if @status.save
-      redirect_to @status, notice: 'Status was successfully created.'
-    else
-      render :new
+
+    respond_to do |format|
+      if @status.save
+        format.html { redirect_to @status, notice: 'Status was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @status.update(status_params)
-      redirect_to @status, notice: 'Status was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @status.update(status_params)
+        format.html { redirect_to @status, notice: 'Status was successfully updated.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @status.destroy
-    redirect_to statuses_url, notice: 'Status was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to statuses_url, notice: 'Status was successfully destroyed.' }
+    end
   end
 
   private

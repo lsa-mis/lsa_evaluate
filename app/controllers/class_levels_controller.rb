@@ -15,24 +15,32 @@ class ClassLevelsController < ApplicationController
 
   def create
     @class_level = ClassLevel.new(class_level_params)
-    if @class_level.save
-      redirect_to @class_level, notice: 'Class Level was successfully created.'
-    else
-      render :new
+
+    respond_to do |format|
+      if @class_level.save
+        format.html { redirect_to @class_level, notice: 'Class Level was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @class_level.update(class_level_params)
-      redirect_to @class_level, notice: 'Class Level was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @class_level.update(class_level_params)
+        format.html { redirect_to @class_level, notice: 'Class Level was successfully updated.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @class_level.destroy
-    redirect_to class_levels_url, notice: 'Class Level was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to class_levels_url, notice: 'Class Level was successfully destroyed.' }
+    end
   end
 
   private

@@ -15,24 +15,32 @@ class SchoolsController < ApplicationController
 
   def create
     @school = School.new(school_params)
-    if @school.save
-      redirect_to @school, notice: 'School was successfully created.'
-    else
-      render :new
+
+    respond_to do |format|
+      if @school.save
+        format.html { redirect_to @school, notice: 'School was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @school.update(school_params)
-      redirect_to @school, notice: 'School was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @school.update(school_params)
+        format.html { redirect_to @school, notice: 'School was successfully updated.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @school.destroy
-    redirect_to schools_url, notice: 'School was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to schools_url, notice: 'School was successfully destroyed.' }
+    end
   end
 
   private

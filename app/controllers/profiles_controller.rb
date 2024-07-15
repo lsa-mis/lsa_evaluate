@@ -23,26 +23,33 @@ class ProfilesController < ApplicationController
   def create
     @profile = Profile.new(profile_params)
 
-    if @profile.save
-      redirect_to @profile, notice: 'Profile was successfully created.'
-    else
-      render :new
+    respond_to do |format|
+      if @profile.save
+        format.html { redirect_to @profile, notice: 'Profile was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   # PATCH/PUT /profiles/1
   def update
-    if @profile.update(profile_params)
-      redirect_to @profile, notice: 'Profile was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @profile.update(profile_params)
+        format.html { edirect_to @profile, notice: 'Profile was successfully updated.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   # DELETE /profiles/1
   def destroy
     @profile.destroy
-    redirect_to profiles_url, notice: 'Profile was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to profiles_url, notice: 'Profile was successfully destroyed.' }
+    end
   end
 
   private

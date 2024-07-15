@@ -15,24 +15,32 @@ class AddressesController < ApplicationController
 
   def create
     @address = Address.new(address_params)
-    if @address.save
-      redirect_to @address, notice: 'Address was successfully created.'
-    else
-      render :new
+
+    respond_to do |format|
+      if @address.save
+        format.html { redirect_to @address, notice: 'Address was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @address.update(address_params)
-      redirect_to @address, notice: 'Address was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @address.update(address_params)
+        format.html { redirect_to @address, notice: 'Address was successfully updated.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @address.destroy
-    redirect_to addresses_url, notice: 'Address was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to addresses_url, notice: 'Address was successfully destroyed.' }
+    end
   end
 
   private

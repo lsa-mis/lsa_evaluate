@@ -15,24 +15,32 @@ class ContestDescriptionsController < ApplicationController
 
   def create
     @contest_description = ContestDescription.new(contest_description_params)
-    if @contest_description.save
-      redirect_to @contest_description, notice: 'Contest description was successfully created.'
-    else
-      render :new
+
+    respond_to do |format|
+      if @contest_description.save
+        format.html { redirect_to @contest_description, notice: 'Contest description was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @contest_description.update(contest_description_params)
-      redirect_to @contest_description, notice: 'Contest description was successfully updated.'
-    else
-      render :edit
+    respond_to do |format|
+      if @contest_description.update(contest_description_params)
+        format.html { redirect_to @contest_description, notice: 'Contest description was successfully updated.' }
+      else
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @contest_description.destroy
-    redirect_to contest_descriptions_url, notice: 'Contest description was successfully destroyed.'
+
+    respond_to do |format|
+      format.html { redirect_to contest_descriptions_url, notice: 'Contest description was successfully destroyed.' }
+    end
   end
 
   private
