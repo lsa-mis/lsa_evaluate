@@ -43,7 +43,6 @@ end
 group :development, :test do
   gem 'capybara'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
-  gem 'faker'
   gem 'pry-byebug'
   gem 'pry-rails'
   gem 'rspec-rails'
@@ -54,4 +53,8 @@ group :development, :test do
   gem 'rubocop-rspec', require: false
   gem 'rubocop-rspec_rails', require: false
   gem 'webdrivers'
+end
+
+group :development, :staging, :test do
+  gem 'faker'
 end
