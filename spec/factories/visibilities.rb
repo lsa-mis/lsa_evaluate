@@ -12,6 +12,8 @@
 #
 #  index_visibilities_on_kind  (kind) UNIQUE
 #
+require 'factory_bot_rails'
+
 FactoryBot.define do
   factory :visibility do
     kind { %w[Public Private].sample }

@@ -15,5 +15,5 @@
 #
 class AddressType < ApplicationRecord
   has_many :addresses
-  validates :kind, presence: true, uniqueness: true
+  # validates :kind, presence: true, uniqueness: true
 end

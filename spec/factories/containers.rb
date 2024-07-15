@@ -22,7 +22,6 @@
 #
 FactoryBot.define do
   factory :container do
-    sequence(:name) { |n| "name_#{n}" }
     name { Faker::Commerce.product_name }
     description { Faker::Lorem.paragraph }
     department

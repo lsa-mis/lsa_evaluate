@@ -13,5 +13,5 @@
 #  index_visibilities_on_kind  (kind) UNIQUE
 #
 class Visibility < ApplicationRecord
-  validates :kind, presence: true, uniqueness: true
+  # validates :kind, presence: true, uniqueness: true
 end

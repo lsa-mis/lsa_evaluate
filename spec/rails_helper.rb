@@ -12,7 +12,9 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'rspec/rails'
-puts "Running in environment: #{Rails.env}"
+require 'factory_bot_rails'
+
+puts "!*!*!*! Running in environment: #{Rails.env} !*!*!*!"
 
 Rails.root.glob('spec/support/**/*.rb').sort.each { |f| require f }
 # Checks for pending migrations and applies them before tests are run.
