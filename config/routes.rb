@@ -24,6 +24,7 @@ Rails.application.routes.draw do
   resources :schools
   resources :addresses
   resources :profiles
+  resources :user_roles
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
 
