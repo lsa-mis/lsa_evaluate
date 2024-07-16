@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @user_role %>
+
+<div>
+  <%= link_to "Edit", edit_user_role_path(@user_role) %> |
+  <%= link_to "Back", user_roles_path %>
+
+  <%= button_to "Destroy", @user_role, method: :delete, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to delete this?' } %>
+</div>
