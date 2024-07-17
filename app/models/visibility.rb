@@ -9,5 +9,5 @@
 #  updated_at  :datetime         not null
 #
 class Visibility < ApplicationRecord
-  # validates :kind, presence: true, uniqueness: true
+  validates :kind, presence: true
 end
