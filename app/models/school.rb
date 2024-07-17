@@ -13,4 +13,5 @@
 #
 class School < ApplicationRecord
   validates :name, presence: true
+  validates :id, uniqueness: true
 end
