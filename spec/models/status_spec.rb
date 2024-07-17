@@ -8,11 +8,39 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+# Indexes
+#
+#  index_statuses_on_kind  (kind) UNIQUE
+#
 require 'rails_helper'
 
 RSpec.describe Status do
-  it { is_expected.to validate_presence_of(:kind) }
-  it { is_expected.to validate_uniqueness_of(:kind) }
-  it { is_expected.to validate_inclusion_of(:kind).in_array(%w[Active Deleted Archived Disqualified]) }
-  it { is_expected.to validate_presence_of(:description) }
+  let(:status) { build(:status) }
+
+  describe 'validations' do
+    it 'validates presence of kind' do
+      status.kind = nil
+      expect(status).not_to be_valid
+      expect(status.errors[:kind]).to include("can't be blank")
+    end
+
+    it 'validates uniqueness of kind' do
+      create(:status, kind: 'Active')
+      status.kind = 'Active'
+      expect(status).not_to be_valid
+      expect(status.errors[:kind]).to include('has already been taken')
+    end
+
+    it 'validates inclusion of kind in specific values' do
+      status.kind = 'InvalidKind'
+      expect(status).not_to be_valid
+      expect(status.errors[:kind]).to include('is not included in the list')
+    end
+
+    it 'validates presence of description' do
+      status.description = nil
+      expect(status).not_to be_valid
+      expect(status.errors[:description]).to include("can't be blank")
+    end
+  end
 end

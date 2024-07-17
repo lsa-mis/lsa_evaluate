@@ -8,9 +8,13 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+# Indexes
+#
+#  index_statuses_on_kind  (kind) UNIQUE
+#
 class Status < ApplicationRecord
   has_many :contest_descriptions
   has_many :contest_instances
-  validates :kind, presence: true, inclusion: { in: %w[Active Deleted Archived Disqualified] }
+  validates :kind, presence: true, inclusion: { in: %w[Active Deleted Archived Disqualified] }, uniqueness: true
   validates :description, presence: true
 end
