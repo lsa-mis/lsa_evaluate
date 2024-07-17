@@ -10,11 +10,12 @@
 #
 # Indexes
 #
-#  id_unq_idx  (id) UNIQUE
+#  id_unq_idx                   (id) UNIQUE
+#  index_address_types_on_kind  (kind) UNIQUE
 #
 FactoryBot.define do
   factory :address_type do
-    kind { 'Home' } # Use the unique sequence for kind
+    sequence(:kind) { |n| "Kind #{n}" } # Use a unique sequence for kind
     description { Faker::Lorem.sentence }
 
     trait :home do

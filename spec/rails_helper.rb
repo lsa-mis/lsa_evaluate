@@ -32,6 +32,26 @@ RSpec.configure do |config|
 
   config.use_transactional_fixtures = true
 
+  config.before(:suite) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.before do
+    DatabaseCleaner.strategy = :transaction
+  end
+
+  config.before(:each, :js) do
+    DatabaseCleaner.strategy = :truncation
+  end
+
+  config.before do
+    DatabaseCleaner.start
+  end
+
+  config.after do
+    DatabaseCleaner.clean
+  end
+
   config.infer_spec_type_from_file_location!
 
   config.filter_rails_from_backtrace!
@@ -44,23 +64,5 @@ RSpec.configure do |config|
 
   config.after do
     Warden.test_reset!
-  end
-
-  # config.before(:suite) do
-  #   DatabaseCleaner.start
-  #   FactoryBot.lint(traits: true)
-  # ensure
-  #   DatabaseCleaner.clean
-  # end
-  config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:truncation)
-    FactoryBot.lint(traits: true)
-  end
-
-  config.around do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
   end
 end
