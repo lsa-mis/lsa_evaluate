@@ -11,15 +11,31 @@
 require 'rails_helper'
 
 RSpec.describe ClassLevel do
+  let(:class_level) { build(:class_level) }
+
   describe 'validations' do
-    it { is_expected.to validate_presence_of(:name) }
-    it { is_expected.to validate_uniqueness_of(:name) }
-    it { is_expected.to validate_presence_of(:description) }
+    it 'validates presence of name' do
+      class_level.name = nil
+      expect(class_level).not_to be_valid
+      expect(class_level.errors[:name]).to include("can't be blank")
+    end
+
+    it 'validates uniqueness of name' do
+      create(:class_level, name: 'UniqueName')
+      class_level.name = 'UniqueName'
+      expect(class_level).not_to be_valid
+      expect(class_level.errors[:name]).to include('has already been taken')
+    end
+
+    it 'validates presence of description' do
+      class_level.description = nil
+      expect(class_level).not_to be_valid
+      expect(class_level.errors[:description]).to include("can't be blank")
+    end
   end
 
   describe 'Factory' do
     it 'is valid with valid attributes' do
-      class_level = FactoryBot.build(:class_level)
       expect(class_level).to be_valid
     end
   end
