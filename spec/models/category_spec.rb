@@ -8,16 +8,37 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+# Indexes
+#
+#  index_categories_on_kind  (kind) UNIQUE
+#
 require 'rails_helper'
 
-RSpec.describe Category, type: :model do
-  it { is_expected.to validate_presence_of(:kind) }
-  it { is_expected.to validate_uniqueness_of(:kind) }
+RSpec.describe Category do
+  let(:category) { build(:category) }
 
-  it {
-    expect(subject).to validate_inclusion_of(:kind).in_array(['Drama', 'Screenplay', 'Non-Fiction', 'Fiction', 'Poetry',
-                                                              'Novel', 'Short Fiction', 'Text-Image'])
-  }
+  it 'validates presence of kind' do
+    category.kind = nil
+    expect(category).not_to be_valid
+    expect(category.errors[:kind]).to include("can't be blank")
+  end
 
-  it { is_expected.to validate_presence_of(:description) }
+  it 'validates uniqueness of kind' do
+    create(:category, kind: 'Drama')
+    category.kind = 'Drama'
+    expect(category).not_to be_valid
+    expect(category.errors[:kind]).to include('has already been taken')
+  end
+
+  it 'validates inclusion of kind in specific values' do
+    category.kind = 'InvalidKind'
+    expect(category).not_to be_valid
+    expect(category.errors[:kind]).to include('is not included in the list')
+  end
+
+  it 'validates presence of description' do
+    category.description = nil
+    expect(category).not_to be_valid
+    expect(category.errors[:description]).to include("can't be blank")
+  end
 end

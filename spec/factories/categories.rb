@@ -8,6 +8,10 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+# Indexes
+#
+#  index_categories_on_kind  (kind) UNIQUE
+#
 FactoryBot.define do
   factory :category do
     kind { ['Drama', 'Screenplay', 'Non-Fiction', 'Fiction', 'Poetry', 'Novel', 'Short Fiction', 'Text-Image'].sample }
