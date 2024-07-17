@@ -10,9 +10,10 @@
 #
 # Indexes
 #
-#  id_unq_idx  (id) UNIQUE
+#  id_unq_idx                   (id) UNIQUE
+#  index_address_types_on_kind  (kind) UNIQUE
 #
 class AddressType < ApplicationRecord
   has_many :addresses
-  # validates :kind, presence: true, uniqueness: true
+  validates :kind, presence: true, uniqueness: true
 end

@@ -8,6 +8,10 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
+# Indexes
+#
+#  index_statuses_on_kind  (kind) UNIQUE
+#
 FactoryBot.define do
   factory :status do
     kind { %w[Active Deleted Archived Disqualified].sample }

@@ -10,11 +10,16 @@
 #
 # Indexes
 #
-#  id_unq_idx  (id) UNIQUE
+#  id_unq_idx                   (id) UNIQUE
+#  index_address_types_on_kind  (kind) UNIQUE
 #
 require 'rails_helper'
 
 RSpec.describe AddressType, type: :model do
+  before do
+    described_class.delete_all
+  end
+
   it 'is valid with valid attributes' do
     expect(build(:address_type)).to be_valid
   end

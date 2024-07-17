@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_15_143001) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_17_144402) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -55,6 +55,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_15_143001) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "id_unq_idx", unique: true
+    t.index ["kind"], name: "index_address_types_on_kind", unique: true
   end
 
   create_table "addresses", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -100,6 +101,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_15_143001) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["kind"], name: "index_categories_on_kind", unique: true
   end
 
   create_table "class_level_requirements", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -239,6 +241,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_15_143001) do
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["kind"], name: "index_statuses_on_kind", unique: true
   end
 
   create_table "testingrsmokes", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|

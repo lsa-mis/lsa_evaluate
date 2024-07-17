@@ -60,7 +60,7 @@ FactoryBot.define do
     last_name { Faker::Name.last_name }
     class_level
     school
-    campus
+    campus { Campus.find_by(campus_cd: '1001') || association(:campus, :predefined) }
     major { Faker::Educator.subject }
     department
     grad_date { Faker::Date.forward(days: 365) }
