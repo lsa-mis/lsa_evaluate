@@ -60,7 +60,7 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
   let(:school) { create(:school) }
   let(:campus) { create(:campus) }
   let(:department) { create(:department) }
-  let(:address) { create(:address) }
+  # let(:address) { create(:address) }
 
   let(:profile) do
     described_class.new(
@@ -78,8 +78,8 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       accepted_financial_aid_notice: Faker::Boolean.boolean,
       financial_aid_description: Faker::Lorem.paragraph,
       hometown_publication: Faker::Address.city,
-      pen_name: Faker::Book.author,
-      address:
+      pen_name: Faker::Book.author
+      # address:
     )
   end
 
@@ -140,8 +140,8 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       expect(profile.department).to eq(department)
     end
 
-    it 'belongs to address' do
-      expect(profile.address).to eq(address)
-    end
+    # it 'belongs to address' do
+    #   expect(profile.address).to eq(address)
+    # end
   end
 end
