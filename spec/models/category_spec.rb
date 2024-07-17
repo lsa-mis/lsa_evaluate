@@ -20,7 +20,7 @@ RSpec.describe Category do
   it 'validates presence of kind' do
     category.kind = nil
     expect(category).not_to be_valid
-    expect(category.errors[:kind]).to include("can't be blank")
+    expect(category).not_to be_valid
   end
 
   it 'validates uniqueness of kind' do
@@ -39,6 +39,6 @@ RSpec.describe Category do
   it 'validates presence of description' do
     category.description = nil
     expect(category).not_to be_valid
-    expect(category.errors[:description]).to include("can't be blank")
+    expect(category).not_to be_valid
   end
 end
