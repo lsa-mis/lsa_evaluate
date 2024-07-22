@@ -20,9 +20,10 @@ staging:
   url: <%= ENV["DATABASE_URL"] %>
 
 production:
-  <<: *default
-  database: lsa_evaluate_production
-  username: <%= Rails.application.credentials.mysql[:prod_user] %>
-  password: <%= Rails.application.credentials.mysql[:prod_password] %>
-  host: <%= Rails.application.credentials.mysql[:prod_servername] %>
-  sslca: <%= Rails.application.credentials.mysql[:prod_sslca] %>
+  # <<: *default
+  # database: lsa_evaluate_production
+  # username: <%= Rails.application.credentials.mysql[:prod_user] %>
+  # password: <%= Rails.application.credentials.mysql[:prod_password] %>
+  # host: <%= Rails.application.credentials.mysql[:prod_servername] %>
+  # sslca: <%= Rails.application.credentials.mysql[:prod_sslca] %>
+  url: <%= ENV["DATABASE_URL"] %>
