@@ -1,82 +1,93 @@
 <div id="<%= dom_id profile %>">
   <p>
     <strong>First Name:</strong>
-    <%= @profile.first_name %>
+    <%= profile.first_name %>
   </p>
 
   <p>
     <strong>Last Name:</strong>
-    <%= @profile.last_name %>
+    <%= profile.last_name %>
+  </p>
+
+  <p>
+    <strong>UMID:</strong>
+    <%= profile.umid %>
   </p>
 
   <p>
     <strong>Major:</strong>
-    <%= @profile.major %>
+    <%= profile.major %>
   </p>
 
   <p>
     <strong>Graduation Date:</strong>
-    <%= @profile.grad_date %>
+    <%= profile.grad_date %>
   </p>
 
   <p>
     <strong>Degree:</strong>
-    <%= @profile.degree %>
+    <%= profile.degree %>
   </p>
 
   <p>
     <strong>Receiving Financial Aid:</strong>
-    <%= @profile.receiving_financial_aid ? 'Yes' : 'No' %>
+    <%= profile.receiving_financial_aid ? 'Yes' : 'No' %>
   </p>
 
   <p>
     <strong>Accepted Financial Aid Notice:</strong>
-    <%= @profile.accepted_financial_aid_notice ? 'Yes' : 'No' %>
+    <%= profile.accepted_financial_aid_notice ? 'Yes' : 'No' %>
   </p>
 
   <p>
     <strong>Financial Aid Description:</strong>
-    <%= @profile.financial_aid_description %>
+    <%= profile.financial_aid_description %>
   </p>
 
   <p>
     <strong>Hometown Publication:</strong>
-    <%= @profile.hometown_publication %>
+    <%= profile.hometown_publication %>
   </p>
 
   <p>
     <strong>Pen Name:</strong>
-    <%= @profile.pen_name %>
+    <%= profile.pen_name %>
   </p>
 
   <p>
     <strong>User:</strong>
-    <%= @profile.user.name if @profile.user %>
+    <%= profile.user.display_name if profile.user %>
   </p>
 
   <p>
     <strong>Class Level:</strong>
-    <%= @profile.class_level.name if @profile.class_level %>
+    <%= profile.class_level.name if profile.class_level %>
   </p>
 
   <p>
     <strong>School:</strong>
-    <%= @profile.school.name if @profile.school %>
+    <%= profile.school.name if profile.school %>
   </p>
 
   <p>
     <strong>Campus:</strong>
-    <%= @profile.campus.name if @profile.campus %>
+    <%= profile.campus.campus_descr if profile.campus %>
   </p>
 
   <p>
     <strong>Department:</strong>
-    <%= @profile.department.name if @profile.department %>
+    <%= profile.department.name if profile.department %>
   </p>
 
   <p>
-    <strong>Address:</strong>
-    <%= @profile.address.full_address if @profile.address %>
+    <strong>Home Address:</strong>
+    <%= profile.home_address.full_address if profile.home_address %>
   </p>
+
+  <p>
+    <strong>Campus Address:</strong>
+    <%= profile.campus_address.full_address if profile.campus_address %>
+  </p>
+
 
 </div>

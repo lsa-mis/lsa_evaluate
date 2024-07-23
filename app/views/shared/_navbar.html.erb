@@ -12,8 +12,10 @@
           <span><%= current_user.display_initials_or_email %><i class="bi bi-caret-down-fill"></i></span>
         </div>
         <div class="dropdown-menu" aria-labelledby="avatar-menu" data-dropdown-target="menu">
-          <%= button_to "Item 1", root_path, method: :delete, class: 'dropdown-item btn-as-link' %>
-          <%= button_to "Item One", root_path, method: :delete, class: 'dropdown-item btn-as-link' %>
+          <%= button_to "Dashboard", root_path, class: 'dropdown-item btn-as-link' %>
+          <% if current_user.profile %>
+            <%= button_to "Profile", profile_path(current_user.profile), method: :get, class: 'dropdown-item btn-as-link' %>
+          <% end %>
           <hr class='m-0' >
           <%= button_to destroy_user_session_path, method: :delete, class: 'dropdown-item btn-as-link', data: {turbo: "false"} do %>
             <i class="bi bi-box-arrow-right"></i> Logout

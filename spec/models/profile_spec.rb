@@ -13,9 +13,9 @@
 #  major                         :string(255)
 #  pen_name                      :string(255)
 #  receiving_financial_aid       :boolean          default(FALSE), not null
+#  umid                          :integer          not null
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
-#  address_id                    :bigint
 #  campus_address_id             :bigint
 #  campus_id                     :bigint
 #  class_level_id                :bigint
@@ -26,11 +26,9 @@
 #
 # Indexes
 #
-#  address_id_idx                       (address_id)
 #  campus_id_idx                        (campus_id)
 #  class_level_id_idx                   (class_level_id)
 #  id_unq_idx                           (id) UNIQUE
-#  index_profiles_on_address_id         (address_id)
 #  index_profiles_on_campus_address_id  (campus_address_id)
 #  index_profiles_on_campus_id          (campus_id)
 #  index_profiles_on_class_level_id     (class_level_id)
@@ -43,7 +41,6 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (address_id => addresses.id)
 #  fk_rails_...  (campus_address_id => addresses.id)
 #  fk_rails_...  (campus_id => campuses.id)
 #  fk_rails_...  (class_level_id => class_levels.id)
@@ -67,6 +64,7 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       user:,
       first_name: Faker::Name.first_name,
       last_name: Faker::Name.last_name,
+      umid: Faker::Number.number(digits: 8),
       class_level:,
       school:,
       campus:,
@@ -79,7 +77,6 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       financial_aid_description: Faker::Lorem.paragraph,
       hometown_publication: Faker::Address.city,
       pen_name: Faker::Book.author
-      # address:
     )
   end
 

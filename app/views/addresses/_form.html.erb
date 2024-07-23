@@ -10,8 +10,8 @@
     <%= f.input :state %>
     <%= f.input :zip %>
     <%= f.input :phone %>
-    <%= f.input :country %>
-    <%= f.input :address_type_id, collection: AddressType.all, label_method: :name, value_method: :id, label: "Address Type" %>
+    <%= f.input :country, priority: [ "United States" ] %>
+    <%= f.input :address_type_id, collection: AddressType.all, label_method: :kind, value_method: :id, label: "Address Type" %>
   </div>
 
   <div class="form-actions">

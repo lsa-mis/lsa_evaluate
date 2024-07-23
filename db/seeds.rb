@@ -30,30 +30,30 @@ Address.create([
                    address1: Faker::Address.street_address,
                    address2: Faker::Address.secondary_address,
                    city: Faker::Address.city,
-                   state: Faker::Number.between(from: 1, to: 50),
+                   state: Faker::Address.state_abbr,
                    zip: Faker::Address.zip_code,
                    phone: Faker::PhoneNumber.phone_number,
-                   country: Faker::Number.between(from: 1, to: 250),
+                   country: Faker::Address.country_code,
                    address_type: AddressType.find_by(kind: 'Home')
                  },
                  {
                    address1: Faker::Address.street_address,
                    address2: Faker::Address.secondary_address,
                    city: Faker::Address.city,
-                   state: Faker::Number.between(from: 1, to: 50),
+                   state: Faker::Address.state_abbr,
                    zip: Faker::Address.zip_code,
                    phone: Faker::PhoneNumber.phone_number,
-                   country: Faker::Number.between(from: 1, to: 250),
+                   country: Faker::Address.country_code,
                    address_type: AddressType.find_by(kind: 'Campus')
                  },
                  {
                    address1: Faker::Address.street_address,
                    address2: Faker::Address.secondary_address,
                    city: Faker::Address.city,
-                   state: Faker::Number.between(from: 1, to: 50),
+                   state: Faker::Address.state_abbr,
                    zip: Faker::Address.zip_code,
                    phone: Faker::PhoneNumber.phone_number,
-                   country: Faker::Number.between(from: 1, to: 250),
+                   country: Faker::Address.country_code,
                    address_type: AddressType.find_by(kind: 'Home')
                  }
                ])
