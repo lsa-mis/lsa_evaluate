@@ -17,13 +17,14 @@ test:
   database: lsa_evaluate_test
 
 staging:
+  <<: *default
   url: <%= ENV["DATABASE_URL"] %>
 
 production:
-  # <<: *default
+  <<: *default
+  url: <%= ENV["DATABASE_URL"] %>
   # database: lsa_evaluate_production
   # username: <%= Rails.application.credentials.mysql[:prod_user] %>
   # password: <%= Rails.application.credentials.mysql[:prod_password] %>
   # host: <%= Rails.application.credentials.mysql[:prod_servername] %>
   # sslca: <%= Rails.application.credentials.mysql[:prod_sslca] %>
-  url: <%= ENV["DATABASE_URL"] %>
