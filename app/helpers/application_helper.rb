@@ -18,4 +18,8 @@ module ApplicationHelper
     end
     content_html.html_safe
   end
+
+  def format_datetime(datetime)
+    datetime.strftime('%m/%d/%Y %I:%M %p')
+  end
 end

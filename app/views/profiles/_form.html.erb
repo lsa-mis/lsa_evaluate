@@ -10,7 +10,9 @@
     <%= f.input :pen_name %>
     <%= f.input :umid %>
     <%= f.input :class_level_id, collection: ClassLevel.all, label_method: :name, value_method: :id, label: "Class Level" %>
-    <%= f.input :grad_date, as: :date %>
+    <%= f.input :grad_date, as: :date, start_year: Date.today.year,
+                              end_year: Date.today.year + 12, discard_day: true,
+                              order: [:month, :year] %>
     <%= f.input :degree %>
     <%= f.input :major %>
     <%= f.input :department_id, collection: Department.all, label_method: :name, value_method: :id, label: "Department" %>
