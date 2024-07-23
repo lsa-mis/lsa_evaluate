@@ -5,23 +5,18 @@
     <!-- Department Selection -->
     <div class="col">
       <label for="department-select" class="form-label visually-hidden">Select Department</label>
-      <select class="form-select" id="department-select">
+      <select class="form-select" id="department-select" name="department_id">
         <option value="">Select Department</option>
-        <option value="1">Butterfly Science</option>
-        <option value="2">English</option>
-        <option value="3">Math</option>
+        <%= options_from_collection_for_select(@departments, :id, :name) %>
       </select>
     </div>
 
     <!-- Class Rank Selection -->
     <div class="col">
       <label for="class-rank-select" class="form-label visually-hidden">Open to Class Rank</label>
-      <select class="form-select" id="class-rank-select">
+      <select class="form-select" id="class-rank-select" name="class_rank_id">
         <option value="">Open to Class Rank</option>
-        <option value="1">Freshman</option>
-        <option value="2">Sophomore</option>
-        <option value="3">Junior</option>
-        <option value="4">Senior</option>
+        <%= options_from_collection_for_select(@class_levels, :id, :name) %>
       </select>
     </div>
 

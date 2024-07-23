@@ -2,5 +2,8 @@
 
 # The StaticPagesController class is responsible for handling requests related to static pages.
 class StaticPagesController < ApplicationController
-  def home; end
+  def home
+    @departments = Department.all
+    @class_levels = ClassLevel.all
+  end
 end

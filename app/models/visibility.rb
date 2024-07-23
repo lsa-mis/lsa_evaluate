@@ -9,5 +9,7 @@
 #  updated_at  :datetime         not null
 #
 class Visibility < ApplicationRecord
+  has_many :containers, dependent: :destroy
+
   validates :kind, presence: true
 end
