@@ -12,3 +12,6 @@ application.register("dropdown", DropdownController)
 
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
+
+import InteractionController from "./interaction_controller"
+application.register("interaction", InteractionController)

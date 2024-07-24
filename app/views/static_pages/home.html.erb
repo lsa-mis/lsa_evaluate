@@ -12,7 +12,9 @@
           <% end %>
         </div>
       </div>
-      <%= render 'choose_interaction' %>
+      <div data-controller="interaction" data-interaction-target="content" >
+        <%= render 'choose_interaction' %>
+      </div>
     </div>
 
   <% else %>

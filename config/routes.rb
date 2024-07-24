@@ -12,7 +12,12 @@ Rails.application.routes.draw do
   resources :visibilities
   resources :departments
   resources :roles
-  resources :static_pages
+  resources :static_pages do
+    collection do
+      get 'entrant_content'
+      get 'admin_content'
+    end
+  end
   resources :editable_contents
   resources :statuses
   resources :categories

@@ -241,7 +241,7 @@ svg.wh6 {
 
 
 .card {
-  max-width: 400px;
+  max-width: 1/2;
   margin: auto;
 }
 
@@ -256,6 +256,21 @@ svg.wh6 {
 
 .card-footer {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   /* Center the button horizontally */
+}
+
+.search-input {
+  margin-bottom: 10px;
+  width: 200px;
+}
+
+.btn-icon {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-icon:hover {
+  color: #007bff;
 }
