@@ -5,5 +5,6 @@ class StaticPagesController < ApplicationController
   def home
     @departments = Department.all
     @class_levels = ClassLevel.all
+    @containers = Container.all
   end
 end

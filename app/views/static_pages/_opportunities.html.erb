@@ -15,23 +15,17 @@
     <div class="col">
       <label for="class-rank-select" class="form-label visually-hidden">Open to Class Rank</label>
       <select class="form-select" id="class-rank-select" name="class_rank_id">
-        <option value="">Open to Class Rank</option>
+        <option value="">Available by Grade Level</option>
         <%= options_from_collection_for_select(@class_levels, :id, :name) %>
       </select>
     </div>
 
     <!-- Shoe Size Selection -->
     <div class="col">
-      <label for="class-shoe-size-select" class="form-label visually-hidden">Open to Shoe Size</label>
-      <select class="form-select" id="class-rank-select">
-        <option value="">Open to Shoe Size</option>
-        <option value="1">5</option>
-        <option value="2">6</option>
-        <option value="3">7</option>
-        <option value="4">8</option>
-        <option value="5">9</option>>
-        <option value="6">10</option>
-        <option value="7">11</option>
+      <label for="container-select" class="form-label visually-hidden">Contest Collections</label>
+      <select class="form-select" id="container-select" name="container_id">
+        <option value="">Contest Collections</option>
+        <%= options_from_collection_for_select(@containers, :id, :name) %>
       </select>
     </div>
 
