@@ -2,8 +2,8 @@
 
 require 'rails_helper'
 
-RSpec.describe 'OpportunityDisplay' do
-  it 'Opportunity partial is displayed only after user logs in' do
+RSpec.describe 'ChooseInteractionDisplay' do
+  it '_choose_interaction partial is displayed only after user logs in' do
     visit root_path
     expect(page).to have_no_css '#opportunity-partial', visible: :visible
 
@@ -15,6 +15,6 @@ RSpec.describe 'OpportunityDisplay' do
     click_link_or_button 'Log in'
 
     expect(page).to have_current_path(root_path)
-    expect(page).to have_css '#opportunity-partial', visible: :visible
+    expect(page).to have_css '#choose_interaction', visible: :visible
   end
 end

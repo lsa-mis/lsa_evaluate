@@ -9,7 +9,7 @@ RSpec.describe 'EditableContent', type: :feature do
   end
   let(:user) { create(:user) }
   let(:admin) { create(:user) }
-  let!(:role) { create(:role, kind: 'editable_content_administrator') }
+  let!(:role) { create(:role, kind: 'Editable Content Administrator') }
   let!(:user_role) { create(:user_role, user: admin, role:) }
 
   context 'when editable_content_administrator is logged in' do
