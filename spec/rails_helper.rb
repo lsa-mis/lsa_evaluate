@@ -52,6 +52,10 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
   end
 
+  config.include AuthHelpers, type: :controller
+  # If you're using request specs, you might want to include it for request specs as well
+  config.include AuthHelpers, type: :request
+
   config.infer_spec_type_from_file_location!
 
   config.filter_rails_from_backtrace!
