@@ -69,4 +69,9 @@ class Profile < ApplicationRecord
   validates :degree, presence: true
   validates :receiving_financial_aid, inclusion: { in: [true, false] }
   validates :accepted_financial_aid_notice, inclusion: { in: [true, false] }
+  validates :class_level_id, presence: true
+  validates :campus_id, presence: true
+  validates :school_id, presence: true
+  validates :home_address, presence: true
+  validates :campus_address, presence: true
 end

@@ -6,7 +6,11 @@
       <div class="card">
         <h3 class="m-2">View Submissions</h3>
         <div class="card-body">
-          <p class="card-text">Information on what you can do in this section.   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat.</p>
+          <% if (content = render_editable_content('home', 'view_submissions')) %>
+            <p class="">
+              <%= content %>
+            </p>
+          <% end %>
         </div>
         <div class="card-footer">
           <%= button_to 'View Submissions', '#', class: 'btn btn-primary' %>
@@ -17,10 +21,18 @@
       <div class="card">
         <h3 class="m-2">Manage Profile</h3>
         <div class="card-body">
-          <p class="card-text">Information on what you can do in this section.   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat.</p>
+          <% if (content = render_editable_content('home', 'manage_profile')) %>
+            <p class="">
+              <%= content %>
+            </p>
+          <% end %>
         </div>
         <div class="card-footer">
-          <%= button_to 'Manage Profile', '#', class: 'btn btn-primary'%>
+          <% if current_user.profile_exists? %>
+            <%= button_to 'Manage Profile', profile_path(current_user.profile), method: :get, class: 'btn btn-primary' %>
+          <% else %>
+            <%= button_to 'Manage Profile', new_profile_path, method: :get, class: 'btn btn-primary' %>
+          <% end %>
         </div>
       </div>
     </div>

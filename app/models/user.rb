@@ -74,4 +74,8 @@ class User < ApplicationRecord
   def display_name_or_email
     display_name.presence || email
   end
+
+  def profile_exists?
+    profile.present?
+  end
 end

@@ -5,7 +5,11 @@
       <div class="card">
         <h3 class="m-2">Explore / Submit Entry / Update Profile</h3>
         <div class="card-body">
-          <p class="card-text">Information on what you can do in this section.   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat.</p>
+          <% if (content = render_editable_content('home', 'submit_entry')) %>
+            <p class="">
+              <%= content %>
+            </p>
+          <% end %>
         </div>
         <div class="card-footer">
           <%= button_to 'Submit Entry', '#', class: 'btn btn-primary ', data: { action: "click->interaction#showEntrantContent" } %>
@@ -17,8 +21,11 @@
       <div class="card">
         <h3 class="m-2">Create / Manage Submissions</h3>
         <div class="card-body">
-          <p class="card-text">Information on what you can do in this section.   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat.</p>
-        </div>
+          <% if (content = render_editable_content('home', 'manage_submissions')) %>
+            <p class="">
+              <%= content %>
+            </p>
+          <% end %>        </div>
         <div class="card-footer">
           <%= button_to 'Manage Submissions', admin_content_static_pages_path, method: :get, class: 'btn btn-primary' %>
         </div>

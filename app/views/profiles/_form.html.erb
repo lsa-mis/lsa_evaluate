@@ -3,7 +3,7 @@
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
-  <div class="form-inputs">
+  <div class="form-inputs" data-controller="address-copy" >
     <%= f.input :user_id, as: :hidden, input_html: { value: current_user.id } %>
     <%= f.input :first_name %>
     <%= f.input :last_name %>
@@ -24,25 +24,28 @@
 
     <%= f.simple_fields_for :home_address do |address_form| %>
       <h3>Home Address</h3>
-      <%= address_form.input :address1 %>
-      <%= address_form.input :address2 %>
-      <%= address_form.input :city %>
-      <%= address_form.input :state, collection: Address::STATES %>
-      <%= address_form.input :zip %>
-      <%= address_form.input :phone %>
-      <%= address_form.input :country, priority: [ "United States" ] %>
+      <%= address_form.input :address1, input_html: { data: { target: "address-copy.homeAddress1" } } %>
+      <%= address_form.input :address2, input_html: { data: { target: "address-copy.homeAddress2" } } %>
+      <%= address_form.input :city, input_html: { data: { target: "address-copy.homeCity" } } %>
+      <%= address_form.input :state, collection: Address::STATES, input_html: { data: { target: "address-copy.homeState" } } %>
+      <%= address_form.input :zip, input_html: { data: { target: "address-copy.homeZip" } } %>
+      <%= address_form.input :phone, input_html: { data: { target: "address-copy.homePhone" } } %>
+      <%= address_form.input :country, priority: ["United States"], input_html: { data: { target: "address-copy.homeCountry" } } %>
       <%= address_form.input :address_type_id, as: :hidden, input_html: { value: AddressType.find_by(kind: 'Home').id } %>
     <% end %>
 
+    <!-- Add a button to copy the home address -->
+    <button type="button" data-action="click->address-copy#copy" class="btn btn-secondary">Copy Home Address to Campus Address</button>
+
     <%= f.simple_fields_for :campus_address do |address_form| %>
       <h3>Campus Address</h3>
-      <%= address_form.input :address1 %>
-      <%= address_form.input :address2 %>
-      <%= address_form.input :city %>
-      <%= address_form.input :state, collection: Address::STATES %>
-      <%= address_form.input :zip %>
-      <%= address_form.input :phone %>
-      <%= address_form.input :country, priority: [ "United States" ] %>
+      <%= address_form.input :address1, input_html: { data: { target: "address-copy.campusAddress1" } } %>
+      <%= address_form.input :address2, input_html: { data: { target: "address-copy.campusAddress2" } } %>
+      <%= address_form.input :city, input_html: { data: { target: "address-copy.campusCity" } } %>
+      <%= address_form.input :state, collection: Address::STATES, input_html: { data: { target: "address-copy.campusState" } } %>
+      <%= address_form.input :zip, input_html: { data: { target: "address-copy.campusZip" } } %>
+      <%= address_form.input :phone, input_html: { data: { target: "address-copy.campusPhone" } } %>
+      <%= address_form.input :country, priority: ["United States"], input_html: { data: { target: "address-copy.campusCountry" } } %>
       <%= address_form.input :address_type_id, as: :hidden, input_html: { value: AddressType.find_by(kind: 'Campus').id } %>
     <% end %>
   </div>

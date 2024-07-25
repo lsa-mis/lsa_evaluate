@@ -12,7 +12,7 @@ class ProfilesController < ApplicationController
 
   # GET /profiles/new
   def new
-    @profile = Profile.new
+    @profile = current_user.build_profile
     @profile.build_home_address
     @profile.build_campus_address
   end
@@ -49,7 +49,7 @@ class ProfilesController < ApplicationController
     @profile.destroy
 
     respond_to do |format|
-      format.html { redirect_to profiles_url, notice: 'Profile was successfully destroyed.' }
+      format.html { redirect_to root_url, notice: 'Profile was successfully destroyed.' }
     end
   end
 
@@ -57,7 +57,7 @@ class ProfilesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_profile
-    @profile = Profile.find(params[:id])
+    @profile = Profile.find_by(user_id: current_user.id)
   end
 
   # Only allow a list of trusted parameters through.
