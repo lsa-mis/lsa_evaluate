@@ -18,8 +18,16 @@
     <%= f.input :department_id, collection: Department.all, label_method: :name, value_method: :id, label: "Department" %>
     <%= f.input :school_id, collection: School.all, label_method: :name, value_method: :id, label: "School" %>
     <%= f.input :campus_id, collection: Campus.all, label_method: :campus_descr, value_method: :id, label: "Campus" %>
+    <% if (content = render_editable_content('profiles', 'finaid_information')) %>
+      <strong>Important note for students receiving needs-based financial aid:</strong>
+      <p class="">
+        <%= content %>
+      </p>
+    <% end %>
+    <%= f.input :accepted_financial_aid_notice, as: :boolean, label: "I have read and understood the above statement about the potential impact of prize money on financial aid." %>
     <%= f.input :receiving_financial_aid, as: :boolean %>
-    <%= f.input :accepted_financial_aid_notice, as: :boolean %>
+    <%= f.input :financial_aid_description %>
+
     <%= f.input :hometown_publication %>
 
     <%= f.simple_fields_for :home_address do |address_form| %>
