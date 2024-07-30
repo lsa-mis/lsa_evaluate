@@ -57,7 +57,8 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
   let(:school) { create(:school) }
   let(:campus) { create(:campus) }
   let(:department) { create(:department) }
-  # let(:address) { create(:address) }
+  let(:home_address) { create(:address) }
+  let(:campus_address) { create(:address) }
 
   let(:profile) do
     described_class.new(
@@ -73,10 +74,12 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       grad_date: Faker::Date.forward(days: 365),
       degree: Faker::Educator.degree,
       receiving_financial_aid: Faker::Boolean.boolean,
-      accepted_financial_aid_notice: Faker::Boolean.boolean,
+      accepted_financial_aid_notice: true,
       financial_aid_description: Faker::Lorem.paragraph,
       hometown_publication: Faker::Address.city,
-      pen_name: Faker::Book.author
+      pen_name: Faker::Book.author,
+      home_address:,
+      campus_address:
     )
   end
 
@@ -111,7 +114,7 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
     end
 
     it 'is not valid without accepted_financial_aid_notice' do
-      profile.accepted_financial_aid_notice = nil
+      profile.accepted_financial_aid_notice = false
       expect(profile).not_to be_valid
     end
   end
@@ -137,8 +140,12 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       expect(profile.department).to eq(department)
     end
 
-    # it 'belongs to address' do
-    #   expect(profile.address).to eq(address)
-    # end
+    it 'belongs to home_address' do
+      expect(profile.home_address).to eq(home_address)
+    end
+
+    it 'belongs to campus_address' do
+      expect(profile.campus_address).to eq(campus_address)
+    end
   end
 end
