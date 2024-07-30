@@ -55,12 +55,12 @@ class User < ApplicationRecord
     roles.exists?(kind: role_name)
   end
 
-  def editable_content_administrator?
-    role?('Editable Content Administrator')
+  def axis_mundi?
+    role?('Axis mundi')
   end
 
   def admin_for_container?(container_id)
-    assignments.exists?(container_id:, role: Role.find_by(kind: 'Administrator'))
+    assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Administrator'))
   end
 
   def display_initials_or_email

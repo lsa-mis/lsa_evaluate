@@ -9,10 +9,10 @@ RSpec.describe 'EditableContent', type: :feature do
   end
   let(:user) { create(:user) }
   let(:admin) { create(:user) }
-  let!(:role) { create(:role, kind: 'Editable Content Administrator') }
+  let!(:role) { create(:role, kind: 'Axis mundi') }
   let!(:user_role) { create(:user_role, user: admin, role:) }
 
-  context 'when editable_content_administrator is logged in' do
+  context 'when axis_mundi is logged in' do
     before do
       login_as(admin)
       visit root_path
@@ -24,7 +24,7 @@ RSpec.describe 'EditableContent', type: :feature do
     end
   end
 
-  context 'when NON editable_content_administrator is logged in' do
+  context 'when NON axis_mundi is logged in' do
     before do
       login_as(user)
       visit root_path

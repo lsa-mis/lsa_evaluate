@@ -110,11 +110,20 @@ ClassLevel.create([
 # Seed data for Users
 user1 = User.create!(email: 'alice@example.com', password: 'passwordpassword')
 user2 = User.create!(email: 'bob@example.com', password: 'passwordpassword')
+user3 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
 
 # Seed data for Roles
-role_admin = Role.create!(kind: 'Admin')
-Role.create!(kind: 'editable_content_administrator')
+Role.create!([
+               { kind: 'Container Administrator' },
+               { kind: 'Axis mundi' },
+               { kind: 'Container Manager' }
+             ])
+role_admin = Role.find_by(kind: 'Container Administrator')
+axis_mundi = Role.find_by(kind: 'Axis mundi')
 # role_user = Role.create!(kind: 'User')
+UserRole.create!([
+                   { user: user3, role: axis_mundi }
+                 ])
 
 # Seed data for Containers
 container1 = Container.create!(
@@ -155,7 +164,7 @@ contest_description2 = ContestDescription.create!(
 contest_description3 = ContestDescription.create!(
   status: Status.find_by(kind: 'Active'),
   container: container2,
-  name: 'Physics Drag Challenge',
+  name: 'Physics Sprint Challenge',
   short_name: 'Physics Racers ',
   eligibility_rules: 'Rules 2',
   notes: 'Notes 2',

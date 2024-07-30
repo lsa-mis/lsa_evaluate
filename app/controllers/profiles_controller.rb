@@ -1,10 +1,18 @@
+# frozen_string_literal: true
+
 class ProfilesController < ApplicationController
-  before_action :authenticate_user!
   before_action :set_profile, only: %i[show edit update destroy]
 
+  rescue_from CanCan::AccessDenied do |exception|
+    logger.error("!#!#!#!#! CanCan error in ProfilesController: #{exception.message}")
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: 'You are not authorized' }
+      format.json { render json: { error: 'You are not authorized' }, status: :forbidden }
+    end
+  end
   # GET /profiles
   def index
-    @profiles = Profile.all
+    @profiles = Profile.accessible_by(current_ability)
   end
 
   # GET /profiles/1
@@ -22,7 +30,7 @@ class ProfilesController < ApplicationController
 
   # POST /profiles
   def create
-    @profile = Profile.new(profile_params)
+    @profile = current_user.build_profile(profile_params)
 
     respond_to do |format|
       if @profile.save
@@ -57,7 +65,7 @@ class ProfilesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_profile
-    @profile = Profile.find_by(user_id: current_user.id)
+    @profile = Profile.find(params[:id])
   end
 
   # Only allow a list of trusted parameters through.
