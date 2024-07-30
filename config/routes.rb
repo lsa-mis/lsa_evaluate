@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   resources :campuses
   resources :schools
   resources :addresses
-  resources :profiles, only: %i[show new create edit update destroy]
+  resources :profiles, only: %i[index show new create edit update destroy]
   resources :user_roles
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
