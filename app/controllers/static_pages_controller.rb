@@ -2,7 +2,9 @@
 
 # The StaticPagesController class is responsible for handling requests related to static pages.
 class StaticPagesController < ApplicationController
-  before_action :authenticate_user!, except: %i[home]
+  skip_before_action :authenticate_user!, only: %i[home]
+  skip_load_and_authorize_resource only: %i[home]
+
   def home
     @departments = Department.all
     @class_levels = ClassLevel.all
