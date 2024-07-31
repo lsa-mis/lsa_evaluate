@@ -7,7 +7,20 @@
 EditableContent.create([
                          { page: 'home', section: 'instructions',
                            content: ActionText::RichText.new(body: 'Lorem ipsum dolor sit amet, vince adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.') },
-                         { page: 'home', section: 'description', content: 'Short paragraph explaining LSA Evaluate.' }
+                         { page: 'home', section: 'description',
+                           content: ActionText::RichText.new(body: 'Short paragraph explaining LSA Evaluate.') },
+                         { page: 'home', section: 'submit_entry',
+                           content: ActionText::RichText.new(body: 'Information on what you can do in this section.   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat.') },
+                         { page: 'home', section: 'manage_submissions',
+                           content: ActionText::RichText.new(body: 'Information on what you can do in this section.   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat.') },
+                         { page: 'home', section: 'submit_entry',
+                           content: ActionText::RichText.new(body: 'Information on what you can do in this section.   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat.') },
+                         { page: 'home', section: 'view_submissions',
+                           content: ActionText::RichText.new(body: 'Information on what you can do in this section.   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat.') },
+                         { page: 'home', section: 'manage_profile',
+                           content: ActionText::RichText.new(body: 'Information on what you can do in this section.   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea  commodo consequat.') },
+                         { page: 'profiles', section: 'finaid_information',
+                           content: ActionText::RichText.new(body: "Financial assistance from all sources during the academic year (September thru August), including prize money earned from Hopwood Award contests, factors into the ongoing review of students financial aid eligibility now and in the future. If your total financial aid, including any new offer, exceeds your eligibility for financial assistance this academic year, your aid may be limited in a future term or reduced from previously received assistance. You can learn more about financial aid terms and conditions on the Office of Financial Aid's website. If you have questions or want to consult with someone about your particular situation, please contact OFA.") }
                        ])
 
 # Seed data for School
