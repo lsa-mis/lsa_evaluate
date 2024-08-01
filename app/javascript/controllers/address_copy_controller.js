@@ -7,12 +7,12 @@ export default class extends Controller {
   ]
 
   copy() {
-    this.campusAddress1Target.value = this.homeAddress1Target.value
-    this.campusAddress2Target.value = this.homeAddress2Target.value
-    this.campusCityTarget.value = this.homeCityTarget.value
-    this.campusStateTarget.value = this.homeStateTarget.value
-    this.campusZipTarget.value = this.homeZipTarget.value
-    this.campusPhoneTarget.value = this.homePhoneTarget.value
-    this.campusCountryTarget.value = this.homeCountryTarget.value
+    this.homeAddress1Target.value = this.campusAddress1Target.value
+    this.homeAddress2Target.value = this.campusAddress2Target.value
+    this.homeCityTarget.value = this.campusCityTarget.value
+    this.homeStateTarget.value = this.campusStateTarget.value
+    this.homeZipTarget.value = this.campusZipTarget.value
+    this.homePhoneTarget.value = this.campusPhoneTarget.value
+    this.homeCountryTarget.value = this.campusCountryTarget.value
   }
 }
