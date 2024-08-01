@@ -1,0 +1,32 @@
+<div class="container d-flex mt-4">
+  <div class="col-2">
+    <%= render 'profiles/profile_summary', profile: @profile %>
+  </div>
+
+  <div class="col-10">
+    <div class="row mb-4 ms-2">
+      <div class="col-md-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">Submissions Open</h5>
+            <p class="card-text">Current Date</p>
+            <h3 class="display-4">15</h3>
+            <%= link_to 'View Open Submissions', root_path, class: 'btn btn-primary' %>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center">
+          <div class="card-body">
+            <h5 class="card-title">Explore More Opportunities</h5>
+            <p class="card-text">Open contests!</p>
+            <%= link_to 'Explore', root_path, class: 'btn btn-warning' %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row ms-2">
+      <%= render 'applicant_dashboard/submissions_summary', submissions: @submissions %>
+    </div>
+  </div>
+</div>

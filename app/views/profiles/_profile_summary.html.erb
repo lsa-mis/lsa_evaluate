@@ -1,0 +1,30 @@
+<div class="card mb-4 text-white bg-secondary">
+  <div class="card-header">
+    <h1 class="card-title">Welcome <%= @profile.user.display_name %>!</h1>
+    <p class="card-text text-white">UM ID: <%= @profile.umid %></p>
+  </div>
+  <div class="card-body">
+    <div class="mb-3">
+      <h5>Home Address</h5>
+      <p class="card-text text-white"><%= @profile.home_address.full_address if @profile.home_address %></p>
+    </div>
+    <div class="mb-3">
+      <h5>Campus Address</h5>
+      <p class="card-text text-white"><%= @profile.campus_address.full_address if @profile.campus_address %></p>
+    </div>
+    <p class="card-text text-white">Grade Level: <%= @profile.class_level.name if @profile.class_level %></p>
+    <p class="card-text text-white">School: <%= @profile.school.name if @profile.school %></p>
+    <p class="card-text text-white">Campus: <%= @profile.campus.campus_descr if @profile.campus %></p>
+    <p class="card-text text-white">Major: <%= @profile.major %></p>
+    <p class="card-text text-white">Dept: <%= @profile.department.name if @profile.department %></p>
+    <p class="card-text text-white">Graduation Date: <%= @profile.grad_date %></p>
+    <p class="card-text text-white">Degree: <%= @profile.degree %></p>
+    <p class="card-text text-white">Financial Aid: <%= @profile.receiving_financial_aid ? 'Yes' : 'No' %></p>
+    <% if @profile.receiving_financial_aid %>
+      <p class="card-text text-white">Financial Aid Description: <%= @profile.financial_aid_description %></p>
+    <% end %>
+    <p class="card-text text-white">Name for Publication: <%= @profile.user.display_name %></p>
+    <p class="card-text text-white">Hometown News: <%= @profile.hometown_publication %></p>
+    <p class="card-text text-white">Last updated: <%= @profile.updated_at.strftime("%B %d, %Y") %></p>
+  </div>
+</div>

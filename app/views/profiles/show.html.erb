@@ -4,7 +4,7 @@
 
 <div>
   <%= link_to "Edit", edit_profile_path(@profile) %> |
-  <%= link_to "Back", root_path %>
+  <%= link_to "Back", applicant_dashboard_path %>
 
   <%= button_to "Destroy", @profile, method: :delete, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to delete this?' } %>
 </div>
