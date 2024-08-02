@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  get 'applicant_dashboard/index'
   resources :testingrsmokes
   root 'static_pages#home'
 
@@ -30,6 +31,7 @@ Rails.application.routes.draw do
   resources :addresses
   resources :profiles, only: %i[index show new create edit update destroy]
   resources :user_roles
+  get 'applicant_dashboard', to: 'applicant_dashboard#index'
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
 

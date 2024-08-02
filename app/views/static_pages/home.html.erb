@@ -4,7 +4,7 @@
   <% if user_signed_in? %>
     <div class="row">
       <div class=" w-100 bg-secondary-subtle">
-        <h1 class="text-start mt-6 ms-6"><%= "Welcome #{current_user.display_name_or_email}!" %></h1>
+        <heading><h1 class="text-start mt-6 ms-6"><%= "Welcome #{current_user.display_name_or_email}!" %></h1></heading>
         <div class="row mx-6">
           <h2 class="mt-4">How to use LSA Evaluate</h2>
           <% if (content = render_editable_content('home', 'instructions')) %>
@@ -22,7 +22,7 @@
   <% else %>
     <div class="row">
       <div class="col-md-8 col-lg-6 w-100 bg-secondary-subtle">
-        <h1 class="text-start mt-6 ms-6">Welcome to LSA Evaluate</h1>
+        <heading><h1 class="text-start mt-6 ms-6">Welcome to LSA Evaluate</h1></heading>
           <% if (content = render_editable_content('home', 'description')) %>
             <p class="lead mt-4 ms-6">
               <%= content %>
@@ -33,7 +33,7 @@
         </div>
       </div>
       <div class="row">
-        <h2 class="mt-4">How to use LSA Evaluate</h2>
+        <heading><h2 class="mt-4">How to use LSA Evaluate</h2></heading>
         <% if (content = render_editable_content('home', 'instructions')) %>
           <p class="">
             <%= content %>

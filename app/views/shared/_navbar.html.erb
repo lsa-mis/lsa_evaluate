@@ -12,9 +12,9 @@
           <span><%= current_user.display_initials_or_email %><i class="bi bi-caret-down-fill"></i></span>
         </div>
         <div class="dropdown-menu" aria-labelledby="avatar-menu" data-dropdown-target="menu">
-          <%= button_to "Dashboard", root_path, class: 'dropdown-item btn-as-link' %>
           <% profile = current_user.profile %>
           <% if profile&.persisted? %>
+            <%= button_to "Dashboard", applicant_dashboard_path, method: :get, class: 'dropdown-item btn-as-link' %>
             <%= button_to "Profile", profile_path(current_user.profile), method: :get, class: 'dropdown-item btn-as-link' %>
           <% end %>
           <hr class='m-0' >

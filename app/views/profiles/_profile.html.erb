@@ -1,98 +1,51 @@
 <div id="<%= dom_id profile %>">
-  <p>
-    <strong>First Name:</strong>
-    <%= profile.first_name %>
-  </p>
 
-  <p>
-    <strong>Last Name:</strong>
-    <%= profile.last_name %>
-  </p>
+  <h1 class="mb-0"><%= profile.first_name %> <%= profile.last_name %></h1>
+  <div class="ms-2">
+    <span class="text-body-tertiary"><small><em>Last updated: <%= profile.updated_at.strftime("%B %d, %Y") %></em></small></span><br>
+    <span class="fw-light">UMID: <%= profile.umid %></span>
+  </div>
 
-  <p>
-    <strong>UMID:</strong>
-    <%= profile.umid %>
-  </p>
+  <div class="card mt-5">
+    <div class="header card-header">
+      <h2>Contact Information</h2>
+    </div>
+    <div class="card-body">
+      <div class="header h5 ps-2">
+        email: <%= profile.user.email %>
+      </div>
+      <div class="d-flex justify-content-start">
+        <div class="ps-2 me-8"><p class="m-0">Home Address<%= simple_format(profile.home_address.full_address, {class:"fw-light"}) if profile.home_address %></p></div>
+        <div class="ps-2"><p class="m-0">Campus Address<%= simple_format(profile.campus_address.full_address, {class:"fw-light"}) if profile.campus_address %></p></div>
+      </div>
+      <div class="card-text">
+        Pen Name: <span class="fw-light"> <%= profile.pen_name if profile.pen_name %></span>
+      </div>
+    </div>
+  </div>
 
-  <p>
-    <strong>Campus email:</strong>
-    <%= profile.user.email %>
-  </p>
-
-  <p>
-    <strong>Major:</strong>
-    <%= profile.major %>
-  </p>
-
-  <p>
-    <strong>Graduation Date:</strong>
-    <%= profile.grad_date %>
-  </p>
-
-  <p>
-    <strong>Degree:</strong>
-    <%= profile.degree %>
-  </p>
-
-  <p>
-    <strong>Receiving Financial Aid:</strong>
-    <%= profile.receiving_financial_aid ? 'Yes' : 'No' %>
-  </p>
-
-  <p>
-    <strong>Accepted Financial Aid Notice:</strong>
-    <%= profile.accepted_financial_aid_notice ? 'Yes' : 'No' %>
-  </p>
-
-  <p>
-    <strong>Financial Aid Description:</strong>
-    <%= profile.financial_aid_description %>
-  </p>
-
-  <p>
-    <strong>Hometown Publication:</strong>
-    <%= profile.hometown_publication %>
-  </p>
-
-  <p>
-    <strong>Pen Name:</strong>
-    <%= profile.pen_name %>
-  </p>
-
-  <p>
-    <strong>User:</strong>
-    <%= profile.user.display_name if profile.user %>
-  </p>
-
-  <p>
-    <strong>Class Level:</strong>
-    <%= profile.class_level.name if profile.class_level %>
-  </p>
-
-  <p>
-    <strong>School:</strong>
-    <%= profile.school.name if profile.school %>
-  </p>
-
-  <p>
-    <strong>Campus:</strong>
-    <%= profile.campus.campus_descr if profile.campus %>
-  </p>
-
-  <p>
-    <strong>Department:</strong>
-    <%= profile.department.name if profile.department %>
-  </p>
-
-  <p>
-    <strong>Home Address:</strong>
-    <%= profile.home_address.full_address if profile.home_address %>
-  </p>
-
-  <p>
-    <strong>Campus Address:</strong>
-    <%= profile.campus_address.full_address if profile.campus_address %>
-  </p>
-
-
+  <div class="card mt-5">
+    <div class="header card-header">
+      <h2>Academic Information</h2>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-start">
+        <div class=" text-start ms-4">
+          <p class="">Grade Level:<br><span class="fw-light"> <%= profile.class_level.name if profile.class_level %></span></p>
+          <p class="">School:<br><span class="fw-light"> <%= profile.school.name if profile.school %></span></p>
+          <p class="">Campus:<br><span class="fw-light"> <%= profile.campus.campus_descr if profile.campus %></span></p>
+          <p class="">Major:<br><span class="fw-light"> <%= profile.major %></span></p>
+          <p class="">Dept:<br><span class="fw-light"> <%= profile.department.name if profile.department %></span></p>
+          <p class="">Graduation Date:<br><span class="fw-light"> <%= profile.grad_date.strftime("%B %Y") %></span></p>
+          <p class="">Degree:<br><span class="fw-light"> <%= profile.degree %></span></p>
+          <p class="">Financial Aid:<br><span class="fw-light"> <%= profile.receiving_financial_aid ? 'Yes' : 'No' %></span></p>
+          <% if profile.receiving_financial_aid %>
+            <p class="">Financial Aid Description:<br><span class="fw-light"> <%= profile.financial_aid_description %></span></p>
+          <% end %>
+          <p class="">Name for Publication:<br><span class="fw-light"> <%= profile.user.display_name %></span></p>
+          <p class="">Hometown News:<br><span class="fw-light"> <%= profile.hometown_publication %></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

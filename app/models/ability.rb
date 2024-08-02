@@ -42,10 +42,11 @@ class Ability
     #   can :update, Profile, user_id: user.id
     elsif user.profile.present?
       can :manage, Profile, user_id: user.id
+      can :read, ApplicantDashboardController, user_id: user.id
       # can :read, Profile, user_id: user.id
       # can :update, Profile, user_id: user.id
     else
-      # No abilities granted
+      can :create, Profile, user_id: user.id
     end
   end
 end

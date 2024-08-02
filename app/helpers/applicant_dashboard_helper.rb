@@ -1,0 +1,2 @@
+module ApplicantDashboardHelper
+end

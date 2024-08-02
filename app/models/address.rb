@@ -89,12 +89,20 @@ class Address < ApplicationRecord
       ['Wyoming', 'WY']
     ].freeze
 
+  # def full_address
+  #   "#{address1} #{address2} #{city}, #{state} #{zip}"
+  # end
   def full_address
-    "#{address1} #{address2} #{city}, #{state} #{zip}"
+    "#{address1}\n#{address2.present? ? "#{address2}\n" : ''}#{city}, #{state} #{zip}\n#{country_abbreviation}"
   end
 
   def country_name
     country_data = ISO3166::Country[country]
     country_data.translations[I18n.locale.to_s] || country_data.name if country_data
+  end
+
+  def country_abbreviation
+    country_data = ISO3166::Country[country]
+    country_data.alpha2 if country_data
   end
 end
