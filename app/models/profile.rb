@@ -52,6 +52,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Profile < ApplicationRecord
+  before_save :normalize_names
+
   belongs_to :user
   belongs_to :class_level, optional: true
   belongs_to :school, optional: true
@@ -76,4 +78,11 @@ class Profile < ApplicationRecord
   validates :school_id, presence: true
   validates :home_address, presence: true
   validates :campus_address, presence: true
+
+  private
+
+  def normalize_names
+    self.first_name = first_name.strip
+    self.last_name = last_name.strip
+  end
 end
