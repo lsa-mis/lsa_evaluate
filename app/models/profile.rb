@@ -64,8 +64,8 @@ class Profile < ApplicationRecord
   accepts_nested_attributes_for :home_address, allow_destroy: true
   accepts_nested_attributes_for :campus_address, allow_destroy: true
 
-  validates :first_name, presence: true
-  validates :last_name, presence: true
+  validates :first_name, presence: true, length: { in: 1..255 }
+  validates :last_name, presence: true, length: { in: 1..255 }
   validates :umid, presence: true, length: { is: 8 }
   validates :grad_date, presence: true
   validates :degree, presence: true

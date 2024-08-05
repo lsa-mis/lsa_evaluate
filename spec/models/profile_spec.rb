@@ -95,8 +95,23 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       expect(profile).not_to be_valid
     end
 
+    it 'is not valid with a first_name longer than 255 characters' do
+      profile.first_name = 'a' * 256
+      expect(profile).not_to be_valid
+    end
+
     it 'is not valid without a last_name' do
       profile.last_name = nil
+      expect(profile).not_to be_valid
+    end
+
+    it 'is not valid with a last_name longer than 255 characters' do
+      profile.last_name = 'a' * 256
+      expect(profile).not_to be_valid
+    end
+
+    it 'is not valid with an invalid umid format' do
+      profile.umid = 'invalid_umid'
       expect(profile).not_to be_valid
     end
 
@@ -110,6 +125,7 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       expect(profile).not_to be_valid
     end
 
+    # not sure this test is necessary since there is default of false
     it 'is not valid without receiving_financial_aid' do
       profile.receiving_financial_aid = nil
       expect(profile).not_to be_valid
@@ -148,6 +164,18 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
 
     it 'belongs to campus_address' do
       expect(profile.campus_address).to eq(campus_address)
+    end
+
+    it 'accepts nested attributes for home_address' do
+      profile_attributes = attributes_for(:profile, home_address_attributes: attributes_for(:address))
+      profile = Profile.new(profile_attributes)
+      expect(profile.home_address).to be_present
+    end
+
+    it 'accepts nested attributes for campus_address' do
+      profile_attributes = attributes_for(:profile, campus_address_attributes: attributes_for(:address))
+      profile = Profile.new(profile_attributes)
+      expect(profile.campus_address).to be_present
     end
   end
 end
