@@ -6,6 +6,7 @@
 #
 #  id                            :bigint           not null, primary key
 #  accepted_financial_aid_notice :boolean          default(FALSE), not null
+#  campus_employee               :boolean          default(FALSE), not null
 #  degree                        :string(255)      not null
 #  financial_aid_description     :text(65535)
 #  first_name                    :string(255)      default(""), not null

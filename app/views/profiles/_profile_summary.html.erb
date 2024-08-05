@@ -22,6 +22,7 @@
     <p class="text-white">Dept:<br><span class="fw-light"> <%= @profile.department.name if @profile.department %></span></p>
     <p class="text-white">Graduation Date:<br><span class="fw-light"> <%= @profile.grad_date.strftime("%B %Y") %></span></p>
     <p class="text-white">Degree:<br><span class="fw-light"> <%= @profile.degree %></span></p>
+    <p class="text-white">Currently an active campus employee (workstudy, GSI, etc)?<br><span class="fw-light"> <%= profile.campus_employee ? 'Yes' : 'No' %></span></p>
     <p class="text-white">Financial Aid:<br><span class="fw-light"> <%= @profile.receiving_financial_aid ? 'Yes' : 'No' %></span></p>
     <% if @profile.receiving_financial_aid %>
       <p class="text-white">Financial Aid Description:<br><span class="fw-light"> <%= @profile.financial_aid_description %></span></p>
