@@ -2,7 +2,7 @@ class ContainersController < ApplicationController
   before_action :set_container, only: %i[show edit update destroy]
 
   def index
-    @containers = Container.all
+    @containers = Container.includes(:contest_descriptions).all
   end
 
   def show; end
@@ -41,6 +41,10 @@ class ContainersController < ApplicationController
     respond_to do |format|
       format.html { redirect_to containers_url, notice: 'Container was successfully destroyed.' }
     end
+  end
+
+  def admin_content
+    render 'admin_content'
   end
 
   private

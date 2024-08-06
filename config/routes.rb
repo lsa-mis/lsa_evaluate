@@ -9,14 +9,17 @@ Rails.application.routes.draw do
     delete 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
   end
 
-  resources :containers
+  resources :containers do
+    resources :contest_descriptions do
+      resources :contest_instances, path: 'instances'
+    end
+  end
   resources :visibilities
   resources :departments
   resources :roles
   resources :static_pages do
     collection do
       get 'entrant_content'
-      get 'admin_content'
     end
   end
   resources :editable_contents

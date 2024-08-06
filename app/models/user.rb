@@ -59,6 +59,18 @@ class User < ApplicationRecord
     role?('Axis mundi')
   end
 
+  def administrator?
+    role?('Administrator')
+  end
+
+  def manager?
+    role?('Manager')
+  end
+
+  def judge?
+    role?('Judge')
+  end
+
   def admin_for_container?(container_id)
     assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Administrator'))
   end
