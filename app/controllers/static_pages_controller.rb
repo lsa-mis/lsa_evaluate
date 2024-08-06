@@ -17,8 +17,4 @@ class StaticPagesController < ApplicationController
     @containers = Container.all
     render partial: 'entrant_content'
   end
-
-  def admin_content
-    render 'admin_content'
-  end
 end

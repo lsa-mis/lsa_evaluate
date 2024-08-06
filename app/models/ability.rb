@@ -40,6 +40,8 @@ class Ability
     # elsif user.manager?
     #   can :read, Profile
     #   can :update, Profile, user_id: user.id
+    elsif user.administrator?
+      can :manage, Container, :all
     elsif user.profile.present?
       can :manage, Profile, user_id: user.id
       can :read, ApplicantDashboardController, user_id: user.id
