@@ -5,10 +5,13 @@ class ContainersController < ApplicationController
     @containers = Container.includes(:contest_descriptions).all
   end
 
-  def show; end
+  def show
+    @assignments = @container.assignments.includes(:user, :role)
+  end
 
   def new
     @container = Container.new
+    @container.assignments.build
   end
 
   def edit; end
@@ -18,6 +21,7 @@ class ContainersController < ApplicationController
 
     respond_to do |format|
       if @container.save
+        create_assignment(@container, current_user, 'Administrator')
         format.html { redirect_to container_url(@container), notice: 'Container was successfully created.' }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -28,6 +32,7 @@ class ContainersController < ApplicationController
   def update
     respond_to do |format|
       if @container.update(container_params)
+        update_assignment(@container)
         format.html { redirect_to container_url(@container), notice: 'Container was successfully updated.' }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -37,7 +42,6 @@ class ContainersController < ApplicationController
 
   def destroy
     @container.destroy!
-
     respond_to do |format|
       format.html { redirect_to containers_url, notice: 'Container was successfully destroyed.' }
     end
@@ -54,6 +58,7 @@ class ContainersController < ApplicationController
   end
 
   def container_params
-    params.require(:container).permit(:name, :description, :department_id, :visibility_id)
+    params.require(:container).permit(:name, :description, :department_id, :visibility_id,
+                                      assignments_attributes: %i[id user_id role_id])
   end
 end
