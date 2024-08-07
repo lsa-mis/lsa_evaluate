@@ -1,10 +1,25 @@
-<p style="color: green"><%= notice %></p>
-
 <%= render @container %>
 
 <div>
-  <%= link_to "Edit", edit_container_path(@container) %> |
-  <%= link_to "Back", containers_path %>
-
-  <%= button_to "Destroy", @container, method: :delete, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to delete this?' } %>
+  <%= link_to "Edit", edit_container_path(@container), class: "btn btn-primary" %> |
+  <%= link_to "Back", containers_path, class: "btn btn-secondary" %> |
+  <%= button_to "Destroy", @container, method: :delete, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to delete this?' }, class: "btn btn-danger" %>
 </div>
+
+<h3 class="mt-4">Assignments</h3>
+<table class="table table-striped mt-2">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @container.assignments.each do |assignment| %>
+      <tr>
+        <td><%= assignment.user.email %></td>
+        <td><%= assignment.role.kind %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

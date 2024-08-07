@@ -1,4 +1,3 @@
-
 <%= simple_form_for(@container) do |f| %>
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
@@ -6,9 +5,16 @@
   <div class="form-inputs">
     <%= f.input :name %>
     <%= f.input :description %>
-    <%= f.association :department, label_method: :name %>
-    <%= f.association :visibility, label_method: :kind %>
+    <%= f.input :department_id, collection: Department.all, label_method: :name, value_method: :id %>
+    <%= f.input :visibility_id, collection: Visibility.all, label_method: :kind, value_method: :id %>
   </div>
+
+  <h3>Assignments</h3>
+    <%= f.simple_fields_for :assignments do |assignment_form| %>
+      <%= assignment_form.input :user_id, collection: User.all, label_method: :email, value_method: :id, label: 'User' %>
+      <%= assignment_form.input :role_id, collection: Role.all, label_method: :kind, value_method: :id, label: 'Role' %>
+    <% end %>
+    <%#= f.association :assignments %>
 
   <div class="form-actions">
     <%= f.button :submit %>
