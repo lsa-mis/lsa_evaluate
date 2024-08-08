@@ -1,0 +1,36 @@
+<div class="col-3 bg-secondary text-white profile-sidebar text-center">
+  <div class="text-end">
+    <%= link_to edit_profile_path(@profile), class: 'text-white link-underline link-underline-opacity-0' do %>
+      <i class="bi bi-pencil"></i> <span class="fw-light">Edit</span>
+    <% end %>
+  </div>
+  <h1 class="">Welcome<br> <%= @profile.user.display_name %>!</h1>
+  <p class="text-white fw-light"><small>UM ID: <%= @profile.umid %></small></p>
+  <hr>
+  <div class="text-white text-start ms-4">
+    <div class="mt-4">
+      <p class="text-white m-0">Home Address<%= simple_format(@profile.home_address.full_address, {class:"text-white fw-light"}) if @profile.home_address %></p>
+    </div>
+    <div class="mb-4">
+      <p class="text-white m-0">Campus Address<%= simple_format(@profile.campus_address.full_address, {class:"text-white fw-light"}) if @profile.campus_address %></span></p>
+    </div>
+    <hr>
+    <p class="text-white">Grade Level:<br><span class="fw-light"> <%= @profile.class_level.name if @profile.class_level %></span></p>
+    <p class="text-white">School:<br><span class="fw-light"> <%= @profile.school.name if @profile.school %></span></p>
+    <p class="text-white">Campus:<br><span class="fw-light"> <%= @profile.campus.campus_descr if @profile.campus %></span></p>
+    <p class="text-white">Major:<br><span class="fw-light"> <%= @profile.major %></span></p>
+    <p class="text-white">Dept:<br><span class="fw-light"> <%= @profile.department.name if @profile.department %></span></p>
+    <p class="text-white">Graduation Date:<br><span class="fw-light"> <%= @profile.grad_date.strftime("%B %Y") %></span></p>
+    <p class="text-white">Degree:<br><span class="fw-light"> <%= @profile.degree %></span></p>
+    <p class="text-white">Currently an active campus employee (workstudy, GSI, etc)?<br><span class="fw-light"> <%= profile.campus_employee ? 'Yes' : 'No' %></span></p>
+    <p class="text-white">Financial Aid:<br><span class="fw-light"> <%= @profile.receiving_financial_aid ? 'Yes' : 'No' %></span></p>
+    <% if @profile.receiving_financial_aid %>
+      <p class="text-white">Financial Aid Description:<br><span class="fw-light"> <%= @profile.financial_aid_description %></span></p>
+    <% end %>
+    <p class="text-white">Name for Publication:<br><span class="fw-light"> <%= @profile.user.display_name %></span></p>
+    <p class="text-white">Hometown News:<br><span class="fw-light"> <%= @profile.hometown_publication %></span></p>
+  </div>
+  <div class="mt-8">
+    <p class="text-white"><small><em>Last updated: <%= @profile.updated_at.strftime("%B %d, %Y") %></em></small></span></p>
+  </div>
+</div>

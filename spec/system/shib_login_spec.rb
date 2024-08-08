@@ -1,16 +1,8 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+# spec/system/shib_login_spec.rb
 
-def mock_login(info)
-  OmniAuth.config.test_mode = true
-  OmniAuth.config.mock_auth[:saml] = OmniAuth::AuthHash.new({
-                                                              provider: 'saml',
-                                                              uid: '12345678',
-                                                              info:
-                                                            })
-  post user_saml_omniauth_callback_path
-end
+require 'rails_helper'
 
 RSpec.describe 'Shibboleth', type: :request do
   describe 'login success -' do

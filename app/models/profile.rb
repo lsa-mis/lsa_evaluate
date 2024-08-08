@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: profiles
 #
 #  id                            :bigint           not null, primary key
 #  accepted_financial_aid_notice :boolean          default(FALSE), not null
+#  campus_employee               :boolean          default(FALSE), not null
 #  degree                        :string(255)      not null
 #  financial_aid_description     :text(65535)
 #  first_name                    :string(255)      default(""), not null
@@ -13,9 +16,9 @@
 #  major                         :string(255)
 #  pen_name                      :string(255)
 #  receiving_financial_aid       :boolean          default(FALSE), not null
+#  umid                          :integer          not null
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
-#  address_id                    :bigint
 #  campus_address_id             :bigint
 #  campus_id                     :bigint
 #  class_level_id                :bigint
@@ -26,11 +29,9 @@
 #
 # Indexes
 #
-#  address_id_idx                       (address_id)
 #  campus_id_idx                        (campus_id)
 #  class_level_id_idx                   (class_level_id)
 #  id_unq_idx                           (id) UNIQUE
-#  index_profiles_on_address_id         (address_id)
 #  index_profiles_on_campus_address_id  (campus_address_id)
 #  index_profiles_on_campus_id          (campus_id)
 #  index_profiles_on_class_level_id     (class_level_id)
@@ -43,7 +44,6 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (address_id => addresses.id)
 #  fk_rails_...  (campus_address_id => addresses.id)
 #  fk_rails_...  (campus_id => campuses.id)
 #  fk_rails_...  (class_level_id => class_levels.id)
@@ -53,6 +53,8 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Profile < ApplicationRecord
+  before_save :normalize_names
+
   belongs_to :user
   belongs_to :class_level, optional: true
   belongs_to :school, optional: true
@@ -62,10 +64,26 @@ class Profile < ApplicationRecord
   belongs_to :home_address, class_name: 'Address', optional: true
   belongs_to :campus_address, class_name: 'Address', optional: true
 
-  validates :first_name, presence: true
-  validates :last_name, presence: true
+  accepts_nested_attributes_for :home_address, allow_destroy: true
+  accepts_nested_attributes_for :campus_address, allow_destroy: true
+
+  validates :first_name, presence: true, length: { in: 1..255 }
+  validates :last_name, presence: true, length: { in: 1..255 }
+  validates :umid, presence: true, length: { is: 8 }
   validates :grad_date, presence: true
   validates :degree, presence: true
   validates :receiving_financial_aid, inclusion: { in: [true, false] }
-  validates :accepted_financial_aid_notice, inclusion: { in: [true, false] }
+  validates :accepted_financial_aid_notice, acceptance: true
+  validates :class_level_id, presence: true
+  validates :campus_id, presence: true
+  validates :school_id, presence: true
+  validates :home_address, presence: true
+  validates :campus_address, presence: true
+
+  private
+
+  def normalize_names
+    self.first_name = first_name.strip
+    self.last_name = last_name.strip
+  end
 end

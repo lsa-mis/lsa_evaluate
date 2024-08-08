@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_17_144402) do
+ActiveRecord::Schema[7.1].define(version: 2024_08_05_195047) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -62,10 +62,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_144402) do
     t.string "address1"
     t.string "address2"
     t.string "city"
-    t.integer "state"
+    t.string "state"
     t.string "zip"
     t.string "phone"
-    t.integer "country"
+    t.string "country"
     t.bigint "address_type_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -201,13 +201,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_144402) do
     t.text "financial_aid_description"
     t.string "hometown_publication"
     t.string "pen_name"
-    t.bigint "address_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "home_address_id"
     t.bigint "campus_address_id"
-    t.index ["address_id"], name: "address_id_idx"
-    t.index ["address_id"], name: "index_profiles_on_address_id"
+    t.integer "umid", null: false
+    t.boolean "campus_employee", default: false, null: false
     t.index ["campus_address_id"], name: "index_profiles_on_campus_address_id"
     t.index ["campus_id"], name: "campus_id_idx"
     t.index ["campus_id"], name: "index_profiles_on_campus_id"
@@ -309,7 +308,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_17_144402) do
   add_foreign_key "contest_instances", "categories"
   add_foreign_key "contest_instances", "contest_descriptions"
   add_foreign_key "contest_instances", "statuses"
-  add_foreign_key "profiles", "addresses"
   add_foreign_key "profiles", "addresses", column: "campus_address_id"
   add_foreign_key "profiles", "addresses", column: "home_address_id"
   add_foreign_key "profiles", "campuses"

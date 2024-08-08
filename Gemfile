@@ -4,10 +4,11 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'rails', '~> 7.1.3'
-ruby '3.3.0'
+ruby '3.3.4'
 
 gem 'actiontext'
 gem 'bootsnap', require: false
+gem 'cancancan'
 gem 'country_select'
 gem 'cssbundling-rails'
 gem 'devise', '~> 4.9'
@@ -34,6 +35,7 @@ end
 group :test do
   gem 'database_cleaner-active_record'
   gem 'factory_bot_rails'
+  gem 'rails-controller-testing'
 end
 
 group :development, :staging do

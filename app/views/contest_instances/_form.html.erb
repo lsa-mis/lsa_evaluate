@@ -1,16 +1,16 @@
-<%= simple_form_for(@contest_instance) do |f| %>
+<%= simple_form_for([@container, @contest_description, @contest_instance]) do |f| %>
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
   <div class="form-inputs">
-    <%= f.association :status %>
-    <%= f.association :contest_description %>
-    <%= f.input :date_open, as: :datetime_picker %>
-    <%= f.input :date_closed, as: :datetime_picker %>
+    <%= f.association :status, label_method: :kind %>
+    <%= f.association :contest_description, label_method: :name %>
+    <%= f.input :date_open, as: :datetime %>
+    <%= f.input :date_closed, as: :datetime %>
     <%= f.input :notes %>
     <%= f.input :judging_open %>
     <%= f.input :judging_rounds %>
-    <%= f.association :category %>
+    <%= f.association :category, label_method: :kind %>
     <%= f.input :has_course_requirement %>
     <%= f.input :judge_evaluations_complete %>
     <%= f.input :course_requirement_description %>

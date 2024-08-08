@@ -6,8 +6,8 @@
   <div class="form-inputs">
     <%= f.input :name %>
     <%= f.input :description %>
-    <%= f.association :department %>
-    <%= f.association :visibility %>
+    <%= f.association :department, label_method: :name %>
+    <%= f.association :visibility, label_method: :kind %>
   </div>
 
   <div class="form-actions">

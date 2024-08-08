@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 class EditableContentsController < ApplicationController
   before_action :set_editable_content, only: %i[show edit update destroy]
-  before_action :authorize_editing, only: %i[edit update]
 
   def index
     @editable_contents = EditableContent.all
@@ -50,12 +51,6 @@ class EditableContentsController < ApplicationController
 
   def set_editable_content
     @editable_content = EditableContent.find(params[:id])
-  end
-
-  def authorize_editing
-    return if current_user.editable_content_administrator?
-
-    redirect_to root_path, alert: 'You are not authorized to edit this content.'
   end
 
   def editable_content_params

@@ -1,9 +1,18 @@
+# frozen_string_literal: true
+
 class ProfilesController < ApplicationController
   before_action :set_profile, only: %i[show edit update destroy]
 
+  rescue_from CanCan::AccessDenied do |exception|
+    logger.error("!#!#!#!#! CanCan error in ProfilesController: #{exception.message}")
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: 'You are not authorized' }
+      format.json { render json: { error: 'You are not authorized' }, status: :forbidden }
+    end
+  end
   # GET /profiles
   def index
-    @profiles = Profile.all
+    @profiles = Profile.accessible_by(current_ability)
   end
 
   # GET /profiles/1
@@ -11,7 +20,7 @@ class ProfilesController < ApplicationController
 
   # GET /profiles/new
   def new
-    @profile = Profile.new
+    @profile = current_user.build_profile
     @profile.build_home_address
     @profile.build_campus_address
   end
@@ -21,7 +30,7 @@ class ProfilesController < ApplicationController
 
   # POST /profiles
   def create
-    @profile = Profile.new(profile_params)
+    @profile = current_user.build_profile(profile_params)
 
     respond_to do |format|
       if @profile.save
@@ -36,7 +45,7 @@ class ProfilesController < ApplicationController
   def update
     respond_to do |format|
       if @profile.update(profile_params)
-        format.html { edirect_to @profile, notice: 'Profile was successfully updated.' }
+        format.html { redirect_to @profile, notice: 'Profile was successfully updated.' }
       else
         format.html { render :edit, status: :unprocessable_entity }
       end
@@ -48,7 +57,7 @@ class ProfilesController < ApplicationController
     @profile.destroy
 
     respond_to do |format|
-      format.html { redirect_to profiles_url, notice: 'Profile was successfully destroyed.' }
+      format.html { redirect_to root_url, notice: 'Profile was successfully destroyed.' }
     end
   end
 
@@ -61,10 +70,11 @@ class ProfilesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def profile_params
-    params.require(:profile).permit(:user_id, :first_name, :last_name, :class_level_id, :school_id, :campus_id, :major,
+    params.require(:profile).permit(:user_id, :umid, :first_name, :last_name, :class_level_id, :school_id, :campus_id,
+                                    :major,
                                     :department_id, :grad_date, :degree, :receiving_financial_aid,
                                     :accepted_financial_aid_notice, :financial_aid_description,
-                                    :hometown_publication, :pen_name, :address_id,
+                                    :hometown_publication, :pen_name,
                                     home_address_attributes: %i[id address1 address2 city state zip phone country address_type_id],
                                     campus_address_attributes: %i[id address1 address2 city state zip phone country address_type_id])
   end

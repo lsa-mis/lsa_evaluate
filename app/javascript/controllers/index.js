@@ -4,6 +4,9 @@
 
 import { application } from "./application"
 
+import AddressCopyController from "./address_copy_controller"
+application.register("address-copy", AddressCopyController)
+
 import ConfirmController from "./confirm_controller"
 application.register("confirm", ConfirmController)
 
@@ -12,3 +15,6 @@ application.register("dropdown", DropdownController)
 
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
+
+import InteractionController from "./interaction_controller"
+application.register("interaction", InteractionController)

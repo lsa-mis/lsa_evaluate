@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  get 'applicant_dashboard/index'
   resources :testingrsmokes
   root 'static_pages#home'
 
@@ -8,11 +9,19 @@ Rails.application.routes.draw do
     delete 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
   end
 
-  resources :containers
+  resources :containers do
+    resources :contest_descriptions do
+      resources :contest_instances, path: 'instances'
+    end
+  end
   resources :visibilities
   resources :departments
   resources :roles
-  resources :static_pages
+  resources :static_pages do
+    collection do
+      get 'entrant_content'
+    end
+  end
   resources :editable_contents
   resources :statuses
   resources :categories
@@ -23,8 +32,9 @@ Rails.application.routes.draw do
   resources :campuses
   resources :schools
   resources :addresses
-  resources :profiles
+  resources :profiles, only: %i[index show new create edit update destroy]
   resources :user_roles
+  get 'applicant_dashboard', to: 'applicant_dashboard#index'
 
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
 

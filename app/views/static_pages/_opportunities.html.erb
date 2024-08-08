@@ -5,38 +5,27 @@
     <!-- Department Selection -->
     <div class="col">
       <label for="department-select" class="form-label visually-hidden">Select Department</label>
-      <select class="form-select" id="department-select">
+      <select class="form-select" id="department-select" name="department_id">
         <option value="">Select Department</option>
-        <option value="1">Butterfly Science</option>
-        <option value="2">English</option>
-        <option value="3">Math</option>
+        <%= options_from_collection_for_select(@departments, :id, :name) %>
       </select>
     </div>
 
     <!-- Class Rank Selection -->
     <div class="col">
       <label for="class-rank-select" class="form-label visually-hidden">Open to Class Rank</label>
-      <select class="form-select" id="class-rank-select">
-        <option value="">Open to Class Rank</option>
-        <option value="1">Freshman</option>
-        <option value="2">Sophomore</option>
-        <option value="3">Junior</option>
-        <option value="4">Senior</option>
+      <select class="form-select" id="class-rank-select" name="class_rank_id">
+        <option value="">Available by Grade Level</option>
+        <%= options_from_collection_for_select(@class_levels, :id, :name) %>
       </select>
     </div>
 
     <!-- Shoe Size Selection -->
     <div class="col">
-      <label for="class-shoe-size-select" class="form-label visually-hidden">Open to Shoe Size</label>
-      <select class="form-select" id="class-rank-select">
-        <option value="">Open to Shoe Size</option>
-        <option value="1">5</option>
-        <option value="2">6</option>
-        <option value="3">7</option>
-        <option value="4">8</option>
-        <option value="5">9</option>>
-        <option value="6">10</option>
-        <option value="7">11</option>
+      <label for="container-select" class="form-label visually-hidden">Contest Collections</label>
+      <select class="form-select" id="container-select" name="container_id">
+        <option value="">Contest Collections</option>
+        <%= options_from_collection_for_select(@containers, :id, :name) %>
       </select>
     </div>
 

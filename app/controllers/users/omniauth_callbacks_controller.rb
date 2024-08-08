@@ -29,6 +29,7 @@ module Users
     end
 
     def auth
+      # Rails.logger.info("@@@@@@  Omniauth Auth Hash: #{request.env['omniauth.auth'].inspect}")
       request.env['omniauth.auth']
     end
 
@@ -41,7 +42,7 @@ module Users
       if user_signed_in?
         current_user
       elsif (user = User.find_by(email: auth.info.email))
-        user
+        update_user(user)
       else
         create_user
       end
@@ -53,6 +54,11 @@ module Users
 
     def create_user
       User.create(user_params)
+    end
+
+    def update_user(user)
+      user.update(user_params)
+      user
     end
 
     def user_params

@@ -2,6 +2,14 @@
 class UserRolesController < ApplicationController
   before_action :set_user_role, only: %i[show edit update destroy]
 
+  rescue_from CanCan::AccessDenied do |exception|
+    logger.error("!#!#!#!#! CanCan error in UserRolesController: #{exception.message}")
+    respond_to do |format|
+      format.html { redirect_to root_path, alert: 'You are not authorized to go to that page.' }
+      format.json { render json: { error: 'You are not authorized to go to that page.' }, status: :forbidden }
+    end
+  end
+
   def index
     @user_roles = UserRole.all
   end

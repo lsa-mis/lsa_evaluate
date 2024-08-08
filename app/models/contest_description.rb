@@ -26,7 +26,9 @@
 class ContestDescription < ApplicationRecord
   belongs_to :container
   belongs_to :status
-  has_many :contest_instances
+  has_many :contest_instances, dependent: :destroy
+
+  accepts_nested_attributes_for :contest_instances, allow_destroy: true
 
   validates :name, :created_by, presence: true
 end

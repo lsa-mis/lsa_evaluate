@@ -1,0 +1,36 @@
+<div id="choose_interaction" class="my-4">
+  <div class="row g-4 align-items-center justify-content-center">
+
+    <div class="col">
+      <div class="card">
+        <h3 class="m-2">Explore / Submit Entry / Update Profile</h3>
+        <div class="card-body">
+          <% if (content = render_editable_content('home', 'submit_entry')) %>
+            <p class="">
+              <%= content %>
+            </p>
+          <% end %>
+        </div>
+        <div class="card-footer">
+          <%= button_to 'Submit Entry', '#', class: 'btn btn-primary ', data: { action: "click->interaction#showEntrantContent" } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <h3 class="m-2">Create / Manage Submissions</h3>
+        <div class="card-body">
+          <% if (content = render_editable_content('home', 'manage_submissions')) %>
+            <p class="">
+              <%= content %>
+            </p>
+          <% end %>        </div>
+        <div class="card-footer">
+          <%= button_to 'Manage Submissions', containers_path, method: :get, class: 'btn btn-primary' %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

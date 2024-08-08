@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: profiles
 #
 #  id                            :bigint           not null, primary key
 #  accepted_financial_aid_notice :boolean          default(FALSE), not null
+#  campus_employee               :boolean          default(FALSE), not null
 #  degree                        :string(255)      not null
 #  financial_aid_description     :text(65535)
 #  first_name                    :string(255)      default(""), not null
@@ -13,9 +16,9 @@
 #  major                         :string(255)
 #  pen_name                      :string(255)
 #  receiving_financial_aid       :boolean          default(FALSE), not null
+#  umid                          :integer          not null
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
-#  address_id                    :bigint
 #  campus_address_id             :bigint
 #  campus_id                     :bigint
 #  class_level_id                :bigint
@@ -26,11 +29,9 @@
 #
 # Indexes
 #
-#  address_id_idx                       (address_id)
 #  campus_id_idx                        (campus_id)
 #  class_level_id_idx                   (class_level_id)
 #  id_unq_idx                           (id) UNIQUE
-#  index_profiles_on_address_id         (address_id)
 #  index_profiles_on_campus_address_id  (campus_address_id)
 #  index_profiles_on_campus_id          (campus_id)
 #  index_profiles_on_class_level_id     (class_level_id)
@@ -43,7 +44,6 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (address_id => addresses.id)
 #  fk_rails_...  (campus_address_id => addresses.id)
 #  fk_rails_...  (campus_id => campuses.id)
 #  fk_rails_...  (class_level_id => class_levels.id)
@@ -54,32 +54,35 @@
 #
 require 'rails_helper'
 
-RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
+RSpec.describe Profile do
   let(:user) { create(:user) }
-  let(:class_level) { create(:class_level) }
-  let(:school) { create(:school) }
-  let(:campus) { create(:campus) }
-  let(:department) { create(:department) }
-  # let(:address) { create(:address) }
+
+  let(:addresses) { create_list(:address, 2) }
+  let(:associated_records) do
+    {
+      class_level: create(:class_level),
+      school: create(:school),
+      campus: create(:campus),
+      department: create(:department),
+      home_address: addresses.first,
+      campus_address: addresses.second
+    }
+  end
 
   let(:profile) do
     described_class.new(
       user:,
       first_name: Faker::Name.first_name,
       last_name: Faker::Name.last_name,
-      class_level:,
-      school:,
-      campus:,
-      major: Faker::Educator.subject,
-      department:,
+      umid: Faker::Number.number(digits: 8),
       grad_date: Faker::Date.forward(days: 365),
       degree: Faker::Educator.degree,
       receiving_financial_aid: Faker::Boolean.boolean,
-      accepted_financial_aid_notice: Faker::Boolean.boolean,
+      accepted_financial_aid_notice: true,
       financial_aid_description: Faker::Lorem.paragraph,
       hometown_publication: Faker::Address.city,
-      pen_name: Faker::Book.author
-      # address:
+      pen_name: Faker::Book.author,
+      **associated_records
     )
   end
 
@@ -93,8 +96,23 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       expect(profile).not_to be_valid
     end
 
+    it 'is not valid with a first_name longer than 255 characters' do
+      profile.first_name = 'a' * 256
+      expect(profile).not_to be_valid
+    end
+
     it 'is not valid without a last_name' do
       profile.last_name = nil
+      expect(profile).not_to be_valid
+    end
+
+    it 'is not valid with a last_name longer than 255 characters' do
+      profile.last_name = 'a' * 256
+      expect(profile).not_to be_valid
+    end
+
+    it 'is not valid with an invalid umid format' do
+      profile.umid = 'invalid_umid'
       expect(profile).not_to be_valid
     end
 
@@ -108,13 +126,8 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
       expect(profile).not_to be_valid
     end
 
-    it 'is not valid without receiving_financial_aid' do
-      profile.receiving_financial_aid = nil
-      expect(profile).not_to be_valid
-    end
-
     it 'is not valid without accepted_financial_aid_notice' do
-      profile.accepted_financial_aid_notice = nil
+      profile.accepted_financial_aid_notice = false
       expect(profile).not_to be_valid
     end
   end
@@ -125,23 +138,55 @@ RSpec.describe Profile do # rubocop:disable RSpec/MultipleMemoizedHelpers
     end
 
     it 'belongs to class_level' do
-      expect(profile.class_level).to eq(class_level)
+      expect(profile.class_level).to eq(associated_records[:class_level])
     end
 
     it 'belongs to school' do
-      expect(profile.school).to eq(school)
+      expect(profile.school).to  eq(associated_records[:school])
     end
 
     it 'belongs to campus' do
-      expect(profile.campus).to eq(campus)
+      expect(profile.campus).to  eq(associated_records[:campus])
     end
 
     it 'belongs to department' do
-      expect(profile.department).to eq(department)
+      expect(profile.department).to eq(associated_records[:department])
     end
 
-    # it 'belongs to address' do
-    #   expect(profile.address).to eq(address)
-    # end
+    it 'belongs to home_address' do
+      expect(profile.home_address).to eq(associated_records[:home_address])
+    end
+
+    it 'belongs to campus_address' do
+      expect(profile.campus_address).to eq(associated_records[:campus_address])
+    end
+
+    it 'accepts nested attributes for home_address' do
+      profile_attributes = attributes_for(:profile, home_address_attributes: attributes_for(:address))
+      profile = described_class.new(profile_attributes)
+      expect(profile.home_address).to be_present
+    end
+
+    it 'accepts nested attributes for campus_address' do
+      profile_attributes = attributes_for(:profile, campus_address_attributes: attributes_for(:address))
+      profile = described_class.new(profile_attributes)
+      expect(profile.campus_address).to be_present
+    end
+  end
+
+  describe 'callbacks' do
+    describe 'before_save normalize_names' do
+      it 'normalizes the first_name before saving' do
+        profile.first_name = '  John  '
+        profile.save
+        expect(profile.first_name).to eq('John')
+      end
+
+      it 'normalizes the last_name before saving' do
+        profile.last_name = '  Popper  '
+        profile.save
+        expect(profile.last_name).to eq('Popper')
+      end
+    end
   end
 end

@@ -55,12 +55,24 @@ class User < ApplicationRecord
     roles.exists?(kind: role_name)
   end
 
-  def editable_content_administrator?
-    role?('editable_content_administrator')
+  def axis_mundi?
+    role?('Axis mundi')
+  end
+
+  def administrator?
+    role?('Administrator')
+  end
+
+  def manager?
+    role?('Manager')
+  end
+
+  def judge?
+    role?('Judge')
   end
 
   def admin_for_container?(container_id)
-    assignments.exists?(container_id:, role: Role.find_by(kind: 'administrator'))
+    assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Administrator'))
   end
 
   def display_initials_or_email
@@ -69,5 +81,13 @@ class User < ApplicationRecord
     else
       email.split('@').first
     end
+  end
+
+  def display_name_or_email
+    display_name.presence || email
+  end
+
+  def profile_exists?
+    profile.present?
   end
 end

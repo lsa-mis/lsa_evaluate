@@ -1,9 +1,11 @@
 class ContestInstancesController < ApplicationController
+  before_action :set_container
+  before_action :set_contest_description
   before_action :set_contest_instance, only: %i[show edit update destroy]
 
   # GET /contest_instances
   def index
-    @contest_instances = ContestInstance.all
+    @contest_instances = @contest_description.contest_instances
   end
 
   # GET /contest_instances/:id
@@ -11,19 +13,26 @@ class ContestInstancesController < ApplicationController
 
   # GET /contest_instances/new
   def new
-    @contest_instance = ContestInstance.new
+    @contest_instance = @contest_description.contest_instances.new
   end
 
   # GET /contest_instances/:id/edit
-  def edit; end
+  def edit
+    Rails.logger.debug { "Container: #{@container.inspect}" }
+    Rails.logger.debug { "Contest Description: #{@contest_description.inspect}" }
+    Rails.logger.debug { "Contest Instance: #{@contest_instance.inspect}" }
+  end
 
   # POST /contest_instances
   def create
-    @contest_instance = ContestInstance.new(contest_instance_params)
+    @contest_instance = @contest_description.contest_instances.new(contest_instance_params)
 
     respond_to do |format|
       if @contest_instance.save
-        format.html { redirect_to @contest_instance, notice: 'Contest instance was successfully created.' }
+        format.html do
+          redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                      notice: 'Contest instance was successfully created.'
+        end
       else
         format.html { render :new, status: :unprocessable_entity }
       end
@@ -34,7 +43,10 @@ class ContestInstancesController < ApplicationController
   def update
     respond_to do |format|
       if @contest_instance.update(contest_instance_params)
-        format.html { redirect_to @contest_instance, notice: 'Contest instance was successfully updated.' }
+        format.html do
+          redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                      notice: 'Contest instance was successfully updated.'
+        end
       else
         format.html { render :edit, status: :unprocessable_entity }
       end
@@ -44,16 +56,26 @@ class ContestInstancesController < ApplicationController
   # DELETE /contest_instances/:id
   def destroy
     @contest_instance.destroy
-
     respond_to do |format|
-      format.html { redirect_to contest_instances_url, notice: 'Contest instance was successfully destroyed.' }
+      format.html do
+        redirect_to container_contest_description_contest_instances_path(@container, @contest_description),
+                    notice: 'Contest instance was successfully destroyed.'
+      end
     end
   end
 
   private
 
   def set_contest_instance
-    @contest_instance = ContestInstance.find(params[:id])
+    @contest_instance = @contest_description.contest_instances.find(params[:id])
+  end
+
+  def set_container
+    @container = Container.find(params[:container_id])
+  end
+
+  def set_contest_description
+    @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
   end
 
   def contest_instance_params

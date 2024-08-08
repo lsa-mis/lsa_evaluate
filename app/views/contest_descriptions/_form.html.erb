@@ -4,12 +4,12 @@
 
   <div class="form-inputs">
     <%= f.input :name, required: true %>
-    <%= f.input :created_by, required: true %>
+    <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
     <%= f.input :eligibility_rules %>
     <%= f.input :notes %>
     <%= f.input :short_name %>
     <%= f.association :container, as: :select, collection: Container.all, label_method: :name, value_method: :id %>
-    <%= f.association :status, as: :select, collection: Status.all, label_method: :name, value_method: :id %>
+    <%= f.association :status, as: :select, collection: Status.all, label_method: :kind, value_method: :id %>
   </div>
 
   <div class="form-actions">
