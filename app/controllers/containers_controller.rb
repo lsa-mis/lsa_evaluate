@@ -59,6 +59,6 @@ class ContainersController < ApplicationController
 
   def container_params
     params.require(:container).permit(:name, :description, :department_id, :visibility_id,
-                                      assignments_attributes: %i[id user_id role_id])
+                                      assignments_attributes: %i[id user_id role_id _destroy])
   end
 end
