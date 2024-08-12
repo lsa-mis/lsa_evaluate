@@ -1,6 +1,32 @@
 <h1><%= action_name.capitalize %> container</h1>
 
-<%= render "form", container: @container %>
+<%# = render "form", container: @container %>
+
+<%= simple_form_for(@container) do |f| %>
+  <%= f.error_notification %>
+  <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
+
+  <div class="form-inputs">
+    <%= f.input :name %>
+    <%= f.input :description %>
+    <%= f.input :department_id, collection: Department.all, label_method: :name, value_method: :id %>
+    <%= f.input :visibility_id, collection: Visibility.all, label_method: :kind, value_method: :id %>
+  </div>
+
+  <h3>Assignments</h3>
+  <div id="assignments">
+    <%= f.simple_fields_for :assignments do |assignment_form| %>
+      <%= render 'assignment_fields', f: assignment_form %>
+    <% end %>
+  </div>
+  <div class="form-actions">
+    <%= link_to_add_association 'Add Assignment', f, :assignments, partial: 'assignment_fields', class: 'btn btn-secondary' %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>
 
 <br>
 
