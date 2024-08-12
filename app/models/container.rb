@@ -30,6 +30,6 @@ class Container < ApplicationRecord
   has_many :roles, through: :assignments
   has_many :contest_descriptions, dependent: :destroy
 
-  accepts_nested_attributes_for :assignments, allow_destroy: true
+  accepts_nested_attributes_for :assignments, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :contest_descriptions, allow_destroy: true
 end
