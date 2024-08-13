@@ -11,7 +11,6 @@ class ContainersController < ApplicationController
 
   def new
     @container = Container.new
-    @container.assignments.build
   end
 
   def edit; end
@@ -21,7 +20,7 @@ class ContainersController < ApplicationController
 
     respond_to do |format|
       if @container.save
-        create_assignment(@container, current_user, 'Administrator')
+        create_assignment(@container, current_user, 'Container Administrator')
         format.html { redirect_to container_url(@container), notice: 'Container was successfully created.' }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -55,6 +54,11 @@ class ContainersController < ApplicationController
 
   def set_container
     @container = Container.find(params[:id])
+  end
+
+  def create_assignment(container, user, role_kind)
+    role = Role.find_by(kind: role_kind)
+    Assignment.create(user:, container:, role:)
   end
 
   def container_params
