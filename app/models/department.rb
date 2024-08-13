@@ -14,4 +14,8 @@ class Department < ApplicationRecord
 
   validates :name, presence: true
   validates :dept_id, presence: true
+
+  def display_name
+    name
+  end
 end
