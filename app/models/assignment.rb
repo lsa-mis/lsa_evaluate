@@ -29,6 +29,8 @@ class Assignment < ApplicationRecord
   belongs_to :container
   belongs_to :role
 
+  scope :container_administrators, -> { joins(:role).where(roles: { kind: 'Container Administrator' }) }
+
   validates :role_id,
             uniqueness: { scope: %i[user_id container_id],
                           message: 'combination with user and container must be unique' }
