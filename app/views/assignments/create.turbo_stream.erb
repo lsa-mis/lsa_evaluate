@@ -4,7 +4,6 @@
   <tr id="<%= dom_id(@assignment) %>">
     <td><%= @assignment.user.display_name_or_email %></td>
     <td><%= @assignment.role.kind %></td>
-    <td><%= link_to "Remove", container_assignment_path(@container, @assignment), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "btn btn-danger btn-sm" %></td>
   </tr>
 <% end %>
 
