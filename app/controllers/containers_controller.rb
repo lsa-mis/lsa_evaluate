@@ -7,6 +7,7 @@ class ContainersController < ApplicationController
 
   def show
     @assignments = @container.assignments.includes(:user, :role)
+    @new_assignment = @container.assignments.build
   end
 
   def new
