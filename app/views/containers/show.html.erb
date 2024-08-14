@@ -1,3 +1,4 @@
+<%# app/views/containers/show.html.erb %>
 <%= render @container %>
 
 <div class="d-flex">
@@ -6,20 +7,12 @@
   <%= button_to "Destroy", @container, method: :delete, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to delete this?' }, class: "btn btn-danger" %>
 </div>
 
-<h3 class="mt-4">Assignments</h3>
-<table class="table table-striped mt-2">
-  <thead>
-    <tr>
-      <th>User</th>
-      <th>Role</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @assignments.each do |assignment| %>
-      <tr>
-        <td><%= assignment.user.display_name_or_email %></td>
-        <td><%= assignment.role.kind %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<h3 class="mt-4">Current Assignments</h3>
+<%= turbo_frame_tag "assignments" do %>
+  <%= render partial: "containers/assignments_table", locals: { container: @container, assignments: @assignments } %>
+<% end %>
+
+<h3 class="mt-4">Add a New Assignment</h3>
+<%= turbo_frame_tag "new_assignment" do %>
+  <%= render partial: 'containers/assignment_form', locals: { container: @container, new_assignment: @new_assignment } %>
+<% end %>

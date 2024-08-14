@@ -1,0 +1,8 @@
+<%# app/views/containers/_assignment_form.html.erb %>
+<%= simple_form_for [container, new_assignment], remote: true, html: { class: "assignment-form" } do |f| %>
+  <div class="assignment-fields">
+    <%= f.input :user_id, collection: User.all, label_method: :display_name_or_email, include_blank: "Select a user" %>
+    <%= f.input :role_id, collection: Role.all, label_method: :kind, include_blank: "Select a role" %>
+  </div>
+  <%= f.submit 'Add Assignment', class: "btn btn-primary mt-2" %>
+<% end %>
