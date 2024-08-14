@@ -2,7 +2,6 @@ class AssignmentsController < ApplicationController
   before_action :set_container
 
   def create
-    # @container = Container.find(params[:container_id])
     @assignment = @container.assignments.build(assignment_params)
 
     if @assignment.save
