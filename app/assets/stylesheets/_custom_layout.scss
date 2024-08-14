@@ -108,7 +108,7 @@ p {
 
 #LSAlogo {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   padding-left: 82px;
 
   .navbar-brand {
@@ -118,13 +118,16 @@ p {
 
   .nav-title {
     position: relative;
-    font-family: Noto Sans;
-    font-size: 48px;
-    font-weight: 300;
-    line-height: 60px;
     letter-spacing: 0em;
     text-align: left;
     color: white;
+    font-family: Noto Sans;
+    font-size: 3rem;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 100%;
+    text-transform: uppercase;
+    margin-left: 10px;
   }
 }
 
