@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     resources :contest_descriptions do
       resources :contest_instances, path: 'instances'
     end
+    resources :assignments, only: %i[create destroy]
   end
   resources :visibilities
   resources :departments

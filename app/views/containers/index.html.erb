@@ -10,8 +10,19 @@
     <div class="row mt-2">
       <div class="">
         <div class="card">
-          <div class="card-header">
-            <h5 class="card-title"><%= container.name %></h5>
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0"><%= container.name %></h5>
+              <small class="text-muted">
+                <%= container.department.display_name %> - 
+                <% admins = container.assignments.container_administrators %>
+                <% if admins.any? %>
+                  <%= pluralize(admins.count, admins.first.role.kind) %>:
+                  <%= admins.map { |assignment| assignment.user.display_name_or_email }.join(', ') %>
+                <% else %>
+                  No Administrators Assigned
+                <% end %>
+              </small>
+            <%= link_to "Show", container_path(container), class: "btn btn-secondary" %>
           </div>
           <div class="card-body">
             <table class="table table-striped">
@@ -40,6 +51,4 @@
       </div>
     </div>
   <% end %>
-</div>
-
 </div>

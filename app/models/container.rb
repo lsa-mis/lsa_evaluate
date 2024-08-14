@@ -30,6 +30,26 @@ class Container < ApplicationRecord
   has_many :roles, through: :assignments
   has_many :contest_descriptions, dependent: :destroy
 
-  accepts_nested_attributes_for :assignments, allow_destroy: true
+  attr_accessor :creator
+
+  accepts_nested_attributes_for :assignments, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :contest_descriptions, allow_destroy: true
+
+  after_create :assign_container_administrator
+
+  private
+
+  def assign_container_administrator
+    container_admin_role = Role.find_by(kind: 'Container Administrator')
+
+    if container_admin_role.present?
+      assignment = assignments.create(user: creator, role: container_admin_role)
+      unless assignment.persisted?
+        raise ActiveRecord::Rollback, 'Container Administrator assignment failed to be created'
+      end
+    else
+      errors.add(:base, 'Container Administrator role not found.')
+      raise ActiveRecord::Rollback
+    end
+  end
 end

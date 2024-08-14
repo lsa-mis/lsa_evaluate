@@ -22,7 +22,7 @@
 #
 require 'rails_helper'
 
-RSpec.describe Container, type: :model do
+RSpec.describe Container do
   describe 'associations' do
     it 'belongs to department' do
       association = described_class.reflect_on_association(:department)
@@ -86,6 +86,29 @@ RSpec.describe Container, type: :model do
       container = Container.new(visibility_id: nil)
       container.validate
       expect(container).not_to be_valid
+    end
+
+    context 'when the container is created' do
+      let(:user) { create(:user) }
+      let(:department) { create(:department) }
+      let(:visibility) { create(:visibility) }
+      let!(:container_admin_role) { create(:role, kind: 'Container Administrator') }
+
+      before do
+        # Pass the current_user to the container using the `creator` attribute
+        @container = Container.new(
+          name: 'Test Container',
+          department:,
+          visibility:,
+          creator: user
+        )
+      end
+
+      it 'creates an assignment for the creator as Container Administrator when the container is created' do
+        expect { @container.save! }.to change { Assignment.count }.by(1)
+        assignment = Assignment.find_by(container: @container, user:, role: container_admin_role)
+        expect(assignment).to be_present
+      end
     end
   end
 
