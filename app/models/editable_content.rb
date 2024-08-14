@@ -21,6 +21,10 @@ class EditableContent < ApplicationRecord
 
   before_save :sanitize_content
 
+  def display_name
+    "#{self.page.titleize} #{self.section.titleize}"
+  end
+
   private
 
   def sanitize_content
@@ -30,4 +34,5 @@ class EditableContent < ApplicationRecord
     sanitized_html = content.body.to_html.gsub(%r{<div class="trix-content">(.*)</div>}m, '\1')
     content.body = ActionText::Content.new(sanitized_html)
   end
+
 end
