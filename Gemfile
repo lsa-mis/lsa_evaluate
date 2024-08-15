@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'rails', '~> 7.1.3'
+gem 'rails', '~> 7.2'
 ruby '3.3.4'
 
 gem 'actiontext'
@@ -14,11 +14,11 @@ gem 'cssbundling-rails'
 gem 'devise', '~> 4.9'
 gem 'jbuilder'
 gem 'jsbundling-rails'
-gem 'mysql2', '>= 0.5.3'
+gem 'mysql2', '~> 0.5.3'
 gem 'omniauth-rails_csrf_protection', '~> 1.0'
 gem 'omniauth-saml', '~> 2.1'
 gem 'puma'
-gem 'redis', '~> 4.0'
+gem 'redis', '~> 5.0'
 gem 'sassc-rails'
 gem 'simple_form', '~> 5.3'
 gem 'stimulus-rails'
@@ -52,6 +52,7 @@ group :development, :test do
   gem 'rubocop-capybara', require: false
   gem 'rubocop-factory_bot', require: false
   gem 'rubocop-rails', require: false
+  gem 'rubocop-rails-omakase', require: false
   gem 'rubocop-rspec', require: false
   gem 'rubocop-rspec_rails', require: false
   gem 'webdrivers'
