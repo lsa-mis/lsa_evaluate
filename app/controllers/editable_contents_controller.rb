@@ -11,10 +11,6 @@ class EditableContentsController < ApplicationController
     @editable_content = EditableContent.find(params[:id])
   end
 
-  def new
-    @editable_content = EditableContent.new
-  end
-
   def edit
     session[:return_to] = request.referer
   end
