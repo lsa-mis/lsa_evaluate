@@ -5,7 +5,10 @@ class ContainersController < ApplicationController
     @containers = Container.includes(:contest_descriptions).all
   end
 
-  def show; end
+  def show
+    @assignments = @container.assignments.includes(:user, :role)
+    @new_assignment = @container.assignments.build
+  end
 
   def new
     @container = Container.new
@@ -15,7 +18,7 @@ class ContainersController < ApplicationController
 
   def create
     @container = Container.new(container_params)
-
+    @container.creator = current_user
     respond_to do |format|
       if @container.save
         format.html { redirect_to container_url(@container), notice: 'Container was successfully created.' }
@@ -37,7 +40,6 @@ class ContainersController < ApplicationController
 
   def destroy
     @container.destroy!
-
     respond_to do |format|
       format.html { redirect_to containers_url, notice: 'Container was successfully destroyed.' }
     end
@@ -54,6 +56,7 @@ class ContainersController < ApplicationController
   end
 
   def container_params
-    params.require(:container).permit(:name, :description, :department_id, :visibility_id)
+    params.require(:container).permit(:name, :description, :department_id, :visibility_id,
+                                      assignments_attributes: %i[id user_id role_id _destroy])
   end
 end
