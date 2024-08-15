@@ -5,6 +5,16 @@ class ApplicationController < ActionController::Base
   load_and_authorize_resource unless: :devise_controller?
   include ApplicationHelper
 
+  def flash
+    super.tap do |flash_hash|
+      if flash_hash.present?
+        flash_hash.each do |type, message|
+          Rails.logger.info("*!**!*!**!*!**!*! Flash message set: Type: #{type}, Message: '#{message}', Controller: #{controller_name}, Action: #{action_name}")
+        end
+      end
+    end
+  end
+
   rescue_from CanCan::AccessDenied do |exception|
     logger.error("!!!!!!!!!!! CanCan error: #{exception.message}")
     respond_to do |format|
