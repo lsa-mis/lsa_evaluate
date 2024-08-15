@@ -11,7 +11,7 @@ module ApplicationHelper
 
     content_html = render_rich_text_without_outer_div(content.content)
     if current_user&.axis_mundi?
-      edit_link = link_to(editable_content_path(content), class: 'edit-link ms-2') do
+      edit_link = link_to(edit_editable_content_path(content), class: 'edit-link ms-2') do
         content_tag(:i, '', class: 'bi bi-pencil')
       end
       content_html += edit_link

@@ -19,11 +19,11 @@ RSpec.describe 'EditableContent' do
     end
 
     it 'displays the edit link' do
-      expect(page).to have_link('', href: editable_content_path(instructions))
+      expect(page).to have_link('', href: edit_editable_content_path(instructions))
     end
 
     it 'displays a pencil icon within the edit link' do
-      expect(page).to have_css('a[href="' + editable_content_path(instructions) + '"] .bi.bi-pencil')
+      expect(page).to have_css('a[href="' + edit_editable_content_path(instructions) + '"] .bi.bi-pencil')
     end
   end
 
@@ -34,11 +34,11 @@ RSpec.describe 'EditableContent' do
     end
 
     it 'does not display the edit link' do
-      expect(page).to have_no_link('', href: editable_content_path(instructions))
+      expect(page).to have_no_link('', href: edit_editable_content_path(instructions))
     end
 
     it 'does not display a pencil icon within the edit link' do
-      expect(page).to have_no_css('a[href="' + editable_content_path(instructions) + '"] .bi.bi-pencil')
+      expect(page).to have_no_css('a[href="' + edit_editable_content_path(instructions) + '"] .bi.bi-pencil')
     end
   end
 
@@ -48,7 +48,7 @@ RSpec.describe 'EditableContent' do
     end
 
     it 'does not display the edit link' do
-      expect(page).to have_no_link('', href: editable_content_path(instructions))
+      expect(page).to have_no_link('', href: edit_editable_content_path(instructions))
     end
 
     it 'does not display a pencil icon' do
