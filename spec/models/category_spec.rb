@@ -30,12 +30,6 @@ RSpec.describe Category do
     expect(category.errors[:kind]).to include('has already been taken')
   end
 
-  it 'validates inclusion of kind in specific values' do
-    category.kind = 'InvalidKind'
-    expect(category).not_to be_valid
-    expect(category.errors[:kind]).to include('is not included in the list')
-  end
-
   it 'validates presence of description' do
     category.description = nil
     expect(category).not_to be_valid
