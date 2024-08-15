@@ -13,11 +13,4 @@ export default class extends Controller {
     const html = await response.text();
     this.contentTarget.innerHTML = html;
   }
-
-  // async showAdminContent(event) {
-  //   event.preventDefault();
-  //   const response = await fetch('/containers/admin_content');
-  //   const html = await response.text();
-  //   this.contentTarget.innerHTML = html;
-  // }
 }

@@ -26,7 +26,7 @@ FactoryBot.define do
       kind { 'Campus' }
     end
 
-    factory :home_address_type, traits: [:home]
-    factory :campus_address_type, traits: [:campus]
+    factory :home_address_type, traits: [ :home ]
+    factory :campus_address_type, traits: [ :campus ]
   end
 end
