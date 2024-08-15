@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class EditableContentsController < ApplicationController
-  before_action :set_editable_content, only: %i[show edit update destroy]
+  before_action :set_editable_content, only: %i[show edit update]
 
   def index
     @editable_contents = EditableContent.all
@@ -11,39 +11,16 @@ class EditableContentsController < ApplicationController
     @editable_content = EditableContent.find(params[:id])
   end
 
-  def new
-    @editable_content = EditableContent.new
+  def edit
+    session[:return_to] = request.referer
   end
 
-  def edit; end
-
-  def create
-    @editable_content = EditableContent.new(editable_content_params)
-
-    respond_to do |format|
-      if @editable_content.save
-        format.html { redirect_to @editable_content, notice: 'Content was successfully created.' }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-      end
-    end
-  end
 
   def update
-    respond_to do |format|
-      if @editable_content.update(editable_content_params)
-        format.html { redirect_to @editable_content, notice: 'Content was successfully updated.' }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  def destroy
-    @editable_content.destroy
-
-    respond_to do |format|
-      format.html { redirect_to editable_contents_url, notice: 'Content was successfully destroyed.' }
+    if @editable_content.update(editable_content_params)
+      redirect_back_or_default(notice: "Content was successfully updated.")
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
