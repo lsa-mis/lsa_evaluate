@@ -23,7 +23,7 @@ Rails.application.routes.draw do
       get 'entrant_content'
     end
   end
-  resources :editable_contents, only: %i[index show edit update]
+  resources :editable_contents, only: %i[index edit update]
   resources :statuses
   resources :categories
   resources :contest_descriptions
