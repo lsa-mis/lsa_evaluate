@@ -1,24 +1,19 @@
 # frozen_string_literal: true
 
 class EditableContentsController < ApplicationController
-  before_action :set_editable_content, only: %i[show edit update]
+  before_action :set_editable_content, only: %i[edit update]
+  before_action :store_return_location, only: %i[ edit ]
 
   def index
     @editable_contents = EditableContent.all
   end
 
-  def show
-    @editable_content = EditableContent.find(params[:id])
-  end
-
-  def edit
-    session[:return_to] = request.referer
-  end
-
+  def edit; end
 
   def update
     if @editable_content.update(editable_content_params)
-      redirect_back_or_default(notice: "Content was successfully updated.")
+      flash[:notice] = 'Content was successfully updated.'
+      redirect_back_or_default(default: editable_contents_path)
     else
       render :edit, status: :unprocessable_entity
     end
@@ -28,6 +23,10 @@ class EditableContentsController < ApplicationController
 
   def set_editable_content
     @editable_content = EditableContent.find(params[:id])
+  end
+
+  def store_return_location
+    session[:return_to] = request.referer
   end
 
   def editable_content_params
