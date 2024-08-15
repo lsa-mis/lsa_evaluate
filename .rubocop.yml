@@ -5,7 +5,6 @@ require:
   - rubocop-factory_bot
   - rubocop-capybara
   - rubocop-rspec_rails
-  - rubocop-rails-omakase
 
   # Omakase Ruby styling for Rails
 inherit_gem:
