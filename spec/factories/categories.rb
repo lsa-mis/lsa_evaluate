@@ -14,7 +14,7 @@
 #
 FactoryBot.define do
   factory :category do
-    kind { ['Drama', 'Screenplay', 'Non-Fiction', 'Fiction', 'Poetry', 'Novel', 'Short Fiction', 'Text-Image'].sample }
+    kind { [ 'Drama', 'Screenplay', 'Non-Fiction', 'Fiction', 'Poetry', 'Novel', 'Short Fiction', 'Text-Image' ].sample }
     description { Faker::Lorem.sentence(word_count: 5) }
   end
 end
