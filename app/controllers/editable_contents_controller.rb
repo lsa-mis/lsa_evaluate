@@ -13,7 +13,7 @@ class EditableContentsController < ApplicationController
   def update
     if @editable_content.update(editable_content_params)
       flash[:notice] = 'Content was successfully updated.'
-      redirect_back_or_default(default: editable_contents_path)
+      redirect_back_or_default
     else
       render :edit, status: :unprocessable_entity
     end
