@@ -23,14 +23,7 @@ module ApplicationHelper
     datetime.strftime('%m/%d/%Y %I:%M %p')
   end
 
-  def redirect_back_or_default(notice: '', alert: false, default: root_url)
-    if alert
-      flash[:alert] = notice
-    else
-      flash[:notice] = notice
-    end
-    url = session[:return_to]
-    session[:return_to] = nil
-    redirect_to(url, anchor: 'top' || default)
+  def redirect_back_or_default(default: root_url)
+    redirect_to(session.delete(:return_to) || default, anchor: 'top')
   end
 end
