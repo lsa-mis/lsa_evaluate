@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_05_195047) do
+ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -69,6 +69,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_05_195047) do
     t.bigint "address_type_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["address_type_id"], name: "address_type_id_idx"
     t.index ["address_type_id"], name: "index_addresses_on_address_type_id"
     t.index ["id"], name: "id_unq_idx", unique: true
   end
@@ -164,9 +165,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_05_195047) do
     t.string "created_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "category_id_idx"
     t.index ["category_id"], name: "index_contest_instances_on_category_id"
+    t.index ["contest_description_id"], name: "contest_description_id_idx"
     t.index ["contest_description_id"], name: "index_contest_instances_on_contest_description_id"
+    t.index ["id"], name: "id_unq_idx", unique: true
     t.index ["status_id"], name: "index_contest_instances_on_status_id"
+    t.index ["status_id"], name: "status_id_idx"
   end
 
   create_table "departments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
