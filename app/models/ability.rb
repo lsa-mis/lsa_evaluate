@@ -34,21 +34,14 @@ class Ability
 
     if user.axis_mundi?
       can :manage, :all
-    elsif user.person_affiliation == 'employee'
+    elsif user.person_affiliation == 'employee' || user.assignments.container_administrators.exists?
       can :create, Container
-      can :manage, Container, id: user.assignments.container_administrators.pluck(:container_id)
-    elsif user.assignments.container_administrators.exists?
       can :manage, Container, id: user.assignments.container_administrators.pluck(:container_id)
     elsif user.profile.present?
       can :manage, Profile, user_id: user.id
       can :read, ApplicantDashboardController, user_id: user.id
     else
       can :create, Profile, user_id: user.id
-    end
-
-    # Allow managing Assignments only for Containers the user can manage
-    can :create, Assignment do |assignment|
-      can? :manage, assignment.container
     end
   end
 end
