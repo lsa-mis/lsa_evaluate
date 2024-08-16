@@ -15,9 +15,6 @@
 class Category < ApplicationRecord
   has_many :contest_instances
   validates :kind, presence: true,
-                   inclusion: { in: ['Drama', 'Screenplay', 'Non-Fiction',
-                                     'Fiction', 'Poetry', 'Novel',
-                                     'Short Fiction', 'Text-Image'] },
                    uniqueness: true
   validates :description, presence: true
 end
