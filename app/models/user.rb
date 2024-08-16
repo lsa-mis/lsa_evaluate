@@ -39,7 +39,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :trackable, :lockable, :timeoutable,
-         :omniauthable, omniauth_providers: [:saml]
+         :omniauthable, omniauth_providers: [ :saml ]
 
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
@@ -60,11 +60,11 @@ class User < ApplicationRecord
   end
 
   def administrator?
-    role?('Administrator')
+    role?('Container Administrator')
   end
 
   def manager?
-    role?('Manager')
+    role?('Container Manager')
   end
 
   def judge?
@@ -73,6 +73,10 @@ class User < ApplicationRecord
 
   def admin_for_container?(container_id)
     assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Administrator'))
+  end
+
+  def manager_for_container?(container_id)
+    assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Manager'))
   end
 
   def display_initials_or_email
