@@ -18,6 +18,7 @@ gem 'mysql2', '~> 0.5.3'
 gem 'omniauth-rails_csrf_protection', '~> 1.0'
 gem 'omniauth-saml', '~> 2.1'
 gem 'puma'
+gem 'pundit'
 gem 'redis', '~> 5.0'
 gem 'sassc-rails'
 gem 'simple_form', '~> 5.3'
@@ -47,6 +48,7 @@ group :development, :test do
   gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'pry-byebug'
   gem 'pry-rails'
+  gem 'pundit-matchers'
   gem 'rspec-rails'
   gem 'rubocop', require: false
   gem 'rubocop-capybara', require: false

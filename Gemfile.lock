@@ -224,6 +224,13 @@ GEM
     public_suffix (6.0.1)
     puma (6.4.2)
       nio4r (~> 2.0)
+    pundit (2.3.2)
+      activesupport (>= 3.0.0)
+    pundit-matchers (3.1.2)
+      rspec-core (~> 3.12)
+      rspec-expectations (~> 3.12)
+      rspec-mocks (~> 3.12)
+      rspec-support (~> 3.12)
     racc (1.8.1)
     rack (3.1.7)
     rack-protection (4.0.0)
@@ -433,6 +440,8 @@ DEPENDENCIES
   pry-byebug
   pry-rails
   puma
+  pundit
+  pundit-matchers
   rails (~> 7.2)
   rails-controller-testing
   redis (~> 5.0)
