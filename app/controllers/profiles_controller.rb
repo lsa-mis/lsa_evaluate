@@ -5,7 +5,7 @@ class ProfilesController < ApplicationController
 
   # GET /profiles
   def index
-    @profiles = Profile.accessible_by(current_ability)
+    @profiles = Profile.all
   end
 
   # GET /profiles/1
