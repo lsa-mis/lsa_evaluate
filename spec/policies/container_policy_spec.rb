@@ -1,27 +1,47 @@
 require 'rails_helper'
 
-RSpec.describe ContainerPolicy, type: :policy do
-  let(:user) { User.new }
+RSpec.describe ContainerPolicy do
+  subject { described_class.new(user, container) }
 
-  subject { described_class }
+  let(:container) { create(:container) }
+  let(:axis_mundi_role) { create(:role, kind: 'Axis Mundi') }
+  let(:axis_mundi_user) { create(:user) }
+  let(:creator) { create(:user, person_affiliation: 'employee') }
 
-  permissions ".scope" do
-    pending "add some examples to (or delete) #{__FILE__}"
+  before do
+    create(:assignment, container: container, user: creator)
   end
 
-  permissions :show? do
-    pending "add some examples to (or delete) #{__FILE__}"
+  context 'for an employee user' do
+    let(:user) { creator }
+
+    it { is_expected.to permit_action(:create) }
+    it { is_expected.to permit_action(:update) }
   end
 
-  permissions :create? do
-    pending "add some examples to (or delete) #{__FILE__}"
+  context 'for a non-employee user' do
+    let(:user) { create(:user, person_affiliation: 'student') }
+
+    it { is_expected.not_to permit_action(:create) }
+    it { is_expected.not_to permit_action(:update) }
   end
 
-  permissions :update? do
-    pending "add some examples to (or delete) #{__FILE__}"
+  context 'for an employee user who did not create the container' do
+    let(:user) { create(:user, person_affiliation: 'employee') }
+
+    it { is_expected.to permit_action(:create) }
+    it { is_expected.not_to permit_action(:update) }
   end
 
-  permissions :destroy? do
-    pending "add some examples to (or delete) #{__FILE__}"
+  context 'for an Axis Mundi user' do
+    let(:user) { axis_mundi_user }
+
+    before do
+      create(:user_role, user: user, role: axis_mundi_role)
+    end
+
+    it { is_expected.to permit_action(:create) }
+    it { is_expected.to permit_action(:update) }
+    it { is_expected.to permit_action(:destroy) }
   end
 end

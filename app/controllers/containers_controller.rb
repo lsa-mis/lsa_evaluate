@@ -1,8 +1,10 @@
 class ContainersController < ApplicationController
   before_action :set_container, only: %i[show edit update destroy]
+  before_action :authorize_container, only: %i[edit update destroy]
 
   def index
     @containers = Container.includes(:contest_descriptions).all
+    authorize @container
   end
 
   def show
@@ -18,6 +20,7 @@ class ContainersController < ApplicationController
 
   def create
     @container = Container.new(container_params)
+    authorize @container, :create?
     @container.creator = current_user
     respond_to do |format|
       if @container.save
@@ -29,6 +32,7 @@ class ContainersController < ApplicationController
   end
 
   def update
+    authorize @container, :update?
     respond_to do |format|
       if @container.update(container_params)
         format.html { redirect_to container_url(@container), notice: 'Container was successfully updated.' }
@@ -50,6 +54,10 @@ class ContainersController < ApplicationController
   end
 
   private
+
+  def authorize_container
+    authorize @container
+  end
 
   def set_container
     @container = Container.find(params[:id])

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -13,7 +11,7 @@ class ApplicationPolicy
   end
 
   def show?
-    false
+    scope.exists?(id: record.id)
   end
 
   def create?
@@ -36,18 +34,23 @@ class ApplicationPolicy
     false
   end
 
-  class Scope
-    def initialize(user, scope)
-      @user = user
-      @scope = scope
-    end
+  def scope
+    Pundit.policy_scope!(user, record.class)
+  end
 
-    def resolve
-      raise NoMethodError, "You must define #resolve in #{self.class}"
-    end
+  def admin_user?
+    user.user_roles.joins(:role).exists?(roles: { kind: 'Axis Mundi' })
+  end
 
-    private
+  # Override the `authorize` method to allow admin users
+  def authorized_action?
+    admin_user? || specific_action?
+  end
 
-    attr_reader :user, :scope
+  private
+
+  # Implement specific action rules in derived policies
+  def specific_action?
+    false
   end
 end
