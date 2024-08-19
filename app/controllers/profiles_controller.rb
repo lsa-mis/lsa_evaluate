@@ -2,10 +2,12 @@
 
 class ProfilesController < ApplicationController
   before_action :set_profile, only: %i[show edit update destroy]
+  before_action :authorize_profile, only: %i[show edit update destroy]
 
   # GET /profiles
   def index
     @profiles = Profile.all
+    authorize @profiles
   end
 
   # GET /profiles/1
@@ -16,6 +18,7 @@ class ProfilesController < ApplicationController
     @profile = current_user.build_profile
     @profile.build_home_address
     @profile.build_campus_address
+    authorize @profile
   end
 
   # GET /profiles/1/edit
@@ -24,6 +27,7 @@ class ProfilesController < ApplicationController
   # POST /profiles
   def create
     @profile = current_user.build_profile(profile_params)
+    authorize @profile
 
     respond_to do |format|
       if @profile.save
@@ -61,6 +65,9 @@ class ProfilesController < ApplicationController
     @profile = Profile.find(params[:id])
   end
 
+  def authorize_profile
+    authorize @profile
+  end
   # Only allow a list of trusted parameters through.
   def profile_params
     params.require(:profile).permit(:user_id, :umid, :first_name, :last_name, :class_level_id, :school_id, :campus_id,
