@@ -3,13 +3,6 @@
 class ProfilesController < ApplicationController
   before_action :set_profile, only: %i[show edit update destroy]
 
-  rescue_from CanCan::AccessDenied do |exception|
-    logger.error("!#!#!#!#! CanCan error in ProfilesController: #{exception.message}")
-    respond_to do |format|
-      format.html { redirect_to root_path, alert: 'You are not authorized' }
-      format.json { render json: { error: 'You are not authorized' }, status: :forbidden }
-    end
-  end
   # GET /profiles
   def index
     @profiles = Profile.accessible_by(current_ability)
