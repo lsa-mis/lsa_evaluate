@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
+ActiveRecord::Schema[7.2].define(version: 2024_08_20_215900) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -190,6 +190,25 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
     t.index ["page", "section"], name: "index_editable_contents_on_page_and_section", unique: true
   end
 
+  create_table "entries", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "title", null: false
+    t.bigint "status_id", null: false
+    t.bigint "contest_instance_id", null: false
+    t.bigint "profile_id", null: false
+    t.bigint "category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "category_id_idx"
+    t.index ["category_id"], name: "index_entries_on_category_id"
+    t.index ["contest_instance_id"], name: "contest_instance_id_idx"
+    t.index ["contest_instance_id"], name: "index_entries_on_contest_instance_id"
+    t.index ["id"], name: "id_unq_idx", unique: true
+    t.index ["profile_id"], name: "index_entries_on_profile_id"
+    t.index ["profile_id"], name: "profile_id_idx"
+    t.index ["status_id"], name: "index_entries_on_status_id"
+    t.index ["status_id"], name: "status_id_idx"
+  end
+
   create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "first_name", default: "", null: false
@@ -313,6 +332,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
   add_foreign_key "contest_instances", "categories"
   add_foreign_key "contest_instances", "contest_descriptions"
   add_foreign_key "contest_instances", "statuses"
+  add_foreign_key "entries", "categories"
+  add_foreign_key "entries", "contest_instances"
+  add_foreign_key "entries", "profiles"
+  add_foreign_key "entries", "statuses"
   add_foreign_key "profiles", "addresses", column: "campus_address_id"
   add_foreign_key "profiles", "addresses", column: "home_address_id"
   add_foreign_key "profiles", "campuses"

@@ -23,9 +23,13 @@
 #
 # Indexes
 #
+#  category_id_idx                                    (category_id)
+#  contest_description_id_idx                         (contest_description_id)
+#  id_unq_idx                                         (id) UNIQUE
 #  index_contest_instances_on_category_id             (category_id)
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
 #  index_contest_instances_on_status_id               (status_id)
+#  status_id_idx                                      (status_id)
 #
 # Foreign Keys
 #

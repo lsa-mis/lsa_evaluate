@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  resources :entries
   get 'applicant_dashboard/index'
   resources :testingrsmokes
   root 'static_pages#home'
