@@ -6,8 +6,16 @@ class ProfilesController < ApplicationController
 
   # GET /profiles
   def index
-    @profiles = Profile.all
-    authorize @profiles
+    if current_user.axis_mundi?
+      @profiles = policy_scope(Profile)
+      authorize Profile
+    else
+      if current_user.profile&.persisted?
+        redirect_to current_user.profile
+      else
+        redirect_to new_profile_path
+      end
+    end
   end
 
   # GET /profiles/1
@@ -16,9 +24,13 @@ class ProfilesController < ApplicationController
   # GET /profiles/new
   def new
     @profile = current_user.build_profile
-    @profile.build_home_address
-    @profile.build_campus_address
-    authorize @profile
+    if @profile.nil?
+      Rails.logger.debug { "^^^^^^^^^^^^^^^^ Profile is nil for user: #{current_user.inspect}" }
+    else
+      authorize @profile
+      @profile.build_home_address
+      @profile.build_campus_address
+    end
   end
 
   # GET /profiles/1/edit
