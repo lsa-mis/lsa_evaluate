@@ -35,4 +35,5 @@ class Entry < ApplicationRecord
   belongs_to :contest_instance
   belongs_to :profile
   belongs_to :category
+  has_one_attached :entry_file
 end
