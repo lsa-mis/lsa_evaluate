@@ -3,8 +3,7 @@ class ContainersController < ApplicationController
   before_action :authorize_container, only: %i[edit update destroy]
 
   def index
-    @containers = Container.includes(:contest_descriptions).all
-    authorize @container
+    @containers = policy_scope(Container)
   end
 
   def show
