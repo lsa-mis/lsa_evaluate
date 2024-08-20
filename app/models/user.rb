@@ -50,6 +50,15 @@ class User < ApplicationRecord
   validates :email, :encrypted_password, presence: true
   validates :email, uniqueness: { case_sensitive: false }
 
+  def active_for_authentication?
+    super.tap do |active|
+      if !active && timedout?(current_sign_in_at)
+        # Prevent the flash[:timedout] from being set
+        flash[:timedout] = nil
+      end
+    end
+  end
+
   # Method to check for a specific role
   def role?(role_name)
     roles.exists?(kind: role_name)

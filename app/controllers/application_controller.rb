@@ -2,7 +2,7 @@
 
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!
-  load_and_authorize_resource unless: :devise_controller?
+  include Pundit::Authorization
   include ApplicationHelper
 
   def flash
@@ -15,13 +15,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  rescue_from CanCan::AccessDenied do |exception|
-    logger.error("!!!!!!!!!!! CanCan error: #{exception.message}")
-    respond_to do |format|
-      format.html { redirect_to root_path, alert: 'You are not authorized for that action' }
-      format.json { render json: { error: 'You are not authorized for that action' }, status: :forbidden }
-    end
-  end
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   rescue_from ActiveRecord::RecordNotFound, with: :render404
   rescue_from StandardError, with: :render500
@@ -49,5 +43,13 @@ class ApplicationController < ActionController::Base
         format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
       end
     end
+  end
+
+  private
+
+  def user_not_authorized
+    flash[:alert] = 'You are not authorized to perform this action.'
+    logger.error('!!!!!!!!!!! Pundit error: ')
+    redirect_to(request.referer || root_path)
   end
 end

@@ -2,17 +2,20 @@
 
 class ProfilesController < ApplicationController
   before_action :set_profile, only: %i[show edit update destroy]
+  before_action :authorize_profile, only: %i[show edit update destroy]
 
-  rescue_from CanCan::AccessDenied do |exception|
-    logger.error("!#!#!#!#! CanCan error in ProfilesController: #{exception.message}")
-    respond_to do |format|
-      format.html { redirect_to root_path, alert: 'You are not authorized' }
-      format.json { render json: { error: 'You are not authorized' }, status: :forbidden }
-    end
-  end
   # GET /profiles
   def index
-    @profiles = Profile.accessible_by(current_ability)
+    if current_user.axis_mundi?
+      @profiles = policy_scope(Profile)
+      authorize Profile
+    else
+      if current_user.profile&.persisted?
+        redirect_to current_user.profile
+      else
+        redirect_to new_profile_path
+      end
+    end
   end
 
   # GET /profiles/1
@@ -21,8 +24,13 @@ class ProfilesController < ApplicationController
   # GET /profiles/new
   def new
     @profile = current_user.build_profile
-    @profile.build_home_address
-    @profile.build_campus_address
+    if @profile.nil?
+      Rails.logger.debug { "^^^^^^^^^^^^^^^^ Profile is nil for user: #{current_user.inspect}" }
+    else
+      authorize @profile
+      @profile.build_home_address
+      @profile.build_campus_address
+    end
   end
 
   # GET /profiles/1/edit
@@ -31,6 +39,7 @@ class ProfilesController < ApplicationController
   # POST /profiles
   def create
     @profile = current_user.build_profile(profile_params)
+    authorize @profile
 
     respond_to do |format|
       if @profile.save
@@ -68,6 +77,9 @@ class ProfilesController < ApplicationController
     @profile = Profile.find(params[:id])
   end
 
+  def authorize_profile
+    authorize @profile
+  end
   # Only allow a list of trusted parameters through.
   def profile_params
     params.require(:profile).permit(:user_id, :umid, :first_name, :last_name, :class_level_id, :school_id, :campus_id,
