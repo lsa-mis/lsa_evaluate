@@ -24,4 +24,13 @@
     <%= entry.category_id %>
   </p>
 
+  <p>
+    <strong>Attached file:</strong>
+    <% if @entry.entry_file.attached? %>
+      <%= link_to 'Download File', rails_blob_path(@entry.entry_file, disposition: "attachment") %>
+    <% else %>
+      No file attached
+    <% end %>
+  </p>
+
 </div>
