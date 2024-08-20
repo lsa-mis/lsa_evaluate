@@ -42,4 +42,31 @@ RSpec.describe ProfilePolicy do
     it { is_expected.not_to permit_action(:update) }
     it { is_expected.not_to permit_action(:destroy) }
   end
+
+  context 'for a logged-in user without a Profile and without Axis Mundi role' do
+    let(:user) { create(:user) }
+    let(:profile) { build(:profile, user: user) } # Using build instead of create to test creation
+
+    it 'permits new and create actions' do
+      # Ensure the user does not have a profile
+      expect(user.profile).to be_nil
+
+      # Test new? policy
+      expect(subject).to permit_action(:new)
+
+      # Test create? policy
+      expect(subject).to permit_action(:create)
+    end
+
+    it 'forbids show, update, and destroy actions' do
+      # Test show? policy
+      expect(subject).not_to permit_action(:show)
+
+      # Test update? policy
+      expect(subject).not_to permit_action(:update)
+
+      # Test destroy? policy
+      expect(subject).not_to permit_action(:destroy)
+    end
+  end
 end
