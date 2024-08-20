@@ -47,12 +47,16 @@ class ContestInstance < ApplicationRecord
 
   validates :date_open, presence: true
   validates :date_closed, presence: true
-  validates :judging_open, inclusion: { in: [true, false] }
+  validates :judging_open, inclusion: { in: [ true, false ] }
   validates :judging_rounds, presence: true, numericality: { only_integer: true, greater_than: 0 }
-  validates :has_course_requirement, inclusion: { in: [true, false] }
-  validates :judge_evaluations_complete, inclusion: { in: [true, false] }
-  validates :recletter_required, inclusion: { in: [true, false] }
-  validates :transcript_required, inclusion: { in: [true, false] }
+  validates :has_course_requirement, inclusion: { in: [ true, false ] }
+  validates :judge_evaluations_complete, inclusion: { in: [ true, false ] }
+  validates :recletter_required, inclusion: { in: [ true, false ] }
+  validates :transcript_required, inclusion: { in: [ true, false ] }
   validates :maximum_number_entries_per_applicant, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :created_by, presence: true
+
+  def display_name
+    "#{contest_description.name} - #{date_open.strftime('%Y-%m-%d')} to #{date_closed.strftime('%Y-%m-%d')}"
+  end
 end
