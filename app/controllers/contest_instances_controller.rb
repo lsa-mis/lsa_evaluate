@@ -17,11 +17,7 @@ class ContestInstancesController < ApplicationController
   end
 
   # GET /contest_instances/:id/edit
-  def edit
-    Rails.logger.debug { "Container: #{@container.inspect}" }
-    Rails.logger.debug { "Contest Description: #{@contest_description.inspect}" }
-    Rails.logger.debug { "Contest Instance: #{@contest_instance.inspect}" }
-  end
+  def edit; end
 
   # POST /contest_instances
   def create
