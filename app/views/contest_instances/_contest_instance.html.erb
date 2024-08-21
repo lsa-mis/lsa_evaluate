@@ -36,7 +36,7 @@
 
   <p>
     <strong>Category:</strong>
-    <%= contest_instance.category.kind %>
+    <%= contest_instance.categories.map(&:kind).join(', ') %>
   </p>
 
   <p>

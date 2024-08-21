@@ -32,7 +32,7 @@
           <td><%= contest_instance.notes %></td>
           <td><%= contest_instance.judging_open %></td>
           <td><%= contest_instance.judging_rounds %></td>
-          <td><%= contest_instance.category.kind %></td>
+          <td><%= contest_instance.categories.map(&:kind).join(', ') %></td>
           <td><%= contest_instance.has_course_requirement %></td>
           <td><%= contest_instance.judge_evaluations_complete %></td>
           <td><%= contest_instance.course_requirement_description %></td>
