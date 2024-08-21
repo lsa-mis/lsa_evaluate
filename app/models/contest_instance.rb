@@ -17,33 +17,31 @@
 #  transcript_required                  :boolean          default(FALSE), not null
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
-#  category_id                          :bigint           not null
 #  contest_description_id               :bigint           not null
 #  status_id                            :bigint           not null
 #
 # Indexes
 #
-#  category_id_idx                                    (category_id)
 #  contest_description_id_idx                         (contest_description_id)
 #  id_unq_idx                                         (id) UNIQUE
-#  index_contest_instances_on_category_id             (category_id)
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
 #  index_contest_instances_on_status_id               (status_id)
 #  status_id_idx                                      (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (category_id => categories.id)
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #  fk_rails_...  (status_id => statuses.id)
 #
 class ContestInstance < ApplicationRecord
   has_many :class_level_requirements, dependent: :destroy
   has_many :class_levels, through: :class_level_requirements
+  has_many :category_contest_instances
+  has_many :categories, through: :category_contest_instances
+  has_many :entries
 
   belongs_to :status
   belongs_to :contest_description
-  belongs_to :category
 
   validates :date_open, presence: true
   validates :date_closed, presence: true
