@@ -17,23 +17,19 @@
 #  transcript_required                  :boolean          default(FALSE), not null
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
-#  category_id                          :bigint           not null
 #  contest_description_id               :bigint           not null
 #  status_id                            :bigint           not null
 #
 # Indexes
 #
-#  category_id_idx                                    (category_id)
 #  contest_description_id_idx                         (contest_description_id)
 #  id_unq_idx                                         (id) UNIQUE
-#  index_contest_instances_on_category_id             (category_id)
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
 #  index_contest_instances_on_status_id               (status_id)
 #  status_id_idx                                      (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (category_id => categories.id)
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #  fk_rails_...  (status_id => statuses.id)
 #
@@ -41,7 +37,6 @@ FactoryBot.define do
   factory :contest_instance do
     status
     contest_description
-    category
     date_open { Faker::Date.backward(days: 14) }
     date_closed { Faker::Date.forward(days: 14) }
     notes { Faker::Lorem.paragraph }
@@ -54,5 +49,10 @@ FactoryBot.define do
     transcript_required { false }
     maximum_number_entries_per_applicant { 1 }
     created_by { Faker::Name.name }
+
+    # After creating a contest_instance, also create a category_contest_instance association
+    after(:create) do |contest_instance|
+      create_list(:category_contest_instance, 1, contest_instance: contest_instance)
+    end
   end
 end
