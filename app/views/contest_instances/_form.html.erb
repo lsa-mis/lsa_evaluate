@@ -16,7 +16,7 @@
     <%= f.input :recletter_required %>
     <%= f.input :transcript_required %>
     <%= f.input :maximum_number_entries_per_applicant %>
-    <%= f.input :created_by %>
+    <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
 
     <h3>Categories</h3>
     <div data-controller="nested-form">
