@@ -17,16 +17,29 @@
     <%= f.input :transcript_required %>
     <%= f.input :maximum_number_entries_per_applicant %>
     <%= f.input :created_by %>
+
     <h3>Categories</h3>
-    <div id="categories">
-      <%= f.fields_for :category_contest_instances do |cc_f| %>
+    <div data-controller="nested-form">
+      <div data-nested-form-target="container">
+        <%= f.fields_for :category_contest_instances do |cc_f| %>
+          <div class="nested-fields">
+            <%= cc_f.association :category, label_method: :kind %>
+            <%= link_to 'Remove', '#', class: 'remove_category', data: { action: "click->nested-form#removeAssociation" } %>
+          </div>
+        <% end %>
+      </div>
+      <%= link_to 'Add Category', '#', data: { action: "click->nested-form#addAssociation" } %>
+
+      <!-- Move template inside the same div -->
+      <template data-nested-form-target="template">
         <div class="nested-fields">
-          <%= cc_f.association :category, label_method: :name %>
-          <%= link_to 'Remove', '#', class: 'remove_category' %>
+          <%= f.fields_for :category_contest_instances, CategoryContestInstance.new, child_index: "new_category_contest_instances" do |cc_f| %>
+            <%= cc_f.association :category, label_method: :kind %>
+            <%= link_to 'Remove', '#', class: 'remove_category', data: { action: "click->nested-form#removeAssociation" } %>
+          <% end %>
         </div>
-      <% end %>
+      </template>
     </div>
-    <%= link_to 'Add Category', '#', id: 'add_category' %>
   </div>
 
   <div class="form-actions">
