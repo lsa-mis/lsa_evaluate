@@ -96,6 +96,14 @@ class User < ApplicationRecord
     end
   end
 
+  def display_firstname_or_email
+    if display_name.present?
+      display_name.split.first
+    else
+      email.split('@').first
+    end
+  end
+
   def display_name_or_email
     display_name.presence || email
   end
