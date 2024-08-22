@@ -61,7 +61,10 @@ h2 {
   margin-top: 1rem;
 }
 
-h3, h4, h5, h6 {
+h3,
+h4,
+h5,
+h6 {
   font-family: Roboto;
   margin-top: 1rem;
 }
@@ -267,6 +270,7 @@ svg.wh6 {
 
 .flash_notice {
   background-color: $flash-notice-color;
+  z-index: 1000;
 }
 
 .flash_alert {
@@ -389,10 +393,12 @@ svg.wh6 {
 
 .link_to {
   color: $um_blue;
-  text-decoration: none; /* Ensures no underline by default */
+  text-decoration: none;
+  /* Ensures no underline by default */
 }
 
 .link_to:hover {
-  text-decoration: underline; /* Adds underline on hover */
+  text-decoration: underline;
+  /* Adds underline on hover */
   cursor: pointer;
 }
