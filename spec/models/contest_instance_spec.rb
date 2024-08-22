@@ -17,19 +17,19 @@
 #  transcript_required                  :boolean          default(FALSE), not null
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
-#  category_id                          :bigint           not null
 #  contest_description_id               :bigint           not null
 #  status_id                            :bigint           not null
 #
 # Indexes
 #
-#  index_contest_instances_on_category_id             (category_id)
+#  contest_description_id_idx                         (contest_description_id)
+#  id_unq_idx                                         (id) UNIQUE
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
 #  index_contest_instances_on_status_id               (status_id)
+#  status_id_idx                                      (status_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (category_id => categories.id)
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #  fk_rails_...  (status_id => statuses.id)
 #
@@ -47,9 +47,15 @@ RSpec.describe ContestInstance do
       expect(association.macro).to eq(:belongs_to)
     end
 
-    it 'belongs to category' do
-      association = described_class.reflect_on_association(:category)
-      expect(association.macro).to eq(:belongs_to)
+    it 'has many categories through category_contest_instances' do
+      association = described_class.reflect_on_association(:categories)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:through]).to eq(:category_contest_instances)
+    end
+
+    it 'has many category_contest_instances' do
+      association = described_class.reflect_on_association(:category_contest_instances)
+      expect(association.macro).to eq(:has_many)
     end
   end
 

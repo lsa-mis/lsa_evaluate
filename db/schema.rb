@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
+ActiveRecord::Schema[7.2].define(version: 2024_08_21_205130) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -105,6 +105,16 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
     t.index ["kind"], name: "index_categories_on_kind", unique: true
   end
 
+  create_table "category_contest_instances", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "category_id", null: false
+    t.bigint "contest_instance_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id", "contest_instance_id"], name: "index_cat_ci_on_category_and_contest_instance", unique: true
+    t.index ["category_id"], name: "index_category_contest_instances_on_category_id"
+    t.index ["contest_instance_id"], name: "index_category_contest_instances_on_contest_instance_id"
+  end
+
   create_table "class_level_requirements", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "contest_instance_id", null: false
     t.bigint "class_level_id", null: false
@@ -155,7 +165,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
     t.text "notes"
     t.boolean "judging_open", default: false, null: false
     t.integer "judging_rounds", default: 1
-    t.bigint "category_id", null: false
     t.boolean "has_course_requirement", default: false, null: false
     t.boolean "judge_evaluations_complete", default: false, null: false
     t.text "course_requirement_description"
@@ -165,8 +174,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
     t.string "created_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["category_id"], name: "category_id_idx"
-    t.index ["category_id"], name: "index_contest_instances_on_category_id"
     t.index ["contest_description_id"], name: "contest_description_id_idx"
     t.index ["contest_description_id"], name: "index_contest_instances_on_contest_description_id"
     t.index ["id"], name: "id_unq_idx", unique: true
@@ -188,6 +195,25 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["page", "section"], name: "index_editable_contents_on_page_and_section", unique: true
+  end
+
+  create_table "entries", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "title", null: false
+    t.bigint "status_id", null: false
+    t.bigint "contest_instance_id", null: false
+    t.bigint "profile_id", null: false
+    t.bigint "category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "category_id_idx"
+    t.index ["category_id"], name: "index_entries_on_category_id"
+    t.index ["contest_instance_id"], name: "contest_instance_id_idx"
+    t.index ["contest_instance_id"], name: "index_entries_on_contest_instance_id"
+    t.index ["id"], name: "id_unq_idx", unique: true
+    t.index ["profile_id"], name: "index_entries_on_profile_id"
+    t.index ["profile_id"], name: "profile_id_idx"
+    t.index ["status_id"], name: "index_entries_on_status_id"
+    t.index ["status_id"], name: "status_id_idx"
   end
 
   create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -304,15 +330,20 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_05_195047) do
   add_foreign_key "assignments", "containers"
   add_foreign_key "assignments", "roles"
   add_foreign_key "assignments", "users"
+  add_foreign_key "category_contest_instances", "categories"
+  add_foreign_key "category_contest_instances", "contest_instances"
   add_foreign_key "class_level_requirements", "class_levels"
   add_foreign_key "class_level_requirements", "contest_instances"
   add_foreign_key "containers", "departments"
   add_foreign_key "containers", "visibilities"
   add_foreign_key "contest_descriptions", "containers"
   add_foreign_key "contest_descriptions", "statuses"
-  add_foreign_key "contest_instances", "categories"
   add_foreign_key "contest_instances", "contest_descriptions"
   add_foreign_key "contest_instances", "statuses"
+  add_foreign_key "entries", "categories"
+  add_foreign_key "entries", "contest_instances"
+  add_foreign_key "entries", "profiles"
+  add_foreign_key "entries", "statuses"
   add_foreign_key "profiles", "addresses", column: "campus_address_id"
   add_foreign_key "profiles", "addresses", column: "home_address_id"
   add_foreign_key "profiles", "campuses"

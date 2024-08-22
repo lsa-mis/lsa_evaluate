@@ -143,8 +143,9 @@ ClassLevel.create([
                   ])
 
 # Seed data for Users
-user1 = User.create!(email: 'alice@example.com', password: 'passwordpassword', uniqname: 'alice', uid: 'alice', principal_name: 'alice@example.com', display_name: 'Alice Wonderland', person_affiliation: 'employee')
-user2 = User.create!(email: 'bob@example.com', password: 'passwordpassword', uniqname: 'bob', uid: 'bob', principal_name: 'bob@example.com', display_name: 'Bob Builder', person_affiliation: 'employee')
+user1 = User.create!(email: 'alice@example.com', password: 'passwordpassword', uniqname: 'alicew', uid: 'alicew', principal_name: 'alice@example.com', display_name: 'Alice Wonderland', person_affiliation: 'employee')
+user2 = User.create!(email: 'bob@example.com', password: 'passwordpassword', uniqname: 'bobb', uid: 'bobb', principal_name: 'bob@example.com', display_name: 'Bob Builder', person_affiliation: 'employee')
+user2 = User.create!(email: 'sallystu@example.com', password: 'passwordpassword', uniqname: 'sallystu', uid: 'sallystu', principal_name: 'sallystu@example.com', display_name: 'Sally Student', person_affiliation: 'student')
 user3 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
 user4 = User.create!(email: 'brita@umich.edu', password: 'passwordpassword')
 user5 = User.create!(email: 'jjsantos@umich.edu', password: 'passwordpassword')
@@ -213,6 +214,7 @@ contest_description3 = ContestDescription.create!(
   notes: 'Notes 2',
   created_by: user1.email
 )
+
 # Seed data for ContestInstance
 ContestInstance.create!(
   status: Status.find_by(kind: 'Active'),
@@ -222,7 +224,6 @@ ContestInstance.create!(
   notes: 'First contest instance',
   judging_open: false,
   judging_rounds: 1,
-  category: Category.find_by(kind: 'Drama'),
   has_course_requirement: false,
   judge_evaluations_complete: false,
   course_requirement_description: 'No course requirement',
@@ -240,7 +241,6 @@ ContestInstance.create!(
   notes: 'Second contest instance',
   judging_open: true,
   judging_rounds: 2,
-  category: Category.find_by(kind: 'Fiction'),
   has_course_requirement: true,
   judge_evaluations_complete: true,
   course_requirement_description: 'Course required',
@@ -258,7 +258,6 @@ ContestInstance.create!(
   notes: 'Third contest instance',
   judging_open: false,
   judging_rounds: 1,
-  category: Category.find_by(kind: 'Research Paper'),
   has_course_requirement: false,
   judge_evaluations_complete: false,
   course_requirement_description: 'No course requirement',
@@ -267,3 +266,9 @@ ContestInstance.create!(
   maximum_number_entries_per_applicant: 1,
   created_by: user1.email
 )
+
+CategoryContestInstance.create!([
+                                  { category: Category.find_by(kind: 'Drama'), contest_instance: ContestInstance.find_by(contest_description: contest_description1) },
+                                  { category: Category.find_by(kind: 'Fiction'), contest_instance: ContestInstance.find_by(contest_description: contest_description2) },
+                                  { category: Category.find_by(kind: 'Research Paper'), contest_instance: ContestInstance.find_by(contest_description: contest_description3) }
+                                ])
