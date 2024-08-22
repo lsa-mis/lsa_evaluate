@@ -36,12 +36,14 @@
 class ContestInstance < ApplicationRecord
   has_many :class_level_requirements, dependent: :destroy
   has_many :class_levels, through: :class_level_requirements
-  has_many :category_contest_instances
+  has_many :category_contest_instances, dependent: :destroy
   has_many :categories, through: :category_contest_instances
   has_many :entries
 
   belongs_to :status
   belongs_to :contest_description
+
+  accepts_nested_attributes_for :category_contest_instances, allow_destroy: true
 
   validates :date_open, presence: true
   validates :date_closed, presence: true
