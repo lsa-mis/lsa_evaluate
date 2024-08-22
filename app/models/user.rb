@@ -97,8 +97,8 @@ class User < ApplicationRecord
   end
 
   def is_employee?
-    person_affiliation.include? %w[ employee staff ].to_s
-    Rails.logger.info "@@@@@@@@@@Person affiliation: #{person_affiliation}"
+    Rails.logger.info "@@@@@@@@@@ email: #{email} - Person affiliation: #{person_affiliation}"
+    %w[employee staff].any? { |affiliation| person_affiliation&.include?(affiliation) }
   end
 
   def display_firstname_or_email
