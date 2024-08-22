@@ -19,7 +19,7 @@ RSpec.describe 'ChooseInteractionDisplay' do
       fill_in 'Password', with: user.password
       click_link_or_button 'Log in'
 
-      save_and_open_page
+      # save_and_open_page
 
       expect(page).to have_current_path(root_path)
       expect(page).to have_css '#choose-interaction', visible: :visible
