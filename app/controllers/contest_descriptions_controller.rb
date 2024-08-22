@@ -40,7 +40,7 @@ class ContestDescriptionsController < ApplicationController
     @contest_description.destroy
 
     respond_to do |format|
-      format.html { redirect_to container_contest_descriptions_path(@container), notice: 'Contest description was successfully destroyed.' }
+      format.html { redirect_to containers_path, notice: 'Contest description was successfully destroyed.' }
     end
   end
 
