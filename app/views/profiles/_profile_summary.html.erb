@@ -1,10 +1,10 @@
-<div class="col-3 bg-secondary text-white profile-sidebar text-center">
+<div class="col-2 bg-secondary text-white profile-sidebar text-center">
   <div class="text-end">
     <%= link_to edit_profile_path(@profile), class: 'text-white link-underline link-underline-opacity-0' do %>
       <i class="bi bi-pencil"></i> <span class="fw-light">Edit</span>
     <% end %>
   </div>
-  <h1 class="">Welcome<br> <%= @profile.user.display_name %>!</h1>
+  <h1 class="">Welcome<br> <%= @profile.user.display_firstname_or_email %>!</h1>
   <p class="text-white fw-light"><small>UM ID: <%= @profile.umid %></small></p>
   <hr>
   <div class="text-white text-start ms-4">
