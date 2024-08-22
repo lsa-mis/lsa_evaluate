@@ -18,21 +18,23 @@
       </div>
     </div>
 
-    <div class="col mb-4">
-      <div class="card">
-        <h3 class="m-2">Create / Manage Submissions</h3>
-        <div class="card-body">
-          <% if (content = render_editable_content('home', 'manage_submissions')) %>
-            <p class="">
-              <%= content %>
-            </p>
-          <% end %>
-          <div>
-            <%= link_to 'Manage Submissions', containers_path, method: :get, class: 'btn btn-primary' %>
+    <% if current_user.is_employee? %>
+      <div class="col mb-4">
+        <div class="card">
+          <h3 class="m-2">Create / Manage Submissions</h3>
+          <div class="card-body">
+            <% if (content = render_editable_content('home', 'manage_submissions')) %>
+              <p class="">
+                <%= content %>
+              </p>
+            <% end %>
+            <div>
+              <%= link_to 'Manage Submissions', containers_path, method: :get, class: 'btn btn-primary' %>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    <% end %>
 
   </div>
 </div>
