@@ -2,14 +2,14 @@
   <div class="container-fluid d-flex justify-content-between align-items-center">
     <div id="LSAlogo">
       <a class="navbar-brand" href="/"><%= image_tag 'LSA_Logo.svg', alt: 'LSA Logo' %></a>
-      <a href="/" class="nav-title d-lg-block text-decoration-none">
+      <a href="/" class="nav-title d-lg-block text-decoration-none mb-1">
         Evaluate
       </a>
     </div>
     <% if user_signed_in? %>
       <div class="user-controls d-flex flex-column align-items-end" data-controller="dropdown">
         <div id="avatar" class="avatar bg-warning mb-2" data-action="click->dropdown#toggle" aria-haspopup="true" aria-expanded="false">
-          <span><%= current_user.display_initials_or_email %><i class="bi bi-caret-down-fill"></i></span>
+          <span><%= current_user.display_initials_or_email %><i class="bi bi-caret-down-fill" style="font-size: .75rem;"></i></span>
         </div>
         <div class="dropdown-menu" aria-labelledby="avatar-menu" data-dropdown-target="menu">
           <% profile = current_user.profile %>

@@ -22,10 +22,9 @@ staging:
 
 production:
   <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
+  # url: <%= ENV["DATABASE_URL"] %>
+  database: evaluate_db_prod
+  username: <%= Rails.application.credentials.mysql[:prod_user] %>
+  password: <%= Rails.application.credentials.mysql[:prod_password] %>
+  host: <%= Rails.application.credentials.mysql[:prod_servername] %>
   sslca: <%= Rails.application.credentials.mysql[:prod_sslca] %>
-  # database: lsa_evaluate_production
-  # username: <%= Rails.application.credentials.mysql[:prod_user] %>
-  # password: <%= Rails.application.credentials.mysql[:prod_password] %>
-  # host: <%= Rails.application.credentials.mysql[:prod_servername] %>
-  # sslca: <%= Rails.application.credentials.mysql[:prod_sslca] %>

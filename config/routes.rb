@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  resources :entries
   get 'applicant_dashboard/index'
   resources :testingrsmokes
   root 'static_pages#home'
@@ -13,6 +14,7 @@ Rails.application.routes.draw do
     resources :contest_descriptions do
       resources :contest_instances, path: 'instances'
     end
+    resources :assignments, only: %i[create destroy]
   end
   resources :visibilities
   resources :departments
@@ -22,12 +24,12 @@ Rails.application.routes.draw do
       get 'entrant_content'
     end
   end
-  resources :editable_contents
+  resources :editable_contents, only: %i[index edit update]
   resources :statuses
   resources :categories
-  resources :contest_descriptions
+  # resources :contest_descriptions
   resources :class_levels
-  resources :contest_instances
+  # resources :contest_instances
   resources :address_types
   resources :campuses
   resources :schools

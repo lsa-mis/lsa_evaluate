@@ -1,4 +1,5 @@
 class ContestDescriptionsController < ApplicationController
+  before_action :set_container
   before_action :set_contest_description, only: %i[show edit update destroy]
 
   def index
@@ -8,17 +9,17 @@ class ContestDescriptionsController < ApplicationController
   def show; end
 
   def new
-    @contest_description = ContestDescription.new
+    @contest_description = @container.contest_descriptions.new
   end
 
   def edit; end
 
   def create
-    @contest_description = ContestDescription.new(contest_description_params)
+    @contest_description = @container.contest_descriptions.new(contest_description_params)
 
     respond_to do |format|
       if @contest_description.save
-        format.html { redirect_to @contest_description, notice: 'Contest description was successfully created.' }
+        format.html { redirect_to container_contest_description_path(@container, @contest_description), notice: 'Contest description was successfully created.' }
       else
         format.html { render :new, status: :unprocessable_entity }
       end
@@ -28,7 +29,7 @@ class ContestDescriptionsController < ApplicationController
   def update
     respond_to do |format|
       if @contest_description.update(contest_description_params)
-        format.html { redirect_to @contest_description, notice: 'Contest description was successfully updated.' }
+        format.html { redirect_to container_contest_description_path(@container, @contest_description), notice: 'Contest description was successfully updated.' }
       else
         format.html { render :edit, status: :unprocessable_entity }
       end
@@ -39,11 +40,14 @@ class ContestDescriptionsController < ApplicationController
     @contest_description.destroy
 
     respond_to do |format|
-      format.html { redirect_to contest_descriptions_url, notice: 'Contest description was successfully destroyed.' }
+      format.html { redirect_to containers_path, notice: 'Contest description was successfully destroyed.' }
     end
   end
 
   private
+  def set_container
+    @container = Container.find(params[:container_id])
+  end
 
   def set_contest_description
     @contest_description = ContestDescription.find(params[:id])

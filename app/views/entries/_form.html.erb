@@ -1,0 +1,19 @@
+
+<%= simple_form_for(@entry) do |f| %>
+  <%= f.error_notification %>
+  <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
+
+  <div class="form-inputs">
+    <%= f.input :title %>
+    <%= f.association :status, label_method: :kind %>
+    <%= f.association :contest_instance, label_method: :display_name %>
+    <%= f.association :profile, label_method: :display_name %>
+    <%= f.association :category, label_method: :kind %>
+
+    <%= f.input :entry_file, as: :file %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>

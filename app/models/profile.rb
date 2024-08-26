@@ -72,7 +72,7 @@ class Profile < ApplicationRecord
   validates :umid, presence: true, length: { is: 8 }
   validates :grad_date, presence: true
   validates :degree, presence: true
-  validates :receiving_financial_aid, inclusion: { in: [true, false] }
+  validates :receiving_financial_aid, inclusion: { in: [ true, false ] }
   validates :accepted_financial_aid_notice, acceptance: true
   validates :class_level_id, presence: true
   validates :campus_id, presence: true
@@ -85,5 +85,9 @@ class Profile < ApplicationRecord
   def normalize_names
     self.first_name = first_name.strip
     self.last_name = last_name.strip
+  end
+
+  def display_name
+    "#{first_name} #{last_name}"
   end
 end

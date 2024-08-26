@@ -1,14 +1,7 @@
-<p style="color: green"><%= notice %></p>
+<h1>Editable Contents</h1>
 
-<h1>Editable_contents</h1>
-
-<div id="editable_contents">
-  <% @editable_contents.each do |editable_content| %>
-    <%= render editable_content %>
-    <p>
-      <%= link_to "Show this editable_content", editable_content %>
-    </p>
-  <% end %>
+<div class="row row-cols-1 row-cols-md-3">
+    <% @editable_contents.each do |editable_content| %>
+      <%= render editable_content %>
+    <% end %>
 </div>
-
-<%= link_to "New editable_content", new_editable_content_path %>

@@ -1,4 +1,4 @@
-<%= simple_form_for(@contest_description) do |f| %>
+<%= simple_form_for([@container, @contest_description]) do |f| %>
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
@@ -8,7 +8,6 @@
     <%= f.input :eligibility_rules %>
     <%= f.input :notes %>
     <%= f.input :short_name %>
-    <%= f.association :container, as: :select, collection: Container.all, label_method: :name, value_method: :id %>
     <%= f.association :status, as: :select, collection: Status.all, label_method: :kind, value_method: :id %>
   </div>
 

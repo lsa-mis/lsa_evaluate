@@ -1,10 +1,8 @@
-<p style="color: green"><%= notice %></p>
-
 <%= render @contest_description %>
 
 <div>
-  <%= link_to "Edit", edit_contest_description_path(@contest_description) %> |
-  <%= link_to "Back", contest_descriptions_path %>
+  <%= link_to "Edit", edit_container_contest_description_path([@container, @contest_description]) %> |
+  <%= link_to "Back", containers_path %>
 
-  <%= button_to "Destroy", @contest_description, method: :delete, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to delete this?' } %>
+  <%= button_to "Destroy", container_contest_description_path([@container, @contest_description]), method: :delete, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to delete this?' } %>
 </div>

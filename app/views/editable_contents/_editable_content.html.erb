@@ -1,17 +1,19 @@
-<div id="<%= dom_id editable_content %>">
-  <p>
-    <strong>Page:</strong>
-    <%= editable_content.page %>
-  </p>
-
-  <p>
-    <strong>Section:</strong>
-    <%= editable_content.section %>
-  </p>
-
-    <p>
-    <strong>Body:</strong>
-    <%= editable_content.content.body %>
-  </p>
+<div class="col mb-4">
+    <div class="card">
+      <div class="card-header">
+        <p>
+          <%= editable_content.page.titleize %>
+          <%= editable_content.section.titleize %>
+        </p>
+      </div>
+      <div class="card-body">
+        <p>
+          <%= editable_content.content %>
+        </p>
+        <div>
+          <%= link_to 'Edit', edit_editable_content_path(editable_content), class:"btn btn-primary" %>
+        </div>
+      </div>
+  </div>
 
 </div>

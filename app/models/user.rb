@@ -39,7 +39,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :trackable, :lockable, :timeoutable,
-         :omniauthable, omniauth_providers: [:saml]
+         :omniauthable, omniauth_providers: [ :saml ]
 
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
@@ -49,6 +49,15 @@ class User < ApplicationRecord
 
   validates :email, :encrypted_password, presence: true
   validates :email, uniqueness: { case_sensitive: false }
+
+  def active_for_authentication?
+    super.tap do |active|
+      if !active && timedout?(current_sign_in_at)
+        # Prevent the flash[:timedout] from being set
+        flash[:timedout] = nil
+      end
+    end
+  end
 
   # Method to check for a specific role
   def role?(role_name)
@@ -60,11 +69,11 @@ class User < ApplicationRecord
   end
 
   def administrator?
-    role?('Administrator')
+    role?('Container Administrator')
   end
 
   def manager?
-    role?('Manager')
+    role?('Container Manager')
   end
 
   def judge?
@@ -75,9 +84,26 @@ class User < ApplicationRecord
     assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Administrator'))
   end
 
+  def manager_for_container?(container_id)
+    assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Manager'))
+  end
+
   def display_initials_or_email
     if display_name.present?
       display_name.split.map { |name| name[0].upcase }.join
+    else
+      email.split('@').first
+    end
+  end
+
+  def is_employee?
+    Rails.logger.info "@@@@@@@@@@ email: #{email} - Person affiliation: #{person_affiliation}"
+    %w[employee staff].any? { |affiliation| person_affiliation&.include?(affiliation) }
+  end
+
+  def display_firstname_or_email
+    if display_name.present?
+      display_name.split.first
     else
       email.split('@').first
     end

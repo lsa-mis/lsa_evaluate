@@ -129,7 +129,8 @@ Category.create([
                   { kind: 'Poetry', description: 'Category for poetry works.' },
                   { kind: 'Novel', description: 'Category for novel works.' },
                   { kind: 'Short Fiction', description: 'Category for short fiction works.' },
-                  { kind: 'Text-Image', description: 'Category for text-image works.' }
+                  { kind: 'Text-Image', description: 'Category for text-image works.' },
+                  { kind: 'Research Paper', description: 'Category for research paper works.' }
                 ])
 
 # Seed data for ClassLevel
@@ -142,9 +143,13 @@ ClassLevel.create([
                   ])
 
 # Seed data for Users
-user1 = User.create!(email: 'alice@example.com', password: 'passwordpassword')
-user2 = User.create!(email: 'bob@example.com', password: 'passwordpassword')
+user1 = User.create!(email: 'alice@example.com', password: 'passwordpassword', uniqname: 'alicew', uid: 'alicew', principal_name: 'alice@example.com', display_name: 'Alice Wonderland', person_affiliation: 'employee')
+user2 = User.create!(email: 'bob@example.com', password: 'passwordpassword', uniqname: 'bobb', uid: 'bobb', principal_name: 'bob@example.com', display_name: 'Bob Builder', person_affiliation: 'employee')
+user2 = User.create!(email: 'sallystu@example.com', password: 'passwordpassword', uniqname: 'sallystu', uid: 'sallystu', principal_name: 'sallystu@example.com', display_name: 'Sally Student', person_affiliation: 'student')
 user3 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
+user4 = User.create!(email: 'brita@umich.edu', password: 'passwordpassword')
+user5 = User.create!(email: 'jjsantos@umich.edu', password: 'passwordpassword')
+user6 = User.create!(email: 'mlaitan@umich.edu', password: 'passwordpassword')
 
 # Seed data for Roles
 Role.create!([
@@ -154,9 +159,12 @@ Role.create!([
              ])
 role_admin = Role.find_by(kind: 'Container Administrator')
 axis_mundi = Role.find_by(kind: 'Axis mundi')
-# role_user = Role.create!(kind: 'User')
+
 UserRole.create!([
-                   { user: user3, role: axis_mundi }
+                  { user: user3, role: axis_mundi },
+                  { user: user4, role: axis_mundi },
+                  { user: user5, role: axis_mundi },
+                  { user: user6, role: axis_mundi }
                  ])
 
 # Seed data for Containers
@@ -164,14 +172,16 @@ container1 = Container.create!(
   name: 'Hopwood Contests',
   description: 'The Hopwood Contest.',
   department: Department.find_by(name: 'LSA English Language & Lit.'),
-  visibility: Visibility.find_by(kind: 'Public')
+  visibility: Visibility.find_by(kind: 'Public'),
+  creator: user1
 )
 
 container2 = Container.create!(
   name: 'Science Contest',
   description: 'The Science Contest.',
   department: Department.find_by(name: 'LSA Physics'),
-  visibility: Visibility.find_by(kind: 'Private')
+  visibility: Visibility.find_by(kind: 'Private'),
+  creator: user2
 )
 
 # Seed data for ContestDescription
@@ -204,6 +214,7 @@ contest_description3 = ContestDescription.create!(
   notes: 'Notes 2',
   created_by: user1.email
 )
+
 # Seed data for ContestInstance
 ContestInstance.create!(
   status: Status.find_by(kind: 'Active'),
@@ -213,7 +224,6 @@ ContestInstance.create!(
   notes: 'First contest instance',
   judging_open: false,
   judging_rounds: 1,
-  category: Category.find_by(kind: 'Drama'),
   has_course_requirement: false,
   judge_evaluations_complete: false,
   course_requirement_description: 'No course requirement',
@@ -231,7 +241,6 @@ ContestInstance.create!(
   notes: 'Second contest instance',
   judging_open: true,
   judging_rounds: 2,
-  category: Category.find_by(kind: 'Fiction'),
   has_course_requirement: true,
   judge_evaluations_complete: true,
   course_requirement_description: 'Course required',
@@ -241,10 +250,25 @@ ContestInstance.create!(
   created_by: user1.email
 )
 
-# Seed data for Assignments
-Assignment.create!([
-                     { user: user1, container: container1, role: role_admin },
-                     # { user: user2, container: container1, role: role_user },
-                     # { user: user1, container: container2, role: role_user },
-                     { user: user2, container: container2, role: role_admin }
-                   ])
+ContestInstance.create!(
+  status: Status.find_by(kind: 'Active'),
+  contest_description: contest_description3,
+  date_open: DateTime.now - 30,
+  date_closed: DateTime.now + 30,
+  notes: 'Third contest instance',
+  judging_open: false,
+  judging_rounds: 1,
+  has_course_requirement: false,
+  judge_evaluations_complete: false,
+  course_requirement_description: 'No course requirement',
+  recletter_required: false,
+  transcript_required: false,
+  maximum_number_entries_per_applicant: 1,
+  created_by: user1.email
+)
+
+CategoryContestInstance.create!([
+                                  { category: Category.find_by(kind: 'Drama'), contest_instance: ContestInstance.find_by(contest_description: contest_description1) },
+                                  { category: Category.find_by(kind: 'Fiction'), contest_instance: ContestInstance.find_by(contest_description: contest_description2) },
+                                  { category: Category.find_by(kind: 'Research Paper'), contest_instance: ContestInstance.find_by(contest_description: contest_description3) }
+                                ])

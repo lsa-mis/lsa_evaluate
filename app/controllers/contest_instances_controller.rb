@@ -17,11 +17,7 @@ class ContestInstancesController < ApplicationController
   end
 
   # GET /contest_instances/:id/edit
-  def edit
-    Rails.logger.debug { "Container: #{@container.inspect}" }
-    Rails.logger.debug { "Contest Description: #{@contest_description.inspect}" }
-    Rails.logger.debug { "Contest Instance: #{@contest_instance.inspect}" }
-  end
+  def edit; end
 
   # POST /contest_instances
   def create
@@ -80,6 +76,6 @@ class ContestInstancesController < ApplicationController
 
   def contest_instance_params
     params.require(:contest_instance).permit(:status_id, :contest_description_id, :date_open, :date_closed, :notes,
-                                             :judging_open, :judging_rounds, :category_id, :has_course_requirement, :judge_evaluations_complete, :course_requirement_description, :recletter_required, :transcript_required, :maximum_number_entries_per_applicant, :created_by)
+                                             :judging_open, :judging_rounds, :category_id, :has_course_requirement, :judge_evaluations_complete, :course_requirement_description, :recletter_required, :transcript_required, :maximum_number_entries_per_applicant, :created_by, category_contest_instances_attributes: [ :id, :category_id, :_destroy ])
   end
 end

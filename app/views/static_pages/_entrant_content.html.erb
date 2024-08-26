@@ -1,7 +1,7 @@
 <!-- app/views/static_pages/_entrant_content.html.erb -->
 <div class="my-4" >
   <h2>Get Started with LSA Evaluate </h2>
-  <div class="row g-4 align-items-center justify-content-center">
+  <div class="row g-4 align-items-top justify-content-center">
     <div class="col">
       <div class="card">
         <h3 class="m-2">View Submissions</h3>
@@ -11,9 +11,13 @@
               <%= content %>
             </p>
           <% end %>
-        </div>
-        <div class="card-footer">
-          <%= button_to 'View Submissions', '#', class: 'btn btn-primary' %>
+          <div>
+            <% if current_user.profile_exists? %>
+              <%= button_to 'View Submissions', applicant_dashboard_path, method: :get, class: 'btn btn-primary' %>
+            <% else %>
+              <%= button_to 'Create Profile', new_profile_path, method: :get, class: 'btn btn-primary' %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
@@ -26,13 +30,13 @@
               <%= content %>
             </p>
           <% end %>
-        </div>
-        <div class="card-footer">
-          <% if current_user.profile_exists? %>
-            <%= button_to 'Manage Profile', profile_path(current_user.profile), method: :get, class: 'btn btn-primary' %>
-          <% else %>
-            <%= button_to 'Manage Profile', new_profile_path, method: :get, class: 'btn btn-primary' %>
-          <% end %>
+          <div>
+            <% if current_user.profile_exists? %>
+              <%= button_to 'Manage Profile', profile_path(current_user.profile), method: :get, class: 'btn btn-primary' %>
+            <% else %>
+              <%= button_to 'Manage Profile', new_profile_path, method: :get, class: 'btn btn-primary' %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
