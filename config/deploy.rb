@@ -20,7 +20,7 @@ set :branch, 'main'
 set :pty,             true
 set :stage,           :production
 set :deploy_to,       "/home/#{fetch(:user)}/apps/#{fetch(:application)}"
-set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_ed25519.pub] }
+set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_ed25519.pub], verbose: :debug }
 set :tmp_dir, '/home/deployer/tmp'
 set :keep_releases, 3
 
