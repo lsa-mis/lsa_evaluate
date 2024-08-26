@@ -23,12 +23,16 @@ gem 'sassc-rails'
 gem 'simple_form', '~> 5.3'
 gem 'stimulus-rails'
 gem 'turbo-rails'
+gem 'turnout'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 group :development do
   gem 'annotate'
   gem 'better_errors'
   gem 'binding_of_caller'
+  gem 'capistrano', '~> 3.17', require: false
+  gem 'capistrano-rails', '~> 1.6', '>= 1.6.1', require: false
+  gem 'capistrano-asdf', require: false
   gem 'web-console'
 end
 
