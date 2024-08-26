@@ -252,6 +252,8 @@ GEM
       rspec-support (~> 3.12)
     racc (1.8.1)
     rack (3.1.7)
+    rack-accept (0.4.5)
+      rack (>= 0.4)
     rack-protection (4.0.0)
       base64 (>= 0.1.0)
       rack (>= 3.0.0, < 4)
@@ -411,6 +413,9 @@ GEM
       actionpack (>= 6.0.0)
       activejob (>= 6.0.0)
       railties (>= 6.0.0)
+    turnout (1.0.0)
+      rack
+      rack-accept (~> 0.4)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unaccent (0.4.0)
@@ -483,6 +488,7 @@ DEPENDENCIES
   simple_form (~> 5.3)
   stimulus-rails
   turbo-rails
+  turnout
   tzinfo-data
   web-console
   webdrivers
