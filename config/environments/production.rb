@@ -51,7 +51,7 @@ Rails.application.configure do
   config.force_ssl = true
 
   # Ensure the session cookies are also set to secure in production
-  Rails.application.config.session_store :cookie_store, key: 'evaluate_session', secure: Rails.env.production?
+  config.session_store :cookie_store, key: 'evaluate_session', secure: Rails.env.production?
 
   # Include generic and useful information about system operation, but avoid logging too much
   # information to avoid inadvertent exposure of personally identifiable information (PII).
