@@ -15,28 +15,28 @@ $flash-notice-color: #DBFFDD;
 $flash-alert-color: #FFE1DE;
 
 // Import Bootstrap's functions and variables
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
 
 // Override Bootstrap's default variables
 $theme-colors: (
-  "um-blue": $um_blue,
-  "bone": $bone,
-  "primary": $um_blue,
-  "secondary": $michigan_summer_blue,
-  "success": $lsa_success,
-  "info": $lsa_cyan,
-  "warning": $um_maize,
-  "danger": $rigorous_red,
+  'um-blue': $um_blue,
+  'bone': $bone,
+  'primary': $um_blue,
+  'secondary': $michigan_summer_blue,
+  'success': $lsa_success,
+  'info': $lsa_cyan,
+  'warning': $um_maize,
+  'danger': $rigorous_red,
   // Add more custom colors or override existing ones here
 );
 
 // Optionally, override other Bootstrap variables here
 // Extend the $spacers map
-$spacers: map-merge(("6": 4rem,
-      "7": 5rem,
-      "8": 6rem,
-      "9": 7rem,
+$spacers: map-merge(('6': 4rem,
+      '7': 5rem,
+      '8': 6rem,
+      '9': 7rem,
       // more custom spacers as needed
     ),
     $spacers);
@@ -46,7 +46,7 @@ $spacers: map-merge(("6": 4rem,
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 // Import the rest of Bootstrap now that variables are overridden
-@import "bootstrap/scss/bootstrap";
+@import 'bootstrap/scss/bootstrap';
 
 // Import Bootstrap icons if needed
 @import 'bootstrap-icons/font/bootstrap-icons';
