@@ -43,6 +43,12 @@ class ContestInstance < ApplicationRecord
   belongs_to :status
   belongs_to :contest_description
 
+  scope :active_and_open, -> {
+    joins(:status)
+    .where(statuses: { kind: 'Active' })
+    .where('date_open <= ? AND date_closed >= ?', Time.zone.now, Time.zone.now)
+  }
+
   accepts_nested_attributes_for :category_contest_instances, allow_destroy: true
 
   validates :date_open, presence: true
