@@ -16,7 +16,16 @@
       </div>
       <div class="row ms-2">
         <div class="col-12 submissions-summary">
-          <%= render 'applicant_dashboard/submissions_summary', submissions: @submissions %>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+              Show Submissions Summary
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li>
+                <%= render 'applicant_dashboard/submissions_summary', submissions: @submissions %>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
