@@ -59,4 +59,8 @@ class ContestInstance < ApplicationRecord
   def display_name
     "#{contest_description.name} - #{date_open.strftime('%Y-%m-%d')} to #{date_closed.strftime('%Y-%m-%d')}"
   end
+
+  def is_open?
+    status.kind.downcase == 'active' && DateTime.now.between?(date_open, date_closed)
+  end
 end
