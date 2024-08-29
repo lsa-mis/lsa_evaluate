@@ -157,4 +157,38 @@ RSpec.describe ContestInstance do
       expect(contest_instance).to be_valid
     end
   end
+
+  let!(:active_status) { create(:status, kind: 'Active') }
+  let!(:archived_status) { create(:status, kind: 'Archived') }
+
+  describe '#is_open?' do
+    context 'when the current date is between date_open and date_closed and status is active' do
+      it 'returns true' do
+        contest_instance = create(:contest_instance, status: active_status, date_open: 2.days.ago, date_closed: 2.days.from_now)
+        binding.pry
+        expect(contest_instance.is_open?).to be(true)
+      end
+    end
+
+    context 'when the current date is between date_open and date_closed but status is not active' do
+      it 'returns false' do
+        contest_instance = create(:contest_instance, status: archived_status, date_open: 2.days.ago, date_closed: 2.days.from_now)
+        expect(contest_instance.is_open?).to be(false)
+      end
+    end
+
+    context 'when the current date is before date_open' do
+      it 'returns false' do
+        contest_instance = create(:contest_instance, status: active_status, date_open: 2.days.from_now, date_closed: 4.days.from_now)
+        expect(contest_instance.is_open?).to be(false)
+      end
+    end
+
+    context 'when the current date is after date_closed' do
+      it 'returns false' do
+        contest_instance = create(:contest_instance, status: active_status, date_open: 4.days.ago, date_closed: 2.days.ago)
+        expect(contest_instance.is_open?).to be(false)
+      end
+    end
+  end
 end
