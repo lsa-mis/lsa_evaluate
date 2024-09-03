@@ -25,11 +25,10 @@
   </p>
 
   <p>
-    <strong>Attached file:</strong>
-    <% if @entry.entry_file.attached? %>
-      <%= link_to 'Download File', rails_blob_path(@entry.entry_file, disposition: "attachment") %>
+    <% if entry.entry_file.attached? %>
+      <p>File attached: <%= link_to entry.entry_file.filename.to_s, rails_blob_path(entry.entry_file, disposition: "attachment") %></p>
     <% else %>
-      No file attached
+      <p>No file attached</p>
     <% end %>
   </p>
 
