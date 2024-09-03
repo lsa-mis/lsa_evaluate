@@ -60,7 +60,7 @@ RSpec.describe ContestInstance do
   end
 
   describe 'validations' do
-    let(:contest_instance) { FactoryBot.build(:contest_instance) }
+    let(:contest_instance) { build(:contest_instance) }
 
     it 'is valid with valid attributes' do
       expect(contest_instance).to be_valid
@@ -158,43 +158,40 @@ RSpec.describe ContestInstance do
     end
   end
 
-  let!(:active_status) { create(:status, kind: 'Active') }
-  let!(:archived_status) { create(:status, kind: 'Archived') }
-
   describe '#is_open?' do
     context 'when the current date is between date_open and date_closed and status is active' do
       it 'returns true' do
-        contest_instance = create(:contest_instance, status: active_status, date_open: 2.days.ago, date_closed: 2.days.from_now)
+        contest_instance = create(:contest_instance, date_open: 2.days.ago, date_closed: 2.days.from_now)
         expect(contest_instance.is_open?).to be(true)
       end
     end
 
     context 'when the current date is between date_open and date_closed but status is not active' do
       it 'returns false' do
-        contest_instance = create(:contest_instance, status: archived_status, date_open: 2.days.ago, date_closed: 2.days.from_now)
+        contest_instance = create(:contest_instance, status: create(:status_archived), date_open: 2.days.ago, date_closed: 2.days.from_now)
         expect(contest_instance.is_open?).to be(false)
       end
     end
 
     context 'when the current date is before date_open' do
       it 'returns false' do
-        contest_instance = create(:contest_instance, status: active_status, date_open: 2.days.from_now, date_closed: 4.days.from_now)
+        contest_instance = create(:contest_instance, date_open: 2.days.from_now, date_closed: 4.days.from_now)
         expect(contest_instance.is_open?).to be(false)
       end
     end
 
     context 'when the current date is after date_closed' do
       it 'returns false' do
-        contest_instance = create(:contest_instance, status: active_status, date_open: 4.days.ago, date_closed: 2.days.ago)
+        contest_instance = create(:contest_instance, date_open: 4.days.ago, date_closed: 2.days.ago)
         expect(contest_instance.is_open?).to be(false)
       end
     end
   end
 
   describe '.active_and_open' do
-    let!(:active_open_contest) { create(:contest_instance, status: active_status, date_open: 1.day.ago, date_closed: 1.day.from_now) }
-    let!(:active_closed_contest) { create(:contest_instance, status: active_status, date_open: 3.days.ago, date_closed: 1.day.ago) }
-    let!(:archived_contest) { create(:contest_instance, status: archived_status, date_open: 1.day.ago, date_closed: 1.day.from_now) }
+    let!(:active_open_contest) { create(:contest_instance, date_open: 1.day.ago, date_closed: 1.day.from_now) }
+    let!(:active_closed_contest) { create(:contest_instance, date_open: 3.days.ago, date_closed: 1.day.ago) }
+    let!(:archived_contest) { create(:contest_instance, status: create(:status_archived), date_open: 1.day.ago, date_closed: 1.day.from_now) }
 
     it 'returns only active contests within the date range' do
       expect(ContestInstance.active_and_open).to include(active_open_contest)
