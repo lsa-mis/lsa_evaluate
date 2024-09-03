@@ -19,7 +19,11 @@
           <td class="card-text"><%= contest.contest_description.eligibility_rules %></td>
           <td class="card-text"><%= "#{contest.contest_description.container.name} - #{contest.contest_description.container.department.name}" %></td>
           <td class="card-text"><%= contest.date_closed.strftime("%B %d, %Y - %I:%M %p") %></td>
-          <td><%= link_to "Upload Application", new_entry_path, class: 'btn btn-sm primary' %> </td>
+          <td class="text-center">
+            <%= link_to new_entry_path(contest_instance_id: contest.id), class: 'btn-icon' do %>
+              <i class="bi bi-pencil"></i>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
