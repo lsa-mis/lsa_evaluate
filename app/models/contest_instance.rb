@@ -56,6 +56,7 @@ class ContestInstance < ApplicationRecord
   }
 
   accepts_nested_attributes_for :category_contest_instances, allow_destroy: true
+  accepts_nested_attributes_for :class_level_requirements, allow_destroy: true
 
   validates :date_open, presence: true
   validates :date_closed, presence: true
@@ -79,7 +80,7 @@ class ContestInstance < ApplicationRecord
 
   def must_have_at_least_one_class_level_requirement
     if class_level_requirements.empty?
-      errors.add(:class_level_requirements, 'must have at least one associated class level requirement')
+      errors.add(:base, 'At least one class level requirement must be added.')
     end
   end
 end
