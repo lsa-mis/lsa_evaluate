@@ -49,6 +49,12 @@ class ContestInstance < ApplicationRecord
     .where('date_open <= ? AND date_closed >= ?', Time.zone.now, Time.zone.now)
   }
 
+  scope :active_and_open_for_container, ->(container_id) {
+    active_and_open
+    .joins(contest_description: :container)
+    .where(contest_descriptions: { container_id: container_id })
+  }
+
   accepts_nested_attributes_for :category_contest_instances, allow_destroy: true
 
   validates :date_open, presence: true
