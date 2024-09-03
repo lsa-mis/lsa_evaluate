@@ -1,0 +1,28 @@
+<div class="mt-4">
+
+  <h2 class="">Contests available</h2>
+
+  <table class="table table-bordered table-hover table-striped mt-3">
+    <thead>
+      <tr>
+        <th>Contest Name</th>
+        <th>Rules</th>
+        <th>Contest Container</th>
+        <th>Close Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @active_contests.each do |contest| %>
+        <tr>
+          <td class="strong"><%= contest.contest_description.name %></td>
+          <td class="card-text"><%= contest.contest_description.eligibility_rules %></td>
+          <td class="card-text"><%= "#{contest.contest_description.container.name} - #{contest.contest_description.container.department.name}" %></td>
+          <td class="card-text"><%= contest.date_closed.strftime("%B %d, %Y - %I:%M %p") %></td>
+          <td><%= link_to "Upload Application", new_entry_path, class: 'btn btn-sm primary' %> </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+</div>
