@@ -57,6 +57,11 @@ RSpec.describe ContestInstance do
       association = described_class.reflect_on_association(:category_contest_instances)
       expect(association.macro).to eq(:has_many)
     end
+
+    it 'has many class_level_requirements' do
+      association = described_class.reflect_on_association(:class_level_requirements)
+      expect(association.macro).to eq(:has_many)
+    end
   end
 
   describe 'validations' do
@@ -148,6 +153,12 @@ RSpec.describe ContestInstance do
       contest_instance.transcript_required = nil
       expect(contest_instance).not_to be_valid
       expect(contest_instance.errors[:transcript_required]).to include('is not included in the list')
+    end
+
+    it 'is invalid without at least one class_level_requirement' do
+      contest_instance.class_level_requirements.clear
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:base]).to include('At least one class level requirement must be added.')
     end
   end
 
