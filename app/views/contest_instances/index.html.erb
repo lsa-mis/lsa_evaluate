@@ -19,6 +19,7 @@
         <th>Recommendation Letter Required</th>
         <th>Transcript Required</th>
         <th>Max Entries per Applicant</th>
+        <th>Class Level</th>
         <th>Created By</th>
       </tr>
     </thead>
@@ -42,6 +43,7 @@
           <td><%= contest_instance.recletter_required %></td>
           <td><%= contest_instance.transcript_required %></td>
           <td><%= contest_instance.maximum_number_entries_per_applicant %></td>
+          <td><%= contest_instance.class_levels.map(&:name).join(', ') %></td>
           <td><%= contest_instance.created_by %></td>
         </tr>
       <% end %>
