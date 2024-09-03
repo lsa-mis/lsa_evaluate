@@ -67,6 +67,7 @@ class ContestInstance < ApplicationRecord
   validates :transcript_required, inclusion: { in: [ true, false ] }
   validates :maximum_number_entries_per_applicant, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :created_by, presence: true
+  validate :must_have_at_least_one_class_level_requirement
 
   def display_name
     "#{contest_description.name} - #{date_open.strftime('%Y-%m-%d')} to #{date_closed.strftime('%Y-%m-%d')}"
@@ -74,5 +75,11 @@ class ContestInstance < ApplicationRecord
 
   def is_open?
     status.kind.downcase == 'active' && DateTime.now.between?(date_open, date_closed)
+  end
+
+  def must_have_at_least_one_class_level_requirement
+    if class_level_requirements.empty?
+      errors.add(:class_level_requirements, 'must have at least one associated class level requirement')
+    end
   end
 end
