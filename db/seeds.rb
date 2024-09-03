@@ -41,7 +41,10 @@ EditableContent.create([
                            for financial assistance this academic year, your aid may be limited in a future term or
                            reduced from previously received assistance. You can learn more about financial aid terms
                            and conditions on the Office of Financial Aid's website. If you have questions or want to
-                           consult with someone about your particular situation, please contact OFA.") }
+                           consult with someone about your particular situation, please contact OFA.") },
+                         { page: 'profiles', section: 'submission_ownership',
+                          content: ActionText::RichText.new(body: "By submitting your profile you are agreeing that
+                          submission belongs to the University of Michigan") }
                        ])
 
 # Seed data for School
