@@ -6,22 +6,22 @@
 
   <p>
     <strong>Status:</strong>
-    <%= entry.status_id %>
+    <%= entry.status.kind %>
   </p>
 
   <p>
     <strong>Contest instance:</strong>
-    <%= entry.contest_instance_id %>
+    <%= entry.contest_instance.contest_description.name %>
   </p>
 
   <p>
     <strong>Profile:</strong>
-    <%= entry.profile_id %>
+    <%= entry.profile.user.display_name %>
   </p>
 
   <p>
     <strong>Category:</strong>
-    <%= entry.category_id %>
+    <%= entry.category.kind %>
   </p>
 
   <p>
