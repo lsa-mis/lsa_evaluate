@@ -288,3 +288,9 @@ CategoryContestInstance.create!([
                                   { category: Category.find_by(kind: 'Fiction'), contest_instance: ContestInstance.find_by(contest_description: contest_description2) },
                                   { category: Category.find_by(kind: 'Research Paper'), contest_instance: ContestInstance.find_by(contest_description: contest_description3) }
                                 ])
+
+ClassLevelRequirement.create!([
+                                { class_level: ClassLevel.find_by(name: 'Second year'), contest_instance: contest_instance1 },
+                                { class_level: ClassLevel.find_by(name: 'Junior'), contest_instance: contest_instance1 },
+                                { class_level: ClassLevel.find_by(name: 'Senior'), contest_instance: contest_instance1 }
+                              ])
