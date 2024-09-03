@@ -14,8 +14,8 @@
 #
 # spec/factories/categories.rb
 FactoryBot.define do
-  factory :category do
-    kind { [ 'Drama', 'Screenplay', 'Non-Fiction', 'Fiction', 'Poetry', 'Novel', 'Short Fiction', 'Text-Image', 'Research Paper' ].sample }
+  factory :category_drama, class: 'Category' do
+    kind { 'Drama' }
     description { Faker::Lorem.sentence(word_count: 5) }
   end
 end
