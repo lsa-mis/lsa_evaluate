@@ -4,5 +4,7 @@ class ApplicantDashboardController < ApplicationController
     @departments = Department.all
     @class_levels = ClassLevel.all
     @containers = Container.all
+    @active_contests = ContestInstance.active_and_open
+    @entries = Entry.where(profile: @profile)
   end
 end

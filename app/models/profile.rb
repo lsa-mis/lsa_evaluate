@@ -60,6 +60,7 @@ class Profile < ApplicationRecord
   belongs_to :school, optional: true
   belongs_to :campus, optional: true
   belongs_to :department, optional: true
+  has_many :entries, dependent: :destroy
 
   belongs_to :home_address, class_name: 'Address', optional: true
   belongs_to :campus_address, class_name: 'Address', optional: true

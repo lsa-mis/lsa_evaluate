@@ -11,163 +11,22 @@
           <th>Contest Name</th>
           <th>Open Date</th>
           <th>Close Date</th>
-          <th><input type="text" class="form-control search-input" placeholder="Search..."></th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-          </td>
-          <td>Open</td>
-          <td>Cora Duncan Award in Fiction</td>
-          <td>November 1, 2023 12:00 AM</td>
-          <td>January 18, 2024 11:59 PM</td>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-            <button class="btn-icon">
-              <i class="bi bi-pencil"></i>
-            </button>
-          </td>
-        </tr>
-        <!-- Repeat rows as necessary -->
-        <tr>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-          </td>
-          <td>Open</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-            <button class="btn-icon">
-              <i class="bi bi-pencil"></i>
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-          </td>
-          <td>Open</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-            <button class="btn-icon">
-              <i class="bi bi-pencil"></i>
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-          </td>
-          <td>Open</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-            <button class="btn-icon">
-              <i class="bi bi-pencil"></i>
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-          </td>
-          <td>Open</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-            <button class="btn-icon">
-              <i class="bi bi-pencil"></i>
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-          </td>
-          <td>Open</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-            <button class="btn-icon">
-              <i class="bi bi-pencil"></i>
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-          </td>
-          <td>Closed</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-            <button class="btn-icon">
-              <i class="bi bi-pencil"></i>
-            </button>
-          </td>
-        </tr>
-        <tr>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-          </td>
-          <td>Closed</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td>Text line</td>
-          <td class="text-center">
-            <button class="btn-icon">
-              <i class="bi bi-eye"></i>
-            </button>
-            <button class="btn-icon">
-              <i class="bi bi-pencil"></i>
-            </button>
-          </td>
-        </tr>
+        <% @entries.each do |entry| %>
+          <tr>
+            <td class="text-center">
+              <%= link_to entry_path(entry), class: 'btn-icon' do %>
+                <i class="bi bi-eye"></i>
+              <% end %>
+            </td>
+            <td><%= entry.status.kind %></td> <!-- Assuming status has a `kind` attribute -->
+            <td><%= entry.contest_instance.contest_description.name %></td>
+            <td><%= entry.contest_instance.date_open.strftime("%B %d, %Y") %></td>
+            <td><%= entry.contest_instance.date_closed.strftime("%B %d, %Y") %></td>
+          </tr>
+        <% end %>
       </tbody>
     </table>
   </div>

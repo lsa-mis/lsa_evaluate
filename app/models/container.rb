@@ -40,6 +40,7 @@ class Container < ApplicationRecord
   private
 
   def assign_container_administrator
+    return if creator.blank?  # Skip if creator is nil
     container_admin_role = Role.find_by(kind: 'Container Administrator')
 
     if container_admin_role.present?
