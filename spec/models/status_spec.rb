@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 RSpec.describe Status do
-  let(:status) { build(:status) }
+  let(:status) { build(:status_active) }
 
   describe 'validations' do
     it 'validates presence of kind' do
@@ -25,7 +25,7 @@ RSpec.describe Status do
     end
 
     it 'validates uniqueness of kind' do
-      create(:status, kind: 'Active')
+      create(:status_active, kind: 'Active')
       status.kind = 'Active'
       expect(status).not_to be_valid
       expect(status.errors[:kind]).to include('has already been taken')
