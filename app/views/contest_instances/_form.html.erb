@@ -24,6 +24,7 @@
         <%= f.fields_for :category_contest_instances do |cc_f| %>
           <div class="nested-fields">
             <%= cc_f.association :category, label_method: :kind %>
+            <%= cc_f.hidden_field :_destroy %>
             <%= link_to 'Remove', '#', class: 'remove_category', data: { action: "click->nested-form#removeAssociation" } %>
           </div>
         <% end %>
@@ -35,6 +36,7 @@
         <div class="nested-fields">
           <%= f.fields_for :category_contest_instances, CategoryContestInstance.new, child_index: "new_category_contest_instances" do |cc_f| %>
             <%= cc_f.association :category, label_method: :kind %>
+            <%= cc_f.hidden_field :_destroy %>
             <%= link_to 'Remove', '#', class: 'remove_category', data: { action: "click->nested-form#removeAssociation" } %>
           <% end %>
         </div>
@@ -48,6 +50,7 @@
         <%= f.fields_for :class_level_requirements do |clr_f| %>
           <div class="nested-fields">
             <%= clr_f.association :class_level, label_method: :name %>
+            <%= clr_f.hidden_field :_destroy %>
             <%= link_to 'Remove', '#', class: 'remove_class_level', data: { action: "click->nested-form#removeAssociation" } %>
           </div>
         <% end %>
@@ -58,6 +61,7 @@
         <div class="nested-fields">
           <%= f.fields_for :class_level_requirements, ClassLevelRequirement.new, child_index: Time.now.to_i do |clr_f| %>
             <%= clr_f.association :class_level, label_method: :name %>
+            <%= clr_f.hidden_field :_destroy %>
             <%= link_to 'Remove', '#', class: 'remove_class_level', data: { action: "click->nested-form#removeAssociation" } %>
           <% end %>
         </div>
