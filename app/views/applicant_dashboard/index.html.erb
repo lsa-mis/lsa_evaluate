@@ -9,7 +9,7 @@
             <div class="card-body">
               <small class="text-muted"><%= Time.now.strftime("%B %d, %Y - %I:%M %p") %></small>
               <%= render 'static_pages/opportunities' %>
-              <p class="card-text"><%= "Currently there are #{"25"} Open contests!"%></p>
+              <p class="card-text"><%= "Currently there are #{@active_contests.count} Open contests!"%></p>
             </div>
           </div>
         </div>
@@ -28,6 +28,12 @@
           </div>
         </div>
       </div>
+      <div class="row ms-2">
+        <div class="col-12 submissions-summary">
+          <%= render 'applicant_dashboard/available_contests' %>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
