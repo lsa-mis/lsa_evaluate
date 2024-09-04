@@ -1,5 +1,14 @@
-<h1><%= @contest_description.name %> Instances</h1>
 
+
+
+<div class="d-flex justify-content-between">
+  <div>
+    <h1><%= @contest_description.name %> Instances</h1>
+  </div>
+  <div>
+    <%= link_to "Return to Manage Submissions", containers_path, class: "link_to" %>
+  </div>
+</div>
 <div id="contest_instances" class="table-responsive">
   <table class="table table-striped table-bordered">
     <thead class="thead-light">
@@ -9,47 +18,32 @@
         <th>Contest Description</th>
         <th>Date Open</th>
         <th>Date Closed</th>
-        <th>Notes</th>
         <th>Judging Open</th>
         <th>Judging Rounds</th>
         <th>Category</th>
-        <th>Has Course Requirement</th>
         <th>Judge Evaluations Complete</th>
-        <th>Course Requirement Description</th>
-        <th>Recommendation Letter Required</th>
-        <th>Transcript Required</th>
-        <th>Max Entries per Applicant</th>
         <th>Class Level</th>
-        <th>Created By</th>
       </tr>
     </thead>
     <tbody>
       <% @contest_instances.each do |contest_instance| %>
         <tr>
           <td>
-            <%= link_to "Show", container_contest_description_contest_instance_path(@container, @contest_description, contest_instance), class: "btn btn-primary btn-sm" %>
+            <%= link_to "View Details", container_contest_description_contest_instance_path(@container, @contest_description, contest_instance), class: "link_to" %>
           </td>
           <td><%= contest_instance.status.kind %></td>
           <td><%= contest_instance.contest_description.name %></td>
           <td><%= format_datetime(contest_instance.date_open) %></td>
           <td><%= format_datetime(contest_instance.date_closed) %></td>
-          <td><%= contest_instance.notes %></td>
           <td><%= contest_instance.judging_open %></td>
           <td><%= contest_instance.judging_rounds %></td>
           <td><%= contest_instance.categories.map(&:kind).join(', ') %></td>
-          <td><%= contest_instance.has_course_requirement %></td>
           <td><%= contest_instance.judge_evaluations_complete %></td>
-          <td><%= contest_instance.course_requirement_description %></td>
-          <td><%= contest_instance.recletter_required %></td>
-          <td><%= contest_instance.transcript_required %></td>
-          <td><%= contest_instance.maximum_number_entries_per_applicant %></td>
           <td><%= contest_instance.class_levels.map(&:name).join(', ') %></td>
-          <td><%= contest_instance.created_by %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 </div>
 
-<%= link_to "New", new_container_contest_description_contest_instance_path(@container, @contest_description), class: "btn btn-primary" %>
-<%= link_to "Return to Containers", containers_path, class: "btn btn-secondary" %>
+<%= link_to "Create New Contest Instance", new_container_contest_description_contest_instance_path(@container, @contest_description), class: "btn btn-sm btn-primary" %>
