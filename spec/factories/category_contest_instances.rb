@@ -22,7 +22,7 @@
 # spec/factories/category_contest_instances.rb
 FactoryBot.define do
   factory :category_contest_instance do
-    category
+    category { Category.find_or_create_by(kind: 'Drama') }
     contest_instance
   end
 end

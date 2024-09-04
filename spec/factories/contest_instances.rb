@@ -35,7 +35,7 @@
 #
 FactoryBot.define do
   factory :contest_instance do
-    status
+    status { Status.find_or_create_by(kind: 'Active') }
     contest_description
     date_open { Faker::Date.backward(days: 14) }
     date_closed { Faker::Date.forward(days: 14) }
@@ -50,9 +50,13 @@ FactoryBot.define do
     maximum_number_entries_per_applicant { 1 }
     created_by { Faker::Name.name }
 
-    # After creating a contest_instance, also create a category_contest_instance association
-    after(:create) do |contest_instance|
-      create_list(:category_contest_instance, 1, contest_instance: contest_instance)
+    # after(:create) do |contest_instance|
+    #   create_list(:category_contest_instance, 1, contest_instance: contest_instance)
+    #   create(:class_level_requirement, contest_instance: contest_instance)
+    # end
+    after(:build) do |contest_instance|
+      contest_instance.class_level_requirements << build(:class_level_requirement, contest_instance: contest_instance)
+      contest_instance.category_contest_instances << build(:category_contest_instance, contest_instance: contest_instance)
     end
   end
 end

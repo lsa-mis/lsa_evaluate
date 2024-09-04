@@ -41,7 +41,10 @@ EditableContent.create([
                            for financial assistance this academic year, your aid may be limited in a future term or
                            reduced from previously received assistance. You can learn more about financial aid terms
                            and conditions on the Office of Financial Aid's website. If you have questions or want to
-                           consult with someone about your particular situation, please contact OFA.") }
+                           consult with someone about your particular situation, please contact OFA.") },
+                         { page: 'profiles', section: 'submission_ownership',
+                          content: ActionText::RichText.new(body: "By submitting your profile you are agreeing that
+                          submission belongs to the University of Michigan") }
                        ])
 
 # Seed data for School
@@ -216,7 +219,7 @@ contest_description3 = ContestDescription.create!(
 )
 
 # Seed data for ContestInstance
-ContestInstance.create!(
+contest_instance1 = ContestInstance.new(
   status: Status.find_by(kind: 'Active'),
   contest_description: contest_description1,
   date_open: DateTime.now - 30,
@@ -233,7 +236,14 @@ ContestInstance.create!(
   created_by: user1.email
 )
 
-ContestInstance.create!(
+# Build the associated ClassLevelRequirement
+contest_instance1.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'First year'))
+
+# Save the ContestInstance with validation
+contest_instance1.save!
+
+# Repeat the same pattern for other ContestInstances
+contest_instance2 = ContestInstance.new(
   status: Status.find_by(kind: 'Archived'),
   contest_description: contest_description2,
   date_open: DateTime.now - 60,
@@ -250,7 +260,10 @@ ContestInstance.create!(
   created_by: user1.email
 )
 
-ContestInstance.create!(
+contest_instance2.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'Second year'))
+contest_instance2.save!
+
+contest_instance3 = ContestInstance.new(
   status: Status.find_by(kind: 'Active'),
   contest_description: contest_description3,
   date_open: DateTime.now - 30,
@@ -267,8 +280,17 @@ ContestInstance.create!(
   created_by: user1.email
 )
 
+contest_instance3.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'Junior'))
+contest_instance3.save!
+
 CategoryContestInstance.create!([
                                   { category: Category.find_by(kind: 'Drama'), contest_instance: ContestInstance.find_by(contest_description: contest_description1) },
                                   { category: Category.find_by(kind: 'Fiction'), contest_instance: ContestInstance.find_by(contest_description: contest_description2) },
                                   { category: Category.find_by(kind: 'Research Paper'), contest_instance: ContestInstance.find_by(contest_description: contest_description3) }
                                 ])
+
+ClassLevelRequirement.create!([
+                                { class_level: ClassLevel.find_by(name: 'Second year'), contest_instance: contest_instance1 },
+                                { class_level: ClassLevel.find_by(name: 'Junior'), contest_instance: contest_instance1 },
+                                { class_level: ClassLevel.find_by(name: 'Senior'), contest_instance: contest_instance1 }
+                              ])

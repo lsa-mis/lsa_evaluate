@@ -28,9 +28,10 @@ end
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
-  config.fixture_paths = [Rails.root.join('spec/fixtures').to_s]
+  config.fixture_paths = [ Rails.root.join('spec/fixtures').to_s ]
 
-  config.use_transactional_fixtures = true
+  # Set this to false if using DatabaseCleaner
+  config.use_transactional_fixtures = false
 
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
@@ -53,7 +54,6 @@ RSpec.configure do |config|
   end
 
   config.include AuthHelpers, type: :controller
-  # If you're using request specs, you might want to include it for request specs as well
   config.include AuthHelpers, type: :request
 
   config.infer_spec_type_from_file_location!

@@ -22,13 +22,30 @@ export default class extends Controller {
     this.containerTarget.insertAdjacentHTML('beforeend', content);
   }
 
+  // removeAssociation(event) {
+  //   event.preventDefault();
+
+  //   // Find the closest nested field wrapper and remove it
+  //   const wrapper = event.target.closest('.nested-fields');
+  //   if (wrapper) {
+  //     wrapper.remove();
+  //   }
+  // }
   removeAssociation(event) {
     event.preventDefault();
 
-    // Find the closest nested field wrapper and remove it
+    // Find the closest nested field wrapper
     const wrapper = event.target.closest('.nested-fields');
-    if (wrapper) {
-      wrapper.remove();
+
+    // Find the _destroy hidden field within the wrapper
+    const destroyField = wrapper.querySelector('input[name*="_destroy"]');
+
+    if (destroyField) {
+      // Set the _destroy field value to 1
+      destroyField.value = 1;
+
+      // Optionally hide the element or visually indicate it will be removed
+      wrapper.style.display = 'none';
     }
   }
 }

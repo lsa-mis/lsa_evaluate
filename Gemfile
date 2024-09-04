@@ -23,7 +23,7 @@ gem 'sassc-rails'
 gem 'simple_form', '~> 5.3'
 gem 'stimulus-rails'
 gem 'turbo-rails'
-# gem 'turnout'
+gem 'turnout2024', require: 'turnout'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 group :development do

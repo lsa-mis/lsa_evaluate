@@ -13,8 +13,13 @@
 #  index_statuses_on_kind  (kind) UNIQUE
 #
 FactoryBot.define do
-  factory :status do
-    kind { %w[Active Deleted Archived Disqualified].sample }
+  factory :status_active, class: 'Status' do
+    kind { 'Active' }
+    description { Faker::Lorem.sentence(word_count: 5) }
+  end
+
+  factory :status_archived, class: 'Status' do
+    kind { 'Archived' }
     description { Faker::Lorem.sentence(word_count: 5) }
   end
 end

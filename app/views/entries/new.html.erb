@@ -1,11 +1,11 @@
 <% content_for :title, "New entry" %>
 
-<h1>New entry</h1>
+<h1><%= @entry.contest_instance.contest_description.name %></h1>
 
 <%= render "form", entry: @entry %>
 
 <br>
 
 <div>
-  <%= link_to "Back to entries", entries_path %>
+  <%= link_to "Back to dashboard", applicant_dashboard_path %>
 </div>

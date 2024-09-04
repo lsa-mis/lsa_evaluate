@@ -12,11 +12,17 @@ class EntriesController < ApplicationController
 
   # GET /entries/new
   def new
-    @entry = Entry.new
+    contest_instance_id = params[:contest_instance_id]
+    @entry = Entry.new(
+      contest_instance_id: contest_instance_id,
+      status: Status.find_by(kind: 'Active'), # Replace with your logic
+      profile: current_user.profile # Assuming the current user has a profile associated
+    )
   end
 
   # GET /entries/1/edit
   def edit
+    @entry = Entry.find(params[:id])
   end
 
   # POST /entries or /entries.json

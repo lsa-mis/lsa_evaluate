@@ -43,7 +43,20 @@ class ContestInstance < ApplicationRecord
   belongs_to :status
   belongs_to :contest_description
 
+  scope :active_and_open, -> {
+    joins(:status)
+    .where(statuses: { kind: 'Active' })
+    .where('date_open <= ? AND date_closed >= ?', Time.zone.now, Time.zone.now)
+  }
+
+  scope :active_and_open_for_container, ->(container_id) {
+    active_and_open
+    .joins(contest_description: :container)
+    .where(contest_descriptions: { container_id: container_id })
+  }
+
   accepts_nested_attributes_for :category_contest_instances, allow_destroy: true
+  accepts_nested_attributes_for :class_level_requirements, allow_destroy: true
 
   validates :date_open, presence: true
   validates :date_closed, presence: true
@@ -55,8 +68,19 @@ class ContestInstance < ApplicationRecord
   validates :transcript_required, inclusion: { in: [ true, false ] }
   validates :maximum_number_entries_per_applicant, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :created_by, presence: true
+  validate :must_have_at_least_one_class_level_requirement
 
   def display_name
     "#{contest_description.name} - #{date_open.strftime('%Y-%m-%d')} to #{date_closed.strftime('%Y-%m-%d')}"
+  end
+
+  def is_open?
+    status.kind.downcase == 'active' && DateTime.now.between?(date_open, date_closed)
+  end
+
+  def must_have_at_least_one_class_level_requirement
+    if class_level_requirements.empty?
+      errors.add(:base, 'At least one class level requirement must be added.')
+    end
   end
 end
