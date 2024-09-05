@@ -14,7 +14,6 @@
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string(255)
 #  locked_at              :datetime
-#  person_affiliation     :string(255)
 #  principal_name         :string(255)
 #  provider               :string(255)
 #  remember_created_at    :datetime
@@ -41,6 +40,9 @@ class User < ApplicationRecord
          :trackable, :lockable, :timeoutable,
          :omniauthable, omniauth_providers: [ :saml ]
 
+  has_many :affiliations, dependent: :destroy
+  accepts_nested_attributes_for :affiliations
+
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
   has_many :assignments, dependent: :destroy
@@ -59,7 +61,10 @@ class User < ApplicationRecord
     end
   end
 
-  # Method to check for a specific role
+  def has_affiliation?(affiliation_name)
+    affiliations.exists?(name: affiliation_name)
+  end
+
   def role?(role_name)
     roles.exists?(kind: role_name)
   end
@@ -97,8 +102,7 @@ class User < ApplicationRecord
   end
 
   def is_employee?
-    Rails.logger.info "@@@@@@@@@@ email: #{email} - Person affiliation: #{person_affiliation}"
-    %w[employee staff member].any? { |affiliation| person_affiliation&.include?(affiliation) }
+    affiliations.exists?(name: [ 'employee', 'staff' ])
   end
 
   def display_firstname_or_email
