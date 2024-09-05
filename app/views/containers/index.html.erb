@@ -1,7 +1,7 @@
 <div class="container d-flex justify-content-between mt-4">
   <h1>Manage Submissions</h1> 
   <div>
-    <%= link_to "Create a new container", new_container_path, {class: 'btn btn-primary'} %>
+    <%= link_to "Create New Contest", new_container_path, {class: 'btn btn-sm btn-primary'} %>
   </div>
 </div>
 
@@ -13,7 +13,8 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0"><%= container.name %></h5>
               <small class="text-muted">
-                <%= container.department.display_name %> - 
+                <%= container.department.display_name %>
+                <br> 
                 <% admins = container.assignments.container_administrators %>
                 <% if admins.any? %>
                   <%= pluralize(admins.count, admins.first.role.kind) %>:
@@ -22,7 +23,7 @@
                   No Administrators Assigned
                 <% end %>
               </small>
-            <%= link_to "Show Container Details", container_path(container), class: "btn btn-secondary" %>
+            <%= link_to "View Contest Details", container_path(container), class: "link_to" %>
           </div>
           <div class="card-body">
             <%= link_to "Create a New Contest Description", new_container_contest_description_path(container), class: "btn btn-secondary" %>
@@ -43,8 +44,8 @@
                     <td><%= description.short_name %></td>
                     <td><%= description.eligibility_rules %></td>
                     <td>
-                      <%= link_to "View instances", container_contest_description_contest_instances_path(container, description), class: "btn btn-primary btn-sm" %>
-                      <%= button_to "Destroy", container_contest_description_path(container, description), method: :delete, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to delete this?' } %>
+                      <%= link_to "View contest instances", container_contest_description_contest_instances_path(container, description), class: "link_to" %> |
+                      <%= link_to "Archive", container_contest_description_path(container, description), data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' }, class: "link_to" %>
                     </td>
                     </tr>
                   </tr>

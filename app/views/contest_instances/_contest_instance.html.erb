@@ -1,12 +1,10 @@
 <div id="<%= dom_id contest_instance %>">
+
+  <h1><%= "#{contest_instance.contest_description.name } - #{contest_instance.date_open.year}"%></h1>
+
   <p>
     <strong>Status:</strong>
     <%= contest_instance.status.kind %>
-  </p>
-
-  <p>
-    <strong>Contest Description:</strong>
-    <%= contest_instance.contest_description.name %>
   </p>
 
   <p>
@@ -26,7 +24,7 @@
 
   <p>
     <strong>Judging Open:</strong>
-    <%= contest_instance.judging_open %>
+    <%= boolean_to_yes_no(contest_instance.judging_open) %>
   </p>
 
   <p>
@@ -41,12 +39,12 @@
 
   <p>
     <strong>Has Course Requirement:</strong>
-    <%= contest_instance.has_course_requirement %>
+    <%= boolean_to_yes_no(contest_instance.has_course_requirement) %>
   </p>
 
   <p>
     <strong>Judge Evaluations Complete:</strong>
-    <%= contest_instance.judge_evaluations_complete %>
+    <%= boolean_to_yes_no(contest_instance.judge_evaluations_complete) %>
   </p>
 
   <p>
@@ -56,12 +54,12 @@
 
   <p>
     <strong>Recommendation Letter Required:</strong>
-    <%= contest_instance.recletter_required %>
+    <%= boolean_to_yes_no(contest_instance.recletter_required) %>
   </p>
 
   <p>
     <strong>Transcript Required:</strong>
-    <%= contest_instance.transcript_required %>
+    <%= boolean_to_yes_no(contest_instance.transcript_required) %>
   </p>
 
   <p>
