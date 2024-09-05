@@ -18,7 +18,7 @@ RSpec.describe 'StaticPages', type: :request do
     end
 
     context 'when user is signed in' do
-      let(:user) { create(:user) }
+      let!(:user) { create(:user, :student) }
 
       before do
         mock_login({
