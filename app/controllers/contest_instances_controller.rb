@@ -69,9 +69,9 @@ class ContestInstancesController < ApplicationController
       new_contest_instance.created_by = current_user.email
       new_contest_instance.date_open = params[:dates][:date_open]
       new_contest_instance.date_closed = params[:dates][:date_closed]
-      class_level = last_contest_instance.class_levels.last
       new_contest_instance.save(validate: false)
-      new_contest_instance.class_levels << class_level
+      new_contest_instance.class_levels << last_contest_instance.class_levels
+      new_contest_instance.categories << last_contest_instance.categories
     end
     redirect_to containers_path, notice: "Contests instances were created for selected descriptions"
   end
