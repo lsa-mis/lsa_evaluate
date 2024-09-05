@@ -23,6 +23,9 @@ Rails.application.routes.draw do
       resources :assignments, only: %i[create destroy]
     end
 
+    get '/containers/:container_id/contest_descriptions_for_container/', to: 'contest_descriptions#contest_descriptions_for_container', as: :contest_descriptions_for_container
+    post '/containers/:container_id/contest_descriptions/create_instances_for_selected_descriptions', to: 'contest_instances#create_instances_for_selected_descriptions', as: :create_instances_for_selected_descriptions
+
     resources :visibilities
     resources :departments
     resources :roles
