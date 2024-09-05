@@ -15,6 +15,6 @@
 class Status < ApplicationRecord
   has_many :contest_descriptions
   has_many :contest_instances
-  validates :kind, presence: true, inclusion: { in: %w[Active Deleted Archived Disqualified] }, uniqueness: true
+  validates :kind, presence: true, inclusion: { in: %w[Active Inactive Deleted Archived Disqualified] }, uniqueness: true
   validates :description, presence: true
 end
