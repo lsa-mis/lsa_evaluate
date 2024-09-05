@@ -4,7 +4,7 @@ class ProfilePolicy < ApplicationPolicy
   end
 
   def new?
-    Rails.logger.debug { "&&!&&!&&!&&! Checking new? for user #{user.id}: has profile? #{user_has_persisted_profile?}, is admin? #{admin_user?}" }
+    # Rails.logger.debug { "&&!&&!&&!&&! Checking new? for user #{user.id}: has profile? #{user_has_persisted_profile?}, is admin? #{admin_user?}" }
     !user_has_persisted_profile? || admin_user?
   end
 
@@ -31,7 +31,7 @@ class ProfilePolicy < ApplicationPolicy
   end
 
   def user_has_persisted_profile?
-    Rails.logger.debug { "@@@@@@@@@ user has profile? #{user.profile&.persisted?}" }
+    # Rails.logger.debug { "@@@@@@@@@ user has profile? #{user.profile&.persisted?}" }
     user.profile&.persisted?
   end
 end
