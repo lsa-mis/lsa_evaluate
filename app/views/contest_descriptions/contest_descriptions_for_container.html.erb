@@ -1,4 +1,7 @@
-<h1><%= @container.name %></h1>
+<div class="d-flex justify-content-between align-items-center">
+  <h1><%= @container.name %></h1>
+  <%= link_to "Go Back to Containers", containers_path, class: "link_to mt-4" %>
+</div>
 <p>
 Please select dates for new period and descriptions to carry forward and then click the button to create new contest instances.
 </p>
