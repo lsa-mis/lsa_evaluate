@@ -1,4 +1,7 @@
-<h1><%= @container.name %> Contest Descriptions</h1>
+<h1><%= @container.name %></h1>
+<p>
+Please select dates for new period and descriptions to carry forward and then click the button to create new contest instances.
+</p>
 <div>
   <%= simple_form_for :dates, url: create_instances_for_selected_descriptions_path, method: :post, 
     data: { controller: "checkboxselect",
@@ -7,15 +10,20 @@
             turbo_frame: "_top" 
           } do |form| %>
     <div class="flex md:flex justify-between items-center ml-2 mb-2">
-      <div class="error_text" id="checkbox_error">
-      </div>
       <div>
         <%= submit_tag 'Create Instances for Selected Contest Descriptions', class: "btn btn-secondary" %>
       </div>
     </div>
     <input type="hidden" id="container" name="container" value=<%= @container %>>
-    <%= datetime_field :dates, :date_open %>
-    <%= datetime_field :dates, :date_closed %>
+    <div class="my-4">
+      <%= label_tag  "date_open", "Date Open *:" %>
+      <%= datetime_field :dates, :date_open, class: "mx-2", "data-checkboxselect-target": "date_open" %>
+      <%= label_tag  "date_closed", "Date Closed *:" %>
+      <%= datetime_field :dates, :date_closed, class: "mx-2", "data-checkboxselect-target": "date_closed" %>
+    </div>
+    <div class="text-danger my-2" id="checkbox_error">
+    </div>
+    <h2>Contest Descriptions</h2>
     <table class="table table-striped">
       <thead>
         <tr>

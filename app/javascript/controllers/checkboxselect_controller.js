@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["checkbox_all", "checkbox", "form"]
+  static targets = ["checkbox_all", "checkbox", "form", "date_open", "date_closed"]
 
   connect() {
     console.log("connect - checkbox select/deselect all")
@@ -10,6 +10,8 @@ export default class extends Controller {
   }
 
   toggleCheckbox() {
+    var checkbox_error_place = document.getElementById('checkbox_error')
+    checkbox_error_place.innerHTML = ''
     if (this.checkbox_allTarget.checked) {
       this.checkboxTargets.map(x => x.checked = true)
     } else {
@@ -18,6 +20,8 @@ export default class extends Controller {
   }
 
   toggleCheckboxAll() {
+    var checkbox_error_place = document.getElementById('checkbox_error')
+    checkbox_error_place.innerHTML = ''
     if (this.checkboxTargets.map(x => x.checked).includes(false)) {
       this.checkbox_allTarget.checked = false
     } else {
@@ -28,8 +32,14 @@ export default class extends Controller {
   submitForm(event) {
     var checkbox_error_place = document.getElementById('checkbox_error')
     checkbox_error_place.innerHTML = ''
+    let date_open = this.date_openTarget.value
+    let date_closed = this.date_closedTarget.value
+    if (date_open == "" || date_closed == "") {
+      checkbox_error_place.innerHTML = "Please select dates. "
+      event.preventDefault()
+    }
     if (!this.checkboxTargets.map(x => x.checked).includes(true)) {
-      checkbox_error_place.innerHTML = "Please select descriptions."
+      checkbox_error_place.innerHTML += "Please select descriptions."
       event.preventDefault()
     }
   }
