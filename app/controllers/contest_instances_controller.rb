@@ -61,10 +61,9 @@ class ContestInstancesController < ApplicationController
   end
 
   def create_instances_for_selected_descriptions
-    @selected_descriptions_ids = params[:checkbox].values
-    @selected_descriptions_ids.each do |id|
-      contest_description = ContestDescription.find(id.to_i)
-      last_contest_instance = contest_description.contest_instances.last
+    selected_descriptions_ids = params[:checkbox].values
+    selected_descriptions_ids.each do |id|
+      last_contest_instance = ContestDescription.find(id.to_i).contest_instances.last
       new_contest_instance = last_contest_instance.dup
       new_contest_instance.created_by = current_user.email
       new_contest_instance.date_open = params[:dates][:date_open]
