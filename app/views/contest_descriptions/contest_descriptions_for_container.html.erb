@@ -1,0 +1,46 @@
+<h1><%= @container.name %> Contest Descriptions</h1>
+<div>
+  <%= simple_form_for :dates, url: create_instances_for_selected_descriptions_path, method: :post, 
+    data: { controller: "checkboxselect",
+            target: "form",
+            action: "submit->checkboxselect#submitForm",
+            turbo_frame: "_top" 
+          } do |form| %>
+    <div class="flex md:flex justify-between items-center ml-2 mb-2">
+      <div class="error_text" id="checkbox_error">
+      </div>
+      <div>
+        <%= submit_tag 'Create Instances for Selected Contest Descriptions', class: "btn btn-secondary" %>
+      </div>
+    </div>
+    <input type="hidden" id="container" name="container" value=<%= @container %>>
+    <%= datetime_field :dates, :date_open %>
+    <%= datetime_field :dates, :date_closed %>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <td>
+            <span hidden id="select_all">Select All</span>
+            <input type="checkbox" aria-labelledby="select_all" class="check_box ml-2" data-checkboxselect-target="checkbox_all" data-action="change->checkboxselect#toggleCheckbox">
+          </td>
+          <th>Name</th>
+          <th>Short Name</th>
+          <th>Eligibility Rules</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @contest_descriptions.each do |description| %>
+            <tr>
+              <td class="mi_tbody_td">
+                <input type="checkbox" aria-labelledby=<%= "descr_ids_#{description.id}" %> name="checkbox[<%= description.id %>]" id="descr_ids_<%= description.id %>" value="<%= description.id %>" class="check_box" data-checkboxselect-target="checkbox" data-action="change->checkboxselect#toggleCheckboxAll">
+              </td>
+              <td><%= description.name %></td>
+              <td><%= description.short_name %></td>
+              <td><%= description.eligibility_rules %></td>
+            </tr>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

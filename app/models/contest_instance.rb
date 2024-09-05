@@ -70,6 +70,14 @@ class ContestInstance < ApplicationRecord
   validates :created_by, presence: true
   validate :must_have_at_least_one_class_level_requirement
 
+  def dup
+    super.tap do |new_instance|
+      new_instance.created_by = nil
+      new_instance.date_closed = nil
+      new_instance.date_open = nil
+    end
+  end
+
   def display_name
     "#{contest_description.name} - #{date_open.strftime('%Y-%m-%d')} to #{date_closed.strftime('%Y-%m-%d')}"
   end
