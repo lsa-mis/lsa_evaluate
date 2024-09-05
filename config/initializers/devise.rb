@@ -27,7 +27,8 @@ Devise.setup do |config|
   config.mailer_sender = Rails.application.credentials.dig(:devise, :mailer_sender)
 
   # Configure the class responsible to send e-mails.
-  config.mailer = 'Devise::Mailer'
+  # config.mailer = 'Devise::Mailer'
+  config.mailer = 'CustomDeviseMailer'
 
   # Configure the parent class responsible to send e-mails.
   config.parent_mailer = 'ActionMailer::Base'
@@ -58,12 +59,12 @@ Devise.setup do |config|
   # Configure which authentication keys should be case-insensitive.
   # These keys will be downcased upon creating or modifying a user and when used
   # to authenticate or find a user. Default is :email.
-  config.case_insensitive_keys = [:email]
+  config.case_insensitive_keys = [ :email ]
 
   # Configure which authentication keys should have whitespace stripped.
   # These keys will have whitespace before and after removed upon creating or
   # modifying a user and when used to authenticate or find a user. Default is :email.
-  config.strip_whitespace_keys = [:email]
+  config.strip_whitespace_keys = [ :email ]
 
   # Tell if authentication through request.params is enabled. True by default.
   # It can be set to an array that will enable params authentication only for the
@@ -97,7 +98,7 @@ Devise.setup do |config|
   # Notice that if you are skipping storage for all authentication paths, you
   # may want to disable generating routes to Devise's sessions controller by
   # passing skip: :sessions to `devise_for` in your config/routes.rb
-  config.skip_session_storage = [:http_auth]
+  config.skip_session_storage = [ :http_auth ]
 
   # By default, Devise cleans up the CSRF token on authentication to
   # avoid CSRF token fixation attacks. This means that, when using AJAX
@@ -132,7 +133,7 @@ Devise.setup do |config|
   config.send_email_changed_notification = false
 
   # Send a notification email when the user's password is changed.
-  config.send_password_change_notification = true
+  config.send_password_change_notification = false
 
   # ==> Configuration for :confirmable
   # A period that the user is allowed to access the website even without
@@ -197,7 +198,7 @@ Devise.setup do |config|
   config.lock_strategy = :failed_attempts
 
   # Defines which key will be used when locking and unlocking an account
-  config.unlock_keys = [:email]
+  config.unlock_keys = [ :email ]
 
   # Defines which strategy will be used to unlock an account.
   # :email = Sends an unlock link to the user email
@@ -219,7 +220,7 @@ Devise.setup do |config|
   # ==> Configuration for :recoverable
   #
   # Defines which key will be used when recovering the password for an account
-  config.reset_password_keys = [:email]
+  config.reset_password_keys = [ :email ]
 
   # Time interval you can reset your password with a reset password key.
   # Don't put a too small interval or your users won't have the time to
@@ -301,11 +302,11 @@ Devise.setup do |config|
                   idp_sso_service_url: idp_login_url,
                   idp_slo_service_url: idp_logout_url,
                   name_identifier_format: 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
-                  attribute_statements: { email: ['urn:oid:0.9.2342.19200300.100.1.3'],
-                                          name: ['urn:oid:2.16.840.1.113730.3.1.241'],
-                                          uid: ['urn:oid:0.9.2342.19200300.100.1.1'],
-                                          person_affiliation: ['urn:oid:1.3.6.1.4.1.5923.1.1.1.1'],
-                                          principal_name: ['urn:oid:1.3.6.1.4.1.5923.1.1.1.6'] },
+                  attribute_statements: { email: [ 'urn:oid:0.9.2342.19200300.100.1.3' ],
+                                          name: [ 'urn:oid:2.16.840.1.113730.3.1.241' ],
+                                          uid: [ 'urn:oid:0.9.2342.19200300.100.1.1' ],
+                                          person_affiliation: [ 'urn:oid:1.3.6.1.4.1.5923.1.1.1.1' ],
+                                          principal_name: [ 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6' ] },
                   request_attributes: {},
                   idp_cert_fingerprint: idp_fingerprint,
                   idp_cert_fingerprint_algorithm: 'http://www.w3.org/2000/09/xmldsig#sha256',
