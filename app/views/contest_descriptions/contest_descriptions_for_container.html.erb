@@ -3,7 +3,7 @@
   <%= link_to "Go Back to Containers", containers_path, class: "link_to mt-4" %>
 </div>
 <p>
-Please select dates for new period and descriptions to carry forward and then click the button to create new contest instances.
+Please select dates for a new contest period and descriptions to carry forward. Then click the button to create new contest instances.
 </p>
 <div>
   <%= simple_form_for :dates, url: create_instances_for_selected_descriptions_path, method: :post, 
