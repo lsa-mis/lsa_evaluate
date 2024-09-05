@@ -61,16 +61,17 @@ class ContestInstancesController < ApplicationController
   end
 
   def create_instances_for_selected_descriptions
-    selected_descriptions_ids = params[:checkbox].values
-    selected_descriptions_ids.each do |id|
-      last_contest_instance = ContestDescription.find(id.to_i).contest_instances.last
+    @selected_descriptions_ids = params[:checkbox].values
+    @selected_descriptions_ids.each do |id|
+      contest_description = ContestDescription.find(id.to_i)
+      last_contest_instance = contest_description.contest_instances.last
       new_contest_instance = last_contest_instance.dup
       new_contest_instance.created_by = current_user.email
       new_contest_instance.date_open = params[:dates][:date_open]
       new_contest_instance.date_closed = params[:dates][:date_closed]
+      class_level = last_contest_instance.class_levels.last
       new_contest_instance.save(validate: false)
-      new_contest_instance.class_levels << last_contest_instance.class_levels
-      new_contest_instance.categories << last_contest_instance.categories
+      new_contest_instance.class_levels << class_level
     end
     redirect_to containers_path, notice: "Contests instances were created for selected descriptions"
   end
