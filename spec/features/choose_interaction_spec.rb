@@ -2,40 +2,59 @@
 
 require 'rails_helper'
 
-RSpec.describe 'ChooseInteractionDisplay' do
-  let!(:user) { create(:user) }
-
-  context "user not logged in" do
-    it '_choose_interaction partial is not displayed' do
+RSpec.describe 'ChooseInteractionDisplay', type: :system do
+  context "when user not logged in" do
+    it 'does not render the _choose_interaction partial' do
       visit root_path
       expect(page).to have_no_css '#opportunity-partial', visible: :visible
     end
   end
 
-  context "user logged in" do
-    it '_choose_interaction partial is displayed' do
-      visit new_user_session_path
-      fill_in 'Email', with: user.email
-      fill_in 'Password', with: user.password
-      click_link_or_button 'Log in'
-
-      # save_and_open_page
-
-      expect(page).to have_current_path(root_path)
-      expect(page).to have_css '#choose-interaction', visible: :visible
+  describe 'user signed in' do
+    shared_examples 'renders the choose_interaction partial' do
+      it 'renders the choose_interaction partial' do
+        get root_path
+        expect(response.body).to include('data-controller="interaction"')
+        expect(response.body).to include('data-interaction-target="content"')
+      end
     end
-  end
 
-  context "logged in use is a student" do
-    it 'does not see the #manage-submissions' do
-      user.person_affiliation = 'student'
-      visit new_user_session_path
-      fill_in 'Email', with: user.email
-      fill_in 'Password', with: user.password
-      click_link_or_button 'Log in'
+    context 'when employee user is signed in' do
+      let!(:user) { create(:user, :employee) }
 
-      expect(page).to have_current_path(root_path)
-      expect(page).to have_no_css '#manage-submissions', visible: :visible
+      before do
+        mock_login({
+                     email: user.email,
+                     name: user.display_name,
+                     uniqname: user.uniqname
+                   })
+        get root_path
+      end
+
+      include_examples 'renders the choose_interaction partial'
+
+      it 'renders the manage-submissions' do
+        expect(response.body).to include('manage-submissions')
+      end
+    end
+
+    context 'when student user is signed in' do
+      let!(:user) { create(:user, :student) }
+
+      before do
+        mock_login({
+                     email: user.email,
+                     name: user.display_name,
+                     uniqname: user.uniqname
+                   })
+        get root_path
+      end
+
+      include_examples 'renders the choose_interaction partial'
+
+      it 'does not render the manage-submissions' do
+        expect(response.body).not_to include('manage-submissions')
+      end
     end
   end
 end
