@@ -36,4 +36,6 @@ class Entry < ApplicationRecord
   belongs_to :profile
   belongs_to :category
   has_one_attached :entry_file
+
+  validates :title, presence: true
 end
