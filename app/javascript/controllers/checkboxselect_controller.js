@@ -38,6 +38,10 @@ export default class extends Controller {
       checkbox_error_place.innerHTML = "Please select dates. "
       event.preventDefault()
     }
+    if (date_open > date_closed) {
+      checkbox_error_place.innerHTML = "Date Open should occur before Date Closed. "
+      event.preventDefault()
+    }
     if (!this.checkboxTargets.map(x => x.checked).includes(true)) {
       checkbox_error_place.innerHTML += "Please select descriptions."
       event.preventDefault()
