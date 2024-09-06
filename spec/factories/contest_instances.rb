@@ -35,7 +35,7 @@
 #
 FactoryBot.define do
   factory :contest_instance do
-    status { Status.find_or_create_by(kind: 'Active') }
+    status { create(:status, kind: "Active") }
     contest_description
     date_open { Faker::Date.backward(days: 14) }
     date_closed { Faker::Date.forward(days: 14) }

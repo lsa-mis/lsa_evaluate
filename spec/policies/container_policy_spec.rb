@@ -8,8 +8,8 @@ RSpec.describe ContainerPolicy do
   let!(:axis_mundi_role) { create(:role, kind: 'Axis Mundi') }
   let!(:container_admin_role) { create(:role, kind: 'Container Administrator') }
   let!(:container_manager_role) { create(:role, kind: 'Container Manager') }
-  let(:axis_mundi_user) { create(:user) }
-  let(:creator) { create(:user, person_affiliation: 'employee') }
+  let(:axis_mundi_user) { create(:user, :employee) }
+  let(:creator) { create(:user, :employee) }
 
   before do
     # Ensure the roles and assignments are created after the container is available
@@ -24,14 +24,14 @@ RSpec.describe ContainerPolicy do
   end
 
   context 'for a non-employee user' do
-    let(:user) { create(:user, person_affiliation: 'student') }
+    let(:user) { create(:user, :student) }
 
     it { is_expected.not_to permit_action(:create) }
     it { is_expected.not_to permit_action(:update) }
   end
 
   context 'for an employee user who did not create the container but has a manager role' do
-    let(:user) { create(:user, person_affiliation: 'employee') }
+    let(:user) { create(:user, :employee) }
 
     before do
       create(:assignment, container: container, user: user, role: container_manager_role)

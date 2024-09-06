@@ -30,8 +30,102 @@
 #  fk_rails_...  (profile_id => profiles.id)
 #  fk_rails_...  (status_id => statuses.id)
 #
+# spec/models/entry_spec.rb
+
 require 'rails_helper'
 
 RSpec.describe Entry, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  let(:category) { create(:category, kind: "ecat") }
+  let(:contest_instance) { create(:contest_instance) }
+  let(:profile) { create(:profile) }
+  let(:status) { create(:status, kind: "Disqualified") }
+
+  # describe 'Factory' do
+  #   it 'creates a valid entry' do
+  #     entry = create(:entry)
+  #     puts entry.inspect# Using the factory directly
+  #     expect(entry).to be_valid
+  #   end
+
+  #   it 'creates a valid entry with file attachment' do
+  #     entry = create(:entry)
+  #     expect(entry.entry_file).to be_attached
+  #   end
+  # end
+
+  describe 'validations' do
+    it 'is valid with valid attributes' do
+      entry = build(:entry, category: category, contest_instance: contest_instance, profile: profile, status: status)
+      expect(entry).to be_valid
+    end
+
+    it 'is not valid without a title' do
+      entry = build(:entry, title: nil, category: category, contest_instance: contest_instance, profile: profile, status: status)
+      expect(entry).not_to be_valid
+    end
+
+    it 'is not valid without a category' do
+      entry = build(:entry, category: nil, contest_instance: contest_instance, profile: profile, status: status)
+      expect(entry).not_to be_valid
+    end
+
+    it 'is not valid without a contest_instance' do
+      entry = build(:entry, contest_instance: nil, category: category, profile: profile, status: status)
+      expect(entry).not_to be_valid
+    end
+
+    it 'is not valid without a profile' do
+      entry = build(:entry, profile: nil, category: category, contest_instance: contest_instance, status: status)
+      expect(entry).not_to be_valid
+    end
+
+    it 'is not valid without a status' do
+      entry = build(:entry, status: nil, category: category, contest_instance: contest_instance, profile: profile)
+      expect(entry).not_to be_valid
+    end
+  end
+
+  describe 'associations' do
+    it 'belongs to a category' do
+      association = described_class.reflect_on_association(:category)
+      expect(association.macro).to eq(:belongs_to)
+    end
+
+    it 'belongs to a contest_instance' do
+      association = described_class.reflect_on_association(:contest_instance)
+      expect(association.macro).to eq(:belongs_to)
+    end
+
+    it 'belongs to a profile' do
+      association = described_class.reflect_on_association(:profile)
+      expect(association.macro).to eq(:belongs_to)
+    end
+
+    it 'belongs to a status' do
+      association = described_class.reflect_on_association(:status)
+      expect(association.macro).to eq(:belongs_to)
+    end
+  end
+
+  describe 'database structure' do
+    it 'has a title column' do
+      expect(described_class.column_names).to include('title')
+    end
+
+    it 'has a category_id column' do
+      expect(described_class.column_names).to include('category_id')
+    end
+
+    it 'has a contest_instance_id column' do
+      expect(described_class.column_names).to include('contest_instance_id')
+    end
+
+    it 'has a profile_id column' do
+      expect(described_class.column_names).to include('profile_id')
+    end
+
+    it 'has a status_id column' do
+      expect(described_class.column_names).to include('status_id')
+    end
+  end
 end

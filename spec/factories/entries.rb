@@ -30,12 +30,22 @@
 #  fk_rails_...  (profile_id => profiles.id)
 #  fk_rails_...  (status_id => statuses.id)
 #
-class Entry < ApplicationRecord
-  belongs_to :status
-  belongs_to :contest_instance
-  belongs_to :profile
-  belongs_to :category
-  has_one_attached :entry_file
+# spec/factories/entries.rb
+FactoryBot.define do
+  factory :entry do
+    title { "Sample Entry Title" }
+    status
+    contest_instance
+    profile
+    category
 
-  validates :title, presence: true
+    # If you want to add an attached file, you can use this
+    after(:build) do |entry|
+      entry.entry_file.attach(
+        io: File.open(Rails.root.join("spec/support/files/sample_test.pdf")),
+        filename: 'sample_test.pdf',
+        content_type: 'application/pdf'
+      )
+    end
+  end
 end

@@ -179,7 +179,7 @@ RSpec.describe ContestInstance do
 
     context 'when the current date is between date_open and date_closed but status is not active' do
       it 'returns false' do
-        contest_instance = create(:contest_instance, status: create(:status_archived), date_open: 2.days.ago, date_closed: 2.days.from_now)
+        contest_instance = create(:contest_instance, status: create(:status, :archived), date_open: 2.days.ago, date_closed: 2.days.from_now)
         expect(contest_instance.is_open?).to be(false)
       end
     end

@@ -147,13 +147,45 @@ ClassLevel.create([
                   ])
 
 # Seed data for Users
-user1 = User.create!(email: 'alice@example.com', password: 'passwordpassword', uniqname: 'alicew', uid: 'alicew', principal_name: 'alice@example.com', display_name: 'Alice Wonderland', person_affiliation: 'employee')
-user2 = User.create!(email: 'bob@example.com', password: 'passwordpassword', uniqname: 'bobb', uid: 'bobb', principal_name: 'bob@example.com', display_name: 'Bob Builder', person_affiliation: 'employee')
-user2 = User.create!(email: 'sallystu@example.com', password: 'passwordpassword', uniqname: 'sallystu', uid: 'sallystu', principal_name: 'sallystu@example.com', display_name: 'Sally Student', person_affiliation: 'student')
-user3 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
-user4 = User.create!(email: 'brita@umich.edu', password: 'passwordpassword')
-user5 = User.create!(email: 'jjsantos@umich.edu', password: 'passwordpassword')
-user6 = User.create!(email: 'mlaitan@umich.edu', password: 'passwordpassword')
+user1 = User.create!(email: 'alicefac@example.com',
+                     password: 'passwordpassword',
+                     uniqname: 'alicefac',
+                     uid: 'alicefac',
+                     principal_name: 'alicefac@example.com',
+                     display_name: 'Alice Wonderland',
+                     affiliations_attributes: [
+                                                { name: 'faculty' },
+                                                { name: 'employee' },
+                                                { name: 'member' }
+                                              ]
+                    )
+user2 = User.create!(email: 'bobstaff@example.com',
+                     password: 'passwordpassword',
+                     uniqname: 'bobstaff',
+                     uid: 'bobstaff',
+                     principal_name: 'bobstaff@example.com',
+                     display_name: 'Bob Builder',
+                     affiliations_attributes: [
+                                                { name: 'staff' },
+                                                { name: 'employee' },
+                                                { name: 'member' }
+                                              ]
+)
+user3 = User.create!(email: 'sallystu@example.com',
+                     password: 'passwordpassword',
+                     uniqname: 'sallystu',
+                     uid: 'sallystu',
+                     principal_name: 'sallystu@example.com',
+                     display_name: 'Sally Student',
+                     affiliations_attributes: [
+                                                { name: 'student' },
+                                                { name: 'member' }
+                                              ]
+)
+user4 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
+user5 = User.create!(email: 'brita@umich.edu', password: 'passwordpassword')
+user6 = User.create!(email: 'jjsantos@umich.edu', password: 'passwordpassword')
+user7 = User.create!(email: 'mlaitan@umich.edu', password: 'passwordpassword')
 
 # Seed data for Roles
 Role.create!([
@@ -161,14 +193,14 @@ Role.create!([
                { kind: 'Axis mundi' },
                { kind: 'Container Manager' }
              ])
-role_admin = Role.find_by(kind: 'Container Administrator')
+role_container_admin = Role.find_by(kind: 'Container Administrator')
 axis_mundi = Role.find_by(kind: 'Axis mundi')
 
 UserRole.create!([
-                  { user: user3, role: axis_mundi },
                   { user: user4, role: axis_mundi },
                   { user: user5, role: axis_mundi },
-                  { user: user6, role: axis_mundi }
+                  { user: user6, role: axis_mundi },
+                  { user: user7, role: axis_mundi }
                  ])
 
 # Seed data for Containers

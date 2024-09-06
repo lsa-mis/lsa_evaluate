@@ -14,7 +14,6 @@
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string(255)
 #  locked_at              :datetime
-#  person_affiliation     :string(255)
 #  principal_name         :string(255)
 #  provider               :string(255)
 #  remember_created_at    :datetime
@@ -35,9 +34,30 @@
 #
 FactoryBot.define do
   factory :user do
-    uniqname { Faker::String.random(length: 3..8) }
     email { Faker::Internet.email }
+    # password { "passwordpassword" }
     password { Faker::Internet.password(min_length: 15) }
+    uniqname { Faker::Internet.username }
+    uid { uniqname }
+    principal_name { email }
     display_name { Faker::Name.name }
+
+    trait :employee do
+      after(:create) do |user|
+        create(:affiliation, user: user, name: 'employee')
+      end
+    end
+
+    trait :student do
+      after(:create) do |user|
+        create(:affiliation, user: user, name: 'student')
+      end
+    end
+
+    trait :faculty do
+      after(:create) do |user|
+        create(:affiliation, user: user, name: 'faculty')
+      end
+    end
   end
 end

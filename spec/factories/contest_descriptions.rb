@@ -26,7 +26,7 @@
 FactoryBot.define do
   factory :contest_description do
     container
-    status { Status.find_or_create_by(kind: 'Active') }
+    status
     name { Faker::Lorem.word }
     short_name { Faker::Lorem.word }
     eligibility_rules { Faker::Lorem.paragraph }

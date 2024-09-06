@@ -55,6 +55,7 @@ RSpec.configure do |config|
 
   config.include AuthHelpers, type: :controller
   config.include AuthHelpers, type: :request
+  config.include AuthHelpers, type: :system
 
   config.infer_spec_type_from_file_location!
 
