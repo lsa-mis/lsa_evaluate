@@ -61,13 +61,13 @@ FactoryBot.define do
     umid { Faker::Number.number(digits: 8) }
     class_level
     school
-    campus { Campus.find_by(campus_cd: '1001') || association(:campus, :predefined) }
+    campus
     major { Faker::Educator.subject }
     department
     grad_date { Faker::Date.forward(days: 365) }
     degree { Faker::Educator.degree }
     receiving_financial_aid { Faker::Boolean.boolean }
-    accepted_financial_aid_notice { Faker::Boolean.boolean }
+    accepted_financial_aid_notice { true }
     campus_employee { Faker::Boolean.boolean }
     financial_aid_description { Faker::Lorem.paragraph }
     hometown_publication { Faker::Address.city }
