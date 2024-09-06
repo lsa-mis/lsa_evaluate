@@ -15,7 +15,14 @@
 require 'rails_helper'
 
 RSpec.describe Category, type: :model do
-  let(:category) { create(:category_drama) }
+  let(:category) { create(:category, :drama) }
+
+  describe 'Factory' do
+    it 'creates a valid entry' do
+      category = create(:category) # Using the factory directly
+      expect(category).to be_valid
+    end
+  end
 
   describe 'associations' do
     it 'has many contest_instances through category_contest_instances' do
@@ -33,23 +40,23 @@ RSpec.describe Category, type: :model do
   describe 'validations' do
     it 'validates uniqueness of kind' do
       # Create a category with a unique kind
-      create(:category_drama)
+      create(:category, :drama)
 
       # Attempt to create another category with the same kind
-      duplicate_category = build(:category_drama)
+      duplicate_category = build(:category, :drama)
 
       expect(duplicate_category).not_to be_valid
       expect(duplicate_category.errors[:kind]).to include('has already been taken')
     end
 
     it 'validates presence of kind' do
-      category = build(:category_drama, kind: nil)
+      category = build(:category, :drama, kind: nil)
       expect(category).not_to be_valid
       expect(category.errors[:kind]).to include("can't be blank")
     end
 
     it 'validates presence of description' do
-      category = build(:category_drama, description: nil)
+      category = build(:category, :drama, description: nil)
       expect(category).not_to be_valid
       expect(category.errors[:description]).to include("can't be blank")
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_21_205130) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_05_185447) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -72,6 +72,14 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_21_205130) do
     t.index ["address_type_id"], name: "address_type_id_idx"
     t.index ["address_type_id"], name: "index_addresses_on_address_type_id"
     t.index ["id"], name: "id_unq_idx", unique: true
+  end
+
+  create_table "affiliations", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "name"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_affiliations_on_user_id"
   end
 
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -311,7 +319,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_21_205130) do
     t.string "uid"
     t.string "principal_name"
     t.string "display_name"
-    t.string "person_affiliation"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
@@ -327,6 +334,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_21_205130) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "addresses", "address_types"
+  add_foreign_key "affiliations", "users"
   add_foreign_key "assignments", "containers"
   add_foreign_key "assignments", "roles"
   add_foreign_key "assignments", "users"

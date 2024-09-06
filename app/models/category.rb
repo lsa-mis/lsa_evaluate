@@ -15,6 +15,7 @@
 class Category < ApplicationRecord
   has_many :category_contest_instances
   has_many :contest_instances, through: :category_contest_instances
+  has_many :entries
   validates :kind, presence: true,
                    uniqueness: true
   validates :description, presence: true

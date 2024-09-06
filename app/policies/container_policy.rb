@@ -42,7 +42,7 @@ class ContainerPolicy < ApplicationPolicy
   end
 
   def user_is_employee?
-    user.person_affiliation == 'employee'
+    user.has_affiliation?('employee')
   end
 
   def container_admin_role

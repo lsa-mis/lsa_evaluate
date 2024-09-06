@@ -30,6 +30,18 @@ module Users
 
     def auth
       # Rails.logger.info("@@@@@@  Omniauth Auth Hash: #{request.env['omniauth.auth'].inspect}")
+      auth_hash = request.env['omniauth.auth']
+
+      # Access the attributes hash from raw_info
+      urn_values = auth_hash['extra']['raw_info'].attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.1'] rescue []
+
+      # Ensure urn_values is always an array (handles both string and array cases)
+      urn_values = Array(urn_values)
+
+      # Log the array of values
+      # Rails.logger.info("@@@@@@  URN Values: #{urn_values.join(', ')}")
+
+      session[:urn_values] = urn_values
       request.env['omniauth.auth']
     end
 
@@ -68,8 +80,8 @@ module Users
         uid: auth.info.uid,
         principal_name: auth.info.principal_name,
         display_name: auth.info.name,
-        person_affiliation: auth.info.person_affiliation,
-        password: Devise.friendly_token[0, 20]
+        password: Devise.friendly_token[0, 20],
+        affiliations_attributes: session[:urn_values].map { |value| { name: value } }
       }
     end
   end
