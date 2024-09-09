@@ -39,7 +39,7 @@ module Users
       urn_values = Array(urn_values)
 
       # Log the array of values
-      # Rails.logger.info("@@@@@@  URN Values: #{urn_values.join(', ')}")
+      Rails.logger.info("@@@@@@  URN Values: #{urn_values.join(', ')}")
 
       session[:urn_values] = urn_values
       request.env['omniauth.auth']
