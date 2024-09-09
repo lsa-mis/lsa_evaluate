@@ -89,7 +89,7 @@ RSpec.describe Container do
     end
 
     context 'when the container is created' do
-      let(:user) { create(:user) }
+      let(:user) { create(:user, :employee) }
       let(:department) { create(:department) }
       let(:visibility) { create(:visibility) }
       let!(:container_admin_role) { create(:role, kind: 'Container Administrator') }
