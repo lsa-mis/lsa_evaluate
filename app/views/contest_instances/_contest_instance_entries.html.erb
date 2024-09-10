@@ -1,0 +1,20 @@
+    <h2>Entries</h2>
+<h2>Entries</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>File</th>
+      <th>Display Name</th>
+      <th>Username</th>
+      <th>Title</th>
+      <th>Pen Name</th>
+      <th>Created At</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @contest_instance_entries.each do |ci_entry| %>
+      <%= render partial: 'contest_instances/entry', locals: { entry: ci_entry } %>
+    <% end %>
+  </tbody>
+</table>
