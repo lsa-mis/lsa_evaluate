@@ -8,7 +8,8 @@
     <%= f.input :eligibility_rules %>
     <%= f.input :notes %>
     <%= f.input :short_name %>
-    <%= f.association :status, as: :select, collection: Status.all, label_method: :kind, value_method: :id %>
+    <%= f.input :active %>
+    <%= f.input :archived %>
   </div>
 
   <div class="form-actions">

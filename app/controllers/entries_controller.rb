@@ -15,8 +15,7 @@ class EntriesController < ApplicationController
     contest_instance_id = params[:contest_instance_id]
     @entry = Entry.new(
       contest_instance_id: contest_instance_id,
-      status: Status.find_by(kind: 'Active'), # Replace with your logic
-      profile: current_user.profile # Assuming the current user has a profile associated
+      profile: current_user.profile
     )
   end
 
@@ -71,6 +70,6 @@ class EntriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def entry_params
-      params.require(:entry).permit(:title, :status_id, :contest_instance_id, :profile_id, :category_id, :entry_file)
+      params.require(:entry).permit(:title, :disqualified, :deleted, :contest_instance_id, :profile_id, :category_id, :entry_file)
     end
 end
