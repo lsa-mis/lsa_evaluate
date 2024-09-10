@@ -16,17 +16,6 @@
 #
 #  fk_rails_...  (user_id => users.id)
 #
-# ================================================================================================
-# eduPersonAffiliation	umichInstRoles (in MCommunity)
-# -------------------------------------------------------
-# [student]   Student, EnrolledStudent
-# [faculty]   Faculty
-# [staff]   RegularStaff
-# [employee]    Faculty, RegularStaff, TemporaryStaff
-# [alum]    Alumni
-# [affiliate]   SponsoredAffiliate
-# [member]    Student, EnrolledStudent, Faculty, RegularStaff, TemporaryStaff, Retiree, Alumni
-# # ================================================================================================
 
 class Affiliation < ApplicationRecord
   belongs_to :user

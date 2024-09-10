@@ -5,7 +5,6 @@ Rails.application.routes.draw do
 
   resources :entries
   get 'applicant_dashboard/index'
-  resources :testingrsmokes
 
   devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' } do
     delete 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
@@ -27,7 +26,6 @@ Rails.application.routes.draw do
     end
   end
   resources :editable_contents, only: %i[index edit update]
-  resources :statuses
   resources :categories
   # resources :contest_descriptions
   resources :class_levels

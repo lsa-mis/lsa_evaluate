@@ -3,6 +3,8 @@
 # Table name: contest_instances
 #
 #  id                                   :bigint           not null, primary key
+#  active                               :boolean          default(FALSE), not null
+#  archived                             :boolean          default(FALSE), not null
 #  course_requirement_description       :text(65535)
 #  created_by                           :string(255)
 #  date_closed                          :datetime         not null
@@ -18,30 +20,21 @@
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
 #  contest_description_id               :bigint           not null
-#  status_id                            :bigint           not null
 #
 # Indexes
 #
 #  contest_description_id_idx                         (contest_description_id)
 #  id_unq_idx                                         (id) UNIQUE
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
-#  index_contest_instances_on_status_id               (status_id)
-#  status_id_idx                                      (status_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
-#  fk_rails_...  (status_id => statuses.id)
 #
 require 'rails_helper'
 
 RSpec.describe ContestInstance do
   describe 'associations' do
-    it 'belongs to status' do
-      association = described_class.reflect_on_association(:status)
-      expect(association.macro).to eq(:belongs_to)
-    end
-
     it 'belongs to contest_description' do
       association = described_class.reflect_on_association(:contest_description)
       expect(association.macro).to eq(:belongs_to)
@@ -170,16 +163,16 @@ RSpec.describe ContestInstance do
   end
 
   describe '#is_open?' do
-    context 'when the current date is between date_open and date_closed and status is active' do
+    context 'when the current date is between date_open and date_closed and is active' do
       it 'returns true' do
         contest_instance = create(:contest_instance, date_open: 2.days.ago, date_closed: 2.days.from_now)
         expect(contest_instance.is_open?).to be(true)
       end
     end
 
-    context 'when the current date is between date_open and date_closed but status is not active' do
+    context 'when the current date is between date_open and date_closed but is not active' do
       it 'returns false' do
-        contest_instance = create(:contest_instance, status: create(:status, :archived), date_open: 2.days.ago, date_closed: 2.days.from_now)
+        contest_instance = create(:contest_instance, active: false, date_open: 2.days.ago, date_closed: 2.days.from_now)
         expect(contest_instance.is_open?).to be(false)
       end
     end
@@ -197,12 +190,19 @@ RSpec.describe ContestInstance do
         expect(contest_instance.is_open?).to be(false)
       end
     end
+
+    context 'when is archived' do
+      it 'returns false' do
+        contest_instance = create(:contest_instance, archived: true)
+        expect(contest_instance.is_open?).to be(false)
+      end
+    end
   end
 
   describe '.active_and_open' do
     let!(:active_open_contest) { create(:contest_instance, date_open: 1.day.ago, date_closed: 1.day.from_now) }
     let!(:active_closed_contest) { create(:contest_instance, date_open: 3.days.ago, date_closed: 1.day.ago) }
-    let!(:archived_contest) { create(:contest_instance, status: create(:status_archived), date_open: 1.day.ago, date_closed: 1.day.from_now) }
+    let!(:archived_contest) { create(:contest_instance, archived: true, date_open: 1.day.ago, date_closed: 1.day.from_now) }
 
     it 'returns only active contests within the date range' do
       expect(ContestInstance.active_and_open).to include(active_open_contest)

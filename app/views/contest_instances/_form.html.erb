@@ -3,7 +3,8 @@
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
   <div class="form-inputs">
-    <%= f.association :status, label_method: :kind %>
+    <%= f.input :active %>
+    <%= f.input :archived %>
     <%= f.association :contest_description, label_method: :name %>
     <%= f.input :date_open, as: :datetime %>
     <%= f.input :date_closed, as: :datetime %>
