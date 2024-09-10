@@ -25,29 +25,39 @@
               </small>
             <%= link_to "View Contest Details", container_path(container), class: "link_to" %>
           </div>
-          <div class="card-body">
+          <div class="card-body" data-controller="filter">
             <%= link_to "Create a New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
             <%= link_to "Create Multiple Instances", contest_descriptions_for_container_container_contest_descriptions_path(container), class: "btn btn-sm btn-secondary" %>
+
+            <!-- Add a checkbox to filter only Active contest descriptions -->
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="statusFilter" data-action="change->filter#toggleFilter" data-filter-target="statusFilter">
+              <label class="form-check-label" for="statusFilter">
+                Show only <span class="fw-bolder">Active</span> contest descriptions
+              </label>
+            </div>
+
             <table class="table table-striped">
               <thead>
                 <tr>
                   <th>Name</th>
                   <th>Short Name</th>
                   <th>Eligibility Rules</th>
+                  <th>Status</th>
                   <td>Actions</td>
                 </tr>
               </thead>
               <tbody>
                 <% container.contest_descriptions.each do |description| %>
-                    <tr>
+                  <tr data-status="<%= description.status.kind %>" data-filter-target="filterRow">
                     <td><%= description.name %></td>
                     <td><%= description.short_name %></td>
                     <td><%= description.eligibility_rules %></td>
+                    <td><%= description.status.kind %></td>
                     <td>
                       <%= link_to "View contest instances", container_contest_description_contest_instances_path(container, description), class: "link_to" %> |
                       <%= link_to "Archive", container_contest_description_path(container, description), data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' }, class: "link_to" %>
                     </td>
-                    </tr>
                   </tr>
                 <% end %>
               </tbody>
