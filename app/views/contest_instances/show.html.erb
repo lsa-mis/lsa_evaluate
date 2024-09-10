@@ -12,3 +12,7 @@
   
   <%= link_to "Archive", container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' } %>
 </div>
+<hr>
+<div>
+  <%= render "contest_instance_entries" %>
+</div>
