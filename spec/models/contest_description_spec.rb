@@ -3,6 +3,8 @@
 # Table name: contest_descriptions
 #
 #  id                :bigint           not null, primary key
+#  active            :boolean          default(FALSE), not null
+#  archived          :boolean          default(FALSE), not null
 #  created_by        :string(255)      not null
 #  eligibility_rules :text(65535)
 #  name              :string(255)      not null
@@ -11,17 +13,14 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #  container_id      :bigint           not null
-#  status_id         :bigint           not null
 #
 # Indexes
 #
 #  index_contest_descriptions_on_container_id  (container_id)
-#  index_contest_descriptions_on_status_id     (status_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (container_id => containers.id)
-#  fk_rails_...  (status_id => statuses.id)
 #
 require 'rails_helper'
 
@@ -31,11 +30,6 @@ RSpec.describe ContestDescription, type: :model do
   context 'associations' do
     it 'belongs to a container' do
       association = described_class.reflect_on_association(:container)
-      expect(association.macro).to eq :belongs_to
-    end
-
-    it 'belongs to a status' do
-      association = described_class.reflect_on_association(:status)
       expect(association.macro).to eq :belongs_to
     end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_05_185447) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_10_211246) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -153,7 +153,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_05_185447) do
 
   create_table "contest_descriptions", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "container_id", null: false
-    t.bigint "status_id", null: false
     t.string "name", null: false
     t.string "short_name"
     t.text "eligibility_rules"
@@ -161,12 +160,12 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_05_185447) do
     t.string "created_by", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "active", default: false, null: false
+    t.boolean "archived", default: false, null: false
     t.index ["container_id"], name: "index_contest_descriptions_on_container_id"
-    t.index ["status_id"], name: "index_contest_descriptions_on_status_id"
   end
 
   create_table "contest_instances", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "status_id", null: false
     t.bigint "contest_description_id", null: false
     t.datetime "date_open", null: false
     t.datetime "date_closed", null: false
@@ -182,11 +181,11 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_05_185447) do
     t.string "created_by"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "active", default: false, null: false
+    t.boolean "archived", default: false, null: false
     t.index ["contest_description_id"], name: "contest_description_id_idx"
     t.index ["contest_description_id"], name: "index_contest_instances_on_contest_description_id"
     t.index ["id"], name: "id_unq_idx", unique: true
-    t.index ["status_id"], name: "index_contest_instances_on_status_id"
-    t.index ["status_id"], name: "status_id_idx"
   end
 
   create_table "departments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -207,12 +206,13 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_05_185447) do
 
   create_table "entries", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "title", null: false
-    t.bigint "status_id", null: false
     t.bigint "contest_instance_id", null: false
     t.bigint "profile_id", null: false
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "disqualified", default: false, null: false
+    t.boolean "deleted", default: false, null: false
     t.index ["category_id"], name: "category_id_idx"
     t.index ["category_id"], name: "index_entries_on_category_id"
     t.index ["contest_instance_id"], name: "contest_instance_id_idx"
@@ -220,8 +220,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_05_185447) do
     t.index ["id"], name: "id_unq_idx", unique: true
     t.index ["profile_id"], name: "index_entries_on_profile_id"
     t.index ["profile_id"], name: "profile_id_idx"
-    t.index ["status_id"], name: "index_entries_on_status_id"
-    t.index ["status_id"], name: "status_id_idx"
   end
 
   create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -272,20 +270,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_05_185447) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "id_unq_idx", unique: true
-  end
-
-  create_table "statuses", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "kind", null: false
-    t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["kind"], name: "index_statuses_on_kind", unique: true
-  end
-
-  create_table "testingrsmokes", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "user_roles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -345,13 +329,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_05_185447) do
   add_foreign_key "containers", "departments"
   add_foreign_key "containers", "visibilities"
   add_foreign_key "contest_descriptions", "containers"
-  add_foreign_key "contest_descriptions", "statuses"
   add_foreign_key "contest_instances", "contest_descriptions"
-  add_foreign_key "contest_instances", "statuses"
   add_foreign_key "entries", "categories"
   add_foreign_key "entries", "contest_instances"
   add_foreign_key "entries", "profiles"
-  add_foreign_key "entries", "statuses"
   add_foreign_key "profiles", "addresses", column: "campus_address_id"
   add_foreign_key "profiles", "addresses", column: "home_address_id"
   add_foreign_key "profiles", "campuses"

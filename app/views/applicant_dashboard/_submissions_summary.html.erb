@@ -7,7 +7,8 @@
       <thead>
         <tr>
           <th></th>
-          <th>Status</th>
+          <th>Disqualified</th>
+          <th>Deleted</th>
           <th>Contest Name</th>
           <th>Open Date</th>
           <th>Close Date</th>
@@ -21,7 +22,8 @@
                 <i class="bi bi-eye"></i>
               <% end %>
             </td>
-            <td><%= entry.status.kind %></td> <!-- Assuming status has a `kind` attribute -->
+            <td><%= entry.disqualified %></td>
+            <td><%= entry.deleted %></td>
             <td><%= entry.contest_instance.contest_description.name %></td>
             <td><%= entry.contest_instance.date_open.strftime("%B %d, %Y") %></td>
             <td><%= entry.contest_instance.date_closed.strftime("%B %d, %Y") %></td>

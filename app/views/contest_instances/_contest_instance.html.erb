@@ -3,8 +3,13 @@
   <h1><%= "#{contest_instance.contest_description.name } - #{contest_instance.date_open.year}"%></h1>
 
   <p>
-    <strong>Status:</strong>
-    <%= contest_instance.status.kind %>
+    <strong>Active:</strong>
+    <%= contest_instance.active %>
+  </p>
+
+  <p>
+    <strong>Archived:</strong>
+    <%= contest_instance.archived %>
   </p>
 
   <p>

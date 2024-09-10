@@ -14,7 +14,8 @@
     <thead class="thead-light">
       <tr>
         <th>Actions</th>
-        <th>Status</th>
+        <th>Active</th>
+        <th>Archived</th>
         <th>Contest Description</th>
         <th>Date Open</th>
         <th>Date Closed</th>
@@ -31,7 +32,8 @@
           <td>
             <%= link_to "View Details", container_contest_description_contest_instance_path(@container, @contest_description, contest_instance), class: "link_to" %>
           </td>
-          <td><%= contest_instance.status.kind %></td>
+          <td><%= contest_instance.active %></td>
+          <td><%= contest_instance.archived %></td>
           <td><%= contest_instance.contest_description.name %></td>
           <td><%= format_datetime(contest_instance.date_open) %></td>
           <td><%= format_datetime(contest_instance.date_closed) %></td>

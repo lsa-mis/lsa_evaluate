@@ -3,6 +3,8 @@
 # Table name: contest_instances
 #
 #  id                                   :bigint           not null, primary key
+#  active                               :boolean          default(FALSE), not null
+#  archived                             :boolean          default(FALSE), not null
 #  course_requirement_description       :text(65535)
 #  created_by                           :string(255)
 #  date_closed                          :datetime         not null
@@ -18,24 +20,21 @@
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
 #  contest_description_id               :bigint           not null
-#  status_id                            :bigint           not null
 #
 # Indexes
 #
 #  contest_description_id_idx                         (contest_description_id)
 #  id_unq_idx                                         (id) UNIQUE
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
-#  index_contest_instances_on_status_id               (status_id)
-#  status_id_idx                                      (status_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
-#  fk_rails_...  (status_id => statuses.id)
 #
 FactoryBot.define do
   factory :contest_instance do
-    status { create(:status, kind: "Active") }
+    active { true }
+    archived { false }
     contest_description
     date_open { Faker::Date.backward(days: 14) }
     date_closed { Faker::Date.forward(days: 14) }

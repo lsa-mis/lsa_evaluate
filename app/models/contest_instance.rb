@@ -3,6 +3,8 @@
 # Table name: contest_instances
 #
 #  id                                   :bigint           not null, primary key
+#  active                               :boolean          default(FALSE), not null
+#  archived                             :boolean          default(FALSE), not null
 #  course_requirement_description       :text(65535)
 #  created_by                           :string(255)
 #  date_closed                          :datetime         not null
@@ -18,34 +20,28 @@
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
 #  contest_description_id               :bigint           not null
-#  status_id                            :bigint           not null
 #
 # Indexes
 #
 #  contest_description_id_idx                         (contest_description_id)
 #  id_unq_idx                                         (id) UNIQUE
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
-#  index_contest_instances_on_status_id               (status_id)
-#  status_id_idx                                      (status_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
-#  fk_rails_...  (status_id => statuses.id)
 #
 class ContestInstance < ApplicationRecord
   has_many :class_level_requirements, dependent: :destroy
   has_many :class_levels, through: :class_level_requirements
   has_many :category_contest_instances, dependent: :destroy
   has_many :categories, through: :category_contest_instances
-  has_many :entries
-
-  belongs_to :status
+  has_many :entries, dependent: :destroy
   belongs_to :contest_description
 
   scope :active_and_open, -> {
-    joins(:status)
-    .where(statuses: { kind: 'Active' })
+    where(active: true)
+    .where(archived: false)
     .where('date_open <= ? AND date_closed >= ?', Time.zone.now, Time.zone.now)
   }
 
@@ -84,7 +80,7 @@ class ContestInstance < ApplicationRecord
   end
 
   def is_open?
-    status.kind.downcase == 'active' && DateTime.now.between?(date_open, date_closed)
+    active && !archived && DateTime.now.between?(date_open, date_closed)
   end
 
   def must_have_at_least_one_class_level_requirement
