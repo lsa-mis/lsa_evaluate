@@ -9,7 +9,9 @@ class ContestInstancesController < ApplicationController
   end
 
   # GET /contest_instances/:id
-  def show; end
+  def show
+    @contest_instance_entries = @contest_instance.entries
+  end
 
   # GET /contest_instances/new
   def new
