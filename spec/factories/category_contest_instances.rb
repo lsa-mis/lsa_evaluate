@@ -22,7 +22,10 @@
 # spec/factories/category_contest_instances.rb
 FactoryBot.define do
   factory :category_contest_instance do
-    category { Category.find_by(kind: 'General') || association(:category, :general) }
+    category
     contest_instance
+
+    sequence(:category_id) { |n| n }
+    sequence(:contest_instance_id) { |n| n }
   end
 end

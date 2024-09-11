@@ -13,6 +13,10 @@ Rails.application.routes.draw do
   resources :containers do
     resources :contest_descriptions do
       resources :contest_instances, path: 'instances'
+      collection do
+        get 'contest_descriptions_for_container'
+        post 'create_instances_for_selected_descriptions', to: 'contest_instances#create_instances_for_selected_descriptions'
+      end
     end
     resources :assignments, only: %i[create destroy]
   end

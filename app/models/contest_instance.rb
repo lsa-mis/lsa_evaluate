@@ -66,6 +66,26 @@ class ContestInstance < ApplicationRecord
   validates :created_by, presence: true
   validate :must_have_at_least_one_class_level_requirement
 
+  def dup_with_associations
+    new_instance = dup
+    new_instance.active = false
+    new_instance.created_by = nil
+    new_instance.date_closed = nil
+    new_instance.date_open = nil
+    new_instance.judging_open = false
+    new_instance.archived = false
+
+    class_level_requirements.each do |clr|
+      new_instance.class_level_requirements.build(clr.attributes.except('id', 'contest_instance_id', 'created_at', 'updated_at'))
+    end
+
+    category_contest_instances.each do |cci|
+      new_instance.category_contest_instances.build(cci.attributes.except('id', 'contest_instance_id', 'created_at', 'updated_at'))
+    end
+
+    new_instance
+  end
+
   def display_name
     "#{contest_description.name} - #{date_open.strftime('%Y-%m-%d')} to #{date_closed.strftime('%Y-%m-%d')}"
   end

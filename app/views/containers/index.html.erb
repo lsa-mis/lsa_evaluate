@@ -26,7 +26,8 @@
             <%= link_to "View Contest Details", container_path(container), class: "link_to" %>
           </div>
           <div class="card-body">
-            <%= link_to "Create a New Contest Description", new_container_contest_description_path(container), class: "btn btn-secondary" %>
+            <%= link_to "Create a New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
+            <%= link_to "Create Multiple Instances", contest_descriptions_for_container_container_contest_descriptions_path(container), class: "btn btn-sm btn-secondary" %>
             <table class="table table-striped">
               <thead>
                 <tr>

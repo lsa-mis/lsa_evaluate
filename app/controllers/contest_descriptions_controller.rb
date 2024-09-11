@@ -36,6 +36,10 @@ class ContestDescriptionsController < ApplicationController
     end
   end
 
+  def contest_descriptions_for_container
+    @contest_descriptions = @container.contest_descriptions
+  end
+
   def destroy
     @contest_description.destroy
 
