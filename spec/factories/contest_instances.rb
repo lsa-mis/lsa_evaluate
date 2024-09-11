@@ -55,7 +55,7 @@ FactoryBot.define do
     # end
     after(:build) do |contest_instance|
       contest_instance.class_level_requirements << build(:class_level_requirement, contest_instance: contest_instance)
-      contest_instance.category_contest_instances << build(:category_contest_instance, contest_instance: contest_instance)
+      contest_instance.category_contest_instances << build(:category_contest_instance, contest_instance: contest_instance, category: create(:category))
     end
   end
 end

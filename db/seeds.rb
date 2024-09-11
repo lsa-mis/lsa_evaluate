@@ -102,14 +102,6 @@ Campus.create([
                 { campus_descr: 'Dearborn', campus_cd: 710 }
               ])
 
-# Seed data for Status
-Status.create([
-                { kind: 'Active', description: 'The entity is active and operational.' },
-                { kind: 'Deleted', description: 'The entity has been deleted.' },
-                { kind: 'Archived', description: 'The entity is archived.' },
-                { kind: 'Disqualified', description: 'The entity is disqualified.' }
-              ])
-
 # Seed data for Department
 Department.create([
                     { dept_id: 179_000, name: 'LSA History', dept_description: 'Department of History' },
@@ -221,7 +213,7 @@ container2 = Container.create!(
 
 # Seed data for ContestDescription
 contest_description1 = ContestDescription.create!(
-  status: Status.find_by(kind: 'Active'),
+  active: true,
   container: container1,
   name: 'Cora Duncan Contest',
   short_name: 'Cora D',
@@ -231,7 +223,7 @@ contest_description1 = ContestDescription.create!(
 )
 
 contest_description2 = ContestDescription.create!(
-  status: Status.find_by(kind: 'Archived'),
+  archived: true,
   container: container1,
   name: 'Arthur Miller',
   short_name: 'AM',
@@ -241,7 +233,7 @@ contest_description2 = ContestDescription.create!(
 )
 
 contest_description3 = ContestDescription.create!(
-  status: Status.find_by(kind: 'Active'),
+  active: true,
   container: container2,
   name: 'Physics Sprint Challenge',
   short_name: 'Physics Racers ',
@@ -252,7 +244,7 @@ contest_description3 = ContestDescription.create!(
 
 # Seed data for ContestInstance
 contest_instance1 = ContestInstance.new(
-  status: Status.find_by(kind: 'Active'),
+  active: true,
   contest_description: contest_description1,
   date_open: DateTime.now - 30,
   date_closed: DateTime.now + 30,
@@ -270,13 +262,11 @@ contest_instance1 = ContestInstance.new(
 
 # Build the associated ClassLevelRequirement
 contest_instance1.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'First year'))
-
-# Save the ContestInstance with validation
 contest_instance1.save!
 
 # Repeat the same pattern for other ContestInstances
 contest_instance2 = ContestInstance.new(
-  status: Status.find_by(kind: 'Archived'),
+  archived: true,
   contest_description: contest_description2,
   date_open: DateTime.now - 60,
   date_closed: DateTime.now - 30,
@@ -296,7 +286,7 @@ contest_instance2.class_level_requirements.build(class_level: ClassLevel.find_by
 contest_instance2.save!
 
 contest_instance3 = ContestInstance.new(
-  status: Status.find_by(kind: 'Active'),
+  active: true,
   contest_description: contest_description3,
   date_open: DateTime.now - 30,
   date_closed: DateTime.now + 30,

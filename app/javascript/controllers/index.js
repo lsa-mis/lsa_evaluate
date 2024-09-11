@@ -21,3 +21,6 @@ application.register("interaction", InteractionController)
 
 import NestedFormController from "./nested_form_controller"
 application.register("nested-form", NestedFormController)
+
+import CheckboxselectController from "./checkboxselect_controller"
+application.register("checkboxselect", CheckboxselectController)

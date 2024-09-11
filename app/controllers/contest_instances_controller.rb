@@ -1,6 +1,7 @@
 class ContestInstancesController < ApplicationController
   before_action :set_container
   before_action :set_contest_description
+  before_action :set_contest_description, except: %i[create_instances_for_selected_descriptions]
   before_action :set_contest_instance, only: %i[show edit update archive unarchive]
 
   # GET /contest_instances
@@ -68,6 +69,26 @@ class ContestInstancesController < ApplicationController
       @container = Container.find(params[:container_id])
       @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
       redirect_back_or_default(notice: "Error unarchiving contest instance", alert: true)
+    end
+  end
+
+  def create_instances_for_selected_descriptions
+    selected_descriptions_ids = params[:checkbox].values
+    transaction = ActiveRecord::Base.transaction do
+      selected_descriptions_ids.each do |id|
+        last_contest_instance = ContestDescription.find(id.to_i).contest_instances.last
+        new_contest_instance = last_contest_instance.dup_with_associations
+        new_contest_instance.created_by = current_user.email
+        new_contest_instance.date_open = params[:dates][:date_open]
+        new_contest_instance.date_closed = params[:dates][:date_closed]
+        raise ActiveRecord::Rollback unless new_contest_instance.save(validate: false)
+      end
+      true
+    end
+    if transaction
+      redirect_to containers_path, notice: 'Contests instances were created for selected descriptions'
+    else
+      redirect_to containers_path, alert: 'Database error creating instances.'
     end
   end
 

@@ -36,6 +36,10 @@ class ContestDescriptionsController < ApplicationController
     end
   end
 
+  def contest_descriptions_for_container
+    @contest_descriptions = @container.contest_descriptions
+  end
+
   def archive
     session[:return_to] = request.referer
     if @contest_description.update(archived: true)
