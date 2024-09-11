@@ -17,6 +17,9 @@ Rails.application.routes.draw do
     resources :assignments, only: %i[create destroy]
   end
 
+  post '/containers/:container_id/contest_description/:contest_description_id/archive/:id', to: 'contest_instances#archive', as: :archive_contest_instance
+  post '/containers/:container_id/contest_description/:contest_description_id/unarchive/:id', to: 'contest_instances#unarchive', as: :unarchive_contest_instance
+
   resources :visibilities
   resources :departments
   resources :roles
