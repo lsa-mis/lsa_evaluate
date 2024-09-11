@@ -10,41 +10,46 @@ export default class extends Controller {
   }
 
   toggleCheckbox() {
-    var checkbox_error_place = document.getElementById('checkbox_error')
-    checkbox_error_place.innerHTML = ''
-    if (this.checkbox_allTarget.checked) {
-      this.checkboxTargets.map(x => x.checked = true)
-    } else {
-      this.checkboxTargets.map(x => x.checked = false)
-    }
+    this.clearErrorMessage();
+    const isChecked = this.checkbox_allTarget.checked;
+    this.checkboxTargets.forEach(checkbox => checkbox.checked = isChecked);
   }
 
   toggleCheckboxAll() {
-    var checkbox_error_place = document.getElementById('checkbox_error')
-    checkbox_error_place.innerHTML = ''
-    if (this.checkboxTargets.map(x => x.checked).includes(false)) {
-      this.checkbox_allTarget.checked = false
-    } else {
-      this.checkbox_allTarget.checked = true
-    }
+    this.clearErrorMessage();
+    const allChecked = this.checkboxTargets.every(checkbox => checkbox.checked);
+    this.checkbox_allTarget.checked = allChecked;
   }
 
   submitForm(event) {
-    var checkbox_error_place = document.getElementById('checkbox_error')
-    checkbox_error_place.innerHTML = ''
-    let date_open = this.date_openTarget.value
-    let date_closed = this.date_closedTarget.value
-    if (date_open == "" || date_closed == "") {
-      checkbox_error_place.innerHTML = "Please select dates. "
-      event.preventDefault()
+    this.clearErrorMessage();
+    const date_open = this.date_openTarget.value;
+    const date_closed = this.date_closedTarget.value;
+    let errorMessage = '';
+
+    if (!date_open || !date_closed) {
+      errorMessage = "Please select dates. ";
+    } else if (date_open > date_closed) {
+      errorMessage = "Date Open should occur before Date Closed. ";
     }
-    if (date_open > date_closed) {
-      checkbox_error_place.innerHTML = "Date Open should occur before Date Closed. "
-      event.preventDefault()
+
+    if (!this.checkboxTargets.some(checkbox => checkbox.checked)) {
+      errorMessage += "Please select descriptions.";
     }
-    if (!this.checkboxTargets.map(x => x.checked).includes(true)) {
-      checkbox_error_place.innerHTML += "Please select descriptions."
-      event.preventDefault()
+
+    if (errorMessage) {
+      this.setErrorMessage(errorMessage);
+      event.preventDefault();
     }
+  }
+
+  clearErrorMessage() {
+    const checkbox_error_place = document.getElementById('checkbox_error');
+    checkbox_error_place.innerHTML = '';
+  }
+
+  setErrorMessage(message) {
+    const checkbox_error_place = document.getElementById('checkbox_error');
+    checkbox_error_place.innerHTML = message;
   }
 }
