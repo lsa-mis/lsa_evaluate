@@ -12,15 +12,21 @@ Rails.application.routes.draw do
 
   resources :containers do
     resources :contest_descriptions do
+      collection do
+        post 'archive_contest_description', to: 'contest_descriptions#archive'
+        post 'unarchive_contest_description', to: 'contest_descriptions#unarchive'
+        post 'archive_contest_instance', to: 'contest_instances#archive'
+        post 'unarchive_contest_instance', to: 'contest_instances#unarchive'
+      end
       resources :contest_instances, path: 'instances'
     end
     resources :assignments, only: %i[create destroy]
   end
 
-  post '/archive_contest_description/:container_id/:id', to: 'contest_descriptions#archive', as: :archive_contest_description
-  post '/unarchive_contest_description/:container_id/:id', to: 'contest_descriptions#unarchive', as: :unarchive_contest_description
-  post '/archive_contest_instance/:container_id/:contest_description_id/:id', to: 'contest_instances#archive', as: :archive_contest_instance
-  post '/unarchive_contest_instance/:container_id/:contest_description_id/:id', to: 'contest_instances#unarchive', as: :unarchive_contest_instance
+  # post '/archive_contest_description/:container_id/:id', to: 'contest_descriptions#archive', as: :archive_contest_description
+  # post '/unarchive_contest_description/:container_id/:id', to: 'contest_descriptions#unarchive', as: :unarchive_contest_description
+  # post '/archive_contest_instance/:container_id/:contest_description_id/:id', to: 'contest_instances#archive', as: :archive_contest_instance
+  # post '/unarchive_contest_instance/:container_id/:contest_description_id/:id', to: 'contest_instances#unarchive', as: :unarchive_contest_instance
 
   resources :visibilities
   resources :departments

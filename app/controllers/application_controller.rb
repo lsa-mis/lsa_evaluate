@@ -17,8 +17,8 @@ class ApplicationController < ActionController::Base
 
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
-  rescue_from ActiveRecord::RecordNotFound, with: :render404
-  rescue_from StandardError, with: :render500
+  # rescue_from ActiveRecord::RecordNotFound, with: :render404
+  # rescue_from StandardError, with: :render500
 
   def redirect_back_or_default(notice: '', alert: false, default: root_url)
     if alert
