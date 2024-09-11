@@ -53,6 +53,10 @@ class ContestInstancesController < ApplicationController
     session[:return_to] = request.referer
     if @contest_instance.update(archived: true)
       redirect_back_or_default(notice: "The contest instance was archived")
+    else
+      @container = Container.find(params[:container_id])
+      @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
+      redirect_back_or_default(notice: "Error archiving contest instance", alert: true)
     end
   end
 
@@ -60,6 +64,10 @@ class ContestInstancesController < ApplicationController
     session[:return_to] = request.referer
     if @contest_instance.update(archived: false)
       redirect_back_or_default(notice: "The contest instance was unarchived")
+    else
+      @container = Container.find(params[:container_id])
+      @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
+      redirect_back_or_default(notice: "Error unarchiving contest instance", alert: true)
     end
   end
 
