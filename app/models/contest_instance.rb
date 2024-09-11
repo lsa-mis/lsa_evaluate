@@ -68,10 +68,12 @@ class ContestInstance < ApplicationRecord
 
   def dup
     super.tap do |new_instance|
-      new_instance.status_id = Status.find_by(kind: "Inactive").id
+      new_instance.active = false
       new_instance.created_by = nil
       new_instance.date_closed = nil
       new_instance.date_open = nil
+      new_instance.judging_open = false
+      new_instance.archived = false
     end
   end
 
