@@ -262,8 +262,6 @@ contest_instance1 = ContestInstance.new(
 
 # Build the associated ClassLevelRequirement
 contest_instance1.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'First year'))
-
-# Save the ContestInstance with validation
 contest_instance1.save!
 
 # Repeat the same pattern for other ContestInstances
