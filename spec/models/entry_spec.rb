@@ -39,7 +39,6 @@ RSpec.describe Entry, type: :model do
   describe 'Factory' do
     it 'creates a valid entry' do
       entry = create(:entry)
-      puts entry.inspect# Using the factory directly
       expect(entry).to be_valid
     end
 
