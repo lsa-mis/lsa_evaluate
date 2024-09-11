@@ -223,7 +223,7 @@ contest_description1 = ContestDescription.create!(
 )
 
 contest_description2 = ContestDescription.create!(
-  active: true,
+  archived: true,
   container: container1,
   name: 'Arthur Miller',
   short_name: 'AM',
@@ -268,7 +268,7 @@ contest_instance1.save!
 
 # Repeat the same pattern for other ContestInstances
 contest_instance2 = ContestInstance.new(
-  active: true,
+  archived: true,
   contest_description: contest_description2,
   date_open: DateTime.now - 60,
   date_closed: DateTime.now - 30,
