@@ -6,8 +6,8 @@ export default class extends Controller {
     const showOnlyActive = this.statusFilterTarget.checked;
 
     this.filterRowTargets.forEach((row) => {
-      const status = row.dataset.status;
-      if (showOnlyActive && status !== "Active") {
+      const isActive = row.dataset.status === "true";
+      if (showOnlyActive && !isActive) {
         row.classList.add("d-none");
       } else {
         row.classList.remove("d-none");
