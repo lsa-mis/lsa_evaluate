@@ -78,7 +78,7 @@ class ContestInstancesController < ApplicationController
     if transaction 
       redirect_to containers_path, notice: "Contests instances were created for selected descriptions"
     else
-      redirect_to containers_path, alert: "Database error creating instanses."
+      redirect_to containers_path, alert: "Database error creating instances."
     end
   end
 
