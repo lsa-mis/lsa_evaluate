@@ -11,9 +11,9 @@
   <%= link_to "Edit", edit_container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), class: "btn btn-sm btn-primary" %>
   <% unless @contest_instance.active %>
     <% if @contest_instance.archived %>
-      | <%= link_to "Unarchive", unarchive_contest_instance_path(@container, @contest_description, @contest_instance), data: { turbo_confirm: "Are you sure you want to unarchive this contest instance?" , turbo_method: :post } %>
+      | <%= link_to "Unarchive", unarchive_contest_instance_path(@container, @contest_description, @contest_instance), data: { turbo_confirm: "Are you sure you want to unarchive this contest instance?", turbo_method: :post } %>
     <% else %>
-      | <%= link_to "Archive", archive_contest_instance_path(@container, @contest_description, @contest_instance), data: { turbo_confirm: "Are you sure you want to archive this contest instance?" , turbo_method: :post } %>
+      | <%= link_to "Archive", archive_contest_instance_path(@container, @contest_description, @contest_instance), data: { turbo_confirm: "Are you sure you want to archive this contest instance?", turbo_method: :post } %>
     <% end %>
   <% end %>
 </div>
