@@ -20,6 +20,17 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, with: :render404
   rescue_from StandardError, with: :render500
 
+  def redirect_back_or_default(notice: '', alert: false, default: root_url)
+    if alert
+      flash[:alert] = notice
+    else
+      flash[:notice] = notice
+    end
+    url = session[:return_to]
+    session[:return_to] = nil
+    redirect_to(url, anchor: "top" || default)
+  end
+
   def render404
     respond_to do |format|
       format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
