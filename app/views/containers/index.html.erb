@@ -43,8 +43,14 @@
                     <td><%= description.short_name %></td>
                     <td><%= description.eligibility_rules %></td>
                     <td>
-                      <%= link_to "View contest instances", container_contest_description_contest_instances_path(container, description), class: "link_to" %> |
-                      <%= link_to "Archive", container_contest_description_path(container, description), data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' }, class: "link_to" %>
+                      <%= link_to "View contest instances", container_contest_description_contest_instances_path(container, description), class: "link_to" %>
+                      <% unless description.contest_instances.where(active: true).present? %>
+                        <% if description.archived %>
+                          | <%= link_to "Unarchive", unarchive_contest_description_path(container, description), data: { turbo_confirm: "Are you sure you want to unarchive this contest description?" , turbo_method: :post } %>
+                        <% else %>
+                          | <%= link_to "Archive", archive_contest_description_path(container, description), data: { turbo_confirm: "Are you sure you want to archive this contest description?" , turbo_method: :post } %>
+                        <% end %>
+                      <% end %>
                     </td>
                     </tr>
                   </tr>

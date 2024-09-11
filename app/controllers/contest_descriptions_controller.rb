@@ -1,6 +1,6 @@
 class ContestDescriptionsController < ApplicationController
   before_action :set_container
-  before_action :set_contest_description, only: %i[show edit update destroy]
+  before_action :set_contest_description, only: %i[show edit update archive unarchive]
 
   def index
     @contest_descriptions = ContestDescription.all
@@ -36,11 +36,17 @@ class ContestDescriptionsController < ApplicationController
     end
   end
 
-  def destroy
-    @contest_description.destroy
+  def archive
+    session[:return_to] = request.referer
+    if @contest_description.update(archived: true)
+      redirect_back_or_default(notice: "The contest description was archived")
+    end
+  end
 
-    respond_to do |format|
-      format.html { redirect_to containers_path, notice: 'Contest description was successfully destroyed.' }
+  def unarchive
+    session[:return_to] = request.referer
+    if @contest_description.update(archived: false)
+      redirect_back_or_default(notice: "The contest description was unarchived")
     end
   end
 
