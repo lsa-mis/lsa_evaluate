@@ -13,12 +13,13 @@ Rails.application.routes.draw do
   resources :containers do
     resources :contest_descriptions do
       resources :contest_instances, path: 'instances'
+      collection do
+        get 'contest_descriptions_for_container'
+        post 'create_instances_for_selected_descriptions', to: 'contest_instances#create_instances_for_selected_descriptions'
+      end
     end
     resources :assignments, only: %i[create destroy]
   end
-
-  get '/containers/:container_id/contest_descriptions_for_container/', to: 'contest_descriptions#contest_descriptions_for_container', as: :contest_descriptions_for_container
-  post '/containers/:container_id/contest_descriptions/create_instances_for_selected_descriptions', to: 'contest_instances#create_instances_for_selected_descriptions', as: :create_instances_for_selected_descriptions
 
   resources :visibilities
   resources :departments
@@ -28,7 +29,6 @@ Rails.application.routes.draw do
       get 'entrant_content'
     end
   end
-  
   resources :editable_contents, only: %i[index edit update]
   resources :categories
   # resources :contest_descriptions
