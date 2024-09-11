@@ -15,7 +15,7 @@
 # spec/factories/categories.rb
 FactoryBot.define do
   factory :category do
-    kind { 'Drama' }
+    sequence(:kind) { |n| "Category #{n}" }
     description { Faker::Lorem.sentence(word_count: 5) }
 
     # General category

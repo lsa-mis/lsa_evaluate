@@ -60,6 +60,10 @@ RSpec.describe ContestInstance do
   describe 'validations' do
     let(:contest_instance) { build(:contest_instance) }
 
+    before do
+      create(:category_contest_instance, contest_instance: contest_instance, category: create(:category))
+    end
+
     it 'is valid with valid attributes' do
       expect(contest_instance).to be_valid
     end
@@ -208,6 +212,50 @@ RSpec.describe ContestInstance do
       expect(ContestInstance.active_and_open).to include(active_open_contest)
       expect(ContestInstance.active_and_open).not_to include(active_closed_contest)
       expect(ContestInstance.active_and_open).not_to include(archived_contest)
+    end
+  end
+
+  describe '#dup_with_associations' do
+    let!(:contest_instance) { create(:contest_instance) }
+
+    before do
+      create(:class_level_requirement, contest_instance: contest_instance)
+      create(:category_contest_instance, contest_instance: contest_instance, category: create(:category))
+    end
+
+    it 'creates a new instance with the same attributes except specified ones' do
+      new_instance = contest_instance.dup_with_associations
+      expect(new_instance).to be_a_new(ContestInstance)
+      expect(new_instance.active).to be(false)
+      expect(new_instance.created_by).to be_nil
+      expect(new_instance.date_closed).to be_nil
+      expect(new_instance.date_open).to be_nil
+      expect(new_instance.judging_open).to be(false)
+      expect(new_instance.archived).to be(false)
+    end
+
+    it 'duplicates class_level_requirements' do
+      new_instance = contest_instance.dup_with_associations
+
+      expect(new_instance.class_level_requirements.size).to eq(contest_instance.class_level_requirements.size)
+      new_instance.class_level_requirements.each do |clr|
+        expect(clr).to be_a_new(ClassLevelRequirement)
+        expect(clr.contest_instance_id).to be_nil
+        expect(clr.created_at).to be_nil
+        expect(clr.updated_at).to be_nil
+      end
+    end
+
+    it 'duplicates category_contest_instances' do
+      new_instance = contest_instance.dup_with_associations
+
+      expect(new_instance.category_contest_instances.size).to eq(contest_instance.category_contest_instances.size)
+      new_instance.category_contest_instances.each do |cci|
+        expect(cci).to be_a_new(CategoryContestInstance)
+        expect(cci.contest_instance_id).to be_nil
+        expect(cci.created_at).to be_nil
+        expect(cci.updated_at).to be_nil
+      end
     end
   end
 end
