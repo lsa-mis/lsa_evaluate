@@ -25,9 +25,18 @@
               </small>
             <%= link_to "View Contest Details", container_path(container), class: "link_to" %>
           </div>
-          <div class="card-body" data-controller="filter">
+          <div class="card-body" data-controller="filter" data-controller="filter">
             <%= link_to "Create a New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
             <%= link_to "Create Multiple Instances", contest_descriptions_for_container_container_contest_descriptions_path(container), class: "btn btn-sm btn-secondary" %>
+
+            <!-- Add a checkbox to filter only Active contest descriptions -->
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="statusFilter" data-action="change->filter#toggleFilter" data-filter-target="statusFilter">
+              <label class="form-check-label" for="statusFilter">
+                Show only <span class="fw-bolder">Active</span> contest descriptions
+              </label>
+            </div>
+
 
             <!-- Add a checkbox to filter only Active contest descriptions -->
             <div class="form-check mb-3">
