@@ -12,11 +12,7 @@
             </p>
           <% end %>
           <div>
-            <% if current_user.profile_exists? %>
-              <%= button_to 'View Submissions', applicant_dashboard_path, method: :get, class: 'btn btn-primary' %>
-            <% else %>
-              <%= button_to 'Create Profile', new_profile_path, method: :get, class: 'btn btn-primary' %>
-            <% end %>
+            <%= button_to 'View Submissions', applicant_dashboard_path, method: :get, class: 'btn btn-primary' %>
           </div>
         </div>
       </div>

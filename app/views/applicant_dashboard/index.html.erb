@@ -27,7 +27,9 @@
 
     </div>
   </div>
-  <% if true %>
-    <%= render "remote_modal" %>
+  <% if @profile_prompt %>
+    <%= render "remote_modal", title: @title do %>
+      <%= render "profile_prompt" %>
+    <% end %>
   <% end %> 
 </div>

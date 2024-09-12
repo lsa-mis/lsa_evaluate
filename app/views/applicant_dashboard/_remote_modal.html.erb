@@ -4,12 +4,11 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content" id="modal_content">
         <div class="modal-header">
-          <h4 class="modal-title" id="newItemRemoteModalLabel">Title</h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h4 class="modal-title" id="newItemRemoteModalLabel"><%= @title %></h4>
         </div>
 
         <div class="modal-body remote_modal_body" id="remote_modal_body">
-          Hello
+          <%= yield %>
         </div>
       </div>
     </div>
