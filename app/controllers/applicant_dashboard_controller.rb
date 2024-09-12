@@ -7,7 +7,7 @@ class ApplicantDashboardController < ApplicationController
       if @profile.updated_at < DateTime.now - 3.month
         @profile_prompt = true
       end
-      @message = "It's been awile since you've login. Please review and update your profile"
+      @message = "It's been a while since you've login. Please review and update your profile"
       @title = "Welcome back " + current_user.display_firstname_or_email
     else
       @profile_prompt = true
