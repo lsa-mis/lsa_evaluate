@@ -24,3 +24,6 @@ application.register("nested-form", NestedFormController)
 
 import CheckboxselectController from "./checkboxselect_controller"
 application.register("checkboxselect", CheckboxselectController)
+
+import RemoteModalController from "./remote_modal_controller"
+application.register("remote-modal", RemoteModalController)
