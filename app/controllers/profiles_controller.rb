@@ -54,7 +54,7 @@ class ProfilesController < ApplicationController
   def update
     respond_to do |format|
       if @profile.update(profile_params)
-        fail
+        @profile.touch
         format.html { redirect_to applicant_dashboard_path, notice: 'Profile was successfully updated.' }
       else
         format.html { render :edit, status: :unprocessable_entity }
