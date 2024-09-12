@@ -65,6 +65,7 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
   config.include Warden::Test::Helpers
+  config.include Devise::Test::IntegrationHelpers, type: :system
 
   config.before(:each, type: :request) do
     host! 'localhost'
