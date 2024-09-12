@@ -12,8 +12,14 @@ Rails.application.routes.draw do
 
   resources :containers do
     resources :contest_descriptions do
+      collection do
+        post 'archive_contest_description/:id', to: 'contest_descriptions#archive', as: :archive_contest_description
+        post 'unarchive_contest_description/:id', to: 'contest_descriptions#unarchive', as: :unarchive_contest_description
+      end
       resources :contest_instances, path: 'instances'
       collection do
+        post 'archive_contest_instance/:contest_description_id/:id', to: 'contest_instances#archive', as: :archive_contest_instance
+        post 'unarchive_contest_instance/:contest_description_id/:id', to: 'contest_instances#unarchive', as: :unarchive_contest_instance
         get 'contest_descriptions_for_container'
         post 'create_instances_for_selected_descriptions', to: 'contest_instances#create_instances_for_selected_descriptions'
       end

@@ -1,7 +1,8 @@
 class ContestInstancesController < ApplicationController
   before_action :set_container
+  before_action :set_contest_description
   before_action :set_contest_description, except: %i[create_instances_for_selected_descriptions]
-  before_action :set_contest_instance, only: %i[show edit update destroy]
+  before_action :set_contest_instance, only: %i[show edit update archive unarchive]
 
   # GET /contest_instances
   def index
@@ -49,14 +50,25 @@ class ContestInstancesController < ApplicationController
     end
   end
 
-  # DELETE /contest_instances/:id
-  def destroy
-    @contest_instance.destroy
-    respond_to do |format|
-      format.html do
-        redirect_to container_contest_description_contest_instances_path(@container, @contest_description),
-                    notice: 'Contest instance was successfully destroyed.'
-      end
+  def archive
+    session[:return_to] = request.referer
+    if @contest_instance.update(archived: true)
+      redirect_back_or_default(notice: "The contest instance was archived")
+    else
+      @container = Container.find(params[:container_id])
+      @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
+      redirect_back_or_default(notice: "Error archiving contest instance", alert: true)
+    end
+  end
+
+  def unarchive
+    session[:return_to] = request.referer
+    if @contest_instance.update(archived: false)
+      redirect_back_or_default(notice: "The contest instance was unarchived")
+    else
+      @container = Container.find(params[:container_id])
+      @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
+      redirect_back_or_default(notice: "Error unarchiving contest instance", alert: true)
     end
   end
 
