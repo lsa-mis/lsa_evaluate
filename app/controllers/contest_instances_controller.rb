@@ -65,11 +65,13 @@ class ContestInstancesController < ApplicationController
     transaction = ActiveRecord::Base.transaction do
       selected_descriptions_ids.each do |id|
         last_contest_instance = ContestDescription.find(id.to_i).contest_instances.last
-        new_contest_instance = last_contest_instance.dup_with_associations
-        new_contest_instance.created_by = current_user.email
-        new_contest_instance.date_open = params[:dates][:date_open]
-        new_contest_instance.date_closed = params[:dates][:date_closed]
-        raise ActiveRecord::Rollback unless new_contest_instance.save(validate: false)
+        if last_contest_instance.present?
+          new_contest_instance = last_contest_instance.dup_with_associations
+          new_contest_instance.created_by = current_user.email
+          new_contest_instance.date_open = params[:dates][:date_open]
+          new_contest_instance.date_closed = params[:dates][:date_closed]
+          raise ActiveRecord::Rollback unless new_contest_instance.save(validate: false)
+        end
       end
       true
     end
