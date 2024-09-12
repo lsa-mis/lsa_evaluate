@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include ApplicationHelper
 
+  # Custom flash logging (optional)
   def flash
     super.tap do |flash_hash|
       if flash_hash.present?
@@ -15,41 +16,53 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
+  # Rescue from authorization errors
+  # rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+  rescue_from Pundit::NotAuthorizedError do |exception|
+    Rails.logger.info("!!!! Handling Pundit::NotAuthorizedError in ApplicationController")
+    user_not_authorized(exception)
+  end
   rescue_from ActiveRecord::RecordNotFound, with: :render404
   rescue_from StandardError, with: :render500
 
+  # Handle 404 errors (Record Not Found)
   def render404
+    logger.info("!!!!!!! Handling RecordNotFound error")
     respond_to do |format|
       format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
       format.json { render json: { error: 'Not Found' }, status: :not_found }
     end
   end
 
+  # Handle 500 errors (Standard Error)
   def render500(exception)
-    # Log the error, send it to error tracking services, etc.
-    logger.error("!!!!!!!!!!! StandardError: #{exception.message}")
-    logger.error(exception.backtrace.join("\n"))
+    log_exception(exception)
+    logger.info("!!!!!!! Handling StandardError (Exception Class: #{exception.class})")
 
-    if exception.message.include?('You are not authorized')
-      respond_to do |format|
-        format.html { redirect_to root_path, alert: 'You are not authorized for that action' }
-        format.json { render json: { error: 'You are not authorized for that action' }, status: :forbidden }
-      end
-    else
-      respond_to do |format|
-        format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
-        format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
-      end
+    respond_to do |format|
+      format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
+      format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
     end
   end
 
+  # Private method for handling Pundit not authorized errors
   private
 
-  def user_not_authorized
-    flash[:alert] = 'You are not authorized to perform this action.'
-    logger.error('!!!!!!!!!!! Pundit error: ')
+  def user_not_authorized(exception)
+    logger.info("!!!!!!! Handling Pundit::NotAuthorizedError")
+    policy_name = exception.policy.class.to_s.underscore
+    message = "You are not authorized to perform #{exception.query} on #{policy_name.humanize}"
+
+    flash[:alert] = message
+    Rails.logger.error("Pundit error: #{message} - User: #{current_user.id}, Action: #{exception.query}, Policy: #{policy_name}")
+
+    # Redirect back or to root if referer is not available
     redirect_to(request.referer || root_path)
+  end
+
+  # Log exceptions in detail
+  def log_exception(exception)
+    logger.error("!!!!!!!!!!! StandardError: #{exception.class} - #{exception.message}")
+    logger.error(exception.backtrace.join("\n"))
   end
 end
