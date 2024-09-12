@@ -8,7 +8,8 @@ webdriver_options = {
   options: browser_options
 }
 
-browser_options.add_argument('--headless') if ENV['SHOW_TEST_BROWSER'].blank?
+# Only add the headless argument if SHOW_BROWSER is blank
+browser_options.add_argument('--headless') if ENV['SHOW_BROWSER'].blank?
 
 if ENV['TEST_SERVER_PORT'].present?
   Capybara.server_host = '0.0.0.0'
@@ -16,14 +17,25 @@ if ENV['TEST_SERVER_PORT'].present?
   webdriver_options[:url] = "http://#{ENV.fetch('HOST_MACHINE_IP', nil)}:9515"
 end
 
-Capybara.register_driver :selenium_chrome_headless do |app|
+# Register the non-headless selenium_chrome driver
+Capybara.register_driver :selenium_chrome do |app|
   Capybara::Selenium::Driver.new(app, **webdriver_options)
 end
 
+# Register the headless driver separately
+Capybara.register_driver :selenium_chrome_headless do |app|
+  Capybara::Selenium::Driver.new(app, **webdriver_options.merge({options: browser_options}))
+end
+
+# Set javascript driver to the headless version by default
 Capybara.javascript_driver = :selenium_chrome_headless
 
 RSpec.configure do |config|
+  # Choose the correct driver based on the SHOW_BROWSER environment variable
   config.before(:each, type: :system) do
-    driven_by ENV['SHOW_BROWSER'] ? :selenium_chrome : :selenium_chrome_headless
+    driven_by ENV['SHOW_BROWSER'].present? ? :selenium_chrome : :selenium_chrome_headless
   end
 end
+
+# How to use this snippet:
+# SHOW_BROWSER=true bundle exec rspec spec/system/contest_description_filter_spec.rb
