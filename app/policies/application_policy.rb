@@ -39,6 +39,7 @@ class ApplicationPolicy
   end
 
   def admin_user?
+    Rails.logger.info("Checking if user is admin for Axis Mundi role")
     user.user_roles.joins(:role).exists?(roles: { kind: 'Axis Mundi' })
   end
 
