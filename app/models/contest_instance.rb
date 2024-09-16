@@ -65,6 +65,7 @@ class ContestInstance < ApplicationRecord
   validates :maximum_number_entries_per_applicant, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :created_by, presence: true
   validate :must_have_at_least_one_class_level_requirement
+  validate :must_have_at_least_one_category
 
   def dup_with_associations
     new_instance = dup
@@ -97,6 +98,12 @@ class ContestInstance < ApplicationRecord
   def must_have_at_least_one_class_level_requirement
     if class_level_requirements.empty?
       errors.add(:base, 'At least one class level requirement must be added.')
+    end
+  end
+
+  def must_have_at_least_one_category
+    if category_contest_instances.empty?
+      errors.add(:base, 'At least one category must be added.')
     end
   end
 end
