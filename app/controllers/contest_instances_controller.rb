@@ -39,10 +39,10 @@ class ContestInstancesController < ApplicationController
   # PATCH/PUT /contest_instances/:id
   def update
     respond_to do |format|
-      if @contest_instance.save
+      if @contest_instance.update(contest_instance_params)
         format.html { redirect_to_contest_instance_path }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_entity }
       end
     end
   end
@@ -69,44 +69,33 @@ class ContestInstancesController < ApplicationController
     success_count = 0
     errors = []
 
-    selected_descriptions_ids.each do |id|
-      contest_description = ContestDescription.find(id.to_i)
+    contest_descriptions = ContestDescription.where(id: selected_descriptions_ids.map(&:to_i))
+
+    contest_descriptions.each do |contest_description|
       last_contest_instance = contest_description.contest_instances.last
 
       unless last_contest_instance.present?
-        errors << "No previous contest instance found for Contest Description ID #{id}"
+        errors << "No previous contest instance found for Contest Description ID #{contest_description.id}"
         next
       end
 
-        if last_contest_instance.present?
-        new_contest_instance = last_contest_instance.dup_with_associations
-        new_contest_instance.created_by = current_user.email
-        new_contest_instance.date_open = params[:dates][:date_open]
-        new_contest_instance.date_closed = params[:dates][:date_closed]
-  
+      new_contest_instance = last_contest_instance.dup_with_associations
+      new_contest_instance.created_by = current_user.email
+      new_contest_instance.date_open = params[:dates][:date_open]
+      new_contest_instance.date_closed = params[:dates][:date_closed]
+
       if new_contest_instance.save
         success_count += 1
       else
-        errors << "Failed to create contest instance for Contest Description ID #{id}: #{new_contest_instance.errors.full_messages.join(', ')}"
-        end
+        errors << "Failed to create contest instance for Contest Description ID #{contest_description.id}: #{new_contest_instance.errors.full_messages.join(', ')}"
       end
     end
 
-    if errors.empty?
-      redirect_to containers_path, notice: "#{success_count} Contest instances were successfully created."
-    else
-      error_message = if success_count > 0
-        "#{success_count} Contest instances were successfully created. "
-      else
-        ''
-      end
+    error_message = "#{success_count} Contest instances were successfully created.<br>" if success_count > 0
+    error_message ||= ''
+    error_message += "However, errors occurred while creating the following Contest instances:<br>#{errors.join('<br>')}".html_safe if errors.any?
 
-      error_message += if errors.any?
-        "However, errors occurred while creating the following Contest instances: \n"
-        errors.join("\n")
-      end
-      redirect_to containers_path, alert: error_message
-    end
+    redirect_to containers_path, alert: error_message
   end
 
   private
