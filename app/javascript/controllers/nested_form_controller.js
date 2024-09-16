@@ -22,15 +22,6 @@ export default class extends Controller {
     this.containerTarget.insertAdjacentHTML('beforeend', content);
   }
 
-  // removeAssociation(event) {
-  //   event.preventDefault();
-
-  //   // Find the closest nested field wrapper and remove it
-  //   const wrapper = event.target.closest('.nested-fields');
-  //   if (wrapper) {
-  //     wrapper.remove();
-  //   }
-  // }
   removeAssociation(event) {
     event.preventDefault();
 
