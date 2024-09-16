@@ -4,42 +4,30 @@
   <div class="row g-4 align-items-end">
     <!-- Department Selection -->
     <div class="col">
-      <label for="department-select" class="form-label visually-hidden">Select Department</label>
+      <label for="department-select" class="form-label visually-hidden">Department</label>
       <select class="form-select" id="department-select" name="department_id">
-        <option value="">Select Department</option>
+        <option value="">Department</option>
         <%= options_from_collection_for_select(@departments, :id, :name) %>
       </select>
     </div>
 
     <!-- Class Rank Selection -->
     <div class="col">
-      <label for="class-rank-select" class="form-label visually-hidden">Open to Class Rank</label>
+      <label for="class-rank-select" class="form-label visually-hidden">Grade Level</label>
       <select class="form-select" id="class-rank-select" name="class_rank_id">
-        <option value="">Available by Grade Level</option>
+        <option value="">Grade Level</option>
         <%= options_from_collection_for_select(@class_levels, :id, :name) %>
       </select>
     </div>
 
     <!-- Contest Selection -->
     <div class="col">
-      <label for="container-select" class="form-label visually-hidden">Contest Collections</label>
+      <label for="container-select" class="form-label visually-hidden">Collections</label>
       <select class="form-select" id="container-select" name="container_id">
         <option value="">Contest Collections</option>
         <%= options_from_collection_for_select(@containers, :id, :name) %>
       </select>
     </div>
 
-    <!-- Search Form -->
-    <div class="col">
-      <%= form_with(url: root_path, method: :get, local: true) do |form| %>
-        <label for="search" class="visually-hidden">Search</label>
-        <div class="input-group">
-          <%= form.text_field :search, id: "search", class: "form-control", placeholder: "Search...", aria: { label: 'Search' } %>
-          <button class="btn btn-primary" type="submit">
-            <i class="bi bi-search"></i> Search
-          </button>
-        </div>
-      <% end %>
-    </div>
   </div>
 </div>
