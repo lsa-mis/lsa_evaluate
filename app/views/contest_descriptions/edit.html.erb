@@ -1,10 +1,16 @@
-<h1><%= action_name.capitalize %> Contest Description</h1>
+<div class="d-flex justify-content-between">
+  <div>
+    <h1><%= @contest_description.name %></h1>
+  </div>
+  <div>
+    <%= link_to "Return to Manage Submissions", containers_path, class: "link_to" %>
+  </div>
+</div>
 
 <%= render 'form', contest_description: @contest_description %>
 
 <br>
 
 <div>
-  <%= link_to "Show", @contest_description %> |
-  <%= link_to 'Back', contest_descriptions_path %>
+  <%= link_to 'Back', containers_path(@container) %>
 </div>
