@@ -1,15 +1,19 @@
 <div class="container-fluid mt-4">
   <div class="row">
-    <%= render 'profiles/profile_summary', profile: @profile %>
+    <!-- Profile summary: Hidden on small screens, displayed on larger screens -->
+    <div class="col-2 d-none d-xxl-block">
+      <%= render 'profiles/profile_summary', profile: @profile %>
+    </div>
 
-    <div class="col-10 mt-4">
+    <!-- Main content -->
+    <div class="col-xxl-10 col-12 mt-4">
       <div class="row mb-4 ms-2">
         <div class="">
           <div class="card text-center">
             <div class="card-body">
               <small class="text-muted"><%= Time.now.strftime("%B %d, %Y - %I:%M %p") %></small>
               <%= render 'static_pages/opportunities' %>
-              <p class="card-text"><%= "Currently there are #{@active_contests.count} Open contests!"%></p>
+              <p class="card-text"><%= "Currently there are #{@active_contests.count} Open contests!" %></p>
             </div>
           </div>
         </div>
@@ -24,7 +28,6 @@
           <%= render 'applicant_dashboard/available_contests' %>
         </div>
       </div>
-
     </div>
   </div>
 </div>
