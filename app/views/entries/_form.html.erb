@@ -5,7 +5,7 @@
   <div class="form-inputs">
     <%= f.input :title %>
 
-    <%= f.hidden_field :active, value: true %>
+    <%= f.hidden_field :disqualified, value: false %>
     <%= f.hidden_field :contest_instance_id, value: @entry.contest_instance_id %>
     <%= f.hidden_field :profile_id, value: @entry.profile_id %>
 
