@@ -66,6 +66,7 @@ class ContestInstance < ApplicationRecord
   validates :created_by, presence: true
   validate :must_have_at_least_one_class_level_requirement
   validate :must_have_at_least_one_category
+  validate :only_one_active_per_contest_description
 
   def dup_with_associations
     new_instance = dup
@@ -104,6 +105,12 @@ class ContestInstance < ApplicationRecord
   def must_have_at_least_one_category
     if category_contest_instances.empty?
       errors.add(:base, 'At least one category must be added.')
+    end
+  end
+
+  def only_one_active_per_contest_description
+    if active && contest_description.contest_instances.where(active: true).where.not(id: id).exists?
+      errors.add(:active, 'There can only be one active contest instance for a contest description.')
     end
   end
 end
