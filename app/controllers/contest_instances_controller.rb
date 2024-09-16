@@ -78,15 +78,17 @@ class ContestInstancesController < ApplicationController
         next
       end
 
-      new_contest_instance = last_contest_instance.dup_with_associations
-      new_contest_instance.created_by = current_user.email
-      new_contest_instance.date_open = params[:dates][:date_open]
-      new_contest_instance.date_closed = params[:dates][:date_closed]
-
+        if last_contest_instance.present?
+        new_contest_instance = last_contest_instance.dup_with_associations
+        new_contest_instance.created_by = current_user.email
+        new_contest_instance.date_open = params[:dates][:date_open]
+        new_contest_instance.date_closed = params[:dates][:date_closed]
+  
       if new_contest_instance.save
         success_count += 1
       else
         errors << "Failed to create contest instance for Contest Description ID #{id}: #{new_contest_instance.errors.full_messages.join(', ')}"
+        end
       end
     end
 
