@@ -23,7 +23,7 @@
             <td><%= entry.created_at.strftime("%B %d, %Y") %></td>
             <td class="text-center">
               <% if entry.entry_file.attached? %>
-                <%= debug rails_blob_path(entry.entry_file, disposition: "inline") %>
+                <%#= debug rails_blob_path(entry.entry_file, disposition: "inline") %>
                 <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"), target: "_blank", rel: "noopener" do %>
                   <i class="bi bi-book" style="font-size: 1.5rem;" aria-hidden="true"></i>
                 <% end %>
