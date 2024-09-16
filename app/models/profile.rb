@@ -81,14 +81,15 @@ class Profile < ApplicationRecord
   validates :home_address, presence: true
   validates :campus_address, presence: true
 
+
+  def display_name
+    "#{first_name} #{last_name}"
+  end
+
   private
 
   def normalize_names
     self.first_name = first_name.strip
     self.last_name = last_name.strip
-  end
-
-  def display_name
-    "#{first_name} #{last_name}"
   end
 end

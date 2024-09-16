@@ -9,11 +9,15 @@ class ContestInstancesController < ApplicationController
   end
 
   # GET /contest_instances/:id
-  def show; end
+  def show
+    @contest_instance_entries = @contest_instance.entries
+  end
 
   # GET /contest_instances/new
   def new
     @contest_instance = @contest_description.contest_instances.new
+    @contest_instance.category_contest_instances.build if @contest_instance.category_contest_instances.empty?
+    @contest_instance.class_level_requirements.build if @contest_instance.class_level_requirements.empty?
   end
 
   # GET /contest_instances/:id/edit

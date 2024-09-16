@@ -10,6 +10,9 @@ application.register("address-copy", AddressCopyController)
 import ConfirmController from "./confirm_controller"
 application.register("confirm", ConfirmController)
 
+import FilterController from "./filter_controller"
+application.register("filter", FilterController)
+
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
 

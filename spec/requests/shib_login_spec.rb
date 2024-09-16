@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe 'Shibboleth', type: :request do
+RSpec.describe 'Shibboleth' do
   let(:user) { create(:user, :employee) }
 
   describe 'login success -' do

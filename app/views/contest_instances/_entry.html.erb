@@ -1,0 +1,18 @@
+<tr>
+  <td><%= entry.id %></td>
+  <td>
+    <% if entry.entry_file.attached? %>
+      <%= link_to rails_blob_path(entry.entry_file, disposition: "attachment"), target: "_blank", rel: "noopener" do %>
+        <i class="bi bi-book" style="font-size: 1.5rem;" aria-hidden="true"></i>
+      <% end %>
+    <% else %>
+      No file attached
+    <% end %>
+  </td>
+  <td><%= entry.profile.display_name %></td>
+  <td><%= entry.profile.user.uniqname %></td>
+  <td><%= entry.title %></td>
+  <td><%= entry.profile.pen_name %></td>
+  <td><%= format_datetime(entry.created_at) %></td>
+  <td><%= entry.disqualified %></td>
+</tr>

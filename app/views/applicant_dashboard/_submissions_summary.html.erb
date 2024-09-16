@@ -6,27 +6,32 @@
     <table class="table table-bordered table-hover table-striped mt-3">
       <thead>
         <tr>
-          <th></th>
-          <th>Disqualified</th>
-          <th>Deleted</th>
           <th>Contest Name</th>
-          <th>Open Date</th>
-          <th>Close Date</th>
+          <th>Title</th>
+          <th>Entry Type</th>
+          <th>Submitted</th>
+          <th>Entry</th>
+          <th class="text-center">Remove <br><small>available until contest closes</small></th>
         </tr>
       </thead>
       <tbody>
         <% @entries.each do |entry| %>
           <tr>
+            <td><%= "#{entry.contest_instance.contest_description.name } - #{entry.contest_instance.date_open.year}"%></td>
+            <td><%= entry.title %></td>
+            <td><%= entry.category.kind %></td>
+            <td><%= entry.created_at.strftime("%B %d, %Y") %></td>
             <td class="text-center">
-              <%= link_to entry_path(entry), class: 'btn-icon' do %>
-                <i class="bi bi-eye"></i>
+              <% if entry.entry_file.attached? %>
+                <%= debug rails_blob_path(entry.entry_file, disposition: "inline") %>
+                <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"), target: "_blank", rel: "noopener" do %>
+                  <i class="bi bi-book" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                <% end %>
+              <% else %>
+                No file attached
               <% end %>
             </td>
-            <td><%= entry.disqualified %></td>
-            <td><%= entry.deleted %></td>
-            <td><%= entry.contest_instance.contest_description.name %></td>
-            <td><%= entry.contest_instance.date_open.strftime("%B %d, %Y") %></td>
-            <td><%= entry.contest_instance.date_closed.strftime("%B %d, %Y") %></td>
+            <td class="text-center text-danger"><i class="bi bi-file-x-fill" style="font-size: 1.5rem;" aria-hidden="true"></i></td>
           </tr>
         <% end %>
       </tbody>

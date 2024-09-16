@@ -31,15 +31,10 @@ module Users
     def auth
       # Rails.logger.info("@@@@@@  Omniauth Auth Hash: #{request.env['omniauth.auth'].inspect}")
       auth_hash = request.env['omniauth.auth']
-
-      # Access the attributes hash from raw_info
       urn_values = auth_hash['extra']['raw_info'].attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.1'] rescue []
-
-      # Ensure urn_values is always an array (handles both string and array cases)
       urn_values = Array(urn_values)
 
-      # Log the array of values
-      # Rails.logger.info("@@@@@@  URN Values: #{urn_values.join(', ')}")
+      Rails.logger.info("@@@@@@  URN Values: #{urn_values.join(', ')}")
 
       session[:urn_values] = urn_values
       request.env['omniauth.auth']
@@ -66,11 +61,29 @@ module Users
 
     def create_user
       User.create(user_params)
+      sync_affiliations(user)
+      user
     end
 
     def update_user(user)
       user.update(user_params)
+      sync_affiliations(user)
       user
+    end
+
+    def sync_affiliations(user)
+      new_affiliations = session[:urn_values].map { |value| value.downcase }
+      current_affiliations = user.affiliations.pluck(:name).map(&:downcase)
+
+      # Add new affiliations
+      (new_affiliations - current_affiliations).each do |affiliation_name|
+        user.affiliations.create(name: affiliation_name)
+      end
+
+      # Remove old affiliations
+      (current_affiliations - new_affiliations).each do |affiliation_name|
+        user.affiliations.find_by(name: affiliation_name).destroy
+      end
     end
 
     def user_params
@@ -80,8 +93,7 @@ module Users
         uid: auth.info.uid,
         principal_name: auth.info.principal_name,
         display_name: auth.info.name,
-        password: Devise.friendly_token[0, 20],
-        affiliations_attributes: session[:urn_values].map { |value| { name: value } }
+        password: Devise.friendly_token[0, 20]
       }
     end
   end

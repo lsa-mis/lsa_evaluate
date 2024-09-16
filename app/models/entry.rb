@@ -35,6 +35,7 @@ class Entry < ApplicationRecord
   has_one_attached :entry_file
 
   validates :title, presence: true
+  validate :entry_file_validation
 
   scope :active, -> { where(deleted: false) }
   scope :disqualified, -> { where(disqualified: true) }
@@ -42,4 +43,22 @@ class Entry < ApplicationRecord
   def active_entry?
     !disqualified && !deleted
   end
+
+  def entry_file_validation
+    if entry_file.attached?
+      # Validate file type
+      acceptable_types = ["application/pdf"]
+      unless acceptable_types.include?(entry_file.content_type)
+        errors.add(:entry_file, "must be a PDF")
+      end
+
+      # Validate file size
+      if entry_file.byte_size > 30.megabytes
+        errors.add(:entry_file, "is too big. Maximum size is 30 MB.")
+      end
+    else
+      errors.add(:entry_file, "can't be blank")
+    end
+  end
+
 end

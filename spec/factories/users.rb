@@ -35,7 +35,6 @@
 FactoryBot.define do
   factory :user do
     email { Faker::Internet.email }
-    # password { "passwordpassword" }
     password { Faker::Internet.password(min_length: 15) }
     uniqname { Faker::Internet.username }
     uid { uniqname }
@@ -57,6 +56,15 @@ FactoryBot.define do
     trait :faculty do
       after(:create) do |user|
         create(:affiliation, user: user, name: 'faculty')
+      end
+    end
+
+    trait :with_axis_mundi_role do
+      after(:create) do |user|
+        axis_mundi_role = Role.find_or_create_by!(kind: 'Axis mundi') do |role|
+          role.description = 'Axis Mundi Role Description'
+        end
+        create(:user_role, user: user, role: axis_mundi_role)
       end
     end
   end

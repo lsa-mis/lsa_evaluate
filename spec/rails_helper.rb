@@ -13,6 +13,7 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'rspec/rails'
 require 'factory_bot_rails'
+require 'pundit/rspec'
 
 puts "!*!*!*! Running in environment: #{Rails.env} !*!*!*!"
 
@@ -27,6 +28,8 @@ end
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
+
+  config.include Pundit::Matchers, type: :policy
 
   config.fixture_paths = [ Rails.root.join('spec/fixtures').to_s ]
 
@@ -62,6 +65,7 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
   config.include Warden::Test::Helpers
+  config.include Devise::Test::IntegrationHelpers, type: :system
 
   config.before(:each, type: :request) do
     host! 'localhost'
