@@ -16,6 +16,8 @@ class ContestInstancesController < ApplicationController
   # GET /contest_instances/new
   def new
     @contest_instance = @contest_description.contest_instances.new
+    @contest_instance.category_contest_instances.build if @contest_instance.category_contest_instances.empty?
+    @contest_instance.class_level_requirements.build if @contest_instance.class_level_requirements.empty?
   end
 
   # GET /contest_instances/:id/edit
