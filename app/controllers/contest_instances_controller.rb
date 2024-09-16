@@ -29,10 +29,7 @@ class ContestInstancesController < ApplicationController
 
     respond_to do |format|
       if @contest_instance.save
-        format.html do
-          redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
-                      notice: 'Contest instance was successfully created.'
-        end
+        format.html { redirect_to_contest_instance_path }
       else
         format.html { render :new, status: :unprocessable_entity }
       end
@@ -42,47 +39,71 @@ class ContestInstancesController < ApplicationController
   # PATCH/PUT /contest_instances/:id
   def update
     respond_to do |format|
-      if @contest_instance.update(contest_instance_params)
-        format.html do
-          redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
-                      notice: 'Contest instance was successfully updated.'
-        end
+      if @contest_instance.save
+        format.html { redirect_to_contest_instance_path }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /contest_instances/:id
   def destroy
-    @contest_instance.destroy
     respond_to do |format|
-      format.html do
-        redirect_to container_contest_description_contest_instances_path(@container, @contest_description),
-                    notice: 'Contest instance was successfully destroyed.'
+      if @contest_instance.destroy
+        format.html do
+          redirect_to container_contest_description_contest_instances_path(@container, @contest_description),
+                      notice: 'Contest instance was successfully destroyed.'
+        end
+      else
+        format.html do
+          redirect_to container_contest_description_contest_instances_path(@container, @contest_description),
+                      alert: 'Failed to destroy the contest instance.'
+        end
       end
     end
   end
 
   def create_instances_for_selected_descriptions
     selected_descriptions_ids = params[:checkbox].values
-    transaction = ActiveRecord::Base.transaction do
-      selected_descriptions_ids.each do |id|
-        last_contest_instance = ContestDescription.find(id.to_i).contest_instances.last
-        if last_contest_instance.present?
-          new_contest_instance = last_contest_instance.dup_with_associations
-          new_contest_instance.created_by = current_user.email
-          new_contest_instance.date_open = params[:dates][:date_open]
-          new_contest_instance.date_closed = params[:dates][:date_closed]
-          raise ActiveRecord::Rollback unless new_contest_instance.save(validate: false)
-        end
+    success_count = 0
+    errors = []
+
+    selected_descriptions_ids.each do |id|
+      contest_description = ContestDescription.find(id.to_i)
+      last_contest_instance = contest_description.contest_instances.last
+
+      unless last_contest_instance.present?
+        errors << "No previous contest instance found for Contest Description ID #{id}"
+        next
       end
-      true
+
+      new_contest_instance = last_contest_instance.dup_with_associations
+      new_contest_instance.created_by = current_user.email
+      new_contest_instance.date_open = params[:dates][:date_open]
+      new_contest_instance.date_closed = params[:dates][:date_closed]
+
+      if new_contest_instance.save
+        success_count += 1
+      else
+        errors << "Failed to create contest instance for Contest Description ID #{id}: #{new_contest_instance.errors.full_messages.join(', ')}"
+      end
     end
-    if transaction
-      redirect_to containers_path, notice: 'Contests instances were created for selected descriptions'
+
+    if errors.empty?
+      redirect_to containers_path, notice: "#{success_count} Contest instances were successfully created."
     else
-      redirect_to containers_path, alert: 'Database error creating instances.'
+      error_message = if success_count > 0
+        "#{success_count} Contest instances were successfully created. "
+      else
+        ''
+      end
+
+      error_message += if errors.any?
+        "However, errors occurred while creating the following Contest instances: \n"
+        errors.join("\n")
+      end
+      redirect_to containers_path, alert: error_message
     end
   end
 
@@ -98,6 +119,11 @@ class ContestInstancesController < ApplicationController
 
   def set_contest_description
     @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
+  end
+
+  def redirect_to_contest_instance_path
+    redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                notice: 'Contest instance was successfully created/updated.'
   end
 
   def contest_instance_params
