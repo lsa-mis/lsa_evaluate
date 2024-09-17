@@ -4,7 +4,6 @@ export default class extends Controller {
   static targets = ["checkbox_all", "checkbox", "form", "date_open", "date_closed"]
 
   connect() {
-    console.log("connect - checkbox select/deselect all")
     this.checkboxTargets.map(x => x.checked = false)
     this.checkbox_allTarget.checked = false
   }

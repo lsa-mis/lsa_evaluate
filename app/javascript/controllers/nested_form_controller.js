@@ -5,7 +5,7 @@ export default class extends Controller {
   static targets = ["template", "container"]
 
   connect() {
-    console.log("Nested_form controller connected");
+    // console.log("Nested_form controller connected");
   }
 
   addAssociation(event) {

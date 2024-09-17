@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["content"]
 
   connect() {
-    console.log("Interaction controller connected");
+    // console.log("Interaction controller connected");
   }
 
   async showEntrantContent(event) {
