@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row justify-content-start">
     <div class="col-12 col-md-8">
-      <%= simple_form_for @profile do |f| %>
+      <%= simple_form_for @profile, html: { data: { turbo: false } } do |f| %>
         <%= f.error_notification %>
         <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
