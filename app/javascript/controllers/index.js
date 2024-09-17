@@ -7,14 +7,20 @@ import { application } from "./application"
 import AddressCopyController from "./address_copy_controller"
 application.register("address-copy", AddressCopyController)
 
+import CheckboxselectController from "./checkboxselect_controller"
+application.register("checkboxselect", CheckboxselectController)
+
 import ConfirmController from "./confirm_controller"
 application.register("confirm", ConfirmController)
 
-import FilterController from "./filter_controller"
-application.register("filter", FilterController)
-
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
+
+import FadeOutController from "./fade_out_controller"
+application.register("fade-out", FadeOutController)
+
+import FilterController from "./filter_controller"
+application.register("filter", FilterController)
 
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
@@ -24,6 +30,3 @@ application.register("interaction", InteractionController)
 
 import NestedFormController from "./nested_form_controller"
 application.register("nested-form", NestedFormController)
-
-import CheckboxselectController from "./checkboxselect_controller"
-application.register("checkboxselect", CheckboxselectController)
