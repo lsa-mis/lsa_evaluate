@@ -2,12 +2,12 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  connect() {
-      console.log("connect - scroll")
+  static values = {
+    scrollToTop: Boolean
   }
 
-  scrollToTopIfSuccessful(event) {
-    if (event.detail.success) {
+  connect() {
+    if (this.scrollToTopValue) {
       window.scrollTo(0, 0)
     }
   }
