@@ -11,11 +11,11 @@
     <%= f.input :notes %>
     <%= f.input :judging_open %>
     <%= f.input :judging_rounds %>
-    <%= f.input :has_course_requirement %>
     <%= f.input :judge_evaluations_complete %>
-    <%= f.input :course_requirement_description %>
-    <%= f.input :recletter_required %>
-    <%= f.input :transcript_required %>
+    <%#= f.input :has_course_requirement %>
+    <%#= f.input :course_requirement_description %>
+    <%#= f.input :recletter_required %>
+    <%#= f.input :transcript_required %>
     <%= f.input :maximum_number_entries_per_applicant %>
     <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
 
