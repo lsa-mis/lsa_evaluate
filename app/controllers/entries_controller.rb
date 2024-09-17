@@ -1,5 +1,6 @@
 class EntriesController < ApplicationController
-  before_action :set_entry, only: %i[ show edit update destroy ]
+  before_action :set_entry, only: %i[ show edit update destroy soft_delete ]
+  before_action :authorize_entry, only: %i[ soft_delete ]
 
   # GET /entries or /entries.json
   def index
@@ -62,10 +63,31 @@ class EntriesController < ApplicationController
     end
   end
 
+  def soft_delete
+    if @entry.update(deleted: true)
+      respond_to do |format|
+        format.html { redirect_to applicant_dashboard_path, notice: 'Entry was successfully removed.' }
+        format.turbo_stream
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to applicant_dashboard_path, alert: 'Failed to remove entry.' }
+        format.turbo_stream
+      end
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_entry
       @entry = Entry.find(params[:id])
+    end
+
+    def authorize_entry
+      # Ensure the current user owns the entry
+      unless @entry.profile.user == current_user
+        redirect_to root_path, alert: 'You are not authorized to perform this action.'
+      end
     end
 
     # Only allow a list of trusted parameters through.
