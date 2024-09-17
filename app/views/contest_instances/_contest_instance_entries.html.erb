@@ -1,5 +1,5 @@
 <h2>Entries</h2>
-<table>
+<table class="table table-striped w-100">
   <thead>
     <tr>
       <th>ID</th>
@@ -13,8 +13,14 @@
     </tr>
   </thead>
   <tbody>
-    <% @contest_instance_entries.each do |ci_entry| %>
-      <%= render partial: 'contest_instances/entry', locals: { entry: ci_entry } %>
+    <% if @contest_instance_entries.any? %>
+      <% @contest_instance_entries.each do |ci_entry| %>
+        <%= render partial: 'contest_instances/entry', locals: { entry: ci_entry } %>
+      <% end %>
+    <% else %>
+      <tr>
+        <td colspan="8" class="text-center">No entries found.</td>
+      </tr>
     <% end %>
   </tbody>
 </table>
