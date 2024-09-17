@@ -255,27 +255,27 @@ svg.wh6 {
   }
 }
 
-.flash {
-  font-size: 1.5rem;
-  font-weight: bold;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  position: fixed;
-  top: 1.5rem;
-  right: 0.5rem;
-  padding: 1rem 1.25rem; // Note: This line overrides the previous 'padding: 20px'
-  border-radius: 0.5rem;
-}
+// .flash {
+//   font-size: 1.5rem;
+//   font-weight: bold;
+//   text-align: center;
+//   display: flex;
+//   align-items: center;
+//   position: fixed;
+//   top: 1.5rem;
+//   right: 0.5rem;
+//   padding: 1rem 1.25rem; // Note: This line overrides the previous 'padding: 20px'
+//   border-radius: 0.5rem;
+// }
 
-.flash_notice {
-  background-color: $flash-notice-color;
-  z-index: 1000;
-}
+// .flash_notice {
+//   background-color: $flash-notice-color;
+//   z-index: 1000;
+// }
 
-.flash_alert {
-  background-color: $flash-alert-color;
-}
+// .flash_alert {
+//   background-color: $flash-alert-color;
+// }
 
 
 
@@ -401,4 +401,9 @@ svg.wh6 {
   text-decoration: underline;
   /* Adds underline on hover */
   cursor: pointer;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
 }
