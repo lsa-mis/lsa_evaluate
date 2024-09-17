@@ -7,6 +7,7 @@ export default class extends Controller {
   }
 
   connect() {
+    console.log("Hello, Stimulus!", this.scrollToTopValue)
     if (this.scrollToTopValue) {
       window.scrollTo(0, 0)
     }
