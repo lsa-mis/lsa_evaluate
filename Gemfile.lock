@@ -456,7 +456,7 @@ DEPENDENCIES
   capybara
   country_select
   cssbundling-rails
-  database_cleaner-active_record
+  database_cleaner-active_record (~> 2.0)
   debug
   devise (~> 4.9)
   factory_bot_rails

@@ -37,7 +37,7 @@ group :development do
 end
 
 group :test do
-  gem 'database_cleaner-active_record'
+  gem 'database_cleaner-active_record', '~> 2.0'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
 end
