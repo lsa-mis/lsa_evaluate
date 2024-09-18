@@ -51,6 +51,10 @@ class ContestInstance < ApplicationRecord
     .where(contest_descriptions: { container_id: container_id })
   }
 
+  scope :for_class_level, ->(class_level_id) {
+    joins(:class_levels).where(class_levels: { id: class_level_id }).distinct
+  }
+
   accepts_nested_attributes_for :category_contest_instances, allow_destroy: true
   accepts_nested_attributes_for :class_level_requirements, allow_destroy: true
 
