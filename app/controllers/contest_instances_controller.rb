@@ -8,9 +8,28 @@ class ContestInstancesController < ApplicationController
     @contest_instances = @contest_description.contest_instances
   end
 
-  # GET /contest_instances/:id
   def show
-    @contest_instance_entries = @contest_instance.entries
+    @contest_instance_entries = @contest_instance.entries.includes(profile: :user)
+    # @contest_instance_entries = @contest_instance.entries
+
+    if params[:sort_column].present? && params[:sort_direction].present?
+      sortable_columns = Entry.sortable_columns
+      sort_column = params[:sort_column]
+      sort_direction = params[:sort_direction]
+
+      if sortable_columns.keys.include?(sort_column) && %w[asc desc].include?(sort_direction)
+        sort_sql = sortable_columns[sort_column]
+
+        case sort_column
+        when 'profile_display_name', 'pen_name'
+          @contest_instance_entries = @contest_instance_entries.joins(:profile)
+        when 'profile_user_uniqname'
+          @contest_instance_entries = @contest_instance_entries.joins(profile: :user)
+        end
+
+        @contest_instance_entries = @contest_instance_entries.order("#{sort_sql} #{sort_direction}")
+      end
+    end
   end
 
   # GET /contest_instances/new

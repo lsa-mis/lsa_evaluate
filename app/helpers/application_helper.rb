@@ -30,4 +30,19 @@ module ApplicationHelper
   def boolean_to_yes_no(value)
     value ? 'Yes' : 'No'
   end
+
+  def sortable(column, title, container, contest_description, contest_instance)
+    direction = (params[:sort_column] == column && params[:sort_direction] == 'asc') ? 'desc' : 'asc'
+    arrow = ''
+    if params[:sort_column] == column
+      arrow = params[:sort_direction] == 'asc' ? ' ▲' : ' ▼'
+    end
+    link_to "#{title}#{arrow}".html_safe, container_contest_description_contest_instance_path(
+      container,
+      contest_description,
+      contest_instance,
+      sort_column: column,
+      sort_direction: direction
+    )
+  end
 end

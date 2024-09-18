@@ -40,6 +40,18 @@ class Entry < ApplicationRecord
   scope :active, -> { where(deleted: false) }
   scope :disqualified, -> { where(disqualified: true) }
 
+  def self.sortable_columns
+    {
+      'id' => 'entries.id',
+      'title' => 'entries.title',
+      'created_at' => 'entries.created_at',
+      'profile_display_name' => 'profiles.last_name',
+      'profile_user_uniqname' => 'users.uniqname',
+      'pen_name' => 'profiles.pen_name',
+      'disqualified' => 'entries.disqualified'
+    }
+  end
+
   def active_entry?
     !disqualified && !deleted
   end
