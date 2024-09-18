@@ -30,11 +30,17 @@
                 No file attached
               <% end %>
             </td>
-            <td class="text-center text-danger">
-              <%= link_to soft_delete_entry_path(entry), data: { turbo_method: :patch, turbo_confirm: 'Are you sure you want to remove this entry?' } do %>
-                <i class="text-danger bi bi-file-x-fill" style="font-size: 1.5rem;" aria-hidden="true"></i>
-              <% end %>
-            </td>
+              <td class="text-center text-danger">
+                <% if entry.soft_deletable? %>
+                  <%= link_to soft_delete_entry_path(entry), data: { turbo_method: :patch, turbo_confirm: 'Are you sure you want to remove this entry?' } do %>
+                    <i class="text-danger bi bi-file-x-fill" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  <% end %>
+                <% else %>
+                  <span class="text-muted" title="Cannot remove after contest has closed">
+                    <i class="text-danger bi bi-file-x-fill disabled" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  </span>
+                <% end %>
+              </td>
           </tr>
         <% end %>
       </tbody>

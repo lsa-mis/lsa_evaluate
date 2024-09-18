@@ -59,18 +59,21 @@ class Entry < ApplicationRecord
   def entry_file_validation
     if entry_file.attached?
       # Validate file type
-      acceptable_types = ["application/pdf"]
+      acceptable_types = [ 'application/pdf' ]
       unless acceptable_types.include?(entry_file.content_type)
-        errors.add(:entry_file, "must be a PDF")
+        errors.add(:entry_file, 'must be a PDF')
       end
 
       # Validate file size
       if entry_file.byte_size > 30.megabytes
-        errors.add(:entry_file, "is too big. Maximum size is 30 MB.")
+        errors.add(:entry_file, 'is too big. Maximum size is 30 MB.')
       end
     else
       errors.add(:entry_file, "can't be blank")
     end
   end
 
+  def soft_deletable?
+    contest_instance.date_closed > Time.current
+  end
 end

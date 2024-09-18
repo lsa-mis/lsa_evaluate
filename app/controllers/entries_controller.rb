@@ -64,15 +64,22 @@ class EntriesController < ApplicationController
   end
 
   def soft_delete
-    if @entry.update(deleted: true)
-      respond_to do |format|
-        format.html { redirect_to applicant_dashboard_path, notice: 'Entry was successfully removed.' }
-        format.turbo_stream
+    if @entry.soft_deletable?
+      if @entry.update(deleted: true)
+        respond_to do |format|
+          format.html { redirect_to applicant_dashboard_path, notice: 'Entry was successfully removed.' }
+          format.turbo_stream
+        end
+      else
+        respond_to do |format|
+          format.html { redirect_to applicant_dashboard_path, alert: 'Failed to remove entry.' }
+          format.turbo_stream
+        end
       end
     else
       respond_to do |format|
-        format.html { redirect_to applicant_dashboard_path, alert: 'Failed to remove entry.' }
-        format.turbo_stream
+        format.html { redirect_to applicant_dashboard_path, alert: 'Cannot delete entry after contest has closed.' }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash_messages", locals: { alert: 'Cannot delete entry after contest has closed.' }) }
       end
     end
   end
