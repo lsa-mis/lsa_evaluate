@@ -262,6 +262,7 @@ contest_instance1 = ContestInstance.new(
 
 # Build the associated ClassLevelRequirement
 contest_instance1.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'First year'))
+contest_instance1.category_contest_instances.build(category: Category.find_by(kind: 'Drama'))
 contest_instance1.save!
 
 # Repeat the same pattern for other ContestInstances
@@ -273,9 +274,9 @@ contest_instance2 = ContestInstance.new(
   notes: 'Second contest instance',
   judging_open: true,
   judging_rounds: 2,
-  has_course_requirement: true,
+  has_course_requirement: false,
   judge_evaluations_complete: true,
-  course_requirement_description: 'Course required',
+  course_requirement_description: 'No course requirement',
   recletter_required: true,
   transcript_required: true,
   maximum_number_entries_per_applicant: 2,
@@ -283,6 +284,7 @@ contest_instance2 = ContestInstance.new(
 )
 
 contest_instance2.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'Second year'))
+contest_instance2.category_contest_instances.build(category: Category.find_by(kind: 'Fiction'))
 contest_instance2.save!
 
 contest_instance3 = ContestInstance.new(
@@ -293,9 +295,9 @@ contest_instance3 = ContestInstance.new(
   notes: 'Third contest instance',
   judging_open: false,
   judging_rounds: 1,
-  has_course_requirement: false,
+  has_course_requirement: true,
   judge_evaluations_complete: false,
-  course_requirement_description: 'No course requirement',
+  course_requirement_description: 'Course required',
   recletter_required: false,
   transcript_required: false,
   maximum_number_entries_per_applicant: 1,
@@ -303,16 +305,17 @@ contest_instance3 = ContestInstance.new(
 )
 
 contest_instance3.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'Junior'))
+contest_instance3.category_contest_instances.build(category: Category.find_by(kind: 'Research Paper'))
 contest_instance3.save!
 
-CategoryContestInstance.create!([
-                                  { category: Category.find_by(kind: 'Drama'), contest_instance: ContestInstance.find_by(contest_description: contest_description1) },
-                                  { category: Category.find_by(kind: 'Fiction'), contest_instance: ContestInstance.find_by(contest_description: contest_description2) },
-                                  { category: Category.find_by(kind: 'Research Paper'), contest_instance: ContestInstance.find_by(contest_description: contest_description3) }
-                                ])
+# CategoryContestInstance.create!([
+#                                   { category: Category.find_by(kind: 'Drama'), contest_instance: ContestInstance.find_by(contest_description: contest_description1) },
+#                                   { category: Category.find_by(kind: 'Fiction'), contest_instance: ContestInstance.find_by(contest_description: contest_description2) },
+#                                   { category: Category.find_by(kind: 'Research Paper'), contest_instance: ContestInstance.find_by(contest_description: contest_description3) }
+#                                 ])
 
-ClassLevelRequirement.create!([
-                                { class_level: ClassLevel.find_by(name: 'Second year'), contest_instance: contest_instance1 },
-                                { class_level: ClassLevel.find_by(name: 'Junior'), contest_instance: contest_instance1 },
-                                { class_level: ClassLevel.find_by(name: 'Senior'), contest_instance: contest_instance1 }
-                              ])
+# ClassLevelRequirement.create!([
+#                                 { class_level: ClassLevel.find_by(name: 'Second year'), contest_instance: contest_instance1 },
+#                                 { class_level: ClassLevel.find_by(name: 'Junior'), contest_instance: contest_instance1 },
+#                                 { class_level: ClassLevel.find_by(name: 'Senior'), contest_instance: contest_instance1 }
+#                               ])
