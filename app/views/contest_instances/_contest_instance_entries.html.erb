@@ -2,15 +2,15 @@
 <table class="table table-striped w-100">
   <thead>
     <tr>
-      <th>ID</th>
+      <th><%= sortable 'id', 'ID', @container, @contest_description, @contest_instance %></th>
       <th>File</th>
-      <th>Display Name</th>
-      <th>Username</th>
-      <th>Title</th>
-      <th>Pen Name</th>
-      <th>Created At</th>
-      <th>Disqualified?</th>
-      <th>Applicant deleted?</th>
+      <th><%= sortable 'profile_display_name', 'Display Name', @container, @contest_description, @contest_instance %></th>
+      <th><%= sortable 'profile_user_uniqname', 'Username', @container, @contest_description, @contest_instance %></th>
+      <th><%= sortable 'title', 'Title', @container, @contest_description, @contest_instance %></th>
+      <th><%= sortable 'pen_name', 'Pen Name', @container, @contest_description, @contest_instance %></th>
+      <th><%= sortable 'created_at', 'Created At', @container, @contest_description, @contest_instance %></th>
+      <th><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
+      <th>Deleted by applicant</th>
     </tr>
   </thead>
   <tbody>
