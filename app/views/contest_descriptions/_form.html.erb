@@ -5,8 +5,8 @@
   <div class="form-inputs">
     <%= f.input :name, required: true %>
     <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
-    <%= f.input :eligibility_rules %>
-    <%= f.input :notes %>
+    <%= f.input :eligibility_rules, as: :rich_text_area %>
+    <%= f.input :notes, as: :rich_text_area %>
     <%= f.input :short_name %>
     <%= f.input :active %>
     <%= f.input :archived %>
