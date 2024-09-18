@@ -236,6 +236,53 @@ RSpec.describe ContestInstance do
     end
   end
 
+  describe '.for_class_level' do
+    let(:class_level1) { create(:class_level) }
+    let(:class_level2) { create(:class_level) }
+
+    let!(:contest_with_class_level1) do
+      contest_instance = create(:contest_instance)
+      create(:class_level_requirement, contest_instance: contest_instance, class_level: class_level1)
+      contest_instance
+    end
+
+    let!(:contest_with_class_level2) do
+      contest_instance = create(:contest_instance)
+      create(:class_level_requirement, contest_instance: contest_instance, class_level: class_level2)
+      contest_instance
+    end
+
+    let!(:contest_with_both_class_levels) do
+      contest_instance = create(:contest_instance)
+      create(:class_level_requirement, contest_instance: contest_instance, class_level: class_level1)
+      create(:class_level_requirement, contest_instance: contest_instance, class_level: class_level2)
+      contest_instance
+    end
+
+    it 'returns contests matching the specified class level' do
+      result = ContestInstance.for_class_level(class_level1.id)
+      expect(result).to include(contest_with_class_level1, contest_with_both_class_levels)
+      expect(result).not_to include(contest_with_class_level2)
+    end
+
+    it 'returns contests matching the specified class level (class_level2)' do
+      result = ContestInstance.for_class_level(class_level2.id)
+      expect(result).to include(contest_with_class_level2, contest_with_both_class_levels)
+      expect(result).not_to include(contest_with_class_level1)
+    end
+
+    it 'does not return contests without the specified class level' do
+      class_level3 = create(:class_level)
+      result = ContestInstance.for_class_level(class_level3.id)
+      expect(result).to be_empty
+    end
+
+    it 'returns unique contests when multiple class levels are associated' do
+      result = ContestInstance.for_class_level(class_level1.id)
+      expect(result.count).to eq(2)
+    end
+  end
+
   describe '#dup_with_associations' do
     let!(:contest_instance) { create(:contest_instance) }
 
