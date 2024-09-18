@@ -36,8 +36,10 @@ FactoryBot.define do
     active { true }
     archived { false }
     contest_description
-    date_open { Faker::Date.backward(days: 14) }
-    date_closed { Faker::Date.forward(days: 14) }
+    # date_open { Faker::Date.backward(days: 14) }
+    # date_closed { Faker::Date.forward(days: 14) }
+    date_open { 1.day.ago }
+    date_closed { 1.day.from_now }
     notes { Faker::Lorem.paragraph }
     judging_open { false }
     judging_rounds { 1 }
@@ -49,6 +51,14 @@ FactoryBot.define do
     maximum_number_entries_per_applicant { 1 }
     created_by { Faker::Name.name }
 
+    # Allow overriding date_closed in tests
+    trait :closed do
+      date_closed { 1.day.ago }
+    end
+
+    trait :open do
+      date_closed { 1.day.from_now }
+    end
     # after(:create) do |contest_instance|
     #   create_list(:category_contest_instance, 1, contest_instance: contest_instance)
     #   create(:class_level_requirement, contest_instance: contest_instance)
