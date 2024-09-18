@@ -109,4 +109,24 @@ RSpec.describe Entry, type: :model do
       expect(described_class.column_names).to include('profile_id')
     end
   end
+
+  describe '#soft_deletable?' do
+    let(:entry) { create(:entry, contest_instance: contest_instance) }
+
+    context 'when the contest instance date_closed is in the future' do
+      let(:contest_instance) { create(:contest_instance, date_closed: 1.day.from_now) }
+
+      it 'returns true' do
+        expect(entry.soft_deletable?).to be true
+      end
+    end
+
+    context 'when the contest instance date_closed is in the past' do
+      let(:contest_instance) { create(:contest_instance, date_closed: 1.day.ago) }
+
+      it 'returns false' do
+        expect(entry.soft_deletable?).to be false
+      end
+    end
+  end
 end
