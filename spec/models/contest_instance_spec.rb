@@ -157,6 +157,27 @@ RSpec.describe ContestInstance do
       expect(contest_instance).not_to be_valid
       expect(contest_instance.errors[:base]).to include('At least one class level requirement must be added.')
     end
+
+    it 'is invalid without at least one category' do
+      contest_instance.categories.clear
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:base]).to include('At least one category must be added.')
+    end
+
+    it 'is invalid with more than one active contest instance for a contest description' do
+      contest_description = create(:contest_description)
+      create(:contest_instance, contest_description: contest_description, active: true)
+      contest_instance = build(:contest_instance, contest_description: contest_description, active: true)
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:active]).to include('There can only be one active contest instance for a contest description.')
+    end
+
+    it 'is invalid if date_open is after date_closed' do
+      contest_instance.date_open = 2.days.from_now
+      contest_instance.date_closed = 2.days.ago
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:date_closed]).to include('must be after date contest opens')
+    end
   end
 
   describe 'Factory' do

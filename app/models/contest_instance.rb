@@ -67,6 +67,7 @@ class ContestInstance < ApplicationRecord
   validate :must_have_at_least_one_class_level_requirement
   validate :must_have_at_least_one_category
   validate :only_one_active_per_contest_description
+  validate :date_closed_after_date_open
 
   def dup_with_associations
     new_instance = dup
@@ -111,6 +112,12 @@ class ContestInstance < ApplicationRecord
   def only_one_active_per_contest_description
     if active && contest_description.contest_instances.where(active: true).where.not(id: id).exists?
       errors.add(:active, 'There can only be one active contest instance for a contest description.')
+    end
+  end
+
+  def date_closed_after_date_open
+    if date_open && date_closed && date_closed < date_open
+      errors.add(:date_closed, 'must be after date contest opens')
     end
   end
 end
