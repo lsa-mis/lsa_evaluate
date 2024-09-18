@@ -114,7 +114,7 @@ RSpec.describe Entry, type: :model do
     let(:entry) { create(:entry, contest_instance: contest_instance) }
 
     context 'when the contest instance date_closed is in the future' do
-      let(:contest_instance) { create(:contest_instance, date_closed: 1.day.from_now) }
+      let(:contest_instance) { create(:contest_instance, date_open: 1.day.ago, date_closed: 1.day.from_now) }
 
       it 'returns true' do
         expect(entry.soft_deletable?).to be true
@@ -122,7 +122,7 @@ RSpec.describe Entry, type: :model do
     end
 
     context 'when the contest instance date_closed is in the past' do
-      let(:contest_instance) { create(:contest_instance, date_closed: 1.day.ago) }
+      let(:contest_instance) { create(:contest_instance, date_open: 2.days.ago, date_closed: 1.day.ago) }
 
       it 'returns false' do
         expect(entry.soft_deletable?).to be false

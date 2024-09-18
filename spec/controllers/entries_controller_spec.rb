@@ -5,7 +5,7 @@ RSpec.describe EntriesController, type: :controller do
   describe 'PATCH #soft_delete' do
     let(:user) { create(:user) }
     let(:profile) { create(:profile, user: user) }
-    let(:contest_instance) { create(:contest_instance, date_closed: date_closed) }
+    let(:contest_instance) { create(:contest_instance, date_open: date_open, date_closed: date_closed) }
     let(:entry) { create(:entry, profile: profile, contest_instance: contest_instance) }
 
     before do
@@ -14,6 +14,7 @@ RSpec.describe EntriesController, type: :controller do
 
     context 'when the contest instance is still open (date_closed in the future)' do
       let(:date_closed) { 1.day.from_now }
+      let(:date_open) { 1.day.ago }
 
       it 'soft deletes the entry and redirects with a success notice' do
         patch :soft_delete, params: { id: entry.id }
@@ -27,6 +28,7 @@ RSpec.describe EntriesController, type: :controller do
 
     context 'when the contest instance has closed (date_closed in the past)' do
       let(:date_closed) { 1.day.ago }
+      let(:date_open) { 2.days.ago }
 
       it 'does not delete the entry and redirects with an alert' do
         patch :soft_delete, params: { id: entry.id }
