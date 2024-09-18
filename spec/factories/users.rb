@@ -35,7 +35,8 @@
 FactoryBot.define do
   factory :user do
     email { Faker::Internet.email }
-    password { Faker::Internet.password(min_length: 15) }
+    password { 'passwordpassword' }
+    password_confirmation { 'passwordpassword' }
     uniqname { Faker::Internet.username }
     uid { uniqname }
     principal_name { email }
@@ -43,19 +44,20 @@ FactoryBot.define do
 
     trait :employee do
       after(:create) do |user|
-        create(:affiliation, user: user, name: 'employee')
+        # create(:affiliation, user: user, name: 'employee')
+        user.affiliations << create(:affiliation, name: 'employee')
       end
     end
 
     trait :student do
       after(:create) do |user|
-        create(:affiliation, user: user, name: 'student')
+        user.affiliations << create(:affiliation, name: 'student')
       end
     end
 
     trait :faculty do
       after(:create) do |user|
-        create(:affiliation, user: user, name: 'faculty')
+        user.affiliations << create(:affiliation, name: 'faculty')
       end
     end
 
