@@ -3,7 +3,7 @@
   <td>
     <% if entry.entry_file.attached? %>
       <%= link_to rails_blob_path(entry.entry_file, disposition: "attachment"), target: "_blank", rel: "noopener" do %>
-        <i class="bi bi-book" style="font-size: 1.5rem;" aria-hidden="true"></i>
+        <i class="bi bi-download" style="font-size: 1.5rem;" aria-hidden="true"></i>
       <% end %>
     <% else %>
       No file attached
