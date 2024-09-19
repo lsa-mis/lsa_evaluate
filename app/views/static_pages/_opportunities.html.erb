@@ -11,20 +11,11 @@
       </select>
     </div>
 
-    <!-- Class Rank Selection -->
-    <div class="col">
-      <label for="class-rank-select" class="form-label visually-hidden">Grade Level</label>
-      <select class="form-select" id="class-rank-select" name="class_rank_id">
-        <option value="">Grade Level</option>
-        <%= options_from_collection_for_select(@class_levels, :id, :name) %>
-      </select>
-    </div>
-
     <!-- Contest Selection -->
     <div class="col">
       <label for="container-select" class="form-label visually-hidden">Collections</label>
       <select class="form-select" id="container-select" name="container_id">
-        <option value="">Contest Collections</option>
+        <option value="">Contest Collection</option>
         <%= options_from_collection_for_select(@containers, :id, :name) %>
       </select>
     </div>
