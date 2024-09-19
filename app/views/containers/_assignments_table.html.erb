@@ -3,7 +3,7 @@
     <tr>
       <th>User</th>
       <th>Role</th>
-      <th>Actions</th> <!-- New column for actions -->
+      <th class="text-center">Actions</th> <!-- New column for actions -->
     </tr>
   </thead>
   <tbody>
@@ -11,8 +11,13 @@
       <tr id="<%= dom_id(assignment) %>">
         <td><%= assignment.user.display_name_or_email %></td>
         <td><%= assignment.role.kind %></td>
-        <td>
-          <%= link_to "Remove", container_assignment_path(container, assignment), method: :delete, data: { turbo_confirm: "Are you sure?" }, class: "link_to text-danger" %>
+        <td class="text-center">
+          <%= link_to container_assignment_path(container, assignment), 
+                      method: :delete, 
+                      data: { turbo_confirm: "Are you sure?" }, 
+                      class: "link_to text-danger" do %>
+            <i class="text-danger bi bi-trash" style="font-size: 1.5rem;" aria-hidden="true"></i>
+          <% end %>
         </td>
       </tr>
     <% end %>
