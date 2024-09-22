@@ -23,8 +23,15 @@
             <td><%= entry.created_at.strftime("%B %d, %Y") %></td>
             <td class="text-center">
               <% if entry.entry_file.attached? %>
-                <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"), target: "_blank", rel: "noopener" do %>
-                  <i class="bi bi-book" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"),
+                            target: "_blank", 
+                            rel: "noopener",
+                            class: 'd-block',
+                            data: { 'bs-toggle': 'tooltip' },
+                            title: 'Download entry',
+                            aria: { label: 'Download entry' } do %>
+                  <i class="bi bi-download" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  <span class="visually-hidden">Download entry</span>
                 <% end %>
               <% else %>
                 No file attached
@@ -32,12 +39,19 @@
             </td>
               <td class="text-center text-danger">
                 <% if entry.soft_deletable? %>
-                  <%= link_to soft_delete_entry_path(entry), data: { turbo_method: :patch, turbo_confirm: 'Are you sure you want to remove this entry?' } do %>
-                    <i class="text-danger bi bi-file-x-fill" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  <%= button_to soft_delete_entry_path(entry),
+                                method: :patch,
+                                data: { turbo_confirm: 'Are you sure you want to remove this entry?' },
+                                form: { data: { turbo_frame: "_top" } },
+                                class: 'btn btn-link p-0 d-inline-block',
+                                title: 'Delete entry',
+                                aria: { label: 'Delete entry' } do %>
+                    <i class="text-danger bi bi-trash" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                    <span class="visually-hidden">Delete entry</span>
                   <% end %>
                 <% else %>
                   <span class="text-muted" title="Cannot remove after contest has closed">
-                    <i class="text-danger bi bi-file-x-fill disabled" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                    <i class="text-danger bi bi-trash disabled" style="font-size: 1.5rem;" aria-hidden="true"></i>
                   </span>
                 <% end %>
               </td>

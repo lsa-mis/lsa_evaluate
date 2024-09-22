@@ -21,7 +21,7 @@
     <% if current_user.is_employee? %>
       <div id="manage-submissions" class="col mb-4">
         <div class="card">
-          <h3 class="m-2">Create / Manage Submissions</h3>
+          <h3 class="m-2">Create/Manage Contest Collections</h3>
           <div class="card-body">
             <% if (content = render_editable_content('home', 'manage_submissions')) %>
               <p class="">
@@ -29,7 +29,7 @@
               </p>
             <% end %>
             <div>
-              <%= link_to 'Manage Submissions', containers_path, method: :get, class: 'btn btn-primary' %>
+              <%= link_to 'Contest Collections', containers_path, method: :get, class: 'btn btn-primary' %>
             </div>
           </div>
         </div>

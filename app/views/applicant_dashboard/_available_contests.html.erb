@@ -9,7 +9,7 @@
         <th>Rules</th>
         <th>Contest Container</th>
         <th>Close Date</th>
-        <th>Actions</th>
+        <th class="text-center">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -20,8 +20,13 @@
           <td class="card-text"><%= "#{contest.contest_description.container.name} - #{contest.contest_description.container.department.name}" %></td>
           <td class="card-text"><%= contest.date_closed.strftime("%B %d, %Y - %I:%M %p") %></td>
           <td class="text-center">
-            <%= link_to new_entry_path(contest_instance_id: contest.id), class: 'btn-icon' do %>
-              <i class="bi bi-pencil"></i>
+            <%= link_to new_entry_path(contest_instance_id: contest.id),
+                        class: 'd-block',
+                        data: { 'bs-toggle': 'tooltip' },
+                        title: 'Enter contest',
+                        aria: { label: 'Enter contest' } do %>
+              <i class="bi bi-pencil" style="font-size: 1.5rem;" aria-hidden="true"></i>
+              <span class="visually-hidden">Enter instance</span>
             <% end %>
           </td>
         </tr>
