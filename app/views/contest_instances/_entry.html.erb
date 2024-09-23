@@ -1,4 +1,5 @@
-<tr>
+<%# app/views/contest_instances/_entry.html.erb %>
+<tr id="<%= dom_id(entry) %>">
   <td><%= entry.id %></td>
   <td>
     <% if entry.entry_file.attached? %>
@@ -14,5 +15,19 @@
   <td><%= entry.title %></td>
   <td><%= entry.profile.pen_name %></td>
   <td><%= format_datetime(entry.created_at) %></td>
-  <td><%= entry.disqualified %></td>
+  <td class="text-center"><%= boolean_to_yes_no(entry.disqualified) %></td>
+  <td class="text-center">
+    <% if policy(entry).toggle_disqualified? %>
+      <%= button_to toggle_disqualified_entry_path(entry),
+                    method: :patch,
+                    data: { turbo_confirm: 'Are you sure you want to toggle the disqualification status?' },
+                    form: { data: { turbo_frame: "_top" } },
+                    class: 'badge badge bg-warning text-black btn btn-sm p-0',
+                    title: 'Toggle Disqualification',
+                    aria: { label: 'Toggle Disqualification' } do %>
+        <i class="bi bi-ban" style="font-size: 1.5rem;" aria-hidden="true"></i>
+        <span class="visually-hidden">Toggle Disqualification</span>
+      <% end %>
+    <% end %>
+  </td>
 </tr>
