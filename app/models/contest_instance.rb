@@ -97,8 +97,8 @@ class ContestInstance < ApplicationRecord
     "#{contest_description.name} - #{date_open.strftime('%Y-%m-%d')} to #{date_closed.strftime('%Y-%m-%d')}"
   end
 
-  def is_open?
-    active && !archived && DateTime.now.between?(date_open, date_closed)
+  def open?
+    active && !archived && Time.current.between?(date_open, date_closed)
   end
 
   def must_have_at_least_one_class_level_requirement
