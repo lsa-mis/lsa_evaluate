@@ -9,7 +9,7 @@ class ContestInstancesController < ApplicationController
   end
 
   def show
-    @contest_instance_entries = @contest_instance.entries.includes(profile: :user)
+    @contest_instance_entries = @contest_instance.entries.active.includes(profile: :user)
     # @contest_instance_entries = @contest_instance.entries
 
     if params[:sort_column].present? && params[:sort_direction].present?
