@@ -93,6 +93,11 @@ class User < ApplicationRecord
     assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Manager'))
   end
 
+  def has_container_role?(container, role_kinds = ["Container Manager", "Container Administrator"])
+    assignments.joins(:role)
+              .exists?(container: container, roles: { kind: role_kinds })
+  end
+
   def display_initials_or_email
     if display_name.present?
       display_name.split.map { |name| name[0].upcase }.join
