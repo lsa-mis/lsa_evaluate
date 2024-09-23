@@ -9,7 +9,8 @@
       <th><%= sortable 'title', 'Title', @container, @contest_description, @contest_instance %></th>
       <th><%= sortable 'pen_name', 'Pen Name', @container, @contest_description, @contest_instance %></th>
       <th><%= sortable 'created_at', 'Created At', @container, @contest_description, @contest_instance %></th>
-      <th><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
+      <th class=text-center"><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
+      <th class="text-center">Actions</th>
     </tr>
   </thead>
   <tbody>
