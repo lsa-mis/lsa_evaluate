@@ -60,6 +60,9 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Devise::Test::IntegrationHelpers, type: :system
 
+  config.include RequestSpecHelpers, type: :request
+  Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
+
   # Include Warden helpers if needed
   config.include Warden::Test::Helpers
 

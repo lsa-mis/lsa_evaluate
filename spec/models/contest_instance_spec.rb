@@ -187,39 +187,39 @@ RSpec.describe ContestInstance do
     end
   end
 
-  describe '#is_open?' do
+  describe '#open?' do
     context 'when the current date is between date_open and date_closed and is active' do
       it 'returns true' do
         contest_instance = create(:contest_instance, date_open: 2.days.ago, date_closed: 2.days.from_now)
-        expect(contest_instance.is_open?).to be(true)
+        expect(contest_instance.open?).to be(true)
       end
     end
 
     context 'when the current date is between date_open and date_closed but is not active' do
       it 'returns false' do
         contest_instance = create(:contest_instance, active: false, date_open: 2.days.ago, date_closed: 2.days.from_now)
-        expect(contest_instance.is_open?).to be(false)
+        expect(contest_instance.open?).to be(false)
       end
     end
 
     context 'when the current date is before date_open' do
       it 'returns false' do
         contest_instance = create(:contest_instance, date_open: 2.days.from_now, date_closed: 4.days.from_now)
-        expect(contest_instance.is_open?).to be(false)
+        expect(contest_instance.open?).to be(false)
       end
     end
 
     context 'when the current date is after date_closed' do
       it 'returns false' do
         contest_instance = create(:contest_instance, date_open: 4.days.ago, date_closed: 2.days.ago)
-        expect(contest_instance.is_open?).to be(false)
+        expect(contest_instance.open?).to be(false)
       end
     end
 
     context 'when is archived' do
       it 'returns false' do
         contest_instance = create(:contest_instance, archived: true)
-        expect(contest_instance.is_open?).to be(false)
+        expect(contest_instance.open?).to be(false)
       end
     end
   end
