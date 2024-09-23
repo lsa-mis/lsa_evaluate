@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :entries do
     member do
       patch 'soft_delete'
+      patch :toggle_disqualified
     end
   end
 
