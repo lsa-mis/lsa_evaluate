@@ -10,8 +10,8 @@
           <th>Title</th>
           <th>Entry Type</th>
           <th>Submitted</th>
-          <th>Entry</th>
-          <th class="text-center">Remove <br><small>available until contest closes</small></th>
+          <th class="text-center">Entry</th>
+          <th class="text-center">Remove</th>
         </tr>
       </thead>
       <tbody>
@@ -23,38 +23,44 @@
             <td><%= entry.created_at.strftime("%B %d, %Y") %></td>
             <td class="text-center">
               <% if entry.entry_file.attached? %>
-                <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"),
-                            target: "_blank", 
-                            rel: "noopener",
-                            class: 'd-block',
-                            data: { 'bs-toggle': 'tooltip' },
-                            title: 'Download entry',
-                            aria: { label: 'Download entry' } do %>
-                  <i class="bi bi-download" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                  <span class="visually-hidden">Download entry</span>
-                <% end %>
+                <div class="d-flex justify-content-center align-items-center gap-3">
+                  <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"),
+                              target: "_blank", 
+                              rel: "noopener",
+                              data: { 'bs-toggle': 'tooltip' },
+                              title: 'Download entry',
+                              aria: { label: 'Download entry' } do %>
+                    <i class="bi bi-download" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                    <span class="visually-hidden">Download entry</span>
+                  <% end %>
+                  <% if entry.disqualified %>
+                    <span class="badge bg-warning text-black" data-bs-toggle="tooltip" title="This entry has been disqualified">
+                      <i class="bi bi-ban" style="font-size: 1rem;" aria-hidden="true"></i>
+                    </span>
+                  <% end %>
+                </div>
               <% else %>
                 No file attached
               <% end %>
             </td>
-              <td class="text-center text-danger">
-                <% if entry.soft_deletable? %>
-                  <%= button_to soft_delete_entry_path(entry),
-                                method: :patch,
-                                data: { turbo_confirm: 'Are you sure you want to remove this entry?' },
-                                form: { data: { turbo_frame: "_top" } },
-                                class: 'btn btn-link p-0 d-inline-block',
-                                title: 'Delete entry',
-                                aria: { label: 'Delete entry' } do %>
-                    <i class="text-danger bi bi-trash" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                    <span class="visually-hidden">Delete entry</span>
-                  <% end %>
-                <% else %>
-                  <span class="text-muted" title="Cannot remove after contest has closed">
-                    <i class="text-danger bi bi-trash disabled" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                  </span>
+            <td class="text-center text-danger">
+              <% if entry.soft_deletable? %>
+                <%= button_to soft_delete_entry_path(entry),
+                              method: :patch,
+                              data: { turbo_confirm: 'Are you sure you want to remove this entry?' },
+                              form: { data: { turbo_frame: "_top" } },
+                              class: 'btn btn-link p-0 d-inline-block',
+                              title: 'Delete entry',
+                              aria: { label: 'Delete entry' } do %>
+                  <i class="text-danger bi bi-trash" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  <span class="visually-hidden">Delete entry</span>
                 <% end %>
-              </td>
+              <% else %>
+                <span class="text-muted" title="Cannot remove after contest has closed">
+                  <i class="text-danger bi bi-trash disabled" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                </span>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>
