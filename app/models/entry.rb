@@ -74,6 +74,6 @@ class Entry < ApplicationRecord
   end
 
   def soft_deletable?
-    contest_instance.date_closed > Time.current
+    contest_instance.open?
   end
 end
