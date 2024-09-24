@@ -82,7 +82,7 @@ class ProfilesController < ApplicationController
   end
   # Only allow a list of trusted parameters through.
   def profile_params
-    params.require(:profile).permit(:user_id, :umid, :first_name, :last_name, :class_level_id, :school_id, :campus_id,
+    params.require(:profile).permit(:user_id, :umid, :preferred_first_name, :preferred_last_name, :class_level_id, :school_id, :campus_id,
                                     :major,
                                     :department_id, :grad_date, :degree, :receiving_financial_aid,
                                     :accepted_financial_aid_notice, :financial_aid_description,
