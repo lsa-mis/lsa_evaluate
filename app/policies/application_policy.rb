@@ -35,11 +35,9 @@ class ApplicationPolicy
     false
   end
 
-  # Helper method to check for admin user
-  def admin_user?
-    user.user_roles.joins(:role).exists?(roles: { kind: 'Axis Mundi' })
+  def axis_mundi?
+    user&.axis_mundi? || false
   end
-
   # Scope class for determining accessible records
   class Scope
     attr_reader :user, :scope
@@ -50,11 +48,17 @@ class ApplicationPolicy
     end
 
     def resolve
-      if user.user_roles.joins(:role).exists?(roles: { kind: 'Axis Mundi' })
+      if axis_mundi?
         scope.all
       else
         scope.none
       end
+    end
+
+    private
+
+    def axis_mundi?
+      user&.axis_mundi? || false
     end
   end
 end

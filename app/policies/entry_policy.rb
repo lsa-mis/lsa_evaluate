@@ -1,7 +1,7 @@
 class EntryPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      if admin_user?
+      if axis_mundi?
         scope.all
       else
         scope.where(profile: user.profile)
@@ -10,26 +10,26 @@ class EntryPolicy < ApplicationPolicy
   end
 
   def show?
-    admin_user? || record.profile.user == user
+    record.profile.user == user || axis_mundi?
   end
 
   def create?
-    admin_user? || (record.profile.user == user && record.contest_instance.open?)
+    (record.profile.user == user && record.contest_instance.open?) || axis_mundi?
   end
 
   def update?
-    admin_user? || (record.profile.user == user && record.contest_instance.open?)
+    (record.profile.user == user && record.contest_instance.open?) || axis_mundi?
   end
 
   # def destroy?
-  #   admin_user? || (record.profile.user == user && record.contest_instance.open?)
+  #   (record.profile.user == user && record.contest_instance.open?) || axis_mundi?
   # end
 
   def soft_delete?
-    admin_user? || (record.profile.user == user && record.contest_instance.open?)
+    (record.profile.user == user && record.contest_instance.open?) || axis_mundi?
   end
 
   def toggle_disqualified?
-    admin_user? || user.has_container_role?(record.contest_instance.contest_description.container)
+    user&.has_container_role?(record.contest_instance.contest_description.container) || axis_mundi?
   end
 end
