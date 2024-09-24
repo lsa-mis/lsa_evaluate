@@ -11,6 +11,8 @@
 #  email                  :string(255)      default(""), not null
 #  encrypted_password     :string(255)      default(""), not null
 #  failed_attempts        :integer          default(0), not null
+#  first_name             :string(255)      default(""), not null
+#  last_name              :string(255)      default(""), not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string(255)
 #  locked_at              :datetime
@@ -35,6 +37,8 @@
 FactoryBot.define do
   factory :user do
     email { Faker::Internet.email }
+    first_name { Faker::Name.first_name }
+    last_name { Faker::Name.last_name }
     password { 'passwordpassword' }
     password_confirmation { 'passwordpassword' }
     uniqname { Faker::Internet.username }
