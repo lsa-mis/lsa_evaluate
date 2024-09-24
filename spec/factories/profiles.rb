@@ -9,12 +9,12 @@
 #  campus_employee               :boolean          default(FALSE), not null
 #  degree                        :string(255)      not null
 #  financial_aid_description     :text(65535)
-#  first_name                    :string(255)      default(""), not null
 #  grad_date                     :date             not null
 #  hometown_publication          :string(255)
-#  last_name                     :string(255)      default(""), not null
 #  major                         :string(255)
 #  pen_name                      :string(255)
+#  preferred_first_name          :string(255)      default(""), not null
+#  preferred_last_name           :string(255)      default(""), not null
 #  receiving_financial_aid       :boolean          default(FALSE), not null
 #  umid                          :integer          not null
 #  created_at                    :datetime         not null
@@ -56,8 +56,8 @@
 FactoryBot.define do
   factory :profile do
     user
-    first_name { Faker::Name.first_name }
-    last_name { Faker::Name.last_name }
+    preferred_first_name { Faker::Name.first_name }
+    preferred_last_name { Faker::Name.last_name }
     umid { Faker::Number.number(digits: 8) }
     class_level
     school

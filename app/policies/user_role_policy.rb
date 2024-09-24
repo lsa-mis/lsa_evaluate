@@ -1,14 +1,14 @@
 class UserRolePolicy < ApplicationPolicy
   def index?
-    admin_user?
+    axis_mundi?
   end
 
   def show?
-    admin_user?
+    axis_mundi?
   end
 
   def create?
-    admin_user?
+    axis_mundi?
   end
 
   def new?
@@ -16,7 +16,7 @@ class UserRolePolicy < ApplicationPolicy
   end
 
   def update?
-    admin_user?
+    axis_mundi?
   end
 
   def edit?
@@ -24,12 +24,12 @@ class UserRolePolicy < ApplicationPolicy
   end
 
   def destroy?
-    admin_user?
+    axis_mundi?
   end
 
   class Scope < Scope
     def resolve
-      if admin_user?
+      if axis_mundi?
         scope.all
       else
         scope.none

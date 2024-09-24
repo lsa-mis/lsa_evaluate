@@ -11,6 +11,8 @@
 #  email                  :string(255)      default(""), not null
 #  encrypted_password     :string(255)      default(""), not null
 #  failed_attempts        :integer          default(0), not null
+#  first_name             :string(255)      default(""), not null
+#  last_name              :string(255)      default(""), not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string(255)
 #  locked_at              :datetime
@@ -111,9 +113,9 @@ RSpec.describe User do
       end
 
       context 'when display_name is not present' do
-        it 'returns the part of the email before @' do
-          user = build(:user, email: 'user@example.com', display_name: nil)
-          expect(user.display_initials_or_email).to eq('user')
+        it 'returns the first leter of the uid' do
+          user = build(:user, uid: 'user', display_name: nil)
+          expect(user.display_initials_or_email).to eq('U')
         end
       end
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_18_224440) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_24_163055) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -222,8 +222,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_18_224440) do
 
   create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "first_name", default: "", null: false
-    t.string "last_name", default: "", null: false
+    t.string "preferred_first_name", default: "", null: false
+    t.string "preferred_last_name", default: "", null: false
     t.bigint "class_level_id"
     t.bigint "school_id"
     t.bigint "campus_id"
@@ -301,6 +301,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_18_224440) do
     t.string "uid"
     t.string "principal_name"
     t.string "display_name"
+    t.string "first_name", default: "", null: false
+    t.string "last_name", default: "", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true

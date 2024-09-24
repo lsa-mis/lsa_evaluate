@@ -6,12 +6,13 @@ class ApplicationPolicy
     @record = record
   end
 
+  # Default to deny access; override in specific policies
   def index?
     false
   end
 
   def show?
-    scope.exists?(id: record.id)
+    false
   end
 
   def create?
@@ -34,15 +35,10 @@ class ApplicationPolicy
     false
   end
 
-  def scope
-    Pundit.policy_scope!(user, record.class)
+  def axis_mundi?
+    user&.axis_mundi? || false
   end
-
-  def admin_user?
-    Rails.logger.info("Checking if user is admin for Axis Mundi role")
-    user.user_roles.joins(:role).exists?(roles: { kind: 'Axis Mundi' })
-  end
-
+  # Scope class for determining accessible records
   class Scope
     attr_reader :user, :scope
 
@@ -52,34 +48,17 @@ class ApplicationPolicy
     end
 
     def resolve
-      if admin_user?
+      if axis_mundi?
         scope.all
       else
-        specific_scope
+        scope.none
       end
     end
 
     private
 
-    def admin_user?
-      user.user_roles.joins(:role).exists?(roles: { kind: 'Axis Mundi' })
+    def axis_mundi?
+      user&.axis_mundi? || false
     end
-
-    def specific_scope
-      # This method can be overridden in the specific policy if needed.
-      scope.none
-    end
-  end
-
-  # Override the `authorize` method to allow admin users
-  def authorized_action?
-    admin_user? || specific_action?
-  end
-
-  private
-
-  # Implement specific action rules in derived policies
-  def specific_action?
-    false
   end
 end

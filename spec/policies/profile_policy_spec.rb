@@ -4,7 +4,7 @@ RSpec.describe ProfilePolicy do
   subject { described_class.new(user, profile) }
 
   let(:profile) do
-    create(:profile, accepted_financial_aid_notice: true, first_name: 'John', last_name: 'Doe',
+    create(:profile, accepted_financial_aid_notice: true, preferred_first_name: 'John', preferred_last_name: 'Doe',
                      umid: '12345678', grad_date: Date.today + 1.year, degree: 'Bachelor',
                      class_level_id: create(:class_level).id, campus_id: create(:campus).id,
                      school_id: create(:school).id, home_address: create(:address),
