@@ -1,9 +1,7 @@
-# app/policies/entry_policy.rb
 class EntryPolicy < ApplicationPolicy
-  # Scope class remains as generated
-  class Scope < ApplicationPolicy::Scope
+  class Scope < Scope
     def resolve
-      if user.admin_user?
+      if admin_user?
         scope.all
       else
         scope.where(profile: user.profile)
@@ -11,11 +9,27 @@ class EntryPolicy < ApplicationPolicy
     end
   end
 
+  def show?
+    admin_user? || record.profile.user == user
+  end
+
+  def create?
+    admin_user? || (record.profile.user == user && record.contest_instance.open?)
+  end
+
+  def update?
+    admin_user? || (record.profile.user == user && record.contest_instance.open?)
+  end
+
+  # def destroy?
+  #   admin_user? || (record.profile.user == user && record.contest_instance.open?)
+  # end
+
   def soft_delete?
-    record.contest_instance.open? && record.profile.user == user
+    admin_user? || (record.profile.user == user && record.contest_instance.open?)
   end
 
   def toggle_disqualified?
-    user.has_container_role?(record.contest_instance.contest_description.container)
+    admin_user? || user.has_container_role?(record.contest_instance.contest_description.container)
   end
 end
