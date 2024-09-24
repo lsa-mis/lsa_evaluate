@@ -45,7 +45,7 @@ class Entry < ApplicationRecord
       'id' => 'entries.id',
       'title' => 'entries.title',
       'created_at' => 'entries.created_at',
-      'profile_display_name' => 'profiles.last_name',
+      'profile_display_name' => 'profiles.preferred_last_name',
       'profile_user_uniqname' => 'users.uniqname',
       'pen_name' => 'profiles.pen_name',
       'disqualified' => 'entries.disqualified'
