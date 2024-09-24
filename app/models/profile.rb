@@ -82,7 +82,7 @@ class Profile < ApplicationRecord
   validates :campus_address, presence: true
 
 
-  def profile_display_name
+  def display_name
     "#{preferred_first_name} #{preferred_last_name}"
   end
 
