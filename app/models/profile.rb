@@ -9,12 +9,12 @@
 #  campus_employee               :boolean          default(FALSE), not null
 #  degree                        :string(255)      not null
 #  financial_aid_description     :text(65535)
-#  first_name                    :string(255)      default(""), not null
 #  grad_date                     :date             not null
 #  hometown_publication          :string(255)
-#  last_name                     :string(255)      default(""), not null
 #  major                         :string(255)
 #  pen_name                      :string(255)
+#  preferred_first_name          :string(255)      default(""), not null
+#  preferred_last_name           :string(255)      default(""), not null
 #  receiving_financial_aid       :boolean          default(FALSE), not null
 #  umid                          :integer          not null
 #  created_at                    :datetime         not null
@@ -68,8 +68,8 @@ class Profile < ApplicationRecord
   accepts_nested_attributes_for :home_address, allow_destroy: true
   accepts_nested_attributes_for :campus_address, allow_destroy: true
 
-  validates :first_name, presence: true, length: { in: 1..255 }
-  validates :last_name, presence: true, length: { in: 1..255 }
+  validates :preferred_first_name, presence: true, length: { in: 1..255 }
+  validates :preferred_last_name, presence: true, length: { in: 1..255 }
   validates :umid, presence: true, length: { is: 8 }
   validates :grad_date, presence: true
   validates :degree, presence: true
@@ -82,14 +82,14 @@ class Profile < ApplicationRecord
   validates :campus_address, presence: true
 
 
-  def display_name
-    "#{first_name} #{last_name}"
+  def profile_display_name
+    "#{preferred_first_name} #{preferred_last_name}"
   end
 
   private
 
   def normalize_names
-    self.first_name = first_name.strip
-    self.last_name = last_name.strip
+    self.preferred_first_name = preferred_first_name.strip
+    self.preferred_last_name = preferred_last_name.strip
   end
 end
