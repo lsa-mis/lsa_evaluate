@@ -11,6 +11,8 @@
 #  email                  :string(255)      default(""), not null
 #  encrypted_password     :string(255)      default(""), not null
 #  failed_attempts        :integer          default(0), not null
+#  first_name             :string(255)      default(""), not null
+#  last_name              :string(255)      default(""), not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string(255)
 #  locked_at              :datetime
@@ -102,19 +104,19 @@ class User < ApplicationRecord
     if display_name.present?
       display_name.split.map { |name| name[0].upcase }.join
     else
-      email.split('@').first
+      uid[0].upcase
     end
   end
 
   def is_employee?
-    affiliations.exists?(name: [ 'employee', 'staff' ])
+    affiliations.exists?(name: [ 'staff' ])
   end
 
   def display_firstname_or_email
     if display_name.present?
       display_name.split.first
     else
-      email.split('@').first
+      uid[0].upcase
     end
   end
 
