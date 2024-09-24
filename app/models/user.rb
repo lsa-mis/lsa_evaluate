@@ -95,7 +95,7 @@ class User < ApplicationRecord
     assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Manager'))
   end
 
-  def has_container_role?(container, role_kinds = ["Container Manager", "Container Administrator"])
+  def has_container_role?(container, role_kinds = [ 'Container Manager', 'Container Administrator' ])
     assignments.joins(:role)
               .exists?(container: container, roles: { kind: role_kinds })
   end
