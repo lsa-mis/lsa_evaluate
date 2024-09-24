@@ -144,6 +144,8 @@ user1 = User.create!(email: 'alicefac@example.com',
                      uid: 'alicefac',
                      principal_name: 'alicefac@example.com',
                      display_name: 'Alice Wonderland',
+                     first_name: 'Alice',
+                     last_name: 'Wonderland',
                      affiliations_attributes: [
                                                 { name: 'faculty' },
                                                 { name: 'employee' },
@@ -156,6 +158,8 @@ user2 = User.create!(email: 'bobstaff@example.com',
                      uid: 'bobstaff',
                      principal_name: 'bobstaff@example.com',
                      display_name: 'Bob Builder',
+                     first_name: 'Bob',
+                     last_name: 'Builder',
                      affiliations_attributes: [
                                                 { name: 'staff' },
                                                 { name: 'employee' },
@@ -166,6 +170,8 @@ user3 = User.create!(email: 'sallystu@example.com',
                      password: 'passwordpassword',
                      uniqname: 'sallystu',
                      uid: 'sallystu',
+                     first_name: 'Sally',
+                     last_name: 'Student',
                      principal_name: 'sallystu@example.com',
                      display_name: 'Sally Student',
                      affiliations_attributes: [
@@ -173,7 +179,7 @@ user3 = User.create!(email: 'sallystu@example.com',
                                                 { name: 'member' }
                                               ]
 )
-user4 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
+# user4 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
 user5 = User.create!(email: 'brita@umich.edu', password: 'passwordpassword')
 user6 = User.create!(email: 'jjsantos@umich.edu', password: 'passwordpassword')
 user7 = User.create!(email: 'mlaitan@umich.edu', password: 'passwordpassword')
@@ -188,7 +194,7 @@ role_container_admin = Role.find_by(kind: 'Container Administrator')
 axis_mundi = Role.find_by(kind: 'Axis mundi')
 
 UserRole.create!([
-                  { user: user4, role: axis_mundi },
+                  # { user: user4, role: axis_mundi },
                   { user: user5, role: axis_mundi },
                   { user: user6, role: axis_mundi },
                   { user: user7, role: axis_mundi }
