@@ -1,6 +1,6 @@
 <div id="<%= dom_id profile %>">
 
-  <h1 class="mb-0"><%= profile.first_name %> <%= profile.last_name %></h1>
+  <h1 class="mb-0"><%= profile.preferred_first_name %> <%= profile.preferred_last_name %></h1>
   <div class="ms-2">
     <span class="text-body-tertiary"><small><em>Last updated: <%= profile.updated_at.strftime("%B %d, %Y") %></em></small></span><br>
     <span class="fw-light">UMID: <%= profile.umid %></span>
