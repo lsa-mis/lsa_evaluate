@@ -11,6 +11,20 @@
 
     <%= f.association :category, collection: @entry.contest_instance.categories, label_method: :kind %>
     <%= f.input :entry_file, as: :file %>
+    <% if @entry.contest_instance.require_pen_name %>
+      <%= f.input :pen_name,
+                  required: true,
+                  input_html: { value: @entry.pen_name.presence || current_user.profile.pen_name },
+                  label: "Pen Name",
+                  hint: "Enter the pen name you wish to use for this entry." %>
+
+      <% if current_user.profile.pen_name.blank? %>
+        <%= f.input :save_pen_name_to_profile,
+                    as: :boolean,
+                    label: "Save this pen name to my profile for future entries",
+                    hint: "Selecting this option will set this pen name as your default for future entries." %>
+      <% end %>
+    <% end %>
   </div>
 
   <div class="form-actions">
