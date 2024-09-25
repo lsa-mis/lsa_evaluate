@@ -17,6 +17,9 @@
       <div class="d-flex justify-content-start">
         <div class="ps-2 me-8"><p class="m-0">Home Address<%= simple_format(profile.home_address.full_address, {class:"fw-light"}) if profile.home_address %></p></div>
         <div class="ps-2"><p class="m-0">Campus Address<%= simple_format(profile.campus_address.full_address, {class:"fw-light"}) if profile.campus_address %></p></div>
+        <% if profile.pen_name %>
+          <div class="ps-2"><p class="m-0">Pen Name:<%= profile.pen_name %></p></div>
+        <% end %>
       </div>
     </div>
   </div>
@@ -79,8 +82,7 @@
       <div class="d-flex justify-content-start">
         <div class=" text-start ms-4">
           <p class="">Entrant’s name as it should appear in publicity: <br><span class="fw-light"> <%= profile.user.display_name %></span></p>
-          <p class="">Name of hometown newspaper...:<br><span class="fw-light"> <%= profile.hometown_publication %></span></p>
-          <p class="">Pen Name: <span class="fw-light"> <%= profile.pen_name if profile.pen_name %></span></p>
+          <p class="">Name of hometown newspaper:<br><span class="fw-light"> <%= profile.hometown_publication %></span></p>
         </div>
       </div>
     </div>
