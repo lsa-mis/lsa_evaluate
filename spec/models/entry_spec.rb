@@ -5,6 +5,7 @@
 #  id                  :bigint           not null, primary key
 #  deleted             :boolean          default(FALSE), not null
 #  disqualified        :boolean          default(FALSE), not null
+#  pen_name            :string(255)
 #  title               :string(255)      not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -67,6 +68,7 @@ RSpec.describe Entry, type: :model do
     it 'is not valid without a contest_instance' do
       entry = build(:entry, contest_instance: nil, category: category, profile: profile)
       expect(entry).not_to be_valid
+      expect(entry.errors[:contest_instance]).to include("can't be blank")
     end
 
     it 'is not valid without a profile' do
@@ -126,6 +128,45 @@ RSpec.describe Entry, type: :model do
 
       it 'returns false' do
         expect(entry.soft_deletable?).to be false
+      end
+    end
+  end
+
+  describe 'pen_name validations' do
+    let(:category) { create(:category, kind: "ecat") }
+    let(:contest_instance) { create(:contest_instance) }
+    let(:profile) { create(:profile) }
+
+    context 'when contest_instance requires pen name' do
+      before do
+        contest_instance.update(require_pen_name: true)
+      end
+
+      it 'is not valid without a pen_name' do
+        entry = build(:entry, pen_name: nil, category: category, contest_instance: contest_instance, profile: profile)
+        expect(entry).not_to be_valid
+        expect(entry.errors[:pen_name]).to include("can't be blank for this contest")
+      end
+
+      it 'is valid with a pen_name' do
+        entry = build(:entry, pen_name: 'Test Pen Name', category: category, contest_instance: contest_instance, profile: profile)
+        expect(entry).to be_valid
+      end
+    end
+
+    context 'when contest_instance does not require pen name' do
+      before do
+        contest_instance.update(require_pen_name: false)
+      end
+
+      it 'is valid without a pen_name' do
+        entry = build(:entry, pen_name: nil, category: category, contest_instance: contest_instance, profile: profile)
+        expect(entry).to be_valid
+      end
+
+      it 'is valid with a pen_name' do
+        entry = build(:entry, pen_name: 'Optional Pen Name', category: category, contest_instance: contest_instance, profile: profile)
+        expect(entry).to be_valid
       end
     end
   end

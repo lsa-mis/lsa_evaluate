@@ -5,6 +5,7 @@
 #  id                  :bigint           not null, primary key
 #  deleted             :boolean          default(FALSE), not null
 #  disqualified        :boolean          default(FALSE), not null
+#  pen_name            :string(255)
 #  title               :string(255)      not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -33,6 +34,7 @@ FactoryBot.define do
     title { "Sample Entry Title" }
     disqualified { false }
     deleted { false }
+    pen_name { "Sample Pen Name" }
     contest_instance
     profile
     category { Category.find_by(kind: 'General') || association(:category, :general) }

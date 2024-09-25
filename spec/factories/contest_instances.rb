@@ -16,6 +16,7 @@
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
+#  require_pen_name                     :boolean          default(FALSE), not null
 #  transcript_required                  :boolean          default(FALSE), not null
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
@@ -49,6 +50,7 @@ FactoryBot.define do
     recletter_required { false }
     transcript_required { false }
     maximum_number_entries_per_applicant { 1 }
+    require_pen_name { false }  
     created_by { Faker::Name.name }
 
     # Allow overriding date_closed in tests
