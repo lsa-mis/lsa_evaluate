@@ -29,6 +29,9 @@
     <% end %>
     <p class="text-white">Name for Publication:<br><span class="fw-light"> <%= @profile.user.display_name %></span></p>
     <p class="text-white">Hometown News:<br><span class="fw-light"> <%= @profile.hometown_publication %></span></p>
+    <% if @profile.pen_name %>
+      <p class="text-white">Pen Name (default):<br><span class="fw-light"> <%= @profile.pen_name %></span></p>
+    <% end %>
   </div>
   <div class="mt-8">
     <p class="text-white"><small><em>Last updated: <%= @profile.updated_at.strftime("%B %d, %Y") %></em></small></span></p>
