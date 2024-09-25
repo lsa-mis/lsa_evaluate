@@ -30,10 +30,15 @@ class EntriesController < ApplicationController
 
   # POST /entries or /entries.json
   def create
-    @entry = Entry.new(entry_params)
+    @entry = current_user.profile.entries.build(entry_params)
+    # @entry.contest_instance = ContestInstance.find(params[:contest_instance_id])
     authorize @entry
     respond_to do |format|
       if @entry.save
+        save_pen_name = ActiveModel::Type::Boolean.new.cast(@entry.save_pen_name_to_profile)
+        if save_pen_name && current_user.profile.pen_name.blank?
+          current_user.profile.update(pen_name: @entry.pen_name)
+        end
         format.html { redirect_to entry_url(@entry), notice: 'Entry was successfully created.' }
         format.json { render :show, status: :created, location: @entry }
       else
@@ -119,6 +124,6 @@ class EntriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def entry_params
-      params.require(:entry).permit(:title, :disqualified, :deleted, :contest_instance_id, :profile_id, :category_id, :entry_file)
+      params.require(:entry).permit(:title, :disqualified, :deleted, :contest_instance_id, :profile_id, :category_id, :entry_file, :pen_name, :save_pen_name_to_profile)
     end
 end
