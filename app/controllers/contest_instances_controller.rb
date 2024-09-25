@@ -21,7 +21,7 @@ class ContestInstancesController < ApplicationController
         sort_sql = sortable_columns[sort_column]
 
         case sort_column
-        when 'profile_display_name', 'pen_name'
+        when 'profile_display_name'
           @contest_instance_entries = @contest_instance_entries.joins(:profile)
         when 'profile_user_uniqname'
           @contest_instance_entries = @contest_instance_entries.joins(profile: :user)
@@ -141,6 +141,7 @@ class ContestInstancesController < ApplicationController
                                              :judging_open, :judging_rounds, :category_id, :has_course_requirement,
                                              :judge_evaluations_complete, :course_requirement_description,
                                              :recletter_required, :transcript_required, :maximum_number_entries_per_applicant,
+                                             :require_pen_name,
                                              :created_by, category_contest_instances_attributes: [ :id, :category_id, :_destroy ],
                                              class_level_requirements_attributes: [ :id, :class_level_id, :_destroy ])
   end

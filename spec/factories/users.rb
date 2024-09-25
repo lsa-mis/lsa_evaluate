@@ -49,7 +49,7 @@ FactoryBot.define do
     trait :employee do
       after(:create) do |user|
         # create(:affiliation, user: user, name: 'employee')
-        user.affiliations << create(:affiliation, name: 'employee')
+        user.affiliations << create(:affiliation, name: 'staff')
       end
     end
 

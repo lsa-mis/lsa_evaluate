@@ -5,6 +5,7 @@
 #  id                  :bigint           not null, primary key
 #  deleted             :boolean          default(FALSE), not null
 #  disqualified        :boolean          default(FALSE), not null
+#  pen_name            :string(255)
 #  title               :string(255)      not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
@@ -35,10 +36,14 @@ class Entry < ApplicationRecord
   has_one_attached :entry_file
 
   validates :title, presence: true
+  validates :contest_instance, presence: true
   validate :entry_file_validation
+  validate :pen_name_required_if_contest_requires_it
 
   scope :active, -> { where(deleted: false) }
   scope :disqualified, -> { where(disqualified: true) }
+
+  attr_accessor :save_pen_name_to_profile
 
   def self.sortable_columns
     {
@@ -47,7 +52,7 @@ class Entry < ApplicationRecord
       'created_at' => 'entries.created_at',
       'profile_display_name' => 'profiles.preferred_last_name',
       'profile_user_uniqname' => 'users.uniqname',
-      'pen_name' => 'profiles.pen_name',
+      'pen_name' => 'pen_name',
       'disqualified' => 'entries.disqualified'
     }
   end
@@ -75,5 +80,13 @@ class Entry < ApplicationRecord
 
   def soft_deletable?
     contest_instance.open?
+  end
+
+  private
+
+  def pen_name_required_if_contest_requires_it
+    if contest_instance&.require_pen_name && pen_name.blank?
+      errors.add(:pen_name, "can't be blank for this contest")
+    end
   end
 end

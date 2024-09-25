@@ -30,6 +30,7 @@
             <th>Category</th>
             <th>Judge Evaluations Complete</th>
             <th>Class Level</th>
+            <th>Pen Name Rqd</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -46,6 +47,7 @@
               <td><%= contest_instance.categories.map(&:kind).join(', ') %></td>
               <td><%= boolean_to_yes_no(contest_instance.judge_evaluations_complete) %></td>
               <td><%= contest_instance.class_levels.map(&:name).join(', ') %></td>
+              <td><%= contest_instance.require_pen_name %></td>
                 <td class="text-center">
                 <div class="d-flex flex-column">
                   <%= link_to container_contest_description_contest_instance_path(@container, @contest_description, contest_instance),

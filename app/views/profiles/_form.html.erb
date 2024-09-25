@@ -24,6 +24,9 @@
                   <%= f.input :umid %>
                 <% end %>
               </div>
+              <div class="col">
+                <%= f.input :pen_name, label: "Pen Name (optional)", hint: "Set a default pen name to use for future contest entries that require one. You can leave this blank if you prefer to enter a pen name each time." %>
+              </div>
             </div>
 
             <div class= "mt-4 ms-2">
@@ -144,9 +147,6 @@
 
               <div class="col">
                 <%= f.input :hometown_publication, label: "Name of hometown newspaper..." %>
-              </div>
-              <div class="col">
-                <%= f.input :pen_name %>
               </div>
             </div>
           </div>
