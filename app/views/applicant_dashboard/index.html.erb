@@ -1,12 +1,13 @@
 <div class="container-fluid mt-4">
   <div class="row">
-    <!-- Profile summary: Hidden on small screens, displayed on larger screens -->
-    <div class="col-2 d-none d-xxl-block">
+    <!-- Profile summary: Displayed on all screens, order changes based on viewport size -->
+    <div class="col-8 col-xxl-2 order-2 order-xxl-1">
       <%= render 'profiles/profile_summary', profile: @profile %>
     </div>
 
     <!-- Main content -->
-    <div class="col-xxl-10 col-12 mt-4">
+    <div class="col-12 col-xxl-10 mt-4 order-1 order-xxl-2">
+      <!-- Your main content goes here -->
       <div class="row mb-4 ms-2">
         <div class="">
           <div class="card text-center">
