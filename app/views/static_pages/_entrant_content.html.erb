@@ -4,7 +4,7 @@
   <div class="row g-4 align-items-top justify-content-center">
     <div class="col">
       <div class="card">
-        <h3 class="m-2">View Submissions</h3>
+        <h3 class="m-2">Your Dashboard</h3>
         <div class="card-body">
           <% if (content = render_editable_content('home', 'view_submissions')) %>
             <p class="">
@@ -13,7 +13,7 @@
           <% end %>
           <div>
             <% if current_user.profile_exists? %>
-              <%= button_to 'View Submissions', applicant_dashboard_path, method: :get, class: 'btn btn-primary' %>
+              <%= button_to 'View Dashboard', applicant_dashboard_path, method: :get, class: 'btn btn-primary' %>
             <% else %>
               <%= button_to 'Create Profile', new_profile_path, method: :get, class: 'btn btn-primary' %>
             <% end %>
