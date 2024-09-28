@@ -1,5 +1,0 @@
-<% if @container.errors.any? %>
-  <%= turbo_stream.replace 'container_form', partial: 'containers/form', locals: { container: @container } %>
-<% else %>
-  <%= turbo_stream.replace dom_id(@container), partial: 'containers/container', locals: { container: @container } %>
-<% end %>

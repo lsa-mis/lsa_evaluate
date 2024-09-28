@@ -39,7 +39,7 @@ class EntriesController < ApplicationController
         if save_pen_name && current_user.profile.pen_name.blank?
           current_user.profile.update(pen_name: @entry.pen_name)
         end
-        format.html { redirect_to entry_url(@entry), notice: 'Entry was successfully created.' }
+        format.html { redirect_to applicant_dashboard_path, notice: 'Entry was successfully created.' }
         format.json { render :show, status: :created, location: @entry }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -53,7 +53,7 @@ class EntriesController < ApplicationController
     authorize @entry
     respond_to do |format|
       if @entry.update(entry_params)
-        format.html { redirect_to entry_url(@entry), notice: 'Entry was successfully updated.' }
+        format.html { redirect_to applicant_dashboard_path, notice: 'Entry was successfully updated.' }
         format.json { render :show, status: :ok, location: @entry }
       else
         format.html { render :edit, status: :unprocessable_entity }

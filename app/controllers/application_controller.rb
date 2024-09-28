@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
   # Rescue from authorization errors
   # rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   rescue_from Pundit::NotAuthorizedError do |exception|
-    Rails.logger.info("!!!! Handling Pundit::NotAuthorizedError in ApplicationController")
+    Rails.logger.info('!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
     user_not_authorized(exception)
   end
   rescue_from ActiveRecord::RecordNotFound, with: :render404
@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
 
   # Handle 404 errors (Record Not Found)
   def render404
-    logger.info("!!!!!!! Handling RecordNotFound error")
+    logger.info('!!!!!!! Handling RecordNotFound error')
     respond_to do |format|
       format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
       format.json { render json: { error: 'Not Found' }, status: :not_found }
@@ -45,11 +45,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  protected
+
+  def after_sign_out_path_for(resource_or_scope)
+    root_path
+  end
   # Private method for handling Pundit not authorized errors
   private
 
   def user_not_authorized(exception)
-    logger.info("!!!!!!! Handling Pundit::NotAuthorizedError")
+    logger.info('!!!!!!! Handling Pundit::NotAuthorizedError')
     policy_name = exception.policy.class.to_s.underscore
     message = "You are not authorized to perform #{exception.query} on #{policy_name.humanize}"
 
