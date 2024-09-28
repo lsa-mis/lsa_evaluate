@@ -1,101 +1,14 @@
 <div class="container d-flex justify-content-between mt-4">
   <h1>Manage Contest Collections</h1> 
   <div>
-    <%= link_to "Create Contest Collection", new_container_path, {class: 'btn btn-sm btn-primary'} %>
+    <%= link_to "Create Contest Collection", new_container_path, class: 'btn btn-sm btn-primary' %>
   </div>
 </div>
 
-<div class="container-fluid d-flex flex-column justify-content-between mt-4">
-  <% @containers.each do |container| %>
-    <div class="row mt-2">
-      <div class="">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0"><%= container.name %></h5>
-              <small class="text-muted">
-                <%= container.department.display_name %>
-                <br> 
-                <% admins = container.assignments.container_administrators %>
-                <% if admins.any? %>
-                  <%= pluralize(admins.count, admins.first.role.kind) %>:
-                  <%= admins.map { |assignment| assignment.user.display_name_or_email }.join(', ') %>
-                <% else %>
-                  No Administrators Assigned
-                <% end %>
-              </small>
-            <%= link_to "View Contest Details", container_path(container), class: "link_to" %>
-          </div>
-          <div class="card-body" data-controller="filter" data-controller="filter">
-            <%= link_to "Create New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
-            <%= link_to "Create Multiple Instances", contest_descriptions_for_container_container_contest_descriptions_path(container), class: "btn btn-sm btn-secondary" %>
-
-            <!-- Add a checkbox to filter only Active contest descriptions -->
-            <div class="form-check mb-3">
-              <input class="form-check-input" type="checkbox" id="statusFilter" data-action="change->filter#toggleFilter" data-filter-target="statusFilter">
-              <label class="form-check-label" for="statusFilter">
-                Show only <span class="fw-bolder">Active</span> contest descriptions
-              </label>
-            </div>
-
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Short Name</th>
-                  <th>Eligibility Rules</th>
-                  <th>Active</th>
-                  <td class="text-center">Actions</td>
-                </tr>
-              </thead>
-              <tbody>
-                <% container.contest_descriptions.each do |description| %>
-                  <tr data-status="<%= description.active %>" data-filter-target="filterRow">
-                    <td><%= description.name %></td>
-                    <td><%= description.short_name %></td>
-                    <td><%= description.eligibility_rules %></td>
-                    <td><%= boolean_to_yes_no(description.active) %></td>
-                    <td class="text-center">
-                      <div class="d-flex flex-column">
-                        <%= link_to edit_container_contest_description_path(container, description),
-                                    class: 'd-block',
-                                    data: { 'bs-toggle': 'tooltip' },
-                                    title: 'Edit contest',
-                                    aria: { label: 'Edit contest' } do %>
-                          <i class="bi bi-pencil" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                          <span class="visually-hidden">Edit instance</span>
-                        <% end %>
-
-                        <%= link_to container_contest_description_contest_instances_path(container, description),
-                                    class: 'd-block',
-                                    data: { 'bs-toggle': 'tooltip' },
-                                    title: 'View instances',
-                                    aria: { label: 'View instances' } do %>
-                          <i class="bi bi-eye" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                          <span class="visually-hidden">View instances</span>
-                        <% end %>
-
-                        <%= link_to container_contest_description_path(container, description),
-                                    method: :delete,
-                                    class: 'd-block',
-                                    data: {
-                                      'bs-toggle': 'tooltip',
-                                      controller: 'confirm',
-                                      confirm_message_value: 'Are you sure you want to archive this?'
-                                    },
-                                    title: 'Archive contest',
-                                    aria: { label: 'Archive contest' } do %>
-                          <i class="bi bi-archive" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                          <span class="visually-hidden">Archive contest</span>
-                        <% end %>
-                      </div>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="container-fluid d-flex flex-column justify-content-between mt-4" id="containers">
+  <% if @containers.any? %>
+    <%= render partial: 'container_summary', collection: @containers, as: :container %>
+  <% else %>
+    <p>No containers available.</p>
   <% end %>
 </div>

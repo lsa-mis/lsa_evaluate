@@ -1,85 +1,71 @@
 <div id="<%= dom_id contest_instance %>">
+  <div class="container" style="max-width: 100%;" class="mx-auto">
+    <div class="row mb-3">
+      <div class="col">
+        <strong>Active:</strong>
+        <%= contest_instance.active %>
+      </div>
+      <div class="col">
+        <strong>Archived:</strong>
+        <%= contest_instance.archived %>
+      </div>
+    </div>
 
-  <h1><%= "#{contest_instance.contest_description.name } - #{contest_instance.date_open.year}"%></h1>
+    <div class="row mb-3">
+      <div class="col">
+        <strong>Date Open:</strong>
+        <%= format_datetime(contest_instance.date_open) %>
+      </div>
+      <div class="col">
+        <strong>Date Closed:</strong>
+        <%= format_datetime(contest_instance.date_closed) %>
+      </div>
+    </div>
 
-  <p>
-    <strong>Active:</strong>
-    <%= contest_instance.active %>
-  </p>
-
-  <p>
-    <strong>Archived:</strong>
-    <%= contest_instance.archived %>
-  </p>
-
-  <p>
-    <strong>Date Open:</strong>
-    <%= format_datetime(contest_instance.date_open) %>
-  </p>
-
-  <p>
-    <strong>Date Closed:</strong>
-    <%= format_datetime(contest_instance.date_closed) %>
-  </p>
-
-  <p>
-    <strong>Notes:</strong>
-    <%= contest_instance.notes %>
-  </p>
-
-  <p>
-    <strong>Judging Open:</strong>
-    <%= boolean_to_yes_no(contest_instance.judging_open) %>
-  </p>
-
-  <p>
-    <strong>Judging Rounds:</strong>
-    <%= contest_instance.judging_rounds %>
-  </p>
-
-  <p>
-    <strong>Judge Evaluations Complete:</strong>
-    <%= boolean_to_yes_no(contest_instance.judge_evaluations_complete) %>
-  </p>
-  
-  <p>
-    <strong>Category:</strong>
-    <%= contest_instance.categories.map(&:kind).join(', ') %>
-  </p>
-
-<!--  <p>
-    <strong>Has Course Requirement:</strong>
-    <%= boolean_to_yes_no(contest_instance.has_course_requirement) %>
-  </p>
-
-  <p>
-    <strong>Course Requirement Description:</strong>
-    <%= contest_instance.course_requirement_description %>
-  </p>
-
-  <p>
-    <strong>Recommendation Letter Required:</strong>
-    <%= boolean_to_yes_no(contest_instance.recletter_required) %>
-  </p>
-
-  <p>
-    <strong>Transcript Required:</strong>
-    <%= boolean_to_yes_no(contest_instance.transcript_required) %>
-  </p>
--->
-  <p>
-    <strong>Maximum Number of Entries per Applicant:</strong>
-    <%= contest_instance.maximum_number_entries_per_applicant %>
-  </p>
-
-  <p>
-    <strong>Class Level Requirement:</strong>
-    <%= contest_instance.class_levels.map(&:name).join(', ') %>
-  </p>
-
-  <p>
-    <strong>Created By:</strong>
-    <%= contest_instance.created_by %>
-  </p>
-
+    <div class="mb-3">
+      <strong>Notes:</strong>
+      <%= contest_instance.notes %>
+    </div>
+    
+    <div class="row mb-3">
+      <div class="col">
+        <strong>Judging Open:</strong>
+        <%= boolean_to_yes_no(contest_instance.judging_open) %>
+      </div>
+      <div class="col">
+        <strong>Judging Rounds:</strong>
+        <%= contest_instance.judging_rounds %>
+      </div>
+      <div class="col">
+        <strong>Judge Evaluations Complete:</strong>
+        <%= boolean_to_yes_no(contest_instance.judge_evaluations_complete) %>
+      </div>
+    </div>
+    
+    <div class="row mb-3">
+      <div class="col">
+        <strong>Category:</strong>
+        <%= contest_instance.categories.map(&:kind).join(', ') %>
+      </div>
+      <div class="col">
+        <strong>Class Level Requirement:</strong>
+        <%= contest_instance.class_levels.map(&:name).join(', ') %>
+      </div>
+    </div>
+    
+    <div class="mb-3">
+      <strong>Maximum Number of Entries per Applicant:</strong>
+      <%= contest_instance.maximum_number_entries_per_applicant %>
+    </div>
+    
+    <div class="mb-3">
+      <strong>Require a Pen Name:</strong>
+      <%= boolean_to_yes_no(contest_instance.require_pen_name) %>
+    </div>
+    
+    <div class="mb-3">
+      <strong>Created By:</strong>
+      <%= contest_instance.created_by %>
+    </div>
+  </div>
 </div>

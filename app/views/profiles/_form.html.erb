@@ -111,14 +111,11 @@
             <%= f.input :campus_id, collection: Campus.all, label_method: :campus_descr, value_method: :id, label: "Primary Campus Class Location" %>
             <%= f.input :major, label: "Major (if undergraduate)" %>
             <%= f.input :department_id, collection: Department.all, label_method: :name, value_method: :id, label: "Department (if graduate)" %>
-
             <%= f.input :grad_date, as: :date, start_year: Date.today.year,
                                       end_year: Date.today.year + 12, discard_day: true,
                                       order: [:month, :year],
                                       lebel: "Expected Graduation Date" %>
             <%= f.input :degree %>
-            
-
           </div>
 
           <h2 class="mt-4">Employment Information</h2>
@@ -135,8 +132,8 @@
                   <%= content %>
                 </p>
             <% end %>
-            <%= f.input :accepted_financial_aid_notice, as: :boolean, label: "I have read and understood the above statement about the potential impact of prize money on financial aid." %>
-            <%= f.input :receiving_financial_aid, as: :boolean, label: "I currently receive NEED-BASED financial aid?" %>
+            <%= f.input :accepted_financial_aid_notice, as: :boolean, label: "* I have read and understood the above statement about the potential impact of prize money on financial aid." %>
+            <%= f.input :receiving_financial_aid, as: :boolean, label: "I currently receive NEED-BASED financial aid." %>
             <%= f.input :financial_aid_description %>
           </div>
 
@@ -159,7 +156,7 @@
             </p>
           <% end %>
         </div>
-        <div class="form-actions">
+        <div class="form-actions pb-1">
           <%= f.button :submit, class: "btn btn-primary" %>
         </div>
       <% end %>

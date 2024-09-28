@@ -9,7 +9,7 @@ module Users
     attr_reader :user, :service
 
     def saml
-      handle_auth('SAML')
+      handle_auth('U-M')
     end
 
     private

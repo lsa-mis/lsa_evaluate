@@ -323,6 +323,11 @@ Devise.setup do |config|
   #   manager.intercept_401 = false
   #   manager.default_strategies(scope: :user).unshift :some_external_strategy
   # end
+  # Configure Warden to use the CustomFailure app
+  config.warden do |manager|
+    manager.failure_app = CustomFailure
+  end
+
 
   # ==> Mountable engine configurations
   # When using Devise inside an engine, let's call it `MyEngine`, and this engine

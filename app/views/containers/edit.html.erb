@@ -3,14 +3,16 @@
     <h1><%= action_name.capitalize %> Contest</h1>
   </div>
   <div>
-    <%= link_to "Back", containers_path, class: "link_to" %>
+    <%= link_to "Back to Collections", containers_path, class: "link_to" %>
   </div>
 </div>
 
-<%= render "form", container: @container %>
+<div id="container_form">
+  <%= render 'form' %>
+</div>
 
 <br>
 
 <div>
-  <%= link_to "Show", @container %>
+  <%= link_to "Back to #{@container.name}", @container %>
 </div>
