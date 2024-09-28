@@ -1,9 +1,11 @@
-<h1><%= action_name.capitalize %> container</h1>
-
-<%= render "form", container: @container %>
-
-<br>
-
-<div>
-  <%= link_to "Back to Collections", containers_path %>
+<div class="d-flex justify-content-between">
+  <div>
+    <h1><%= action_name.capitalize %> Contest Collection</h1>
+  </div>
+  <div>
+    <%= link_to "Back to Collections", containers_path, class: "link_to" %>
+  </div>
+</div>
+<div id="container_form">
+  <%= render 'form' %>
 </div>

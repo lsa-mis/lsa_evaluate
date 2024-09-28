@@ -22,9 +22,10 @@
           <tr>
             <th>Active</th>
             <th>Archived</th>
-            <th>Contest Description</th>
-            <th>Date Open</th>
-            <th>Date Closed</th>
+            <th>Contest</th>
+            <th>Entries</th>
+            <th>Start</th>
+            <th>End</th>
             <th>Judging Open</th>
             <th>Judging Rounds</th>
             <th>Category</th>
@@ -40,6 +41,7 @@
               <td><%= boolean_to_yes_no(contest_instance.active) %></td>
               <td><%= boolean_to_yes_no(contest_instance.archived) %></td>
               <td><%= contest_instance.contest_description.name %></td>
+              <td><%= contest_instance.entries.active.count %></td>
               <td><%= format_datetime(contest_instance.date_open) %></td>
               <td><%= format_datetime(contest_instance.date_closed) %></td>
               <td><%= boolean_to_yes_no(contest_instance.judging_open) %></td>

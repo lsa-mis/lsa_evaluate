@@ -19,8 +19,10 @@ class ContestDescriptionsController < ApplicationController
 
     respond_to do |format|
       if @contest_description.save
-        format.html { redirect_to container_contest_description_path(@container, @contest_description), notice: 'Contest description was successfully created.' }
+        format.turbo_stream
+        format.html { redirect_to containers_path, notice: 'Contest description was successfully created.' }
       else
+        format.turbo_stream
         format.html { render :new, status: :unprocessable_entity }
       end
     end
@@ -29,8 +31,10 @@ class ContestDescriptionsController < ApplicationController
   def update
     respond_to do |format|
       if @contest_description.update(contest_description_params)
-        format.html { redirect_to container_contest_description_path(@container, @contest_description), notice: 'Contest description was successfully updated.' }
+        format.turbo_stream
+        format.html { redirect_to containers_path, notice: 'Contest description was successfully updated.' }
       else
+        format.turbo_stream
         format.html { render :edit, status: :unprocessable_entity }
       end
     end
@@ -44,6 +48,7 @@ class ContestDescriptionsController < ApplicationController
     @contest_description.destroy
 
     respond_to do |format|
+      format.turbo_stream
       format.html { redirect_to containers_path, notice: 'Contest description was successfully destroyed.' }
     end
   end

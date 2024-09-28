@@ -35,6 +35,11 @@ class Container < ApplicationRecord
   accepts_nested_attributes_for :assignments, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :contest_descriptions, allow_destroy: true
 
+  validates :name, presence: true
+  validates :department_id, presence: { message: "You must select a department" }
+  validates :visibility_id, presence: { message: "You must select a visibility option" }
+
+
   after_create :assign_container_administrator
 
   private
