@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_25_181202) do
+ActiveRecord::Schema[7.2].define(version: 2024_09_29_174639) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -182,6 +182,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_25_181202) do
     t.boolean "active", default: false, null: false
     t.boolean "archived", default: false, null: false
     t.boolean "require_pen_name", default: false, null: false
+    t.boolean "require_finaid_info", default: false, null: false
+    t.boolean "require_campus_employment_info", default: false, null: false
     t.index ["contest_description_id"], name: "contest_description_id_idx"
     t.index ["contest_description_id"], name: "index_contest_instances_on_contest_description_id"
     t.index ["id"], name: "id_unq_idx", unique: true
