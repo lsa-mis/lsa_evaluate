@@ -25,8 +25,6 @@ FactoryBot.define do
     container
     name { Faker::Lorem.word }
     short_name { Faker::Lorem.word }
-    # eligibility_rules { Faker::Lorem.paragraph }
-    # notes { Faker::Lorem.paragraph }
     after(:build) do |contest_description|
       contest_description.eligibility_rules = ActionText::RichText.new(body: Faker::Lorem.paragraph)
     end

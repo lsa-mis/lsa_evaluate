@@ -59,11 +59,11 @@ RSpec.describe ContestInstance do
   end
 
   describe 'validations' do
-    let(:contest_instance) { build(:contest_instance) }
+    let(:contest_instance) { create(:contest_instance) }
 
-    before do
-      create(:category_contest_instance, contest_instance: contest_instance, category: create(:category))
-    end
+    # before do
+    #   create(:category_contest_instance, contest_instance: contest_instance, category: create(:category))
+    # end
 
     it 'is valid with valid attributes' do
       expect(contest_instance).to be_valid

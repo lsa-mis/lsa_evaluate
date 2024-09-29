@@ -24,8 +24,5 @@ FactoryBot.define do
   factory :category_contest_instance do
     category
     contest_instance
-
-    sequence(:category_id) { |n| n }
-    sequence(:contest_instance_id) { |n| n }
   end
 end

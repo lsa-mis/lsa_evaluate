@@ -61,13 +61,11 @@ FactoryBot.define do
     trait :open do
       date_closed { 1.day.from_now }
     end
-    # after(:create) do |contest_instance|
-    #   create_list(:category_contest_instance, 1, contest_instance: contest_instance)
-    #   create(:class_level_requirement, contest_instance: contest_instance)
-    # end
+
     after(:build) do |contest_instance|
+      # Build associations without persisting them
       contest_instance.class_level_requirements << build(:class_level_requirement, contest_instance: contest_instance)
-      contest_instance.category_contest_instances << build(:category_contest_instance, contest_instance: contest_instance, category: create(:category))
+      contest_instance.category_contest_instances << build(:category_contest_instance, contest_instance: contest_instance)
     end
   end
 end
