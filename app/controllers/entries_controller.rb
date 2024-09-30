@@ -123,7 +123,10 @@ class EntriesController < ApplicationController
     end
 
     # Only allow a list of trusted parameters through.
-    def entry_params
-      params.require(:entry).permit(:title, :disqualified, :deleted, :contest_instance_id, :profile_id, :category_id, :entry_file, :pen_name, :save_pen_name_to_profile)
+    def entry_params 
+      params.require(:entry).permit(:title, :disqualified, :deleted, :contest_instance_id, 
+                                    :profile_id, :category_id, :entry_file, :pen_name, 
+                                    :save_pen_name_to_profile, :campus_employee, :accepted_financial_aid_notice,
+                                    :receiving_financial_aid, :financial_aid_description)
     end
 end
