@@ -97,7 +97,7 @@ Address.create([
 
 # Seed data for Campus
 Campus.create([
-                { campus_descr: 'AnnArbor', campus_cd: 100 },
+                { campus_descr: 'Ann Arbor', campus_cd: 100 },
                 { campus_descr: 'Flint', campus_cd: 700 },
                 { campus_descr: 'Dearborn', campus_cd: 710 }
               ])
