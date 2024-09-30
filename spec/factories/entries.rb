@@ -2,16 +2,20 @@
 #
 # Table name: entries
 #
-#  id                  :bigint           not null, primary key
-#  deleted             :boolean          default(FALSE), not null
-#  disqualified        :boolean          default(FALSE), not null
-#  pen_name            :string(255)
-#  title               :string(255)      not null
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  category_id         :bigint           not null
-#  contest_instance_id :bigint           not null
-#  profile_id          :bigint           not null
+#  id                            :bigint           not null, primary key
+#  accepted_financial_aid_notice :boolean          default(FALSE), not null
+#  campus_employee               :boolean          default(FALSE), not null
+#  deleted                       :boolean          default(FALSE), not null
+#  disqualified                  :boolean          default(FALSE), not null
+#  financial_aid_description     :text(65535)
+#  pen_name                      :string(255)
+#  receiving_financial_aid       :boolean          default(FALSE), not null
+#  title                         :string(255)      not null
+#  created_at                    :datetime         not null
+#  updated_at                    :datetime         not null
+#  category_id                   :bigint           not null
+#  contest_instance_id           :bigint           not null
+#  profile_id                    :bigint           not null
 #
 # Indexes
 #
@@ -35,6 +39,11 @@ FactoryBot.define do
     disqualified { false }
     deleted { false }
     pen_name { "Sample Pen Name" }
+    receiving_financial_aid { false }
+    accepted_financial_aid_notice { false }
+    financial_aid_description { "Sample Financial Aid Description" }
+    campus_employee { false }
+    campus_employee { false }
     contest_instance
     profile
     category { Category.find_by(kind: 'General') || association(:category, :general) }
