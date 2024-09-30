@@ -43,7 +43,6 @@ FactoryBot.define do
     accepted_financial_aid_notice { false }
     financial_aid_description { "Sample Financial Aid Description" }
     campus_employee { false }
-    campus_employee { false }
     contest_instance
     profile
     category { Category.find_by(kind: 'General') || association(:category, :general) }
