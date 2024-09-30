@@ -2,7 +2,10 @@
 <%= simple_form_for [container, new_assignment], remote: true, html: { class: "assignment-form" } do |f| %>
   <div class="assignment-fields">
     <%= f.input :user_id, collection: User.all, label_method: :display_name_or_email, include_blank: "Select a user" %>
-    <%= f.input :role_id, collection: Role.all, label_method: :kind, include_blank: "Select a role" %>
+    <%= f.input :role_id, 
+            collection: Role.excluding_axis_mundi,
+            label_method: :kind, 
+            include_blank: "Select a role" %>
   </div>
-  <%= f.submit 'Add User', class: "btn btn-sm btn-primary mt-2" %>
+  <%= f.submit 'Add User', class: "btn btn-sm btn-primary my-2" %>
 <% end %>

@@ -141,7 +141,7 @@ class ContestInstancesController < ApplicationController
                                              :judging_open, :judging_rounds, :category_id, :has_course_requirement,
                                              :judge_evaluations_complete, :course_requirement_description,
                                              :recletter_required, :transcript_required, :maximum_number_entries_per_applicant,
-                                             :require_pen_name,
+                                             :require_pen_name, :require_campus_employment_info, :require_finaid_info,
                                              :created_by, category_contest_instances_attributes: [ :id, :category_id, :_destroy ],
                                              class_level_requirements_attributes: [ :id, :class_level_id, :_destroy ])
   end

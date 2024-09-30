@@ -96,10 +96,10 @@
       <div class="col">
         <p class="text-white">
           Financial Aid:<br>
-          <span class="fw-light"><%= @profile.receiving_financial_aid ? 'Yes' : 'No' %></span>
+          <span class="fw-light"><%= boolean_to_yes_no(@profile.receiving_financial_aid) %></span>
         </p>
       </div>
-      <% if @profile.receiving_financial_aid %>
+      <% if @profile.receiving_financial_aid && @profile.financial_aid_description.present? %>
         <!-- Financial Aid Description -->
         <div class="col">
           <p class="text-white">
@@ -112,16 +112,20 @@
       <div class="col">
         <p class="text-white">
           Name for Publication:<br>
-          <span class="fw-light"><%= @profile.user.display_name %></span>
+          <span class="fw-light"><%= @profile.display_name %></span>
         </p>
       </div>
-      <!-- Hometown News -->
-      <div class="col">
-        <p class="text-white">
-          Hometown News:<br>
-          <span class="fw-light"><%= @profile.hometown_publication %></span>
-        </p>
-      </div>
+
+      <% if @profile.hometown_publication.present? %>
+        <!-- Hometown News -->
+        <div class="col">
+          <p class="text-white">
+            Hometown News:<br>
+            <span class="fw-light"><%= @profile.hometown_publication %></span>
+          </p>
+        </div>
+      <% end %>
+
       <% if @profile.pen_name.present? %>
         <!-- Pen Name -->
         <div class="col">

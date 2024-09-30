@@ -2,16 +2,20 @@
 #
 # Table name: entries
 #
-#  id                  :bigint           not null, primary key
-#  deleted             :boolean          default(FALSE), not null
-#  disqualified        :boolean          default(FALSE), not null
-#  pen_name            :string(255)
-#  title               :string(255)      not null
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  category_id         :bigint           not null
-#  contest_instance_id :bigint           not null
-#  profile_id          :bigint           not null
+#  id                            :bigint           not null, primary key
+#  accepted_financial_aid_notice :boolean          default(FALSE), not null
+#  campus_employee               :boolean          default(FALSE), not null
+#  deleted                       :boolean          default(FALSE), not null
+#  disqualified                  :boolean          default(FALSE), not null
+#  financial_aid_description     :text(65535)
+#  pen_name                      :string(255)
+#  receiving_financial_aid       :boolean          default(FALSE), not null
+#  title                         :string(255)      not null
+#  created_at                    :datetime         not null
+#  updated_at                    :datetime         not null
+#  category_id                   :bigint           not null
+#  contest_instance_id           :bigint           not null
+#  profile_id                    :bigint           not null
 #
 # Indexes
 #
@@ -39,6 +43,7 @@ class Entry < ApplicationRecord
   validates :contest_instance, presence: true
   validate :entry_file_validation
   validate :pen_name_required_if_contest_requires_it
+  validate :accepted_financial_aid_notice_if_contest_requires_it
 
   scope :active, -> { where(deleted: false) }
   scope :disqualified, -> { where(disqualified: true) }
@@ -53,6 +58,9 @@ class Entry < ApplicationRecord
       'profile_display_name' => 'profiles.preferred_last_name',
       'profile_user_uniqname' => 'users.uniqname',
       'pen_name' => 'pen_name',
+      'campus_employee' => 'campus_employee',
+      'accepted_financial_aid_notice' => 'accepted_financial_aid_notice',
+      'receiving_financial_aid' => 'receiving_financial_aid',
       'disqualified' => 'entries.disqualified'
     }
   end
@@ -87,6 +95,12 @@ class Entry < ApplicationRecord
   def pen_name_required_if_contest_requires_it
     if contest_instance&.require_pen_name && pen_name.blank?
       errors.add(:pen_name, "can't be blank for this contest")
+    end
+  end
+
+  def accepted_financial_aid_notice_if_contest_requires_it
+    if contest_instance&.require_finaid_info && !accepted_financial_aid_notice
+      errors.add(:accepted_financial_aid_notice, 'must be accepted for this contest')
     end
   end
 end

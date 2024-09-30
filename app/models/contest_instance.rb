@@ -16,6 +16,8 @@
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
+#  require_campus_employment_info       :boolean          default(FALSE), not null
+#  require_finaid_info                  :boolean          default(FALSE), not null
 #  require_pen_name                     :boolean          default(FALSE), not null
 #  transcript_required                  :boolean          default(FALSE), not null
 #  created_at                           :datetime         not null
