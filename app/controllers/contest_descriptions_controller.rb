@@ -1,6 +1,6 @@
 class ContestDescriptionsController < ApplicationController
   before_action :set_container
-  before_action :set_contest_description, only: %i[show edit update destroy]
+  before_action :set_contest_description, only: %i[show edit update destroy eligibility_rules]
 
   def index
     @contest_descriptions = ContestDescription.all
@@ -54,6 +54,13 @@ class ContestDescriptionsController < ApplicationController
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to containers_path, notice: 'Contest description was successfully destroyed.' }
+    end
+  end
+
+  def eligibility_rules
+    respond_to do |format|
+      format.html { render partial: 'eligibility_rules', locals: { contest_description: @contest_description } }
+      format.turbo_stream
     end
   end
 
