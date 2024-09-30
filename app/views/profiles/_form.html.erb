@@ -118,27 +118,7 @@
             <%= f.input :degree %>
           </div>
 
-          <h2 class="mt-4">Employment Information</h2>
-          <p>In the event you are a contest winnner.....</p>
-          <div class= "ms-4">
-            <%= f.input :campus_employee, as: :boolean, label: "I am currently an active campus employee (workstudy, GSI, etc)?" %>
-          </div>
-
-          <h2 class="mt-4">Financial Aid</h2>
-          <div class= "ms-4">
-            <% if (content = render_editable_content('profiles', 'finaid_information')) %>
-                <strong>Important note for students receiving needs-based financial aid:</strong>
-                <p>
-                  <%= content %>
-                </p>
-            <% end %>
-            <%= f.input :accepted_financial_aid_notice, as: :boolean, label: "* I have read and understood the above statement about the potential impact of prize money on financial aid." %>
-            <%= f.input :receiving_financial_aid, as: :boolean, label: "I currently receive NEED-BASED financial aid." %>
-            <%= f.input :financial_aid_description %>
-          </div>
-
           <h2 class="mt-4">Publicity</h2>
-          <p>If your manuscript earns a Hopwood or other award.....</p>
           <div class= "ms-4">
             <div class="row">
 

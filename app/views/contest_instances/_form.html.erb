@@ -12,12 +12,10 @@
     <%= f.input :judging_open %>
     <%= f.input :judging_rounds %>
     <%= f.input :judge_evaluations_complete %>
-    <%#= f.input :has_course_requirement %>
-    <%#= f.input :course_requirement_description %>
-    <%#= f.input :recletter_required %>
-    <%#= f.input :transcript_required %>
     <%= f.input :maximum_number_entries_per_applicant %>
-    <%= f.input :require_pen_name, as: :boolean, label: "Require Pen Name for Entries?" %>
+    <%= f.input :require_pen_name, as: :boolean, label: "Require Pen Name for entries?" %>
+    <%= f.input :require_campus_employment_info, as: :boolean, label: "Require campus employment check" %>
+    <%= f.input :require_finaid_info, as: :boolean, label: "Require financial aid check" %>
     <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
 
     <h3>Categories</h3>

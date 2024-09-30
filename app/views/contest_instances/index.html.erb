@@ -32,6 +32,8 @@
             <th>Judge Evaluations Complete</th>
             <th>Class Level</th>
             <th>Pen Name Rqd</th>
+            <th>Campus Employment Info Rqd</th>
+            <th>Finaid Info Rqd</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -50,7 +52,9 @@
               <td><%= boolean_to_yes_no(contest_instance.judge_evaluations_complete) %></td>
               <td><%= contest_instance.class_levels.map(&:name).join(', ') %></td>
               <td><%= contest_instance.require_pen_name %></td>
-                <td class="text-center">
+              <td><%= contest_instance.require_campus_employment_info %></td>
+              <td><%= contest_instance.require_finaid_info %></td>
+              <td class="text-center">
                 <div class="d-flex flex-column">
                   <%= link_to container_contest_description_contest_instance_path(@container, @contest_description, contest_instance),
                         class: 'd-block',
@@ -61,7 +65,7 @@
                   <span class="visually-hidden">View instances</span>
                   <% end %>
                 </div>
-                </td>
+              </td>
             </tr>
           <% end %>
         </tbody>
