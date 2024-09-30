@@ -10,15 +10,23 @@ Rails.application.routes.draw do
     end
   end
 
-  get 'applicant_dashboard/index'
+  # get 'applicant_dashboard/index'
 
-  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' } do
-    delete 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
+  # devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' } do
+  #   delete 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
+  # end
+  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }
+
+  devise_scope :user do
+    delete 'sign_out', to: 'users/sessions#destroy'
   end
 
   resources :containers do
     resources :contest_descriptions do
       resources :contest_instances, path: 'instances'
+      member do
+        get 'eligibility_rules'
+      end
       collection do
         get 'contest_descriptions_for_container'
         post 'create_instances_for_selected_descriptions', to: 'contest_instances#create_instances_for_selected_descriptions'
@@ -37,9 +45,7 @@ Rails.application.routes.draw do
   end
   resources :editable_contents, only: %i[index edit update]
   resources :categories
-  # resources :contest_descriptions
   resources :class_levels
-  # resources :contest_instances
   resources :address_types
   resources :campuses
   resources :schools

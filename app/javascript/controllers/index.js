@@ -16,6 +16,9 @@ application.register("confirm", ConfirmController)
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
 
+import EligibilityModalController from "./eligibility_modal_controller"
+application.register("eligibility-modal", EligibilityModalController)
+
 import FadeOutController from "./fade_out_controller"
 application.register("fade-out", FadeOutController)
 
