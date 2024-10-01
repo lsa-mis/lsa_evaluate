@@ -10,14 +10,27 @@ class ApplicantDashboardController < ApplicationController
     @class_levels = ClassLevel.all
     @containers = Container.all
 
-    @active_contests = ContestInstance.active_and_open
-                                      .for_class_level(@profile.class_level_id)
-                                      .includes(:contest_description)
+    available_contests
 
     if @active_contests.empty?
       flash.now[:notice] = 'There are currently no active contests available for your class level.'
     end
 
     @entries = Entry.active.where(profile: @profile)
+  end
+
+  private
+
+  def available_contests
+    @active_contests = ContestInstance.active_and_open
+                                      .for_class_level(@profile.class_level_id)
+                                      .joins(contest_description: :container)
+                                      .includes(contest_description: :container)
+                                      .order('containers.name ASC')
+                                      .distinct
+
+    @active_contests_by_container = @active_contests.group_by do |contest|
+      contest.contest_description.container
+    end
   end
 end
