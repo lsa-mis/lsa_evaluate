@@ -19,13 +19,25 @@ class ContestDescriptionsController < ApplicationController
 
     respond_to do |format|
       if @contest_description.save
-        format.turbo_stream { redirect_to container_path(@container), notice: 'Contest description was successfully updated.' }
-        format.html { redirect_to container_path(@container), notice: 'Contest description was successfully created.' }
+        format.turbo_stream {
+                              redirect_to container_path(@container),
+                              notice: I18n.t('notices.contest_description.create')
+                            }
+        format.html {
+                      redirect_to container_path(@container),
+                      notice: I18n.t('notices.contest_description.create')
+                    }
       else
         format.turbo_stream {
-          render turbo_stream: turbo_stream.replace('contest_description_form', partial: 'contest_descriptions/form', locals: { contest_description: @contest_description }), status: :unprocessable_entity
-        }
-        format.html { render :new, status: :unprocessable_entity }
+                              render turbo_stream: turbo_stream.replace('contest_description_form',
+                              partial: 'contest_descriptions/form',
+                              locals: { contest_description: @contest_description }),
+                              status: :unprocessable_entity
+                            }
+        format.html {
+                      render :new,
+                      status: :unprocessable_entity
+                    }
       end
     end
   end
@@ -33,13 +45,25 @@ class ContestDescriptionsController < ApplicationController
   def update
     respond_to do |format|
       if @contest_description.update(contest_description_params)
-        format.turbo_stream { redirect_to container_path(@container), notice: 'Contest description was successfully updated.' }
-        format.html { redirect_to container_path(@container), notice: 'Contest description was successfully updated.' }
+        format.turbo_stream {
+                              redirect_to container_path(@container),
+                              notice: I18n.t('notices.contest_description.updated.')
+                            }
+        format.html {
+                      redirect_to container_path(@container),
+                      notice: I18n.t('notices.contest_description.updated.')
+                    }
       else
         format.turbo_stream {
-          render turbo_stream: turbo_stream.replace('contest_description_form', partial: 'contest_descriptions/form', locals: { contest_description: @contest_description }), status: :unprocessable_entity
+          render turbo_stream: turbo_stream.replace('contest_description_form',
+          partial: 'contest_descriptions/form',
+          locals: { contest_description: @contest_description }),
+          status: :unprocessable_entity
         }
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html {
+          render :edit,
+          status: :unprocessable_entity
+        }
       end
     end
   end
@@ -53,13 +77,19 @@ class ContestDescriptionsController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream
-      format.html { redirect_to containers_path, notice: 'Contest description was successfully destroyed.' }
+      format.html {
+        redirect_to containers_path,
+        notice: I18n.t('notices.contest_description.destroyed')
+      }
     end
   end
 
   def eligibility_rules
     respond_to do |format|
-      format.html { render partial: 'eligibility_rules', locals: { contest_description: @contest_description } }
+      format.html {
+        render partial: 'eligibility_rules',
+        locals: { contest_description: @contest_description }
+      }
       format.turbo_stream
     end
   end
@@ -74,7 +104,9 @@ class ContestDescriptionsController < ApplicationController
   end
 
   def contest_description_params
-    params.require(:contest_description).permit(:created_by, :active, :archived, :eligibility_rules, :name, :notes, :short_name,
+    params.require(:contest_description).permit(:created_by, :active, :archived,
+                                                :eligibility_rules, :name, :notes,
+                                                :short_name,
                                                 :container_id, :status_id)
   end
 end
