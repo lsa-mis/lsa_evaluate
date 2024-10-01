@@ -55,7 +55,7 @@ RSpec.describe Container do
     it 'has many contest_descriptions with dependent destroy' do
       association = described_class.reflect_on_association(:contest_descriptions)
       expect(association.macro).to eq :has_many
-      expect(association.options[:dependent]).to eq :destroy
+      expect(association.options[:dependent]).to eq :restrict_with_error
     end
   end
 

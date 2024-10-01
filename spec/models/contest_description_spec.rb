@@ -55,20 +55,28 @@ RSpec.describe ContestDescription, type: :model do
     end
   end
 
-  context 'attributes' do
-    it 'has a name' do
-      contest_description.name = 'Test Contest'
-      expect(contest_description.name).to eq('Test Contest')
+  describe 'scopes' do
+    let!(:active_contest) { create(:contest_description, active: true) }
+    let!(:archived_contest) { create(:contest_description, archived: true) }
+
+    describe '.active' do
+      it 'includes active contests' do
+        expect(ContestDescription.active).to include(active_contest)
+      end
+
+      it 'excludes non-active contests' do
+        expect(ContestDescription.active).not_to include(archived_contest)
+      end
     end
 
-    it 'has a created_by' do
-      contest_description.created_by = 'John Doe'
-      expect(contest_description.created_by).to eq('John Doe')
-    end
+    describe '.archived' do
+      it 'includes archived contests' do
+        expect(ContestDescription.archived).to include(archived_contest)
+      end
 
-    it 'has a short_name' do
-      contest_description.short_name = 'Test'
-      expect(contest_description.short_name).to eq('Test')
+      it 'excludes non-archived contests' do
+        expect(ContestDescription.archived).not_to include(active_contest)
+      end
     end
   end
 end

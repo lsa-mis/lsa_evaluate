@@ -19,20 +19,30 @@
 # Foreign Keys
 #
 #  fk_rails_...  (container_id => containers.id)
-#
+
 FactoryBot.define do
   factory :contest_description do
     container
     name { Faker::Lorem.word }
-    short_name { Faker::Lorem.word }
-    after(:build) do |contest_description|
-      contest_description.eligibility_rules = ActionText::RichText.new(body: Faker::Lorem.paragraph)
-    end
-
-    after(:build) do |contest_description|
-      contest_description.notes = ActionText::RichText.new(body: Faker::Lorem.paragraph)
-    end
-
+    short_name { Faker::Lorem.unique.word }
     created_by { Faker::Name.name }
+
+    transient do
+      eligibility_rules_body { Faker::Lorem.paragraphs(number: 3).join("\n\n") }
+      notes_body { Faker::Lorem.paragraph }
+    end
+
+    after(:build) do |contest_description, evaluator|
+      contest_description.eligibility_rules = ActionText::RichText.new(body: evaluator.eligibility_rules_body)
+      contest_description.notes = ActionText::RichText.new(body: evaluator.notes_body)
+    end
+
+    trait :active do
+      active { true }
+    end
+
+    trait :archived do
+      archived { true }
+    end
   end
 end
