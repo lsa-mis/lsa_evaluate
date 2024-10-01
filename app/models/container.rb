@@ -28,14 +28,14 @@ class Container < ApplicationRecord
   has_many :assignments, dependent: :destroy
   has_many :users, through: :assignments
   has_many :roles, through: :assignments
-  has_many :contest_descriptions, dependent: :destroy
+  has_many :contest_descriptions, dependent: :restrict_with_error
 
   attr_accessor :creator
 
   accepts_nested_attributes_for :assignments, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :contest_descriptions, allow_destroy: true
 
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: true
   validates :department_id, presence: { message: "You must select a department" }
   validates :visibility_id, presence: { message: "You must select a visibility option" }
 
