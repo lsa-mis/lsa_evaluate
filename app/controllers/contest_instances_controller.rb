@@ -68,17 +68,15 @@ class ContestInstancesController < ApplicationController
 
   # DELETE /contest_instances/:id
   def destroy
-    respond_to do |format|
-      if @contest_instance.destroy
-        format.html do
-          redirect_to container_contest_description_contest_instances_path(@container, @contest_description),
-                      notice: 'Contest instance was successfully destroyed.'
-        end
-      else
-        format.html do
-          redirect_to container_contest_description_contest_instances_path(@container, @contest_description),
-                      alert: 'Failed to destroy the contest instance.'
-        end
+    if @contest_instance.destroy
+      respond_to do |format|
+        format.turbo_stream { redirect_to container_contest_description_contest_instances_path(@container, @contest_description), notice: I18n.t('notices.contest_instance.destroyed') }
+        format.html { redirect_to container_contest_description_contest_instances_path(@container, @contest_description), notice: I18n.t('notices.contest_instance.destroyed') }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream { redirect_to container_contest_description_contest_instances_path(@container, @contest_description), alert: @contest_description.errors.full_messages.to_sentence }
+        format.html { redirect_to container_contest_description_contest_instances_path(@container, @contest_description), alert: @contest_description.errors.full_messages.to_sentence }
       end
     end
   end
