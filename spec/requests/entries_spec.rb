@@ -9,7 +9,7 @@
 #   let(:user) { create(:user) }
 #   let(:profile) { create(:profile, user: user) }
 #   let(:container) { create(:container) }
-#   let(:role) { create(:role, kind: "Container Manager") }
+#   let(:role) { create(:role, kind: "Collection Manager") }
 #   let!(:assignment) { create(:assignment, user: user, container: container, role: role) }
 #   let(:contest_description) { create(:contest_description, container: container) }
 #   let(:date_closed) { 1.day.from_now }

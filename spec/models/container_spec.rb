@@ -3,8 +3,8 @@
 # Table name: containers
 #
 #  id            :bigint           not null, primary key
-#  description   :text(65535)
 #  name          :string(255)
+#  notes         :text(65535)
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  department_id :bigint           not null
@@ -92,7 +92,7 @@ RSpec.describe Container do
       let(:user) { create(:user, :employee) }
       let(:department) { create(:department) }
       let(:visibility) { create(:visibility) }
-      let!(:container_admin_role) { create(:role, kind: 'Container Administrator') }
+      let!(:container_admin_role) { create(:role, kind: 'Collection Administrator') }
 
       before do
         # Pass the current_user to the container using the `creator` attribute
@@ -104,7 +104,7 @@ RSpec.describe Container do
         )
       end
 
-      it 'creates an assignment for the creator as Container Administrator when the container is created' do
+      it 'creates an assignment for the creator as Collection Administrator when the collection is created' do
         expect { @container.save! }.to change { Assignment.count }.by(1)
         assignment = Assignment.find_by(container: @container, user:, role: container_admin_role)
         expect(assignment).to be_present
