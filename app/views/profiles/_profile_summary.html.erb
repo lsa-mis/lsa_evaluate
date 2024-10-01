@@ -93,13 +93,13 @@
         </p>
       </div>
       <!-- Financial Aid -->
+    <% if @profile.receiving_financial_aid && @profile.financial_aid_description.present? %>
       <div class="col">
         <p class="text-white">
           Financial Aid:<br>
           <span class="fw-light"><%= boolean_to_yes_no(@profile.receiving_financial_aid) %></span>
         </p>
       </div>
-      <% if @profile.receiving_financial_aid && @profile.financial_aid_description.present? %>
         <!-- Financial Aid Description -->
         <div class="col">
           <p class="text-white">
@@ -141,7 +141,7 @@
   <!-- Last Updated -->
   <div class="mt-4">
     <p class="text-white">
-      <small><em>Last updated: <%= @profile.updated_at.strftime("%B %d, %Y") %></em></small>
+      <small><em>Last updated:<br> <%= @profile.updated_at.strftime("%B %d, %Y") %></em></small>
     </p>
   </div>
 </div>

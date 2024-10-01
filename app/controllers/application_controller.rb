@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include ApplicationHelper
 
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   # Custom flash logging (optional)
   def flash
     super.tap do |flash_hash|
@@ -69,5 +70,10 @@ class ApplicationController < ActionController::Base
   def log_exception(exception)
     logger.error("!!!!!!!!!!! StandardError: #{exception.class} - #{exception.message}")
     logger.error(exception.backtrace.join("\n"))
+  end
+
+
+  def record_not_found
+    redirect_to containers_path, alert: I18n.t('notices.alert')
   end
 end

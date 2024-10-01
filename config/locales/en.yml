@@ -31,3 +31,17 @@
 
 en:
   hello: "Hello world"
+  notices:
+    alert: "Record not found."
+    container:
+      destroyed: "Container was successfully destroyed."
+      updated: "Container was successfully updated."
+      created: "Container was successfully created."
+    contest_description:
+      destroyed: "Contest description was successfully destroyed."
+      updated: "Contest description was successfully updated."
+      created: "Contest description was successfully created."
+    contest_instance:
+      destroyed: "Contest instance was successfully destroyed."
+      updated: "Contest instance was successfully updated."
+      created: "Contest instance was successfully created."

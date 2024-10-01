@@ -1,46 +1,11 @@
 <div class="mt-4">
-  <h2 class="">Contests available</h2>
-  <table class="table table-bordered table-hover table-striped mt-3">
-    <thead>
-      <tr>
-        <th>Contest Name</th>
-        <th>Rules</th>
-        <th>Contest Collection</th>
-        <th>Close Date</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @active_contests.each do |contest| %>
-        <tr>
-          <td class="strong"><%= contest.contest_description.name %></td>
-          <td class="card-text">
-            <% eligibility_plain = contest.contest_description.eligibility_rules.to_plain_text %>
-            <% if eligibility_plain.length > 100 %>
-              <%= truncate(eligibility_plain, length: 100) %>
-              <a href="#" 
-                data-action="click->eligibility-modal#open" 
-                data-url="<%= eligibility_rules_container_contest_description_path(contest.contest_description.container, contest.contest_description) %>">
-                ...more
-              </a>
-            <% else %>
-              <%= contest.contest_description.eligibility_rules %>
-            <% end %>
-          </td>
-          <td class="card-text"><%= "#{contest.contest_description.container.name} - #{contest.contest_description.container.department.name}" %></td>
-          <td class="card-text"><%= contest.date_closed.strftime("%B %d, %Y - %I:%M %p") %></td>
-          <td class="text-center">
-            <%= link_to new_entry_path(contest_instance_id: contest.id),
-                        class: 'd-block',
-                        data: { 'bs-toggle': 'tooltip' },
-                        title: 'Enter contest',
-                        aria: { label: 'Enter contest' } do %>
-              <i class="bi bi-pencil" style="font-size: 1.5rem;" aria-hidden="true"></i>
-              <span class="visually-hidden">Enter instance</span>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
+  <h2>Contests Available</h2>
+  
+  <% if @active_contests_by_container.any? %>
+    <% @active_contests_by_container.each do |container, contests| %>
+      <%= render partial: 'contest_table', locals: { container: container, contests: contests } %>
+    <% end %>
+  <% else %>
+    <p>No active contests available for your class level.</p>
+  <% end %>
 </div>

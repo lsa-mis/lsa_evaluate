@@ -10,7 +10,7 @@
     <%= f.hidden_field :profile_id, value: @entry.profile_id %>
 
     <%= f.association :category, collection: @entry.contest_instance.categories, label_method: :kind %>
-    <%= f.input :entry_file, as: :file %>
+    <%= f.input :entry_file, as: :file, required: true %>
     <% if @entry.contest_instance.require_pen_name %>
       <%= f.input :pen_name,
                   required: true,

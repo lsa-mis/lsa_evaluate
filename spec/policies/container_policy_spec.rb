@@ -4,8 +4,8 @@ RSpec.describe ContainerPolicy do
   subject { described_class.new(user, container) }
 
   let(:container) { create(:container) } # Ensure container is saved to the database
-  let!(:container_admin_role) { create(:role, kind: 'Container Administrator') }
-  let!(:container_manager_role) { create(:role, kind: 'Container Manager') }
+  let!(:container_admin_role) { create(:role, kind: 'Collection Administrator') }
+  let!(:container_manager_role) { create(:role, kind: 'Collection Manager') }
   let!(:axis_mundi_role) { create(:role, kind: 'Axis Mundi') }
   let(:creator) { create(:user, :employee) }
 

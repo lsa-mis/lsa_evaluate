@@ -77,9 +77,6 @@ RSpec.describe Profile do
       umid: Faker::Number.number(digits: 8),
       grad_date: Faker::Date.forward(days: 365),
       degree: Faker::Educator.degree,
-      receiving_financial_aid: Faker::Boolean.boolean,
-      accepted_financial_aid_notice: true,
-      financial_aid_description: Faker::Lorem.paragraph,
       hometown_publication: Faker::Address.city,
       pen_name: Faker::Book.author,
       **associated_records
@@ -123,11 +120,6 @@ RSpec.describe Profile do
 
     it 'is not valid without a degree' do
       profile.degree = nil
-      expect(profile).not_to be_valid
-    end
-
-    it 'is not valid without accepted_financial_aid_notice' do
-      profile.accepted_financial_aid_notice = false
       expect(profile).not_to be_valid
     end
   end

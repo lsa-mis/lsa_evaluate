@@ -1,9 +1,9 @@
 <div class="d-flex justify-content-between">
   <div>
-    <h1><%= @contest_description.name %></h1>
+    <h1><%= @contest_description.name %></h1><p class="text-muted"> <%= pluralize(@contest_instances.count, "instance") %></p>
   </div>
   <div>
-    <%= link_to "Return to Manage Collections", containers_path, class: "link_to" %>
+    <%= link_to "Return to Manage Collection", container_path(@container), class: "link_to" %>
   </div>
 </div>
 

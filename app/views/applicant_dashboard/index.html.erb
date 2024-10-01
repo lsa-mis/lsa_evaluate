@@ -15,7 +15,7 @@
             <div class="card-body">
               <small class="text-muted"><%= Time.now.strftime("%B %d, %Y - %I:%M %p") %></small>
               <%= render 'static_pages/opportunities' %>
-              <p class="card-text">Currently there <%= @active_contests.count == 1 ? 'is' : 'are' %> <%= pluralize(@active_contests.count, 'contest') %> open!</p>
+              <p class="card-text">Currently there <%= @active_contests.count == 1 ? 'is' : 'are' %> <%= pluralize(@active_contests.count, 'contest') %> available to you!</p>
             </div>
           </div>
         </div>
