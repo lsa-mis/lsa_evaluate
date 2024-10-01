@@ -76,11 +76,11 @@ class User < ApplicationRecord
   end
 
   def administrator?
-    role?('Container Administrator')
+    role?('Collection Administrator')
   end
 
   def manager?
-    role?('Container Manager')
+    role?('Collection Manager')
   end
 
   def judge?
@@ -88,14 +88,14 @@ class User < ApplicationRecord
   end
 
   def admin_for_container?(container_id)
-    assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Administrator'))
+    assignments.exists?(container_id:, role: Role.find_by(kind: 'Collection Administrator'))
   end
 
   def manager_for_container?(container_id)
-    assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Manager'))
+    assignments.exists?(container_id:, role: Role.find_by(kind: 'Collection Manager'))
   end
 
-  def has_container_role?(container, role_kinds = [ 'Container Manager', 'Container Administrator' ])
+  def has_container_role?(container, role_kinds = [ 'Collection Manager', 'Collection Administrator' ])
     assignments.joins(:role)
               .exists?(container: container, roles: { kind: role_kinds })
   end
