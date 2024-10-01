@@ -57,21 +57,23 @@
     </div>
   </div>
 
-  <div class="card mt-5">
-    <div class="header card-header">
-      <h2>Financial Aid</h2>
-    </div>
-    <div class="card-body">
-      <div class="d-flex justify-content-start">
-        <div class=" text-start ms-4">
-          <p>Financial Aid:<br><span class="fw-light"> <%= profile.receiving_financial_aid ? 'Yes' : 'No' %></span></p>
-          <% if profile.receiving_financial_aid %>
-            <p>Financial Aid Description:<br><span class="fw-light"> <%= profile.financial_aid_description %></span></p>
-          <% end %>
+  <% if @profile.receiving_financial_aid && @profile.financial_aid_description.present? %>
+    <div class="card mt-5">
+      <div class="header card-header">
+        <h2>Financial Aid</h2>
+      </div>
+      <div class="card-body">
+        <div class="d-flex justify-content-start">
+          <div class=" text-start ms-4">
+            <p>Financial Aid:<br><span class="fw-light"> <%= profile.receiving_financial_aid ? 'Yes' : 'No' %></span></p>
+            <% if profile.receiving_financial_aid %>
+              <p>Financial Aid Description:<br><span class="fw-light"> <%= profile.financial_aid_description %></span></p>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  <% end %>
 
   <div class="card mt-5">
     <div class="header card-header">
