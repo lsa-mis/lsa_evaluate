@@ -39,7 +39,7 @@ class ContestInstance < ApplicationRecord
   has_many :class_levels, through: :class_level_requirements
   has_many :category_contest_instances, dependent: :destroy
   has_many :categories, through: :category_contest_instances
-  has_many :entries, dependent: :destroy
+  has_many :entries, dependent: :restrict_with_error
   belongs_to :contest_description
 
   scope :active_and_open, -> {
