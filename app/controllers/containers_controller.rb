@@ -57,10 +57,16 @@ class ContainersController < ApplicationController
   end
 
   def destroy
-    @container.destroy!
-    respond_to do |format|
-      format.html { redirect_to containers_url, notice: 'Collection was successfully destroyed.' }
-      format.turbo_stream
+    if @container.destroy
+      respond_to do |format|
+        format.turbo_stream { redirect_to containers_path, notice: I18n.t('notices.container.destroyed') }
+        format.html { redirect_to containers_path, notice: I18n.t('notices.container.destroyed') }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream { redirect_to containers_path, alert: @container.errors.full_messages.to_sentence }
+        format.html { redirect_to containers_path, alert: @container.errors.full_messages.to_sentence }
+      end
     end
   end
 
