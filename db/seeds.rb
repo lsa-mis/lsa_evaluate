@@ -186,11 +186,11 @@ user7 = User.create!(email: 'mlaitan@umich.edu', password: 'passwordpassword')
 
 # Seed data for Roles
 Role.create!([
-               { kind: 'Container Administrator' },
+               { kind: 'Collection Administrator' },
                { kind: 'Axis mundi' },
-               { kind: 'Container Manager' }
+               { kind: 'Collection Manager' }
              ])
-role_container_admin = Role.find_by(kind: 'Container Administrator')
+role_container_admin = Role.find_by(kind: 'Collection Administrator')
 axis_mundi = Role.find_by(kind: 'Axis mundi')
 
 UserRole.create!([
@@ -222,7 +222,7 @@ contest_description1 = ContestDescription.create!(
   active: true,
   container: container1,
   name: 'Cora Duncan Contest',
-  short_name: 'Cora D',
+  short_name: 'Cora Duncan',
   eligibility_rules: 'Rules 1',
   notes: 'Notes 1',
   created_by: user1.email
@@ -313,15 +313,3 @@ contest_instance3 = ContestInstance.new(
 contest_instance3.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'Junior'))
 contest_instance3.category_contest_instances.build(category: Category.find_by(kind: 'Research Paper'))
 contest_instance3.save!
-
-# CategoryContestInstance.create!([
-#                                   { category: Category.find_by(kind: 'Drama'), contest_instance: ContestInstance.find_by(contest_description: contest_description1) },
-#                                   { category: Category.find_by(kind: 'Fiction'), contest_instance: ContestInstance.find_by(contest_description: contest_description2) },
-#                                   { category: Category.find_by(kind: 'Research Paper'), contest_instance: ContestInstance.find_by(contest_description: contest_description3) }
-#                                 ])
-
-# ClassLevelRequirement.create!([
-#                                 { class_level: ClassLevel.find_by(name: 'Second year'), contest_instance: contest_instance1 },
-#                                 { class_level: ClassLevel.find_by(name: 'Junior'), contest_instance: contest_instance1 },
-#                                 { class_level: ClassLevel.find_by(name: 'Senior'), contest_instance: contest_instance1 }
-#                               ])
