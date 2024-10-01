@@ -22,14 +22,15 @@
 #
 class ContestDescription < ApplicationRecord
   belongs_to :container
-  has_many :contest_instances, dependent: :destroy
+  has_many :contest_instances, dependent: :restrict_with_error
 
   has_rich_text :eligibility_rules
   has_rich_text :notes
 
   accepts_nested_attributes_for :contest_instances, allow_destroy: true
 
-  validates :name, :created_by, presence: true
+  validates :created_by, presence: true
+  validates :name, presence: true, uniqueness: true
 
   scope :active, -> { where(active: true) }
   scope :archived, -> { where(archived: true) }
