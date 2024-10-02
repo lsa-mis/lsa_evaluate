@@ -14,7 +14,7 @@
           <div class="card text-center">
             <div class="card-body">
               <small class="text-muted"><%= Time.now.strftime("%B %d, %Y - %I:%M %p") %></small>
-              <%= render 'opportunities' %>
+              <%= render 'applicant_dashboard/opportunities' %>
               <p class="card-text">Currently there <%= @active_contests.count == 1 ? 'is' : 'are' %> <%= pluralize(@active_contests.count, 'contest') %> available to you!</p>
             </div>
           </div>
@@ -26,7 +26,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-12 available-contests">
+        <div class="col-12 available-contests" id="available-contests">
           <%= render 'applicant_dashboard/available_contests' %>
         </div>
       </div>
