@@ -9,11 +9,4 @@ class StaticPagesController < ApplicationController
     @class_levels = ClassLevel.all
     @containers = Container.all
   end
-
-  def entrant_content
-    @departments = Department.all
-    @class_levels = ClassLevel.all
-    @containers = Container.all
-    render partial: 'entrant_content'
-  end
 end
