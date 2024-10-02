@@ -1,5 +1,5 @@
 <!-- app/views/applicant_dashboard/index.html.erb -->
-
+<h1>Applicant Dashboard</h1>
 <div class="container-fluid mt-4" data-controller="eligibility-modal">
   <div class="row">
     <!-- Profile summary: Displayed on all screens, order changes based on viewport size -->
@@ -9,7 +9,7 @@
 
     <!-- Main content -->
     <div class="col-12 col-xxl-10 mt-4 order-1 order-xxl-2">
-      <div class="row mb-4 ms-2">
+      <div class="row mb-4">
         <div class="">
           <div class="card text-center">
             <div class="card-body">
@@ -20,12 +20,12 @@
           </div>
         </div>
       </div>
-      <div class="row ms-2">
+      <div class="row">
         <div class="col-12 submissions-summary">
           <%= render 'applicant_dashboard/submissions_summary', submissions: @submissions %>
         </div>
       </div>
-      <div class="row ms-2">
+      <div class="row">
         <div class="col-12 available-contests">
           <%= render 'applicant_dashboard/available_contests' %>
         </div>
