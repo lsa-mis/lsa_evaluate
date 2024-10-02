@@ -70,7 +70,7 @@ class Profile < ApplicationRecord
 
   validates :preferred_first_name, presence: true, length: { in: 1..255 }
   validates :preferred_last_name, presence: true, length: { in: 1..255 }
-  validates :umid, presence: true, length: { is: 8 }
+  validates :umid, presence: true, uniqueness: true, length: { is: 8 }
   validates :grad_date, presence: true
   validates :degree, presence: true
   validates :receiving_financial_aid, inclusion: { in: [ true, false ] }
