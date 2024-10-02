@@ -1,10 +1,10 @@
 <%# app/views/containers/show.html.erb %>
-<div class="d-flex justify-content-between">
+<div class="d-flex justify-content-evenly">
   <div>
     <%= render 'container_detail', container: @container %>
   </div>
   <div>
-    <%= link_to "Back to Collections", containers_path, class: "link_to" %>
+    <%= link_to "Back to Collections", containers_path, class: "link_to link_to text-nowrap" %>
 
     <div class="d-flex">
       <% if policy(@container).update? %>
