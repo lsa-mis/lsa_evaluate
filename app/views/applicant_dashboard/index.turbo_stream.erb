@@ -1,0 +1,4 @@
+<!-- app/views/applicant_dashboard/index.turbo_stream.erb -->
+<%= turbo_stream.replace 'available-contests' do %>
+  <%= render 'applicant_dashboard/available_contests' %>
+<% end %>
