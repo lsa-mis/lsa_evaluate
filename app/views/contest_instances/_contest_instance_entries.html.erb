@@ -1,32 +1,30 @@
-<h2><%= pluralize(@contest_instance_entries.count, 'Entry') %></h2>
-<table class="table table-striped w-100">
-  <thead>
-    <tr>
-      <th><%= sortable 'id', 'ID', @container, @contest_description, @contest_instance %></th>
-      <th>File</th>
-      <th><%= sortable 'profile_display_name', 'Display Name', @container, @contest_description, @contest_instance %></th>
-      <th><%= sortable 'profile_user_uniqname', 'Username', @container, @contest_description, @contest_instance %></th>
-      <th><%= sortable 'title', 'Title', @container, @contest_description, @contest_instance %></th>
-      <% if @contest_instance&.require_pen_name %>
-        <th><%= sortable 'pen_name', 'Pen Name', @container, @contest_description, @contest_instance %></th>
-      <% end %>
-      <% if @contest_instance&.require_campus_employment_info %>
-        <th><%= sortable 'profile_campus_employee', 'Campus Employee', @container, @contest_description, @contest_instance %></th>
-      <% end %>
-      <th><%= sortable 'created_at', 'Created At', @container, @contest_description, @contest_instance %></th>
-      <th class=text-center"><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
-      <th class="text-center">Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% if @contest_instance_entries.any? %>
+<% if @contest_instance_entries.any? %>
+  <h2><%= pluralize(@contest_instance_entries.count, 'Entry') %></h2>
+  <table class="table table-striped w-100">
+    <thead>
+      <tr>
+        <th><%= sortable 'id', 'ID', @container, @contest_description, @contest_instance %></th>
+        <th>File</th>
+        <th><%= sortable 'profile_display_name', 'Display Name', @container, @contest_description, @contest_instance %></th>
+        <th><%= sortable 'profile_user_uniqname', 'Username', @container, @contest_description, @contest_instance %></th>
+        <th><%= sortable 'title', 'Title', @container, @contest_description, @contest_instance %></th>
+        <% if @contest_instance&.require_pen_name %>
+          <th><%= sortable 'pen_name', 'Pen Name', @container, @contest_description, @contest_instance %></th>
+        <% end %>
+        <% if @contest_instance&.require_campus_employment_info %>
+          <th><%= sortable 'profile_campus_employee', 'Campus Employee', @container, @contest_description, @contest_instance %></th>
+        <% end %>
+        <th><%= sortable 'created_at', 'Created At', @container, @contest_description, @contest_instance %></th>
+        <th class=text-center"><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
       <% @contest_instance_entries.each do |ci_entry| %>
         <%= render partial: 'contest_instances/entry', locals: { entry: ci_entry } %>
       <% end %>
-    <% else %>
-      <tr>
-        <td colspan="9" class="text-center">No entries found.</td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+<% else %>
+  <h2 class="text-center">No entries for this instance.</h2>
+<% end %>
