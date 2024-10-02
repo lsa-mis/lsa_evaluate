@@ -11,7 +11,9 @@
     <% end %>
   </td>
   <td><%= entry.profile.display_name %></td>
-  <td><%= entry.profile.user.uniqname %></td>
+  <td>
+    <%= link_to entry.profile.user.uniqname, "https://webapps.lsa.umich.edu/UGStuFileV2/App/Cover/Cover.aspx?ID=#{entry.profile.umid}", target: "_blank", title: "View applicant's student file" %>
+  </td>
   <td><%= entry.title %></td>
   <% if entry.contest_instance.require_pen_name %>
     <td><%= entry.pen_name %></td>
