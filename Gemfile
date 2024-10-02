@@ -49,8 +49,6 @@ end
 group :development, :test do
   gem 'capybara'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
-  gem 'pry-byebug'
-  gem 'pry-rails'
   gem 'pundit-matchers'
   gem 'rspec-rails'
   gem 'rubocop', require: false
@@ -65,4 +63,6 @@ end
 
 group :development, :staging, :test do
   gem 'faker'
+  gem 'pry-byebug'
+  gem 'pry-rails'
 end
