@@ -1,24 +1,31 @@
+<!-- app/views/applicant_dashboard/_opportunities.html.erb -->
 <div id="opportunity-partial" class="my-4">
   <h2>Explore Opportunities</h2>
   
-  <div class="row g-4 align-items-end">
-    <!-- Department Selection -->
-    <div class="col">
-      <label for="department-select" class="form-label visually-hidden">Department</label>
-      <select class="form-select" id="department-select" name="department_id">
-        <option value="">Department</option>
-        <%= options_from_collection_for_select(@departments, :id, :name) %>
-      </select>
-    </div>
+  <%= form_with url: applicant_dashboard_path, method: :get, local: false do |form| %>
+    <div class="row g-4 align-items-end">
+      <!-- Department Selection -->
+      <div class="col">
+        <%= form.label :department_id, 'Department', class: 'form-label visually-hidden' %>
+        <%= form.select :department_id,
+                        options_from_collection_for_select(@departments, :id, :name, params[:department_id]),
+                        { include_blank: 'Department' },
+                        { class: 'form-select', id: 'department-select', onchange: 'this.form.requestSubmit()' } %>
+      </div>
 
-    <!-- Contest Selection -->
-    <div class="col">
-      <label for="container-select" class="form-label visually-hidden">Collections</label>
-      <select class="form-select" id="container-select" name="container_id">
-        <option value="">Contest Collection</option>
-        <%= options_from_collection_for_select(@containers, :id, :name) %>
-      </select>
+      <!-- Container Selection -->
+      <div class="col">
+        <%= form.label :container_id, 'Collections', class: 'form-label visually-hidden' %>
+        <%= form.select :container_id,
+                        options_from_collection_for_select(@containers, :id, :name, params[:container_id]),
+                        { include_blank: 'Contest Collection' },
+                        { class: 'form-select', id: 'container-select', onchange: 'this.form.requestSubmit()' } %>
+      </div>
+      <% if params[:department_id].present? || params[:container_id].present? %>
+        <div class="col">
+          <%= link_to 'Clear Filters', applicant_dashboard_path, class: 'btn btn-secondary' %>
+        </div>
+      <% end %>
     </div>
-
-  </div>
+  <% end %>
 </div>
