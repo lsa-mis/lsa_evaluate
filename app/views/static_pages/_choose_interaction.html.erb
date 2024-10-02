@@ -6,13 +6,17 @@
         <h3 class="m-2">Explore / Submit Entry / Update Profile</h3>
         <div class="card-body">
           <% if (content = render_editable_content('home', 'submit_entry')) %>
-            <p class="">
+            <p>
               <%= content %>
             </p>
           <% end %>
 
           <div>
-            <%= button_to 'Submit Entry', '#', class: 'btn btn-primary ', data: { action: "click->interaction#showEntrantContent" } %>
+            <% if current_user.profile_exists? %>
+              <%= button_to 'View Dashboard', applicant_dashboard_path, method: :get, class: 'btn btn-primary' %>
+            <% else %>
+              <%= button_to 'Create Profile', new_profile_path, method: :get, class: 'btn btn-primary' %>
+            <% end %>
           </div>
         </div>
       </div>
