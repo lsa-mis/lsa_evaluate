@@ -8,7 +8,7 @@ class ApplicantDashboardController < ApplicationController
 
     @departments = Department.all
     @class_levels = ClassLevel.all
-    @containers = Container.all
+    @containers = Container.visible
 
     available_contests
 
@@ -22,12 +22,18 @@ class ApplicantDashboardController < ApplicationController
   private
 
   def available_contests
+    # @active_contests = ContestInstance.active_and_open
+    #                                   .for_class_level(@profile.class_level_id)
+    #                                   .joins(contest_description: :container)
+    #                                   .includes(contest_description: :container)
+    #                                   .order('containers.name ASC')
+    #                                   .distinct
     @active_contests = ContestInstance.active_and_open
-                                      .for_class_level(@profile.class_level_id)
-                                      .joins(contest_description: :container)
-                                      .includes(contest_description: :container)
-                                      .order('containers.name ASC')
-                                      .distinct
+    .for_class_level(@profile.class_level_id)
+    .with_public_visibility
+    .includes(contest_description: { container: :visibility })
+    .order('containers.name ASC')
+    .distinct
 
     @active_contests_by_container = @active_contests.group_by do |contest|
       contest.contest_description.container
