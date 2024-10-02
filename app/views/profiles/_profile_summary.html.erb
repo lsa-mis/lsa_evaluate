@@ -1,34 +1,33 @@
-<div class="bg-secondary text-white profile-sidebar text-center">
+<div class="bg-secondary text-white text-center px-2">
 
-    <div class="d-flex flex-row flex-xxl-column justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-row flex-xxl-column justify-content-between align-items-center">
       <!-- Welcome Message -->
-      <div></div>
+      <div class="d-xxl-none"></div>
       <div class="text-center">
-        <h1>Welcome<br><%= @profile.preferred_first_name %>!</h1>
+        <h2>Welcome<br><%= @profile.preferred_first_name %>!</h2>
         <p class="text-white fw-light"><small>UM ID: <%= @profile.umid %></small></p>
       </div>
       <!-- Edit Profile Link -->
-      <div class="mb-3 mb-md-0">
+      <div>
         <%= link_to edit_profile_path(@profile), class: 'text-white link-underline link-underline-opacity-0' do %>
           <i class="bi bi-pencil"></i> <span class="fw-light">Edit</span>
         <% end %>
       </div>
     </div>
   <hr>
-
-  <div class="text-white text-start ms-4">
+  <div class="text-white text-start small">
     <!-- Address Section -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-xxl-1">
-      <div class="col mt-4">
+      <div class="col">
         <p class="text-white m-0">
           Home Address
-          <%= simple_format(@profile.home_address.full_address, class: "text-white fw-light") if @profile.home_address %>
+          <%= simple_format(@profile.home_address.full_address, class: "text-white fw-light lh-1") if @profile.home_address %>
         </p>
       </div>
-      <div class="col mb-4">
+      <div class="col">
         <p class="text-white m-0">
           Campus Address
-          <%= simple_format(@profile.campus_address.full_address, class: "text-white fw-light") if @profile.campus_address %>
+          <%= simple_format(@profile.campus_address.full_address, class: "text-white fw-light lh-1") if @profile.campus_address %>
         </p>
       </div>
     </div>
@@ -88,7 +87,7 @@
       <!-- Campus Employee -->
       <div class="col">
         <p class="text-white">
-          Currently an active campus employee (workstudy, GSI, etc)?<br>
+          Current (workstudy, GSI, etc)<br>
           <span class="fw-light"><%= @profile.campus_employee ? 'Yes' : 'No' %></span>
         </p>
       </div>
@@ -139,7 +138,7 @@
   </div>
 
   <!-- Last Updated -->
-  <div class="mt-4">
+  <div class="mt-2">
     <p class="text-white">
       <small><em>Last updated:<br> <%= @profile.updated_at.strftime("%B %d, %Y") %></em></small>
     </p>

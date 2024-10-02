@@ -11,10 +11,15 @@
     <% end %>
   </td>
   <td><%= entry.profile.display_name %></td>
-  <td><%= entry.profile.user.uniqname %></td>
+  <td>
+    <%= link_to entry.profile.user.uniqname, "https://webapps.lsa.umich.edu/UGStuFileV2/App/Cover/Cover.aspx?ID=#{entry.profile.umid}", target: "_blank", title: "View applicant's student file" %>
+  </td>
   <td><%= entry.title %></td>
   <% if entry.contest_instance.require_pen_name %>
     <td><%= entry.pen_name %></td>
+  <% end %>
+  <% if @contest_instance&.require_campus_employment_info %>
+    <td class="text-center"><%= boolean_to_yes_no(entry.campus_employee) %></td>
   <% end %>
   <td><%= format_datetime(entry.created_at) %></td>
   <td class="text-center"><%= boolean_to_yes_no(entry.disqualified) %></td>

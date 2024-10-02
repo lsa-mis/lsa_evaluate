@@ -7,7 +7,6 @@
 #  address2        :string(255)
 #  city            :string(255)
 #  country         :string(255)
-#  phone           :string(255)
 #  state           :string(255)
 #  zip             :string(255)
 #  created_at      :datetime         not null
@@ -32,7 +31,6 @@ FactoryBot.define do
     city { Faker::Address.city }
     state { Faker::Address.state_abbr }
     zip { Faker::Address.zip_code }
-    phone { Faker::PhoneNumber.phone_number }
     country { Faker::Address.country_code }
     address_type
   end

@@ -2,8 +2,8 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [
-    "homeAddress1", "homeAddress2", "homeCity", "homeState", "homeZip", "homePhone", "homeCountry",
-    "campusAddress1", "campusAddress2", "campusCity", "campusState", "campusZip", "campusPhone", "campusCountry"
+    "homeAddress1", "homeAddress2", "homeCity", "homeState", "homeZip", "homeCountry",
+    "campusAddress1", "campusAddress2", "campusCity", "campusState", "campusZip", "campusCountry"
   ]
 
   copy() {
@@ -12,7 +12,6 @@ export default class extends Controller {
     this.homeCityTarget.value = this.campusCityTarget.value
     this.homeStateTarget.value = this.campusStateTarget.value
     this.homeZipTarget.value = this.campusZipTarget.value
-    this.homePhoneTarget.value = this.campusPhoneTarget.value
     this.homeCountryTarget.value = this.campusCountryTarget.value
   }
 }

@@ -57,9 +57,6 @@
                     <%= address_form.input :address_type_id, as: :hidden, input_html: { value: AddressType.find_by(kind: 'Campus').id } %>
                   </div>
                 </div>
-                <div class="row">
-                  <%= address_form.input :phone, input_html: { data: { target: "address-copy.campusPhone" } } %>
-                </div>
               <% end %>
 
               <button type="button" data-action="click->address-copy#copy" class="btn btn-sm btn-secondary">Copy Campus Address to Home Address</button>
@@ -90,9 +87,6 @@
                     <%= address_form.input :country, priority: ["United States"], input_html: { data: { target: "address-copy.homeCountry" } } %>
                     <%= address_form.input :address_type_id, as: :hidden, input_html: { value: AddressType.find_by(kind: 'Home').id } %>
                   </div>
-                </div>
-                <div class="row">
-                  <%= address_form.input :phone, input_html: { data: { target: "address-copy.homePhone" } } %>
                 </div>
               <% end %>
             </div>

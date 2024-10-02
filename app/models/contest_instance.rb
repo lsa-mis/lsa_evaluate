@@ -58,6 +58,11 @@ class ContestInstance < ApplicationRecord
     joins(:class_levels).where(class_levels: { id: class_level_id }).distinct
   }
 
+  scope :with_public_visibility, -> {
+    joins(contest_description: { container: :visibility })
+    .where(visibilities: { kind: 'Public' })
+  }
+
   accepts_nested_attributes_for :category_contest_instances, allow_destroy: true
   accepts_nested_attributes_for :class_level_requirements, allow_destroy: true
 

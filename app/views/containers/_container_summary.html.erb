@@ -8,6 +8,7 @@
           <small class="text-muted">
             <%= " (#{pluralize(container.contest_descriptions.count, 'contest')})" %>
           </small>
+          <small class="text-muted"><%= container.visibility.kind %></small>
         </h5>
         <small class="text-muted">
           <%= container.department.display_name %><br>

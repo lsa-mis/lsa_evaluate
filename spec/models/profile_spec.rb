@@ -122,6 +122,27 @@ RSpec.describe Profile do
       profile.degree = nil
       expect(profile).not_to be_valid
     end
+
+    it 'is not valid without umid' do
+      profile.umid = nil
+      expect(profile).not_to be_valid
+    end
+
+    it 'is not with a umid less than 8 digits' do
+      profile.umid = Faker::Number.number(digits: 7)
+      expect(profile).not_to be_valid
+    end
+
+    it 'is not with a umid greater than 8 digits' do
+      profile.umid = Faker::Number.number(digits: 9)
+      expect(profile).not_to be_valid
+    end
+
+    it 'is not valid if umid is not unique' do
+      profile.save
+      duplicate_profile = profile.dup
+      expect(duplicate_profile).not_to be_valid
+    end
   end
 
   describe 'associations' do
