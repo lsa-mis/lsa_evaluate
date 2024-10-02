@@ -37,10 +37,14 @@ class AddressesController < ApplicationController
 
   def destroy
     @address.destroy
-
-    respond_to do |format|
-      format.html { redirect_to addresses_url, notice: 'Address was successfully destroyed.' }
+    if @contest_description.destroy
+      respond_to do |format|
+        format.html { redirect_to addresses_url, notice: 'Address was successfully destroyed.' }
+      end
     end
+  rescue ActiveRecord::DeleteRestrictionError => e
+    flash[:error] = e.message
+    redirect_to contest_descriptions_path
   end
 
   private
@@ -50,6 +54,6 @@ class AddressesController < ApplicationController
   end
 
   def address_params
-    params.require(:address).permit(:address1, :address2, :city, :state, :zip, :phone, :country, :address_type_id)
+    params.require(:address).permit(:address1, :address2, :city, :state, :zip, :country, :address_type_id)
   end
 end
