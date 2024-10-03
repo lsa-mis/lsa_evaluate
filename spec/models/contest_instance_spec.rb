@@ -34,9 +34,11 @@
 #
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #
+# spec/models/contest_instance_spec.rb
+
 require 'rails_helper'
 
-RSpec.describe ContestInstance do
+RSpec.describe ContestInstance, type: :model do
   describe 'associations' do
     it 'belongs to contest_description' do
       association = described_class.reflect_on_association(:contest_description)
@@ -54,6 +56,12 @@ RSpec.describe ContestInstance do
       expect(association.macro).to eq(:has_many)
     end
 
+    it 'has many class_levels through class_level_requirements' do
+      association = described_class.reflect_on_association(:class_levels)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:through]).to eq(:class_level_requirements)
+    end
+
     it 'has many class_level_requirements' do
       association = described_class.reflect_on_association(:class_level_requirements)
       expect(association.macro).to eq(:has_many)
@@ -61,11 +69,7 @@ RSpec.describe ContestInstance do
   end
 
   describe 'validations' do
-    let(:contest_instance) { create(:contest_instance) }
-
-    # before do
-    #   create(:category_contest_instance, contest_instance: contest_instance, category: create(:category))
-    # end
+    let(:contest_instance) { build(:contest_instance) }
 
     it 'is valid with valid attributes' do
       expect(contest_instance).to be_valid
@@ -155,16 +159,16 @@ RSpec.describe ContestInstance do
       expect(contest_instance.errors[:transcript_required]).to include('is not included in the list')
     end
 
-    it 'is invalid without at least one class_level_requirement' do
-      contest_instance.class_level_requirements.clear
+    it 'is invalid without at least one class_level selected' do
+      contest_instance.class_levels.clear
       expect(contest_instance).not_to be_valid
-      expect(contest_instance.errors[:base]).to include('At least one class level requirement must be added.')
+      expect(contest_instance.errors[:base]).to include('At least one class level requirement must be selected.')
     end
 
-    it 'is invalid without at least one category' do
+    it 'is invalid without at least one category selected' do
       contest_instance.categories.clear
       expect(contest_instance).not_to be_valid
-      expect(contest_instance.errors[:base]).to include('At least one category must be added.')
+      expect(contest_instance.errors[:base]).to include('At least one category must be selected.')
     end
 
     it 'is invalid with more than one active contest instance for a contest description' do
@@ -185,7 +189,7 @@ RSpec.describe ContestInstance do
 
   describe 'Factory' do
     it 'is valid with valid attributes' do
-      contest_instance = FactoryBot.build(:contest_instance)
+      contest_instance = build(:contest_instance)
       expect(contest_instance).to be_valid
     end
   end
@@ -219,7 +223,7 @@ RSpec.describe ContestInstance do
       end
     end
 
-    context 'when is archived' do
+    context 'when it is archived' do
       it 'returns false' do
         contest_instance = create(:contest_instance, archived: true)
         expect(contest_instance.open?).to be(false)
@@ -244,21 +248,17 @@ RSpec.describe ContestInstance do
     let(:class_level2) { create(:class_level) }
 
     let!(:contest_with_class_level1) do
-      contest_instance = create(:contest_instance)
-      create(:class_level_requirement, contest_instance: contest_instance, class_level: class_level1)
+      contest_instance = create(:contest_instance, class_levels: [ class_level1 ])
       contest_instance
     end
 
     let!(:contest_with_class_level2) do
-      contest_instance = create(:contest_instance)
-      create(:class_level_requirement, contest_instance: contest_instance, class_level: class_level2)
+      contest_instance = create(:contest_instance, class_levels: [ class_level2 ])
       contest_instance
     end
 
     let!(:contest_with_both_class_levels) do
-      contest_instance = create(:contest_instance)
-      create(:class_level_requirement, contest_instance: contest_instance, class_level: class_level1)
-      create(:class_level_requirement, contest_instance: contest_instance, class_level: class_level2)
+      contest_instance = create(:contest_instance, class_levels: [ class_level1, class_level2 ])
       contest_instance
     end
 
@@ -290,8 +290,9 @@ RSpec.describe ContestInstance do
     let!(:contest_instance) { create(:contest_instance) }
 
     before do
-      create(:class_level_requirement, contest_instance: contest_instance)
-      create(:category_contest_instance, contest_instance: contest_instance, category: create(:category))
+      # Ensure associations are present
+      contest_instance.class_levels << create(:class_level)
+      contest_instance.categories << create(:category)
     end
 
     it 'creates a new instance with the same attributes except specified ones' do
@@ -305,28 +306,14 @@ RSpec.describe ContestInstance do
       expect(new_instance.archived).to be(false)
     end
 
-    it 'duplicates class_level_requirements' do
+    it 'duplicates class_levels associations' do
       new_instance = contest_instance.dup_with_associations
-
-      expect(new_instance.class_level_requirements.size).to eq(contest_instance.class_level_requirements.size)
-      new_instance.class_level_requirements.each do |clr|
-        expect(clr).to be_a_new(ClassLevelRequirement)
-        expect(clr.contest_instance_id).to be_nil
-        expect(clr.created_at).to be_nil
-        expect(clr.updated_at).to be_nil
-      end
+      expect(new_instance.class_levels).to match_array(contest_instance.class_levels)
     end
 
-    it 'duplicates category_contest_instances' do
+    it 'duplicates categories associations' do
       new_instance = contest_instance.dup_with_associations
-
-      expect(new_instance.category_contest_instances.size).to eq(contest_instance.category_contest_instances.size)
-      new_instance.category_contest_instances.each do |cci|
-        expect(cci).to be_a_new(CategoryContestInstance)
-        expect(cci.contest_instance_id).to be_nil
-        expect(cci.created_at).to be_nil
-        expect(cci.updated_at).to be_nil
-      end
+      expect(new_instance.categories).to match_array(contest_instance.categories)
     end
   end
 end
