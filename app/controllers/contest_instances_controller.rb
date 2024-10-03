@@ -45,24 +45,20 @@ class ContestInstancesController < ApplicationController
   # POST /contest_instances
   def create
     @contest_instance = @contest_description.contest_instances.new(contest_instance_params)
+    @contest_instance.created_by = current_user.email
 
-    respond_to do |format|
-      if @contest_instance.save
-        format.html { redirect_to_contest_instance_path }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-      end
+    if @contest_instance.save
+      redirect_to_contest_instance_path
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /contest_instances/:id
   def update
-    respond_to do |format|
-      if @contest_instance.update(contest_instance_params)
-        format.html { redirect_to_contest_instance_path }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-      end
+    if @contest_instance.update(contest_instance_params)
+      redirect_to_contest_instance_path
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -135,12 +131,14 @@ class ContestInstancesController < ApplicationController
   end
 
   def contest_instance_params
-    params.require(:contest_instance).permit(:contest_description_id, :date_open, :date_closed, :active, :archived, :notes,
-                                             :judging_open, :judging_rounds, :category_id, :has_course_requirement,
-                                             :judge_evaluations_complete, :course_requirement_description,
-                                             :recletter_required, :transcript_required, :maximum_number_entries_per_applicant,
-                                             :require_pen_name, :require_campus_employment_info, :require_finaid_info,
-                                             :created_by, category_contest_instances_attributes: [ :id, :category_id, :_destroy ],
-                                             class_level_requirements_attributes: [ :id, :class_level_id, :_destroy ])
+    params.require(:contest_instance).permit(
+      :active, :archived, :contest_description_id, :date_open, :date_closed,
+      :notes, :judging_open, :judging_rounds, :judge_evaluations_complete,
+      :maximum_number_entries_per_applicant, :require_pen_name,
+      :require_campus_employment_info, :require_finaid_info, :created_by,
+      :has_course_requirement, :course_requirement_description,
+      :recletter_required, :transcript_required,
+      category_ids: [], class_level_ids: []
+                                             )
   end
 end
