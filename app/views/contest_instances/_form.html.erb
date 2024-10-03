@@ -19,53 +19,25 @@
     <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
 
     <h3>Categories</h3>
-    <div data-controller="nested-form">
-      <div data-nested-form-target="container">
-        <%= f.fields_for :category_contest_instances do |cc_f| %>
-          <div class="nested-fields">
-            <%= cc_f.association :category, label_method: :kind %>
-            <%= cc_f.hidden_field :_destroy %>
-            <%= link_to 'Remove', '#', class: 'remove_category', data: { action: "click->nested-form#removeAssociation" } %>
-          </div>
-        <% end %>
-      </div>
-      <%= link_to 'Add Category', '#', data: { action: "click->nested-form#addAssociation" } %>
-
-      <!-- Move template inside the same div -->
-      <template data-nested-form-target="template">
-        <div class="nested-fields">
-          <%= f.fields_for :category_contest_instances, CategoryContestInstance.new, child_index: "new_category_contest_instances" do |cc_f| %>
-            <%= cc_f.association :category, label_method: :kind %>
-            <%= cc_f.hidden_field :_destroy %>
-            <%= link_to 'Remove', '#', class: 'remove_category', data: { action: "click->nested-form#removeAssociation" } %>
-          <% end %>
+    <div class="form-group">
+      <%= f.collection_check_boxes :category_ids, Category.all, :id, :kind do |b| %>
+        <div class="checkbox">
+          <label>
+            <%= b.check_box %> <%= b.text %>
+          </label>
         </div>
-      </template>
+      <% end %>
     </div>
 
-        <!-- Class Level Requirements -->
     <h3>Class Level Requirements</h3>
-    <div data-controller="nested-form">
-      <div data-nested-form-target="container">
-        <%= f.fields_for :class_level_requirements do |clr_f| %>
-          <div class="nested-fields">
-            <%= clr_f.association :class_level, label_method: :name %>
-            <%= clr_f.hidden_field :_destroy %>
-            <%= link_to 'Remove', '#', class: 'remove_class_level', data: { action: "click->nested-form#removeAssociation" } %>
-          </div>
-        <% end %>
-      </div>
-      <%= link_to 'Add Class Level Requirement', '#', data: { action: "click->nested-form#addAssociation" } %>
-
-      <template data-nested-form-target="template">
-        <div class="nested-fields">
-          <%= f.fields_for :class_level_requirements, ClassLevelRequirement.new, child_index: Time.now.to_i do |clr_f| %>
-            <%= clr_f.association :class_level, label_method: :name %>
-            <%= clr_f.hidden_field :_destroy %>
-            <%= link_to 'Remove', '#', class: 'remove_class_level', data: { action: "click->nested-form#removeAssociation" } %>
-          <% end %>
+    <div class="form-group">
+      <%= f.collection_check_boxes :class_level_ids, ClassLevel.all, :id, :name do |b| %>
+        <div class="checkbox">
+          <label>
+            <%= b.check_box %> <%= b.text %>
+          </label>
         </div>
-      </template>
+      <% end %>
     </div>
 
   </div>

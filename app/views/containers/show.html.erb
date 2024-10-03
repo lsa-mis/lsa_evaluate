@@ -4,7 +4,7 @@
     <%= render 'container_detail', container: @container %>
   </div>
   <div>
-    <%= link_to "Back to Collections", containers_path, class: "link_to link_to text-nowrap" %>
+    <%= link_to "Back to Collections", containers_path, class: "link_to text-nowrap" %>
 
     <div class="d-flex">
       <% if policy(@container).update? %>
