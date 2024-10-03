@@ -31,8 +31,5 @@ application.register("flash", FlashController)
 import InteractionController from "./interaction_controller"
 application.register("interaction", InteractionController)
 
-import NestedFormController from "./nested_form_controller"
-application.register("nested-form", NestedFormController)
-
 import ScrollController from "./scroll_controller"
 application.register("scroll", ScrollController)
