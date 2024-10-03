@@ -6,8 +6,8 @@
     <div class="form-inputs">
       <%= f.input :name, required: true %>
       <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
-      <%= f.input :eligibility_rules, as: :rich_text_area %>
-      <%= f.input :notes, as: :rich_text_area %>
+      <%= f.input :eligibility_rules, as: :rich_text_area, hint: "Displays on the entry form" %>
+      <%= f.input :notes, as: :rich_text_area, hint: "Does not display on the entry form" %>
       <%= f.input :short_name %>
       <%= f.input :active, hint: "Specify whether this contest is currently accepting entries." %>
       <%= f.input :archived %>
