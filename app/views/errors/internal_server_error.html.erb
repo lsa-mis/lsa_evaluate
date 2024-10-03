@@ -1,8 +1,11 @@
-<div class="container d-flex flex-column mt-7" style="width: 100%; max-width: 600px;">
-    <h5>Oops!</h5>
-    <%= image_tag 'error_robot.svg', alt: 'Error Page', class: "img-fluid" %>
-    <p>Error: 500</p>
-  <div style="color: #6C757D; text-align: center; padding-bottom: 120px;">
-    Go back to the <a href="/" style="color: #00274C;">homepage</a> or <a href="contact-link" class="um-blue ps-1">contact XX"</a>
+<div class="container d-flex flex-column mt-4" style="width: 100%; max-width: 600px;">
+  <h1>Oops!</h1>
+  <p class="text-left">🤖 My brain is broken 🤖</p>
+  <p>Try using our navigation to get back on track.</p>
+  <div class="text-muted">
+  Go back to the <a href="/" class="link_to">homepage</a> or <a id="myCustomTrigger" class="link_to" href="#" data-email="<%= session[:user_email]%>">Report an Issue</a>
+  </div>
+  <div>
+    <%= image_tag 'error_500.svg', alt: 'Error Page' %>
   </div>
 </div>
