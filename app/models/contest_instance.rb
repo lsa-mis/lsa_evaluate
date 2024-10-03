@@ -63,9 +63,6 @@ class ContestInstance < ApplicationRecord
     .where(visibilities: { kind: 'Public' })
   }
 
-  accepts_nested_attributes_for :category_contest_instances, allow_destroy: true
-  accepts_nested_attributes_for :class_level_requirements, allow_destroy: true
-
   validates :date_open, presence: true
   validates :date_closed, presence: true
   validates :judging_open, inclusion: { in: [ true, false ] }
@@ -97,7 +94,6 @@ class ContestInstance < ApplicationRecord
     category_contest_instances.each do |cci|
       new_instance.category_contest_instances.build(cci.attributes.except('id', 'contest_instance_id', 'created_at', 'updated_at'))
     end
-
     new_instance
   end
 
@@ -109,15 +105,17 @@ class ContestInstance < ApplicationRecord
     active && !archived && Time.current.between?(date_open, date_closed)
   end
 
+  private
+
   def must_have_at_least_one_class_level_requirement
-    if class_level_requirements.empty?
-      errors.add(:base, 'At least one class level requirement must be added.')
+    if class_levels.empty?
+      errors.add(:base, 'At least one class level requirement must be selected.')
     end
   end
 
   def must_have_at_least_one_category
-    if category_contest_instances.empty?
-      errors.add(:base, 'At least one category must be added.')
+    if categories.empty?
+      errors.add(:base, 'At least one category must be selected.')
     end
   end
 
