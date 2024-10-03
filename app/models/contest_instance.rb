@@ -87,13 +87,12 @@ class ContestInstance < ApplicationRecord
     new_instance.judging_open = false
     new_instance.archived = false
 
-    class_level_requirements.each do |clr|
-      new_instance.class_level_requirements.build(clr.attributes.except('id', 'contest_instance_id', 'created_at', 'updated_at'))
-    end
+    # Duplicate class_levels association
+    new_instance.class_levels = self.class_levels
 
-    category_contest_instances.each do |cci|
-      new_instance.category_contest_instances.build(cci.attributes.except('id', 'contest_instance_id', 'created_at', 'updated_at'))
-    end
+    # Duplicate categories association
+    new_instance.categories = self.categories
+
     new_instance
   end
 
