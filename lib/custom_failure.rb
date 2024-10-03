@@ -15,13 +15,4 @@ class CustomFailure < Devise::FailureApp
       super
     end
   end
-
-  # def respond
-  #   if http_auth?
-  #     http_auth
-  #   else
-  #     set_flash_message! :alert, flash_message
-  #     redirect
-  #   end
-  # end
 end
