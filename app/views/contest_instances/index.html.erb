@@ -59,10 +59,32 @@
                   <%= link_to container_contest_description_contest_instance_path(@container, @contest_description, contest_instance),
                         class: 'd-block',
                         data: { 'bs-toggle': 'tooltip' },
-                        title: 'View instances',
-                        aria: { label: 'View instances' } do %>
-                  <i class="bi bi-eye" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                  <span class="visually-hidden">View instances</span>
+                        title: 'View instance',
+                        aria: { label: 'View instance' } do %>
+                    <i class="bi bi-eye" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                    <span class="visually-hidden">View instance</span>
+                  <% end %>
+                  <%= link_to edit_container_contest_description_contest_instance_path(@container, @contest_description, contest_instance),
+                              class: 'd-block',
+                              data: { 'bs-toggle': 'tooltip' },
+                              title: 'Edit instance',
+                              aria: { label: 'Edit instance' } do %>
+                    <i class="bi bi-pencil" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                    <span class="visually-hidden">Edit instance</span>
+                  <% end %>
+
+                  <%= link_to container_contest_description_contest_instance_path(@container, @contest_description, contest_instance),
+                              method: :delete,
+                              class: 'd-block',
+                              data: {
+                                'bs-toggle': 'tooltip',
+                                controller: 'confirm',
+                                confirm_message_value: 'Are you sure you want to archive this?'
+                              },
+                              title: 'Archive instance',
+                              aria: { label: 'Archive instance' } do %>
+                    <i class="bi bi-archive" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                    <span class="visually-hidden">Archive instance</span>
                   <% end %>
                 </div>
               </td>
