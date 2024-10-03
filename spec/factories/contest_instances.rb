@@ -34,13 +34,13 @@
 #
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #
+# spec/factories/contest_instances.rb
+
 FactoryBot.define do
   factory :contest_instance do
     active { true }
     archived { false }
     contest_description
-    # date_open { Faker::Date.backward(days: 14) }
-    # date_closed { Faker::Date.forward(days: 14) }
     date_open { 1.day.ago }
     date_closed { 1.day.from_now }
     notes { Faker::Lorem.paragraph }
@@ -66,10 +66,32 @@ FactoryBot.define do
       date_closed { 1.day.from_now }
     end
 
-    after(:build) do |contest_instance|
-      # Build associations without persisting them
-      contest_instance.class_level_requirements << build(:class_level_requirement, contest_instance: contest_instance)
-      contest_instance.category_contest_instances << build(:category_contest_instance, contest_instance: contest_instance)
+    # Transient attributes for flexibility
+    transient do
+      class_levels_count { 1 }
+      categories_count { 1 }
+      class_levels { [] }
+      categories { [] }
+    end
+
+    after(:build) do |contest_instance, evaluator|
+      # Associate class_levels
+      if evaluator.class_levels.any?
+        contest_instance.class_levels = evaluator.class_levels
+      else
+        evaluator.class_levels_count.times do
+          contest_instance.class_levels << build(:class_level)
+        end
+      end
+
+      # Associate categories
+      if evaluator.categories.any?
+        contest_instance.categories = evaluator.categories
+      else
+        evaluator.categories_count.times do
+          contest_instance.categories << build(:category)
+        end
+      end
     end
   end
 end
