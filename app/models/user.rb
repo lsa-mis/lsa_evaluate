@@ -63,28 +63,20 @@ class User < ApplicationRecord
     end
   end
 
-  def has_affiliation?(affiliation_name)
-    affiliations.exists?(name: affiliation_name)
-  end
-
-  def role?(role_name)
-    roles.exists?(kind: role_name)
-  end
-
   def axis_mundi?
-    role?('Axis mundi')
+    @axis_mundi ||= roles.exists?(kind: 'Axis mundi')
   end
 
   def administrator?
-    role?('Collection Administrator')
+    @administrator ||= roles.exists?(kind: 'Collection Administrator')
   end
 
   def manager?
-    role?('Collection Manager')
+    @manager ||= roles.exists?(kind: 'Collection Manager')
   end
 
   def judge?
-    role?('Judge')
+    @judge ||= roles.exists?(kind: 'Judge')
   end
 
   def admin_for_container?(container_id)
