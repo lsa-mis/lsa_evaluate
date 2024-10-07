@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include ApplicationHelper
 
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  # rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   # Custom flash logging (optional)
   def flash
     super.tap do |flash_hash|
