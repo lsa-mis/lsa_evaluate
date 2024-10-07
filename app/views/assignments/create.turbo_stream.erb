@@ -2,7 +2,7 @@
 
 <%= turbo_stream.append "assignments" do %>
   <tr id="<%= dom_id(@assignment) %>">
-    <td><%= @assignment.user.display_name_or_email %></td>
+    <td><%= @assignment.user.display_name_or_uid %></td>
     <td><%= @assignment.role.kind %></td>
   </tr>
 <% end %>

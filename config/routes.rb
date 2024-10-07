@@ -53,13 +53,15 @@ Rails.application.routes.draw do
   resources :profiles, only: %i[index show new create edit update destroy]
   resources :user_roles
   get 'applicant_dashboard', to: 'applicant_dashboard#index'
+  get '/404', to: 'errors#not_found', as: 'not_found'
+  get '/500', to: 'errors#internal_server_error', as: 'internal_server_error'
 
   mount ActiveStorage::Engine => '/rails/active_storage', as: 'active_storage'
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
 
   # Place this at the very end of the file to catch all undefined routes
-  match '*path', to: 'application#render404', via: :all, constraints: lambda { |req|
-  req.path.exclude?('/rails/active_storage') &&
-  req.path.exclude?('/letter_opener')
+  match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|
+    req.path.exclude?('/rails/active_storage') &&
+    req.path.exclude?('/letter_opener')
   }
 end

@@ -1,0 +1,2 @@
+class EditableContentPolicy < ApplicationPolicy
+end

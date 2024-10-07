@@ -105,8 +105,8 @@ module Users
         uid: session[:raw_info_hash]['http://www.itcs.umich.edu/identity/shibboleth/attributes/cosignPrincipalName']&.first,
         principal_name: session[:raw_info_hash]['http://its.umich.edu/shibboleth/attributes/umichPrincipalName']&.first,
         display_name: session[:raw_info_hash]['urn:oid:2.16.840.1.113730.3.1.241']&.first,
-        first_name: session[:raw_info_hash]['urn:oid:2.5.4.42']&.first,
-        last_name: session[:raw_info_hash]['urn:oid:2.5.4.4']&.first,
+        first_name: session[:raw_info_hash]['urn:oid:2.5.4.42']&.first || '',
+        last_name: session[:raw_info_hash]['urn:oid:2.5.4.4']&.first || '',
         password: Devise.friendly_token[0, 20]
       }
     end

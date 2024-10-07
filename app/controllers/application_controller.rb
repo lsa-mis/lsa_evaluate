@@ -1,11 +1,9 @@
-# frozen_string_literal: true
-
+# app/controllers/application_controller.rb
 class ApplicationController < ActionController::Base
-  before_action :authenticate_user!
   include Pundit::Authorization
   include ApplicationHelper
+  before_action :authenticate_user!
 
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   # Custom flash logging (optional)
   def flash
     super.tap do |flash_hash|
@@ -17,50 +15,36 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # Rescue from authorization errors
-  # rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-  rescue_from Pundit::NotAuthorizedError do |exception|
-    Rails.logger.info('!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
-    user_not_authorized(exception)
-  end
-  rescue_from ActiveRecord::RecordNotFound, with: :render404
-  rescue_from StandardError, with: :render500
-
-  # Handle 404 errors (Record Not Found)
-  def render404
-    logger.info('!!!!!!! Handling RecordNotFound error')
-    respond_to do |format|
-      format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
-      format.json { render json: { error: 'Not Found' }, status: :not_found }
-    end
-  end
-
-  # Handle 500 errors (Standard Error)
-  def render500(exception)
-    log_exception(exception)
-    logger.info("!!!!!!! Handling StandardError (Exception Class: #{exception.class})")
-
-    respond_to do |format|
-      format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
-      format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
-    end
-  end
+  # Use around_action to handle exceptions from both actions and callbacks
+  around_action :handle_exceptions
 
   protected
 
   def after_sign_out_path_for(resource_or_scope)
     root_path
   end
-  # Private method for handling Pundit not authorized errors
+
   private
 
+  # Around action method to handle exceptions
+  def handle_exceptions
+    yield
+  rescue Pundit::NotAuthorizedError => exception
+    Rails.logger.info('!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
+    user_not_authorized(exception)
+  rescue ActiveRecord::RecordNotFound => exception
+    Rails.logger.info('!!!! Handling ActiveRecord::RecordNotFound in ApplicationController')
+    redirect_to not_found_path
+  end
+
+  # Private method for handling Pundit not authorized errors
   def user_not_authorized(exception)
-    logger.info('!!!!!!! Handling Pundit::NotAuthorizedError')
+    logger.info('!!!!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
     policy_name = exception.policy.class.to_s.underscore
-    message = "You are not authorized to perform #{exception.query} on #{policy_name.humanize}"
+    message = "You are not authorized to perform #{exception.query} on #{policy_name.humanize}."
 
     flash[:alert] = message
-    Rails.logger.error("Pundit error: #{message} - User: #{current_user.id}, Action: #{exception.query}, Policy: #{policy_name}")
+    Rails.logger.error("Pundit error: #{message} - User: #{current_user&.id}, Action: #{exception.query}, Policy: #{policy_name}")
 
     # Redirect back or to root if referer is not available
     redirect_to(request.referer || root_path)
@@ -70,10 +54,5 @@ class ApplicationController < ActionController::Base
   def log_exception(exception)
     logger.error("!!!!!!!!!!! StandardError: #{exception.class} - #{exception.message}")
     logger.error(exception.backtrace.join("\n"))
-  end
-
-
-  def record_not_found
-    redirect_to containers_path, alert: I18n.t('notices.alert')
   end
 end

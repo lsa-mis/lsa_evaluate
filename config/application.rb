@@ -28,7 +28,7 @@ module LsaEvaluate
     config.eager_load_paths << Rails.root.join('lib')
     config.time_zone = 'Eastern Time (US & Canada)'
     config.active_record.default_timezone = :utc
-
+    config.exceptions_app = self.routes
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

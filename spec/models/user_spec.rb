@@ -104,18 +104,18 @@ RSpec.describe User do
   end
 
   describe 'instance methods' do
-    describe '#display_initials_or_email' do
+    describe '#display_initials_or_uid' do
       context 'when display_name is present' do
         it 'returns initials of display_name' do
           user = build(:user, display_name: 'John Doe')
-          expect(user.display_initials_or_email).to eq('JD')
+          expect(user.display_initials_or_uid).to eq('JD')
         end
       end
 
       context 'when display_name is not present' do
         it 'returns the first leter of the uid' do
           user = build(:user, uid: 'user', display_name: nil)
-          expect(user.display_initials_or_email).to eq('U')
+          expect(user.display_initials_or_uid).to eq('U')
         end
       end
     end

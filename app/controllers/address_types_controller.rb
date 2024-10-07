@@ -3,19 +3,26 @@ class AddressTypesController < ApplicationController
   before_action :set_address_type, only: %i[show edit update destroy]
 
   def index
-    @address_types = AddressType.all
+    authorize AddressType
+    @address_types = policy_scope(AddressType)
   end
 
-  def show; end
+  def show
+    authorize @address_type
+  end
 
   def new
     @address_type = AddressType.new
+    authorize @address_type
   end
 
-  def edit; end
+  def edit
+    authorize @address_type
+  end
 
   def create
     @address_type = AddressType.new(address_type_params)
+    authorize @address_type
 
     respond_to do |format|
       if @address_type.save
@@ -27,6 +34,7 @@ class AddressTypesController < ApplicationController
   end
 
   def update
+    authorize @address_type
     respond_to do |format|
       if @address_type.update(address_type_params)
         format.html { redirect_to @address_type, notice: 'Address type was successfully updated.' }
@@ -37,6 +45,7 @@ class AddressTypesController < ApplicationController
   end
 
   def destroy
+    authorize @address_type
     @address_type.destroy
 
     respond_to do |format|

@@ -1,0 +1,2 @@
+class VisibilityPolicy < ApplicationPolicy
+end

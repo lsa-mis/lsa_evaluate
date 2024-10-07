@@ -4,7 +4,7 @@
   <% if user_signed_in? %>
     <div class="row">
       <div class=" w-100 bg-secondary-subtle">
-        <heading><h1 class="text-start mt-6 ms-6"><%= "Welcome #{current_user.display_name_or_email}!" %></h1></heading>
+        <heading><h1 class="text-start mt-6 ms-6"><%= "Welcome #{current_user.display_name_or_uid}!" %></h1></heading>
         <div class="row mx-6">
           <h2 class="mt-4">How to use LSA Evaluate</h2>
           <% if (content = render_editable_content('home', 'instructions')) %>

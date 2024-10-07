@@ -5,8 +5,6 @@ class UserRolesController < ApplicationController
   def index
     authorize UserRole
     @user_roles = policy_scope(UserRole)
-  rescue Pundit::NotAuthorizedError => e
-    user_not_authorized(e)
   end
 
   def show
