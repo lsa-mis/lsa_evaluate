@@ -15,7 +15,7 @@
           <% admins = container.assignments.container_administrators %>
           <% if admins.any? %>
             <%= pluralize(admins.count, admins.first.role.kind) %>:
-            <%= admins.map { |assignment| assignment.user.display_name_or_email }.join(', ') %>
+            <%= admins.map { |assignment| assignment.user.display_name_or_uid }.join(', ') %>
           <% else %>
             No Administrators Assigned
           <% end %>
