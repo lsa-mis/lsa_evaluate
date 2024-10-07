@@ -34,10 +34,7 @@ class ApplicationController < ActionController::Base
     user_not_authorized(exception)
   rescue ActiveRecord::RecordNotFound => exception
     Rails.logger.info('!!!! Handling ActiveRecord::RecordNotFound in ApplicationController')
-    render404(exception)
-  rescue StandardError => exception
-    Rails.logger.info("!!!! Handling StandardError (Exception Class: #{exception.class}), Message: #{exception.message}")
-    render500(exception)
+    redirect_to not_found_path
   end
 
   # Private method for handling Pundit not authorized errors
@@ -51,26 +48,6 @@ class ApplicationController < ActionController::Base
 
     # Redirect back or to root if referer is not available
     redirect_to(request.referer || root_path)
-  end
-
-  # Handle 404 errors (Record Not Found)
-  def render404(exception)
-    logger.info('!!!!!!! Handling RecordNotFound error')
-    respond_to do |format|
-      format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
-      format.json { render json: { error: 'Not Found' }, status: :not_found }
-    end
-  end
-
-  # Handle 500 errors (Standard Error)
-  def render500(exception)
-    log_exception(exception)
-    logger.error("!!!!!!! Handling StandardError (Exception Class: #{exception.class}), Message: #{exception.message}")
-
-    respond_to do |format|
-      format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
-      format.json { render json: { error: 'Internal Server Error' }, status: :internal_server_error }
-    end
   end
 
   # Log exceptions in detail
