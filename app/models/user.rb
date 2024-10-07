@@ -100,7 +100,15 @@ class User < ApplicationRecord
               .exists?(container: container, roles: { kind: role_kinds })
   end
 
-  def display_initials_or_email
+  def is_employee?
+    affiliations.exists?(name: [ 'staff' ])
+  end
+
+  def profile_exists?
+    profile.present?
+  end
+
+  def display_initials_or_uid
     if display_name.present?
       display_name.split.map { |name| name[0].upcase }.join
     else
@@ -108,23 +116,7 @@ class User < ApplicationRecord
     end
   end
 
-  def is_employee?
-    affiliations.exists?(name: [ 'staff' ])
-  end
-
-  def display_firstname_or_email
-    if display_name.present?
-      display_name.split.first
-    else
-      uid[0].upcase
-    end
-  end
-
-  def display_name_or_email
-    display_name.presence || email
-  end
-
-  def profile_exists?
-    profile.present?
+  def display_name_or_uid
+    display_name.presence || uid
   end
 end
