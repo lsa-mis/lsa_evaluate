@@ -2,19 +2,26 @@ class CampusesController < ApplicationController
   before_action :set_campus, only: %i[show edit update destroy]
 
   def index
-    @campuses = Campus.all
+    authorize Campus
+    @campuses = policy_scope(Campus)
   end
 
-  def show; end
+  def show
+    authorize @campus
+  end
 
   def new
     @campus = Campus.new
+    authorize @campus
   end
 
-  def edit; end
+  def edit
+    authorize @campus
+  end
 
   def create
     @campus = Campus.new(campus_params)
+    authorize @campus
 
     respond_to do |format|
       if @campus.save
@@ -26,6 +33,7 @@ class CampusesController < ApplicationController
   end
 
   def update
+    authorize @campus
     respond_to do |format|
       if @campus.update(campus_params)
         format.html { redirect_to @campus, notice: 'Campus was successfully updated.' }
@@ -36,6 +44,7 @@ class CampusesController < ApplicationController
   end
 
   def destroy
+    authorize @campus
     @campus.destroy
 
     respond_to do |format|

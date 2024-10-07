@@ -2,19 +2,26 @@ class CategoriesController < ApplicationController
   before_action :set_category, only: %i[show edit update destroy]
 
   def index
-    @categories = Category.all
+    authorize Category
+    @categories = policy_scope(Category)
   end
 
-  def show; end
+  def show
+    authorize @category
+  end
 
   def new
     @category = Category.new
+    authorize @category
   end
 
-  def edit; end
+  def edit
+    authorize @category
+  end
 
   def create
     @category = Category.new(category_params)
+    authorize @category
 
     respond_to do |format|
       if @category.save
@@ -26,6 +33,7 @@ class CategoriesController < ApplicationController
   end
 
   def update
+    authorize @category
     respond_to do |format|
       if @category.update(category_params)
         format.html { redirect_to @category, notice: 'Category was successfully updated.' }
@@ -36,6 +44,7 @@ class CategoriesController < ApplicationController
   end
 
   def destroy
+    authorize @category
     @category.destroy
 
     respond_to do |format|

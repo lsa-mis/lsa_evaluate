@@ -1,48 +1,54 @@
-# frozen_string_literal: true
-
 class RolesController < ApplicationController
   before_action :set_role, only: %i[show edit update destroy]
 
+  # GET /roles
   def index
-    @roles = Role.all
+    authorize Role
+    @roles = policy_scope(Role)
   end
 
-  def show; end
+  # GET /roles/1
+  def show
+    authorize @role
+  end
 
+  # GET /roles/new
   def new
     @role = Role.new
+    authorize @role
   end
 
-  def edit; end
+  # GET /roles/1/edit
+  def edit
+    authorize @role
+  end
 
+  # POST /roles
   def create
     @role = Role.new(role_params)
-
-    respond_to do |format|
-      if @role.save
-        format.html { redirect_to role_url(@role), notice: 'Role was successfully created.' }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-      end
+    authorize @role
+    if @role.save
+      redirect_to @role, notice: 'Role was successfully created.'
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
+  # PATCH/PUT /roles/1
   def update
-    respond_to do |format|
-      if @role.update(role_params)
-        format.html { redirect_to role_url(@role), notice: 'Role was successfully updated.' }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-      end
+    authorize @role
+    if @role.update(role_params)
+      redirect_to @role, notice: 'Role was successfully updated.'
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
+  # DELETE /roles/1
   def destroy
+    authorize @role
     @role.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to roles_url, notice: 'Role was successfully destroyed.' }
-    end
+    redirect_to roles_url, notice: 'Role was successfully destroyed.'
   end
 
   private

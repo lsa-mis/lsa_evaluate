@@ -1,11 +1,9 @@
-# frozen_string_literal: true
-
+# app/controllers/application_controller.rb
 class ApplicationController < ActionController::Base
-  before_action :authenticate_user!
   include Pundit::Authorization
   include ApplicationHelper
+  before_action :authenticate_user!
 
-  # rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   # Custom flash logging (optional)
   def flash
     super.tap do |flash_hash|
@@ -17,17 +15,46 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # Rescue from authorization errors
-  # rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-  rescue_from Pundit::NotAuthorizedError do |exception|
+  # Use around_action to handle exceptions from both actions and callbacks
+  around_action :handle_exceptions
+
+  protected
+
+  def after_sign_out_path_for(resource_or_scope)
+    root_path
+  end
+
+  private
+
+  # Around action method to handle exceptions
+  def handle_exceptions
+    yield
+  rescue Pundit::NotAuthorizedError => exception
     Rails.logger.info('!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
     user_not_authorized(exception)
+  rescue ActiveRecord::RecordNotFound => exception
+    Rails.logger.info('!!!! Handling ActiveRecord::RecordNotFound in ApplicationController')
+    render404(exception)
+  rescue StandardError => exception
+    Rails.logger.info("!!!! Handling StandardError (Exception Class: #{exception.class}), Message: #{exception.message}")
+    render500(exception)
   end
-  rescue_from ActiveRecord::RecordNotFound, with: :render404
-  rescue_from StandardError, with: :render500
+
+  # Private method for handling Pundit not authorized errors
+  def user_not_authorized(exception)
+    logger.info('!!!!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
+    policy_name = exception.policy.class.to_s.underscore
+    message = "You are not authorized to perform #{exception.query} on #{policy_name.humanize}."
+
+    flash[:alert] = message
+    Rails.logger.error("Pundit error: #{message} - User: #{current_user&.id}, Action: #{exception.query}, Policy: #{policy_name}")
+
+    # Redirect back or to root if referer is not available
+    redirect_to(request.referer || root_path)
+  end
 
   # Handle 404 errors (Record Not Found)
-  def render404
+  def render404(exception)
     logger.info('!!!!!!! Handling RecordNotFound error')
     respond_to do |format|
       format.html { render 'errors/not_found', status: :not_found, layout: 'application' }
@@ -38,7 +65,7 @@ class ApplicationController < ActionController::Base
   # Handle 500 errors (Standard Error)
   def render500(exception)
     log_exception(exception)
-    logger.info("!!!!!!! Handling StandardError (Exception Class: #{exception.class})")
+    logger.error("!!!!!!! Handling StandardError (Exception Class: #{exception.class}), Message: #{exception.message}")
 
     respond_to do |format|
       format.html { render 'errors/internal_server_error', status: :internal_server_error, layout: 'application' }
@@ -46,34 +73,9 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  protected
-
-  def after_sign_out_path_for(resource_or_scope)
-    root_path
-  end
-  # Private method for handling Pundit not authorized errors
-  private
-
-  def user_not_authorized(exception)
-    logger.info('!!!!!!! Handling Pundit::NotAuthorizedError')
-    policy_name = exception.policy.class.to_s.underscore
-    message = "You are not authorized to perform #{exception.query} on #{policy_name.humanize}"
-
-    flash[:alert] = message
-    Rails.logger.error("Pundit error: #{message} - User: #{current_user.id}, Action: #{exception.query}, Policy: #{policy_name}")
-
-    # Redirect back or to root if referer is not available
-    redirect_to(request.referer || root_path)
-  end
-
   # Log exceptions in detail
   def log_exception(exception)
     logger.error("!!!!!!!!!!! StandardError: #{exception.class} - #{exception.message}")
     logger.error(exception.backtrace.join("\n"))
-  end
-
-
-  def record_not_found
-    redirect_to containers_path, alert: I18n.t('notices.alert')
   end
 end

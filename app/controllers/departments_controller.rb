@@ -2,19 +2,26 @@ class DepartmentsController < ApplicationController
   before_action :set_department, only: %i[show edit update destroy]
 
   def index
-    @departments = Department.all
+    authorize Department
+    @departments = policy_scope(Department)
   end
 
-  def show; end
+  def show
+    authorize @department
+  end
 
   def new
     @department = Department.new
+    authorize @department
   end
 
-  def edit; end
+  def edit
+    authorize @department
+  end
 
   def create
     @department = Department.new(department_params)
+    authorize @department
 
     respond_to do |format|
       if @department.save
@@ -26,6 +33,7 @@ class DepartmentsController < ApplicationController
   end
 
   def update
+    authorize @department
     respond_to do |format|
       if @department.update(department_params)
         format.html { redirect_to department_url(@department), notice: 'Department was successfully updated.' }
@@ -36,6 +44,7 @@ class DepartmentsController < ApplicationController
   end
 
   def destroy
+    authorize @department
     @department.destroy!
 
     respond_to do |format|

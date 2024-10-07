@@ -1,3 +1,4 @@
+# app/policies/application_policy.rb
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -6,17 +7,17 @@ class ApplicationPolicy
     @record = record
   end
 
-  # Default to deny access; override in specific policies
+  # Default to check axis_mundi? for all actions
   def index?
-    false
+    axis_mundi?
   end
 
   def show?
-    false
+    axis_mundi?
   end
 
   def create?
-    false
+    axis_mundi?
   end
 
   def new?
@@ -24,7 +25,7 @@ class ApplicationPolicy
   end
 
   def update?
-    false
+    axis_mundi?
   end
 
   def edit?
@@ -32,13 +33,15 @@ class ApplicationPolicy
   end
 
   def destroy?
-    false
+    axis_mundi?
   end
 
+  # Common method to check for Axis mundi role
   def axis_mundi?
     user&.axis_mundi? || false
   end
-  # Scope class for determining accessible records
+
+  # Default Scope
   class Scope
     attr_reader :user, :scope
 
@@ -48,17 +51,11 @@ class ApplicationPolicy
     end
 
     def resolve
-      if axis_mundi?
+      if user&.axis_mundi?
         scope.all
       else
         scope.none
       end
-    end
-
-    private
-
-    def axis_mundi?
-      user&.axis_mundi? || false
     end
   end
 end

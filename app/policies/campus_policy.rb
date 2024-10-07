@@ -1,0 +1,2 @@
+class CampusPolicy < ApplicationPolicy
+end

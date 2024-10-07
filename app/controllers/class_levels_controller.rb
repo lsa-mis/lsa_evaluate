@@ -2,19 +2,26 @@ class ClassLevelsController < ApplicationController
   before_action :set_class_level, only: %i[show edit update destroy]
 
   def index
-    @class_levels = ClassLevel.all
+    authorize ClassLevel
+    @class_levels = policy_scope(ClassLevel)
   end
 
-  def show; end
+  def show
+    authorize @class_level
+  end
 
   def new
     @class_level = ClassLevel.new
+    authorize @class_level
   end
 
-  def edit; end
+  def edit
+    authorize @class_level
+  end
 
   def create
     @class_level = ClassLevel.new(class_level_params)
+    authorize @class_level
 
     respond_to do |format|
       if @class_level.save
@@ -26,6 +33,7 @@ class ClassLevelsController < ApplicationController
   end
 
   def update
+    authorize @class_level
     respond_to do |format|
       if @class_level.update(class_level_params)
         format.html { redirect_to @class_level, notice: 'Class Level was successfully updated.' }
@@ -36,6 +44,7 @@ class ClassLevelsController < ApplicationController
   end
 
   def destroy
+    authorize @class_level
     @class_level.destroy
 
     respond_to do |format|

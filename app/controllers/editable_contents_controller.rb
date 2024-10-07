@@ -5,12 +5,16 @@ class EditableContentsController < ApplicationController
   before_action :store_return_location, only: %i[ edit ]
 
   def index
-    @editable_contents = EditableContent.all
+    authorize EditableContent
+    @editable_contents = policy_scope(EditableContent)
   end
 
-  def edit; end
+  def edit
+    authorize @editable_content
+  end
 
   def update
+    authorize @editable_content
     if @editable_content.update(editable_content_params)
       flash[:notice] = 'Content was successfully updated.'
       redirect_back_or_default
