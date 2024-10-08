@@ -1,13 +1,13 @@
 class EntryPolicy < ApplicationPolicy
-  class Scope < Scope
-    def resolve
-      if axis_mundi?
-        scope.all
-      else
-        scope.where(profile: user.profile)
-      end
-    end
-  end
+  # class Scope < Scope
+  #   def resolve
+  #     if axis_mundi?
+  #       scope.all
+  #     else
+  #       scope.where(profile: user.profile)
+  #     end
+  #   end
+  # end
 
   def show?
     record.profile.user == user || axis_mundi?
