@@ -1,5 +1,5 @@
 <tr id="<%= dom_id(assignment) %>">
-  <td><%= assignment.user.display_name_or_uid %></td>
+  <td><%= assignment.user.display_name_and_uid %></td>
   <td><%= assignment.role.kind %></td>
   <td class="text-center">
     <%= button_to container_assignment_path(container, assignment),
