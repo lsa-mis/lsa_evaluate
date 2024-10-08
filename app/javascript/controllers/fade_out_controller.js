@@ -3,21 +3,12 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   connect() {
-    this.element.addEventListener("turbo:before-stream-render", this.fadeOut)
-  }
-
-  disconnect() {
-    this.element.removeEventListener("turbo:before-stream-render", this.fadeOut)
-  }
-
-  fadeOut = (event) => {
-    const action = event.detail.newStream.element.getAttribute("action")
-    if (action === "remove") {
+    // Directly apply fade out when the controller connects (for testing purposes)
+    setTimeout(() => {
       this.element.classList.add("fade-out")
-      event.preventDefault()
       setTimeout(() => {
-        this.element.remove()
-      }, 500) // Duration matches the CSS transition
-    }
+        this.element.remove() // Remove the element after fading out
+      }, 500) // This duration should match the CSS transition duration
+    }, 3000) // Wait 3 seconds before starting the fade-out
   }
 }
