@@ -22,6 +22,9 @@ Rails.application.routes.draw do
   end
 
   resources :containers do
+    collection do
+      get 'lookup_user'
+    end
     resources :contest_descriptions do
       resources :contest_instances, path: 'instances'
       member do
