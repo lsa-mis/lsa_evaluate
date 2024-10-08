@@ -1,1 +1,2 @@
+---
 authentication: Rails.application.credentials.dig(:skylight, :authentication)
