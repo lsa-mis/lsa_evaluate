@@ -384,3 +384,22 @@ svg.wh6 {
   border-radius: 5px;
   background-color: #f8f9fa;
 }
+
+/* app/assets/stylesheets/application.scss or a relevant CSS file */
+.autocomplete-results {
+  position: relative;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  background-color: #fff;
+  z-index: 1000;
+}
+
+.autocomplete-results .suggestion {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.autocomplete-results .suggestion:hover {
+  background-color: #f0f0f0;
+}
