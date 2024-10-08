@@ -20,11 +20,11 @@ local:
 #   project: your_project
 #   credentials: <%= Rails.root.join("path/to/gcs.keyfile") %>
 #   bucket: your_own_bucket-<%= Rails.env %>
-google:
-  service: GCS
-  project: <%= Rails.application.credentials.dig(:google_cloud, :project_id) %>
-  credentials: <%= JSON.parse(Rails.application.credentials.dig(:google_cloud, :credentials_json)) %>
-  bucket: <%= Rails.application.credentials.dig(:google_cloud, :bucket) %>
+# google:
+#   service: GCS
+#   project: <%= Rails.application.credentials.dig(:google_cloud, :project_id) %>
+#   credentials: <%= JSON.parse(Rails.application.credentials.dig(:google_cloud, :credentials_json)) %>
+#   bucket: <%= Rails.application.credentials.dig(:google_cloud, :bucket) %>
 
 # Use bin/rails credentials:edit to set the Azure Storage secret (as azure_storage:storage_access_key)
 # microsoft:
