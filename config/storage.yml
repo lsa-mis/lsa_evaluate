@@ -10,6 +10,5 @@ local:
 google:
   service: GCS
   project: <%= Rails.application.credentials.dig(:google_cloud, :project_id) %>
-  credentials: |
-    <%= Rails.application.credentials.dig(:google_cloud, :credentials_json) %>
+  credentials: <%= ENV['GCS_KEYFILE_JSON'] %>
   bucket: <%= Rails.application.credentials.dig(:google_cloud, :bucket) %>
