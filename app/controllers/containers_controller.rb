@@ -74,6 +74,11 @@ class ContainersController < ApplicationController
     render 'admin_content'
   end
 
+  def lookup_user
+    @users = User.where('uid LIKE ?', "%#{params[:uid]}%").limit(10)
+    render json: @users.map { |user| { uid: user.uid, display_name: user.display_name, display_name_and_uid: user.display_name_and_uid } }
+  end
+
   private
 
   def authorize_container
