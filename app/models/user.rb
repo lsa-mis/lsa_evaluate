@@ -111,4 +111,12 @@ class User < ApplicationRecord
   def display_name_or_uid
     display_name.presence || uid
   end
+
+  def display_name_and_uid
+    if display_name.present?
+      "#{display_name} (#{uid})"
+    else
+      uid
+    end
+  end
 end

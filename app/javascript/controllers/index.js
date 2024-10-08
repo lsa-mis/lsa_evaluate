@@ -33,3 +33,6 @@ application.register("interaction", InteractionController)
 
 import ScrollController from "./scroll_controller"
 application.register("scroll", ScrollController)
+
+import UidLookupController from "./uid_lookup_controller"
+application.register("uid-lookup", UidLookupController)
