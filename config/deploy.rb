@@ -25,9 +25,8 @@ set :tmp_dir, '/home/deployer/tmp'
 set :keep_releases, 3
 
 # Default value for :linked_files and linked_dirs is []
-set :linked_files, %w[config/puma.rb config/nginx.conf config/master.key] # config/lsa-was-base-c096c776ead3.json mysql/InCommon.CA.crt}
+set :linked_files, %w[config/puma.rb config/nginx.conf config/master.key config/lsa-was-base-efc3d7203bbd.json]
 set :linked_dirs,  %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system]
-# set :linked_dirs, fetch(:linked_dirs, []).push('public/packs', 'node_modules')
 
 namespace :puma do
   desc 'Stop the PUMA service'
@@ -70,16 +69,10 @@ namespace :deploy do
      upload! 'config/master.key',  "#{fetch(:deploy_to)}/shared/config/master.key"
      upload! 'config/puma_prod.rb',  "#{fetch(:deploy_to)}/shared/config/puma.rb"
      upload! 'config/nginx_prod.conf',  "#{fetch(:deploy_to)}/shared/config/nginx.conf"
-      #  upload! 'config/lsa-was-base-c096c776ead3.json',  "#{fetch(:deploy_to)}/shared/config/lsa-was-base-c096c776ead3.json"
-      #  upload! 'config/InCommon.CA.crt',  "#{fetch(:deploy_to)}/shared/mysql/InCommon.CA.crt"
+     upload! 'config/lsa-was-base-efc3d7203bbd.json',  "#{fetch(:deploy_to)}/shared/config/lsa-was-base-efc3d7203bbd.json"
     end
   end
 
-  #   desc "reload the database with seed data"
-  #   task :seed do
-  #     puts "Seeding db with seed file located at db/seeds.rb"
-  #     run "cd #{current_path}; bin/rails db:seed RAILS_ENV=production"
-  #   end
   before 'bundler:install', 'debug:print_ruby_version'
   before :starting,     :check_revision
   after  :finishing,    'puma:restart'
