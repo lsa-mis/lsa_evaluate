@@ -7,8 +7,8 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-google:
+google_production:
   service: GCS
   project: <%= Rails.application.credentials.dig(:google_cloud, :project_id) %>
-  credentials: <%= ENV['GCS_KEYFILE_JSON'] %>
+  credentials: <%= Rails.root.join(Rails.application.credentials.dig(:google_cloud, :credentials_file_path)) %>
   bucket: <%= Rails.application.credentials.dig(:google_cloud, :bucket) %>
