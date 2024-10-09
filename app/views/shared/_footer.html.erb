@@ -3,6 +3,11 @@
     <div class="center text-center">
       <p class="d-none d-md-block">
         <%= image_tag 'LSA_Technology_logo.svg', alt: 'LSA Technology Logo', class: "img-fluid" %>
+        <% if user_signed_in? && current_user.axis_mundi? %>
+          <%= link_to editable_contents_path, class: "edit-icon", data: { bs_toggle: "tooltip", bs_placement: "top" }, title: "Edit the text blocks in the application" do %>
+            <i class="bi bi-pencil" aria-label="Edit Content"></i>
+          <% end %>
+        <% end %>
       </p>
       <p class="text-center footer-bold d-md-none">
         LSA Technology Services
