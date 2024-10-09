@@ -47,7 +47,7 @@ class UserRolesController < ApplicationController
     authorize @user_role
     @user_role.destroy
     respond_to do |format|
-      format.html { redirect_to user_roles_url, notice: 'UserRole was successfully destroyed.' }
+      format.html { redirect_to root_path, notice: 'UserRole was successfully destroyed.' }
     end
   end
 
