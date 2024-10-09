@@ -2,26 +2,23 @@
 #
 # Table name: contest_descriptions
 #
-#  id                :bigint           not null, primary key
-#  created_by        :string(255)      not null
-#  eligibility_rules :text(65535)
-#  name              :string(255)      not null
-#  notes             :text(65535)
-#  short_name        :string(255)
-#  created_at        :datetime         not null
-#  updated_at        :datetime         not null
-#  container_id      :bigint           not null
-#  status_id         :bigint           not null
+#  id           :bigint           not null, primary key
+#  active       :boolean          default(FALSE), not null
+#  archived     :boolean          default(FALSE), not null
+#  created_by   :string(255)      not null
+#  name         :string(255)      not null
+#  short_name   :string(255)
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  container_id :bigint           not null
 #
 # Indexes
 #
 #  index_contest_descriptions_on_container_id  (container_id)
-#  index_contest_descriptions_on_status_id     (status_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (container_id => containers.id)
-#  fk_rails_...  (status_id => statuses.id)
 #
 require 'rails_helper'
 
@@ -31,11 +28,6 @@ RSpec.describe ContestDescription, type: :model do
   context 'associations' do
     it 'belongs to a container' do
       association = described_class.reflect_on_association(:container)
-      expect(association.macro).to eq :belongs_to
-    end
-
-    it 'belongs to a status' do
-      association = described_class.reflect_on_association(:status)
       expect(association.macro).to eq :belongs_to
     end
 
@@ -63,30 +55,28 @@ RSpec.describe ContestDescription, type: :model do
     end
   end
 
-  context 'attributes' do
-    it 'has a name' do
-      contest_description.name = 'Test Contest'
-      expect(contest_description.name).to eq('Test Contest')
+  describe 'scopes' do
+    let!(:active_contest) { create(:contest_description, active: true) }
+    let!(:archived_contest) { create(:contest_description, archived: true) }
+
+    describe '.active' do
+      it 'includes active contests' do
+        expect(ContestDescription.active).to include(active_contest)
+      end
+
+      it 'excludes non-active contests' do
+        expect(ContestDescription.active).not_to include(archived_contest)
+      end
     end
 
-    it 'has a created_by' do
-      contest_description.created_by = 'John Doe'
-      expect(contest_description.created_by).to eq('John Doe')
-    end
+    describe '.archived' do
+      it 'includes archived contests' do
+        expect(ContestDescription.archived).to include(archived_contest)
+      end
 
-    it 'has eligibility_rules' do
-      contest_description.eligibility_rules = 'Must be a student'
-      expect(contest_description.eligibility_rules).to eq('Must be a student')
-    end
-
-    it 'has notes' do
-      contest_description.notes = 'Some important notes'
-      expect(contest_description.notes).to eq('Some important notes')
-    end
-
-    it 'has a short_name' do
-      contest_description.short_name = 'Test'
-      expect(contest_description.short_name).to eq('Test')
+      it 'excludes non-archived contests' do
+        expect(ContestDescription.archived).not_to include(active_contest)
+      end
     end
   end
 end

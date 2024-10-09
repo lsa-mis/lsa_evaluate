@@ -2,19 +2,26 @@ class SchoolsController < ApplicationController
   before_action :set_school, only: %i[show edit update destroy]
 
   def index
-    @schools = School.all
+    authorize School
+    @schools = policy_scope(School)
   end
 
-  def show; end
+  def show
+    authorize @school
+  end
 
   def new
     @school = School.new
+    authorize @school
   end
 
-  def edit; end
+  def edit
+    authorize @school
+  end
 
   def create
     @school = School.new(school_params)
+    authorize @school
 
     respond_to do |format|
       if @school.save
@@ -26,6 +33,7 @@ class SchoolsController < ApplicationController
   end
 
   def update
+    authorize @school
     respond_to do |format|
       if @school.update(school_params)
         format.html { redirect_to @school, notice: 'School was successfully updated.' }
@@ -36,6 +44,7 @@ class SchoolsController < ApplicationController
   end
 
   def destroy
+    authorize @school
     @school.destroy
 
     respond_to do |format|

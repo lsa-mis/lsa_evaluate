@@ -5,30 +5,30 @@
         <comment><![CDATA[Home
 Campus]]></comment>
         <location>
-            <x>2104.00</x>
-            <y>1364.00</y>
+            <x>1889.00</x>
+            <y>1351.00</y>
         </location>
         <size>
             <width>123.00</width>
             <height>61.00</height>
         </size>
-        <zorder>27</zorder>
+        <zorder>25</zorder>
         <commentTitle><![CDATA[Address Types are]]></commentTitle>
-        <labelWindowIndex><![CDATA[17]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[18]]></labelWindowIndex>
         <uid><![CDATA[04B13C33-A09D-46E2-A027-5984F570ECB8]]></uid>
     </SQLComment>
     <SQLTable>
         <name><![CDATA[CourseRequirement]]></name>
         <schema><![CDATA[]]></schema>
         <location>
-            <x>1937.00</x>
-            <y>385.00</y>
+            <x>1948.00</x>
+            <y>412.00</y>
         </location>
         <size>
             <width>290.00</width>
             <height>120.00</height>
         </size>
-        <zorder>11</zorder>
+        <zorder>10</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -78,7 +78,7 @@ Campus]]></comment>
             <uid><![CDATA[E0E65CDD-97EF-4587-9B6F-7C8421C6B631]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[28]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[29]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[09FAC3D5-4EE6-4821-A2D5-0FFE185B2940]]></uid>
     </SQLTable>
@@ -95,9 +95,9 @@ Judge]]></comment>
             <width>100.00</width>
             <height>76.00</height>
         </size>
-        <zorder>23</zorder>
+        <zorder>22</zorder>
         <commentTitle><![CDATA[Role Types are]]></commentTitle>
-        <labelWindowIndex><![CDATA[16]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[17]]></labelWindowIndex>
         <uid><![CDATA[19B3A652-34C1-42AD-8BC4-648BD834244A]]></uid>
     </SQLComment>
     <SQLTable>
@@ -112,7 +112,7 @@ Judge]]></comment>
             <width>197.00</width>
             <height>80.00</height>
         </size>
-        <zorder>8</zorder>
+        <zorder>7</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -136,7 +136,7 @@ Judge]]></comment>
             <unique><![CDATA[1]]></unique>
         </SQLField>
         <SQLField>
-            <name><![CDATA[desc]]></name>
+            <name><![CDATA[description]]></name>
             <type><![CDATA[text]]></type>
             <hidden><![CDATA[0]]></hidden>
             <uid><![CDATA[87FCEFDD-C160-44FE-A587-EB0AE2F80E80]]></uid>
@@ -158,7 +158,7 @@ Judge]]></comment>
             <width>262.00</width>
             <height>80.00</height>
         </size>
-        <zorder>15</zorder>
+        <zorder>14</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -194,7 +194,7 @@ Judge]]></comment>
             <uid><![CDATA[7426F5DC-A9A0-4F9D-8622-4C0CFBB82D94]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[26]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[27]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[3236BED8-78CE-4F1F-9C0B-DBDED5632B14]]></uid>
     </SQLTable>
@@ -209,7 +209,7 @@ Judge]]></comment>
             <width>276.00</width>
             <height>80.00</height>
         </size>
-        <zorder>30</zorder>
+        <zorder>28</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -247,7 +247,7 @@ Judge]]></comment>
             <uid><![CDATA[11679285-C07C-4592-BCC1-81B8E8DEC0B8]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[15]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[16]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[356CCEDF-BAD8-42F7-8025-34612D263C77]]></uid>
     </SQLTable>
@@ -269,23 +269,23 @@ Text-Image]]></comment>
             <width>134.00</width>
             <height>156.00</height>
         </size>
-        <zorder>22</zorder>
+        <zorder>21</zorder>
         <commentTitle><![CDATA[Category Types are]]></commentTitle>
-        <labelWindowIndex><![CDATA[14]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[15]]></labelWindowIndex>
         <uid><![CDATA[36BD272F-34CF-4923-AA82-AB4321AEF53B]]></uid>
     </SQLComment>
     <SQLTable>
         <name><![CDATA[Campus]]></name>
         <schema><![CDATA[]]></schema>
         <location>
-            <x>2205.00</x>
-            <y>1024.00</y>
+            <x>1990.00</x>
+            <y>1011.00</y>
         </location>
         <size>
             <width>254.00</width>
             <height>80.00</height>
         </size>
-        <zorder>21</zorder>
+        <zorder>20</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -315,7 +315,7 @@ Text-Image]]></comment>
             <unique><![CDATA[1]]></unique>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[22]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[23]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[39E702F1-328B-4624-830F-0B0F39C7330F]]></uid>
     </SQLTable>
@@ -330,7 +330,7 @@ Text-Image]]></comment>
             <width>262.00</width>
             <height>80.00</height>
         </size>
-        <zorder>33</zorder>
+        <zorder>31</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -365,7 +365,7 @@ Text-Image]]></comment>
             <uid><![CDATA[D3F64C10-7B77-47B4-AF78-AED1595775B5]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[13]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[14]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[39F2D8C5-ED69-4E21-9F9B-9EBD3D62991B]]></uid>
     </SQLTable>
@@ -380,7 +380,7 @@ Text-Image]]></comment>
             <width>269.00</width>
             <height>120.00</height>
         </size>
-        <zorder>25</zorder>
+        <zorder>23</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -438,7 +438,7 @@ Text-Image]]></comment>
             <uid><![CDATA[CA90AB72-5605-4719-84FA-A4CC54BDACA2]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[12]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[13]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[43AB594F-8FE2-4BCB-8601-8ED047497588]]></uid>
     </SQLTable>
@@ -453,7 +453,7 @@ Text-Image]]></comment>
             <width>276.00</width>
             <height>100.00</height>
         </size>
-        <zorder>10</zorder>
+        <zorder>9</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -495,7 +495,7 @@ Text-Image]]></comment>
             <uid><![CDATA[710E4052-48F5-42B8-83D8-4A3625D4D18A]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[27]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[28]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[4799AFC1-CA22-4648-AB1E-3951535A17EF]]></uid>
     </SQLTable>
@@ -503,14 +503,14 @@ Text-Image]]></comment>
         <name><![CDATA[School]]></name>
         <schema><![CDATA[]]></schema>
         <location>
-            <x>2204.00</x>
-            <y>954.00</y>
+            <x>1989.00</x>
+            <y>941.00</y>
         </location>
         <size>
             <width>197.00</width>
             <height>60.00</height>
         </size>
-        <zorder>20</zorder>
+        <zorder>19</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -529,7 +529,7 @@ Text-Image]]></comment>
             <uid><![CDATA[D06F6D9B-0D1B-409D-8992-D50FAD867F59]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[21]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[22]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[50A3FF01-8A80-4A3B-8699-9FF53821FCB3]]></uid>
     </SQLTable>
@@ -544,57 +544,11 @@ Text-Image]]></comment>
             <width>157.00</width>
             <height>65.00</height>
         </size>
-        <zorder>37</zorder>
+        <zorder>35</zorder>
         <commentTitle><![CDATA[EditableContent]]></commentTitle>
-        <labelWindowIndex><![CDATA[4]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[6]]></labelWindowIndex>
         <uid><![CDATA[51F0BC23-8217-42BF-B038-79F1AD6A70E1]]></uid>
     </SQLComment>
-    <SQLTable>
-        <name><![CDATA[Status]]></name>
-        <schema><![CDATA[]]></schema>
-        <tableType><![CDATA[InnoDB]]></tableType>
-        <location>
-            <x>1180.00</x>
-            <y>126.00</y>
-        </location>
-        <size>
-            <width>247.00</width>
-            <height>80.00</height>
-        </size>
-        <zorder>5</zorder>
-        <SQLField>
-            <name><![CDATA[id]]></name>
-            <type><![CDATA[integer]]></type>
-            <primaryKey>1</primaryKey>
-            <autoIncrement><![CDATA[1]]></autoIncrement>
-            <forcedUnique><![CDATA[1]]></forcedUnique>
-            <hidden><![CDATA[0]]></hidden>
-            <notNull><![CDATA[1]]></notNull>
-            <uid><![CDATA[1454E148-FF2C-465C-B569-D6A8731C111F]]></uid>
-            <unique><![CDATA[1]]></unique>
-            <unsigned><![CDATA[0]]></unsigned>
-        </SQLField>
-        <SQLField>
-            <name><![CDATA[kind]]></name>
-            <type><![CDATA[string]]></type>
-            <hidden><![CDATA[0]]></hidden>
-            <notNull><![CDATA[1]]></notNull>
-            <uid><![CDATA[7B22FFCD-022A-459A-AD87-2F15DD110B08]]></uid>
-            <unsigned><![CDATA[0]]></unsigned>
-        </SQLField>
-        <SQLField>
-            <name><![CDATA[description]]></name>
-            <type><![CDATA[text]]></type>
-            <hidden><![CDATA[0]]></hidden>
-            <notNull><![CDATA[0]]></notNull>
-            <uid><![CDATA[8DDA52FD-1F54-46EF-BB6F-070746005F25]]></uid>
-        </SQLField>
-        <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[35]]></labelWindowIndex>
-        <table_character_set><![CDATA[utf8]]></table_character_set>
-        <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
-        <uid><![CDATA[5760D69B-4C17-4A39-9950-1E87EBDFCE5A]]></uid>
-    </SQLTable>
     <SQLTable>
         <name><![CDATA[Evaluation]]></name>
         <schema><![CDATA[]]></schema>
@@ -681,13 +635,13 @@ Text-Image]]></comment>
             <uid><![CDATA[50C9109D-27E9-4791-BED7-DD5D6B34F205]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[30]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[31]]></labelWindowIndex>
         <table_character_set><![CDATA[utf8]]></table_character_set>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[58ADCF93-01B5-4C98-8175-6C3A612620A9]]></uid>
     </SQLTable>
     <SQLTable>
-        <name><![CDATA[CategoriesContestInstancesJoinTable]]></name>
+        <name><![CDATA[CategoriesContestInstance]]></name>
         <schema><![CDATA[]]></schema>
         <location>
             <x>1620.00</x>
@@ -697,7 +651,7 @@ Text-Image]]></comment>
             <width>262.00</width>
             <height>60.00</height>
         </size>
-        <zorder>39</zorder>
+        <zorder>37</zorder>
         <SQLField>
             <name><![CDATA[contest_instance_id]]></name>
             <type><![CDATA[integer]]></type>
@@ -728,20 +682,22 @@ Text-Image]]></comment>
             <uid><![CDATA[B598D90B-FB21-4A98-ADB2-BC9ED5CD1896]]></uid>
             <unique><![CDATA[0]]></unique>
         </SQLField>
+        <labelWindowIndex><![CDATA[2]]></labelWindowIndex>
+        <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[74CFCEFE-87A4-4976-BD44-2EF33D3BDA56]]></uid>
     </SQLTable>
     <SQLTable>
         <name><![CDATA[AddressType]]></name>
         <schema><![CDATA[]]></schema>
         <location>
-            <x>2234.00</x>
-            <y>1358.00</y>
+            <x>2019.00</x>
+            <y>1345.00</y>
         </location>
         <size>
             <width>247.00</width>
             <height>80.00</height>
         </size>
-        <zorder>26</zorder>
+        <zorder>24</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -768,7 +724,7 @@ Text-Image]]></comment>
             <uid><![CDATA[3157441D-B280-4FA5-8568-39EBFE6A05B8]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[11]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[12]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[777FF987-7AA0-48AD-9C19-965DE769FADD]]></uid>
     </SQLTable>
@@ -783,7 +739,7 @@ Text-Image]]></comment>
             <width>305.00</width>
             <height>140.00</height>
         </size>
-        <zorder>16</zorder>
+        <zorder>15</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -841,29 +797,10 @@ Text-Image]]></comment>
             <uid><![CDATA[6BCBB972-A479-481B-BF82-48C41E15F0C3]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[25]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[26]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[82C9F701-2674-48AE-903F-29F83598690A]]></uid>
     </SQLTable>
-    <SQLComment>
-        <name><![CDATA[Comment1_3]]></name>
-        <comment><![CDATA[Active
-Deleted
-Archived
-Disqualified]]></comment>
-        <location>
-            <x>1191.00</x>
-            <y>20.00</y>
-        </location>
-        <size>
-            <width>118.00</width>
-            <height>92.00</height>
-        </size>
-        <zorder>24</zorder>
-        <commentTitle><![CDATA[Status Types are]]></commentTitle>
-        <labelWindowIndex><![CDATA[10]]></labelWindowIndex>
-        <uid><![CDATA[87BACA24-BCD0-4490-9F21-BB6F39F69183]]></uid>
-    </SQLComment>
     <SQLTable>
         <name><![CDATA[ClassLevel]]></name>
         <schema><![CDATA[]]></schema>
@@ -876,7 +813,7 @@ Disqualified]]></comment>
             <width>238.00</width>
             <height>80.00</height>
         </size>
-        <zorder>7</zorder>
+        <zorder>6</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -923,7 +860,7 @@ Disqualified]]></comment>
             <width>247.00</width>
             <height>80.00</height>
         </size>
-        <zorder>28</zorder>
+        <zorder>26</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -950,7 +887,7 @@ Disqualified]]></comment>
             <uid><![CDATA[E4EE6925-2FBE-4A9F-9234-CF3ACEACD3B7]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[9]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[11]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[92140D1C-A348-464C-8DB7-E2A175B48603]]></uid>
     </SQLTable>
@@ -965,7 +902,7 @@ Disqualified]]></comment>
             <width>307.00</width>
             <height>100.00</height>
         </size>
-        <zorder>35</zorder>
+        <zorder>33</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -999,7 +936,7 @@ Disqualified]]></comment>
             <uid><![CDATA[98C50760-6443-46DA-AA7E-F3A475DBB696]]></uid>
             <unique><![CDATA[1]]></unique>
         </SQLField>
-        <labelWindowIndex><![CDATA[3]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[5]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[9D519985-DBAE-4DF9-84FC-009752308FFE]]></uid>
     </SQLTable>
@@ -1014,7 +951,7 @@ Disqualified]]></comment>
             <width>247.00</width>
             <height>80.00</height>
         </size>
-        <zorder>19</zorder>
+        <zorder>18</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -1043,7 +980,7 @@ Disqualified]]></comment>
             <uid><![CDATA[885E517D-319A-475F-9BB2-86D6A7AA0512]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[20]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[21]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[9F7949DB-14C0-4EDA-BED3-1841E95CE9EC]]></uid>
     </SQLTable>
@@ -1058,7 +995,7 @@ Disqualified]]></comment>
             <width>281.00</width>
             <height>120.00</height>
         </size>
-        <zorder>17</zorder>
+        <zorder>16</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -1149,7 +1086,7 @@ Disqualified]]></comment>
             <uid><![CDATA[E9BDA0D0-932A-4D9F-B078-B4EF09B0F0DB]]></uid>
         </SQLConstraint>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[19]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[20]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[A74AC62A-12D9-4752-BA14-BA9785BB1157]]></uid>
     </SQLTable>
@@ -1164,7 +1101,7 @@ Disqualified]]></comment>
             <width>298.00</width>
             <height>140.00</height>
         </size>
-        <zorder>12</zorder>
+        <zorder>11</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -1183,7 +1120,7 @@ Disqualified]]></comment>
             <uid><![CDATA[1F167F0F-41B4-4045-B53F-41AF94DC2C7A]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[description]]></name>
+            <name><![CDATA[notes]]></name>
             <type><![CDATA[text]]></type>
             <hidden><![CDATA[0]]></hidden>
             <uid><![CDATA[40C70716-C71A-4C73-A3DD-B70DFB89FA24]]></uid>
@@ -1220,13 +1157,12 @@ Disqualified]]></comment>
             <uid><![CDATA[B334408E-F8D2-4E31-BC9B-F9995FCB2FB4]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[created_by]]></name>
-            <type><![CDATA[string]]></type>
-            <hidden><![CDATA[0]]></hidden>
-            <uid><![CDATA[E6478241-921A-40DA-B38A-0652F5BD5AA2]]></uid>
+            <name><![CDATA[description]]></name>
+            <type><![CDATA[text]]></type>
+            <uid><![CDATA[97238E8D-C700-4E6E-949F-4C45F255C1C8]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[24]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[25]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[AAE1EBF5-0B5D-4FBC-A7AC-9A9FE514523A]]></uid>
     </SQLTable>
@@ -1240,9 +1176,9 @@ Disqualified]]></comment>
         </location>
         <size>
             <width>290.00</width>
-            <height>180.00</height>
+            <height>200.00</height>
         </size>
-        <zorder>6</zorder>
+        <zorder>5</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -1274,20 +1210,18 @@ Disqualified]]></comment>
             <uid><![CDATA[D2817BF3-879E-4A18-B50A-CE1BDA4DD155]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[status_id]]></name>
-            <type><![CDATA[integer]]></type>
-            <referencesField>id</referencesField>
-            <referencesTable>Status</referencesTable>
-            <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[Status]]></referencesTable>
-            <sourceCardinality>5</sourceCardinality>
-            <destinationCardinality>1</destinationCardinality>
-            <referencesFieldUID><![CDATA[1454E148-FF2C-465C-B569-D6A8731C111F]]></referencesFieldUID>
-            <referencesTableUID><![CDATA[5760D69B-4C17-4A39-9950-1E87EBDFCE5A]]></referencesTableUID>
-            <connectorHidden><![CDATA[0]]></connectorHidden>
-            <hidden><![CDATA[0]]></hidden>
-            <indexed><![CDATA[1]]></indexed>
-            <uid><![CDATA[F7705322-5F8A-4F48-BB9C-E10A1B04218A]]></uid>
+            <name><![CDATA[active]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[false]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[6E6B9D01-B7B8-4209-8092-F972E30CB0A7]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[archived]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[false]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[311CDA5C-53F4-446F-877E-5D9EDE8A9B3E]]></uid>
         </SQLField>
         <SQLField>
             <name><![CDATA[name]]></name>
@@ -1334,12 +1268,12 @@ Disqualified]]></comment>
         <schema><![CDATA[]]></schema>
         <tableType><![CDATA[InnoDB]]></tableType>
         <location>
-            <x>1945.00</x>
-            <y>186.00</y>
+            <x>1948.00</x>
+            <y>145.00</y>
         </location>
         <size>
             <width>305.00</width>
-            <height>140.00</height>
+            <height>260.00</height>
         </size>
         <zorder>1</zorder>
         <SQLField>
@@ -1370,25 +1304,6 @@ Disqualified]]></comment>
             <hidden><![CDATA[0]]></hidden>
             <indexed><![CDATA[1]]></indexed>
             <uid><![CDATA[614A1F92-5193-4CCD-816C-50BA76AE905E]]></uid>
-        </SQLField>
-        <SQLField>
-            <name><![CDATA[status_id]]></name>
-            <type><![CDATA[integer]]></type>
-            <referencesField>id</referencesField>
-            <referencesTable>Status</referencesTable>
-            <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[Status]]></referencesTable>
-            <sourceCardinality>5</sourceCardinality>
-            <destinationCardinality>1</destinationCardinality>
-            <referencesFieldUID><![CDATA[1454E148-FF2C-465C-B569-D6A8731C111F]]></referencesFieldUID>
-            <referencesTableUID><![CDATA[5760D69B-4C17-4A39-9950-1E87EBDFCE5A]]></referencesTableUID>
-            <connectorHidden><![CDATA[0]]></connectorHidden>
-            <forcedUnique><![CDATA[0]]></forcedUnique>
-            <hidden><![CDATA[0]]></hidden>
-            <indexed><![CDATA[1]]></indexed>
-            <notNull><![CDATA[0]]></notNull>
-            <uid><![CDATA[83783F94-5176-41E5-A807-8D4DC06D50E2]]></uid>
-            <unsigned><![CDATA[0]]></unsigned>
         </SQLField>
         <SQLField>
             <name><![CDATA[contest_instance_id]]></name>
@@ -1431,8 +1346,53 @@ Disqualified]]></comment>
             <notNull><![CDATA[1]]></notNull>
             <uid><![CDATA[74D60AD6-A131-4BD5-A7BB-F94C6FCB9CBD]]></uid>
         </SQLField>
+        <SQLField>
+            <name><![CDATA[disqualified]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[false]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[F6FACC45-781D-4B3C-B295-D030C3C64EBC]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[deleted]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[false]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[B227ACA3-9B74-4A5A-BBEB-9B9F7DA7FEF9]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[accepted_financial_aid_notice]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[0]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[EA326364-5648-4938-A799-4E0F4AC97EB7]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[campus_employee]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[0]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[3AA2B5A8-CA53-4A10-92E1-195D9D42393F]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[financial_aid_description]]></name>
+            <type><![CDATA[text]]></type>
+            <uid><![CDATA[0DC19629-1C07-4E7B-A2A8-6F2739778201]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[pen_name]]></name>
+            <type><![CDATA[string]]></type>
+            <uid><![CDATA[49E25D6A-B014-46D1-8657-E86C4311E6C3]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[receiving_financial_aid]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[0]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[F3B4177F-45BE-40A3-A1F6-68D3D5937CEC]]></uid>
+        </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[31]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[32]]></labelWindowIndex>
         <table_character_set><![CDATA[utf8]]></table_character_set>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[B7C0D0B9-32F3-43D4-8CAC-922A61C7F35A]]></uid>
@@ -1449,9 +1409,9 @@ committee_viewable]]></comment>
             <width>207.00</width>
             <height>61.00</height>
         </size>
-        <zorder>32</zorder>
+        <zorder>30</zorder>
         <commentTitle><![CDATA[Comment Types are]]></commentTitle>
-        <labelWindowIndex><![CDATA[8]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[10]]></labelWindowIndex>
         <uid><![CDATA[B88AC4C4-401F-436D-8A2F-AD8EA2CAEC99]]></uid>
     </SQLComment>
     <SQLTable>
@@ -1498,7 +1458,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[33D3BD8E-38BB-4583-A1F4-A2CCD3894053]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[first_name]]></name>
+            <name><![CDATA[preferred_first_name]]></name>
             <type><![CDATA[string]]></type>
             <defaultValue><![CDATA['']]></defaultValue>
             <hidden><![CDATA[0]]></hidden>
@@ -1506,7 +1466,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[98B36D47-3E9D-4327-9A4C-4848EBD82F2E]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[last_name]]></name>
+            <name><![CDATA[preferred_last_name]]></name>
             <type><![CDATA[string]]></type>
             <defaultValue><![CDATA['']]></defaultValue>
             <hidden><![CDATA[0]]></hidden>
@@ -1687,7 +1647,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[1ED33E22-8828-4F8C-8C56-1CE5646F2BBE]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[34]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[35]]></labelWindowIndex>
         <table_character_set><![CDATA[utf8]]></table_character_set>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[B95D4F4C-BC8C-4C85-A199-4FD562EC0F7D]]></uid>
@@ -1703,7 +1663,7 @@ committee_viewable]]></comment>
             <width>226.00</width>
             <height>80.00</height>
         </size>
-        <zorder>34</zorder>
+        <zorder>32</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -1730,7 +1690,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[AA226887-2354-4FB0-83B4-81F2521B2EED]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[7]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[9]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[BD430CB0-CC8E-48EB-AE0D-FC61B683F8A8]]></uid>
     </SQLTable>
@@ -1738,14 +1698,14 @@ committee_viewable]]></comment>
         <name><![CDATA[ClassLevelRequirement]]></name>
         <schema><![CDATA[]]></schema>
         <location>
-            <x>1521.00</x>
-            <y>593.00</y>
+            <x>1542.00</x>
+            <y>591.00</y>
         </location>
         <size>
             <width>305.00</width>
             <height>80.00</height>
         </size>
-        <zorder>36</zorder>
+        <zorder>34</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -1783,7 +1743,7 @@ committee_viewable]]></comment>
             <indexed><![CDATA[1]]></indexed>
             <uid><![CDATA[152A257A-2914-4E3E-B916-0FC55ECC473C]]></uid>
         </SQLField>
-        <labelWindowIndex><![CDATA[2]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[4]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[BFB4A81F-BE13-4D96-A967-BA905D2BB281]]></uid>
     </SQLTable>
@@ -1798,7 +1758,7 @@ committee_viewable]]></comment>
             <width>398.00</width>
             <height>80.00</height>
         </size>
-        <zorder>14</zorder>
+        <zorder>13</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -1832,9 +1792,54 @@ committee_viewable]]></comment>
             <uid><![CDATA[53A10B69-6CD5-4BD4-9DC0-BAEA0BC4D6FB]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[23]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[24]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[C0145796-A288-4F3E-988A-AE8AA2C4D09E]]></uid>
+    </SQLTable>
+    <SQLTable>
+        <name><![CDATA[Affiliation]]></name>
+        <schema><![CDATA[]]></schema>
+        <location>
+            <x>402.00</x>
+            <y>853.00</y>
+        </location>
+        <size>
+            <width>221.00</width>
+            <height>80.00</height>
+        </size>
+        <zorder>38</zorder>
+        <SQLField>
+            <name><![CDATA[id]]></name>
+            <type><![CDATA[integer]]></type>
+            <primaryKey>1</primaryKey>
+            <autoIncrement><![CDATA[1]]></autoIncrement>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[D8687652-349C-434C-85C8-1A9660C10F56]]></uid>
+            <unique><![CDATA[1]]></unique>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[user_id]]></name>
+            <type><![CDATA[integer]]></type>
+            <referencesField>id</referencesField>
+            <referencesTable>User (Devise Tbl)</referencesTable>
+            <referencesField><![CDATA[id]]></referencesField>
+            <referencesTable><![CDATA[User (Devise Tbl)]]></referencesTable>
+            <sourceCardinality>5</sourceCardinality>
+            <destinationCardinality>1</destinationCardinality>
+            <referencesFieldUID><![CDATA[9C1094DD-6607-485F-ACC4-1E0318C7D0ED]]></referencesFieldUID>
+            <referencesTableUID><![CDATA[F75C1B2F-FA8C-43A7-93FA-C1A4B26B4E92]]></referencesTableUID>
+            <forcedUnique><![CDATA[0]]></forcedUnique>
+            <uid><![CDATA[230C90FE-C45F-47C5-8263-666F4C49F55F]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[name]]></name>
+            <type><![CDATA[string]]></type>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[4DA49B77-7302-402C-8154-B175A16E20FE]]></uid>
+        </SQLField>
+        <labelWindowIndex><![CDATA[1]]></labelWindowIndex>
+        <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
+        <uid><![CDATA[C2084B4A-4958-41E2-BDF5-A317AA4AB46A]]></uid>
     </SQLTable>
     <SQLTable>
         <name><![CDATA[CommentType]]></name>
@@ -1847,7 +1852,7 @@ committee_viewable]]></comment>
             <width>247.00</width>
             <height>80.00</height>
         </size>
-        <zorder>31</zorder>
+        <zorder>29</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -1874,7 +1879,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[0ED5D360-39A2-43F2-B298-31C23F33A634]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[6]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[8]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[CC41B5E8-2241-4DFD-8DD3-9CB64B802DC5]]></uid>
     </SQLTable>
@@ -1889,7 +1894,7 @@ committee_viewable]]></comment>
             <width>247.00</width>
             <height>80.00</height>
         </size>
-        <zorder>18</zorder>
+        <zorder>17</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -1918,7 +1923,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[46774DD3-FE0B-42B2-97D8-E53632B69455]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[18]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[19]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[CF6E089E-E5E4-4383-BF2A-817309BABBDF]]></uid>
     </SQLTable>
@@ -1932,7 +1937,7 @@ committee_viewable]]></comment>
         </location>
         <size>
             <width>427.00</width>
-            <height>340.00</height>
+            <height>400.00</height>
         </size>
         <zorder>3</zorder>
         <SQLField>
@@ -1945,24 +1950,6 @@ committee_viewable]]></comment>
             <notNull><![CDATA[1]]></notNull>
             <uid><![CDATA[7BE88D0F-63DF-4DCF-BF06-E18EDD00AA72]]></uid>
             <unique><![CDATA[1]]></unique>
-            <unsigned><![CDATA[0]]></unsigned>
-        </SQLField>
-        <SQLField>
-            <name><![CDATA[status_id]]></name>
-            <type><![CDATA[integer]]></type>
-            <referencesField>id</referencesField>
-            <referencesTable>Status</referencesTable>
-            <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[Status]]></referencesTable>
-            <sourceCardinality>5</sourceCardinality>
-            <destinationCardinality>1</destinationCardinality>
-            <referencesFieldUID><![CDATA[1454E148-FF2C-465C-B569-D6A8731C111F]]></referencesFieldUID>
-            <referencesTableUID><![CDATA[5760D69B-4C17-4A39-9950-1E87EBDFCE5A]]></referencesTableUID>
-            <connectorHidden><![CDATA[0]]></connectorHidden>
-            <hidden><![CDATA[0]]></hidden>
-            <indexed><![CDATA[1]]></indexed>
-            <notNull><![CDATA[1]]></notNull>
-            <uid><![CDATA[FD35F2D2-2F88-4E9B-AA3F-DCB04966A4C0]]></uid>
             <unsigned><![CDATA[0]]></unsigned>
         </SQLField>
         <SQLField>
@@ -1984,12 +1971,18 @@ committee_viewable]]></comment>
             <uid><![CDATA[ED5E4FE8-84F1-4775-AC5B-C8AFD21E42BD]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[category_id]]></name>
-            <type><![CDATA[integer]]></type>
-            <connectorHidden><![CDATA[0]]></connectorHidden>
-            <hidden><![CDATA[0]]></hidden>
-            <indexed><![CDATA[1]]></indexed>
-            <uid><![CDATA[E60EEB48-B75F-4E19-BE0F-43C669C78A37]]></uid>
+            <name><![CDATA[active]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[false]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[1E295F98-AB3C-42FC-B320-095A17DE76A0]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[archived]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[false]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[1D44AA57-2FF6-42AD-BB38-CF85B713F59D]]></uid>
         </SQLField>
         <SQLField>
             <name><![CDATA[date_open]]></name>
@@ -2082,8 +2075,29 @@ committee_viewable]]></comment>
             <hidden><![CDATA[0]]></hidden>
             <uid><![CDATA[747DB91C-EE5F-41F9-A28D-AAA3EFF88F4A]]></uid>
         </SQLField>
+        <SQLField>
+            <name><![CDATA[require_campus_employment_info]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[0]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[0CB2CC9E-69FC-419F-AEE6-2204E740D8A3]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[require_finaid_info]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[0]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[0D4B8C0C-3096-482C-AA10-7A1297508A7A]]></uid>
+        </SQLField>
+        <SQLField>
+            <name><![CDATA[require_pen_name]]></name>
+            <type><![CDATA[boolean]]></type>
+            <defaultValue><![CDATA[0]]></defaultValue>
+            <notNull><![CDATA[1]]></notNull>
+            <uid><![CDATA[F5EA4B45-1FD6-4286-B798-A518306F2372]]></uid>
+        </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[33]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[34]]></labelWindowIndex>
         <table_character_set><![CDATA[utf8]]></table_character_set>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[CFB01490-75D6-4182-90C4-1E6ED622B397]]></uid>
@@ -2092,14 +2106,14 @@ committee_viewable]]></comment>
         <name><![CDATA[Address]]></name>
         <schema><![CDATA[]]></schema>
         <location>
-            <x>2206.00</x>
-            <y>1129.00</y>
+            <x>1991.00</x>
+            <y>1116.00</y>
         </location>
         <size>
             <width>276.00</width>
-            <height>200.00</height>
+            <height>180.00</height>
         </size>
-        <zorder>9</zorder>
+        <zorder>8</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -2152,14 +2166,6 @@ committee_viewable]]></comment>
             <uid><![CDATA[7A48380D-E706-49DD-B6DA-EA8B39891DC8]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[phone]]></name>
-            <type><![CDATA[string]]></type>
-            <autoIncrement><![CDATA[0]]></autoIncrement>
-            <hidden><![CDATA[0]]></hidden>
-            <notNull><![CDATA[0]]></notNull>
-            <uid><![CDATA[1AEEB8CD-792B-4520-899D-915D1AF4DF27]]></uid>
-        </SQLField>
-        <SQLField>
             <name><![CDATA[country]]></name>
             <type><![CDATA[integer]]></type>
             <hidden><![CDATA[0]]></hidden>
@@ -2183,7 +2189,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[68D66DAC-4C05-4D95-B07E-BC8FB347A2A5]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[29]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[30]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[D54BE6AA-FFB6-4617-9240-B8375E76A95A]]></uid>
     </SQLTable>
@@ -2198,7 +2204,7 @@ committee_viewable]]></comment>
             <width>283.00</width>
             <height>120.00</height>
         </size>
-        <zorder>13</zorder>
+        <zorder>12</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -2269,7 +2275,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[996A6B77-256C-44B8-A451-2EC429CB3225]]></uid>
         </SQLConstraint>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[5]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[7]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[F1EAFA09-BDAB-489A-852D-719C0AB5BCEB]]></uid>
     </SQLTable>
@@ -2282,8 +2288,8 @@ committee_viewable]]></comment>
             <y>749.00</y>
         </location>
         <size>
-            <width>326.00</width>
-            <height>460.00</height>
+            <width>333.00</width>
+            <height>440.00</height>
         </size>
         <zorder>2</zorder>
         <SQLField>
@@ -2309,14 +2315,14 @@ committee_viewable]]></comment>
             <unique><![CDATA[1]]></unique>
         </SQLField>
         <SQLField>
-            <name><![CDATA[firstname]]></name>
+            <name><![CDATA[first_name]]></name>
             <type><![CDATA[string]]></type>
             <hidden><![CDATA[0]]></hidden>
             <notNull><![CDATA[1]]></notNull>
             <uid><![CDATA[D0644049-266E-44BD-95DF-1006A32A72F3]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[lastname]]></name>
+            <name><![CDATA[last_name]]></name>
             <type><![CDATA[string]]></type>
             <hidden><![CDATA[0]]></hidden>
             <notNull><![CDATA[1]]></notNull>
@@ -2348,13 +2354,6 @@ committee_viewable]]></comment>
             <type><![CDATA[string]]></type>
             <hidden><![CDATA[0]]></hidden>
             <uid><![CDATA[5CC05DD6-40A1-4A31-85A5-A6CEBDA8BE2A]]></uid>
-        </SQLField>
-        <SQLField>
-            <name><![CDATA[person_affiliation]]></name>
-            <type><![CDATA[string]]></type>
-            <hidden><![CDATA[0]]></hidden>
-            <notNull><![CDATA[1]]></notNull>
-            <uid><![CDATA[850E4F39-AD0B-453A-AC1B-CC9292C0F91B]]></uid>
         </SQLField>
         <SQLField>
             <name><![CDATA[encrypted_password]]></name>
@@ -2427,7 +2426,7 @@ committee_viewable]]></comment>
             <uid><![CDATA[1792095A-FA09-4AC3-A1CC-0BB96CBE06D2]]></uid>
         </SQLField>
         <hidden><![CDATA[0]]></hidden>
-        <labelWindowIndex><![CDATA[32]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[33]]></labelWindowIndex>
         <table_character_set><![CDATA[utf8]]></table_character_set>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[F75C1B2F-FA8C-43A7-93FA-C1A4B26B4E92]]></uid>
@@ -2443,7 +2442,7 @@ committee_viewable]]></comment>
             <width>218.00</width>
             <height>80.00</height>
         </size>
-        <zorder>38</zorder>
+        <zorder>36</zorder>
         <SQLField>
             <name><![CDATA[id]]></name>
             <type><![CDATA[integer]]></type>
@@ -2480,7 +2479,7 @@ committee_viewable]]></comment>
             <referencesTableUID><![CDATA[F75C1B2F-FA8C-43A7-93FA-C1A4B26B4E92]]></referencesTableUID>
             <uid><![CDATA[89F742F1-6355-4C00-9168-352949CDEB16]]></uid>
         </SQLField>
-        <labelWindowIndex><![CDATA[1]]></labelWindowIndex>
+        <labelWindowIndex><![CDATA[3]]></labelWindowIndex>
         <ui.treeExpanded><![CDATA[1]]></ui.treeExpanded>
         <uid><![CDATA[FA060CC9-868D-4460-A66D-9F0246AF9E3A]]></uid>
     </SQLTable>
@@ -2502,7 +2501,7 @@ Evaluations submitted successfully(to Judge)
             <width>338.00</width>
             <height>150.00</height>
         </size>
-        <zorder>29</zorder>
+        <zorder>27</zorder>
         <commentTitle><![CDATA[Email Types are]]></commentTitle>
         <labelWindowIndex><![CDATA[0]]></labelWindowIndex>
         <uid><![CDATA[FB6754D3-F50F-4B1D-99DA-B5A281080606]]></uid>
@@ -2521,17 +2520,17 @@ Evaluations submitted successfully(to Judge)
         <overviewPanelHidden><![CDATA[0]]></overviewPanelHidden>
         <pageBoundariesVisible><![CDATA[0]]></pageBoundariesVisible>
         <PageGridVisible><![CDATA[0]]></PageGridVisible>
-        <RightSidebarWidth><![CDATA[1998.000000]]></RightSidebarWidth>
+        <RightSidebarWidth><![CDATA[2016.000000]]></RightSidebarWidth>
         <sidebarIndex><![CDATA[0]]></sidebarIndex>
         <snapToGrid><![CDATA[0]]></snapToGrid>
         <SourceSidebarWidth><![CDATA[312.000000]]></SourceSidebarWidth>
         <SQLEditorFileFormatVersion><![CDATA[4]]></SQLEditorFileFormatVersion>
         <uid><![CDATA[E2FE8E50-306B-4494-BAFB-41EE3761C01D]]></uid>
-        <windowHeight><![CDATA[1303.000000]]></windowHeight>
-        <windowLocationX><![CDATA[2597.000000]]></windowLocationX>
-        <windowLocationY><![CDATA[-211.000000]]></windowLocationY>
-        <windowScrollOrigin><![CDATA[{964, 0}]]></windowScrollOrigin>
-        <windowWidth><![CDATA[2275.000000]]></windowWidth>
+        <windowHeight><![CDATA[1415.000000]]></windowHeight>
+        <windowLocationX><![CDATA[1728.000000]]></windowLocationX>
+        <windowLocationY><![CDATA[-323.000000]]></windowLocationY>
+        <windowScrollOrigin><![CDATA[{0, 76}]]></windowScrollOrigin>
+        <windowWidth><![CDATA[2293.000000]]></windowWidth>
     </SQLDocumentInfo>
     <AllowsIndexRenamingOnInsert><![CDATA[1]]></AllowsIndexRenamingOnInsert>
     <defaultLabelExpanded><![CDATA[1]]></defaultLabelExpanded>

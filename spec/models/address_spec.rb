@@ -7,7 +7,6 @@
 #  address2        :string(255)
 #  city            :string(255)
 #  country         :string(255)
-#  phone           :string(255)
 #  state           :string(255)
 #  zip             :string(255)
 #  created_at      :datetime         not null
@@ -39,7 +38,6 @@ RSpec.describe Address do
       city: Faker::Address.city,
       state: Faker::Number.between(from: 1, to: 50),
       zip: Faker::Address.zip_code,
-      phone: Faker::PhoneNumber.phone_number,
       country: Faker::Number.between(from: 1, to: 250),
       address_type: @address_type
     )
@@ -53,7 +51,6 @@ RSpec.describe Address do
       city: Faker::Address.city,
       state: Faker::Number.between(from: 1, to: 50),
       zip: Faker::Address.zip_code,
-      phone: Faker::PhoneNumber.phone_number,
       country: Faker::Number.between(from: 1, to: 250),
       address_type: @address_type
     )
@@ -67,7 +64,6 @@ RSpec.describe Address do
       city: nil,
       state: Faker::Number.between(from: 1, to: 50),
       zip: Faker::Address.zip_code,
-      phone: Faker::PhoneNumber.phone_number,
       country: Faker::Number.between(from: 1, to: 250),
       address_type: @address_type
     )
@@ -81,7 +77,6 @@ RSpec.describe Address do
       city: Faker::Address.city,
       state: nil,
       zip: Faker::Address.zip_code,
-      phone: Faker::PhoneNumber.phone_number,
       country: Faker::Number.between(from: 1, to: 250),
       address_type: @address_type
     )
@@ -95,21 +90,6 @@ RSpec.describe Address do
       city: Faker::Address.city,
       state: Faker::Number.between(from: 1, to: 50),
       zip: nil,
-      phone: Faker::PhoneNumber.phone_number,
-      country: Faker::Number.between(from: 1, to: 250),
-      address_type: @address_type
-    )
-    expect(address).not_to be_valid
-  end
-
-  it 'is not valid without phone' do
-    address = Address.new(
-      address1: Faker::Address.street_address,
-      address2: Faker::Address.secondary_address,
-      city: Faker::Address.city,
-      state: Faker::Number.between(from: 1, to: 50),
-      zip: Faker::Address.zip_code,
-      phone: nil,
       country: Faker::Number.between(from: 1, to: 250),
       address_type: @address_type
     )
@@ -123,7 +103,6 @@ RSpec.describe Address do
       city: Faker::Address.city,
       state: Faker::Number.between(from: 1, to: 50),
       zip: Faker::Address.zip_code,
-      phone: Faker::PhoneNumber.phone_number,
       country: nil,
       address_type: @address_type
     )
@@ -137,7 +116,6 @@ RSpec.describe Address do
       city: Faker::Address.city,
       state: Faker::Number.between(from: 1, to: 50),
       zip: Faker::Address.zip_code,
-      phone: Faker::PhoneNumber.phone_number,
       country: Faker::Number.between(from: 1, to: 250),
       address_type: nil
     )

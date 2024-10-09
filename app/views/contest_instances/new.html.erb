@@ -1,9 +1,12 @@
-<h1><%= action_name.capitalize %> contest instance</h1>
-
-<%= render "form", contest_instance: @contest_instance %>
-
-<br>
-
-<div>
-  <%= link_to "Back", container_contest_description_contest_instances_path(@container, @contest_description) %>
+<div class="d-flex justify-content-between">
+  <div class="pb-1">
+    <h1><%= action_name.capitalize %> contest instance</h1>
+    <%= render "form", contest_instance: @contest_instance %>
+  </div>
+  <div>
+    <%= link_to "Back to #{@contest_description.name}", container_contest_description_contest_instances_path(@container, @contest_description) %>
+  </div>
 </div>
+
+
+

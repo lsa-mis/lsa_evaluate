@@ -25,6 +25,9 @@
 !/tmp/storage/
 !/tmp/storage/.keep
 
+# Ignore gcp auth
+/config/lsa-was-base-efc3d7203bbd.json
+
 /public/assets
 .byebug_history
 

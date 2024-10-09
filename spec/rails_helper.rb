@@ -13,6 +13,7 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'rspec/rails'
 require 'factory_bot_rails'
+require 'pundit/rspec'
 
 puts "!*!*!*! Running in environment: #{Rails.env} !*!*!*!"
 
@@ -27,46 +28,56 @@ end
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
-
+  config.include Pundit::Matchers, type: :policy
   config.fixture_paths = [ Rails.root.join('spec/fixtures').to_s ]
 
-  # Set this to false if using DatabaseCleaner
+  # Disable transactional fixtures because we're using DatabaseCleaner
   config.use_transactional_fixtures = false
 
+  # Clean the database with truncation before the test suite runs
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
   end
 
-  config.before do
-    DatabaseCleaner.strategy = :transaction
-  end
+  # Configure DatabaseCleaner
 
-  config.before(:each, :js) do
-    DatabaseCleaner.strategy = :truncation
-  end
-
-  config.before do
+  config.before do |example|
+    DatabaseCleaner.strategy = if example.metadata[:js] || example.metadata[:type] == :system
+                                  :truncation
+    else
+                                  :transaction
+    end
     DatabaseCleaner.start
   end
 
-  config.after do
+  # Ensure DatabaseCleaner cleans up after each test
+  config.append_after do
     DatabaseCleaner.clean
   end
 
-  config.include AuthHelpers, type: :controller
-  config.include AuthHelpers, type: :request
+  # Include Devise test helpers
+  config.include Devise::Test::ControllerHelpers, type: :controller
+  config.include Devise::Test::IntegrationHelpers, type: :request
+  config.include Devise::Test::IntegrationHelpers, type: :system
 
-  config.infer_spec_type_from_file_location!
+  config.include RequestSpecHelpers, type: :request
+  Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
-  config.filter_rails_from_backtrace!
-
+  # Include Warden helpers if needed
   config.include Warden::Test::Helpers
+
+  # Reset Warden after each test
+  config.after do
+    Warden.test_reset!
+  end
 
   config.before(:each, type: :request) do
     host! 'localhost'
   end
 
-  config.after do
-    Warden.test_reset!
-  end
+  config.include AuthHelpers, type: :controller
+  config.include AuthHelpers, type: :request
+  config.include AuthHelpers, type: :system
+  config.infer_spec_type_from_file_location!
+  config.filter_rails_from_backtrace!
 end

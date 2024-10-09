@@ -3,8 +3,8 @@
 # Table name: containers
 #
 #  id            :bigint           not null, primary key
-#  description   :text(65535)
 #  name          :string(255)
+#  notes         :text(65535)
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #  department_id :bigint           not null

@@ -97,17 +97,9 @@ Address.create([
 
 # Seed data for Campus
 Campus.create([
-                { campus_descr: 'AnnArbor', campus_cd: 100 },
+                { campus_descr: 'Ann Arbor', campus_cd: 100 },
                 { campus_descr: 'Flint', campus_cd: 700 },
                 { campus_descr: 'Dearborn', campus_cd: 710 }
-              ])
-
-# Seed data for Status
-Status.create([
-                { kind: 'Active', description: 'The entity is active and operational.' },
-                { kind: 'Deleted', description: 'The entity has been deleted.' },
-                { kind: 'Archived', description: 'The entity is archived.' },
-                { kind: 'Disqualified', description: 'The entity is disqualified.' }
               ])
 
 # Seed data for Department
@@ -146,28 +138,66 @@ ClassLevel.create([
                   ])
 
 # Seed data for Users
-user1 = User.create!(email: 'alice@example.com', password: 'passwordpassword', uniqname: 'alicew', uid: 'alicew', principal_name: 'alice@example.com', display_name: 'Alice Wonderland', person_affiliation: 'employee')
-user2 = User.create!(email: 'bob@example.com', password: 'passwordpassword', uniqname: 'bobb', uid: 'bobb', principal_name: 'bob@example.com', display_name: 'Bob Builder', person_affiliation: 'employee')
-user2 = User.create!(email: 'sallystu@example.com', password: 'passwordpassword', uniqname: 'sallystu', uid: 'sallystu', principal_name: 'sallystu@example.com', display_name: 'Sally Student', person_affiliation: 'student')
-user3 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
-user4 = User.create!(email: 'brita@umich.edu', password: 'passwordpassword')
-user5 = User.create!(email: 'jjsantos@umich.edu', password: 'passwordpassword')
-user6 = User.create!(email: 'mlaitan@umich.edu', password: 'passwordpassword')
+user1 = User.create!(email: 'alicefac@example.com',
+                     password: 'passwordpassword',
+                     uniqname: 'alicefac',
+                     uid: 'alicefac',
+                     principal_name: 'alicefac@example.com',
+                     display_name: 'Alice Wonderland',
+                     first_name: 'Alice',
+                     last_name: 'Wonderland',
+                     affiliations_attributes: [
+                                                { name: 'faculty' },
+                                                { name: 'employee' },
+                                                { name: 'member' }
+                                              ]
+                    )
+user2 = User.create!(email: 'bobstaff@example.com',
+                     password: 'passwordpassword',
+                     uniqname: 'bobstaff',
+                     uid: 'bobstaff',
+                     principal_name: 'bobstaff@example.com',
+                     display_name: 'Bob Builder',
+                     first_name: 'Bob',
+                     last_name: 'Builder',
+                     affiliations_attributes: [
+                                                { name: 'staff' },
+                                                { name: 'employee' },
+                                                { name: 'member' }
+                                              ]
+)
+user3 = User.create!(email: 'sallystu@example.com',
+                     password: 'passwordpassword',
+                     uniqname: 'sallystu',
+                     uid: 'sallystu',
+                     first_name: 'Sally',
+                     last_name: 'Student',
+                     principal_name: 'sallystu@example.com',
+                     display_name: 'Sally Student',
+                     affiliations_attributes: [
+                                                { name: 'student' },
+                                                { name: 'member' }
+                                              ]
+)
+# user4 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
+user5 = User.create!(email: 'brita@umich.edu', password: 'passwordpassword')
+user6 = User.create!(email: 'jjsantos@umich.edu', password: 'passwordpassword')
+user7 = User.create!(email: 'mlaitan@umich.edu', password: 'passwordpassword')
 
 # Seed data for Roles
 Role.create!([
-               { kind: 'Container Administrator' },
+               { kind: 'Collection Administrator' },
                { kind: 'Axis mundi' },
-               { kind: 'Container Manager' }
+               { kind: 'Collection Manager' }
              ])
-role_admin = Role.find_by(kind: 'Container Administrator')
+role_container_admin = Role.find_by(kind: 'Collection Administrator')
 axis_mundi = Role.find_by(kind: 'Axis mundi')
 
 UserRole.create!([
-                  { user: user3, role: axis_mundi },
-                  { user: user4, role: axis_mundi },
+                  # { user: user4, role: axis_mundi },
                   { user: user5, role: axis_mundi },
-                  { user: user6, role: axis_mundi }
+                  { user: user6, role: axis_mundi },
+                  { user: user7, role: axis_mundi }
                  ])
 
 # Seed data for Containers
@@ -189,17 +219,17 @@ container2 = Container.create!(
 
 # Seed data for ContestDescription
 contest_description1 = ContestDescription.create!(
-  status: Status.find_by(kind: 'Active'),
+  active: true,
   container: container1,
   name: 'Cora Duncan Contest',
-  short_name: 'Cora D',
+  short_name: 'Cora Duncan',
   eligibility_rules: 'Rules 1',
   notes: 'Notes 1',
   created_by: user1.email
 )
 
 contest_description2 = ContestDescription.create!(
-  status: Status.find_by(kind: 'Archived'),
+  archived: true,
   container: container1,
   name: 'Arthur Miller',
   short_name: 'AM',
@@ -209,7 +239,7 @@ contest_description2 = ContestDescription.create!(
 )
 
 contest_description3 = ContestDescription.create!(
-  status: Status.find_by(kind: 'Active'),
+  active: true,
   container: container2,
   name: 'Physics Sprint Challenge',
   short_name: 'Physics Racers ',
@@ -220,7 +250,7 @@ contest_description3 = ContestDescription.create!(
 
 # Seed data for ContestInstance
 contest_instance1 = ContestInstance.new(
-  status: Status.find_by(kind: 'Active'),
+  active: true,
   contest_description: contest_description1,
   date_open: DateTime.now - 30,
   date_closed: DateTime.now + 30,
@@ -238,22 +268,21 @@ contest_instance1 = ContestInstance.new(
 
 # Build the associated ClassLevelRequirement
 contest_instance1.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'First year'))
-
-# Save the ContestInstance with validation
+contest_instance1.category_contest_instances.build(category: Category.find_by(kind: 'Drama'))
 contest_instance1.save!
 
 # Repeat the same pattern for other ContestInstances
 contest_instance2 = ContestInstance.new(
-  status: Status.find_by(kind: 'Archived'),
+  archived: true,
   contest_description: contest_description2,
   date_open: DateTime.now - 60,
   date_closed: DateTime.now - 30,
   notes: 'Second contest instance',
   judging_open: true,
   judging_rounds: 2,
-  has_course_requirement: true,
+  has_course_requirement: false,
   judge_evaluations_complete: true,
-  course_requirement_description: 'Course required',
+  course_requirement_description: 'No course requirement',
   recletter_required: true,
   transcript_required: true,
   maximum_number_entries_per_applicant: 2,
@@ -261,19 +290,20 @@ contest_instance2 = ContestInstance.new(
 )
 
 contest_instance2.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'Second year'))
+contest_instance2.category_contest_instances.build(category: Category.find_by(kind: 'Fiction'))
 contest_instance2.save!
 
 contest_instance3 = ContestInstance.new(
-  status: Status.find_by(kind: 'Active'),
+  active: true,
   contest_description: contest_description3,
   date_open: DateTime.now - 30,
   date_closed: DateTime.now + 30,
   notes: 'Third contest instance',
   judging_open: false,
   judging_rounds: 1,
-  has_course_requirement: false,
+  has_course_requirement: true,
   judge_evaluations_complete: false,
-  course_requirement_description: 'No course requirement',
+  course_requirement_description: 'Course required',
   recletter_required: false,
   transcript_required: false,
   maximum_number_entries_per_applicant: 1,
@@ -281,16 +311,5 @@ contest_instance3 = ContestInstance.new(
 )
 
 contest_instance3.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'Junior'))
+contest_instance3.category_contest_instances.build(category: Category.find_by(kind: 'Research Paper'))
 contest_instance3.save!
-
-CategoryContestInstance.create!([
-                                  { category: Category.find_by(kind: 'Drama'), contest_instance: ContestInstance.find_by(contest_description: contest_description1) },
-                                  { category: Category.find_by(kind: 'Fiction'), contest_instance: ContestInstance.find_by(contest_description: contest_description2) },
-                                  { category: Category.find_by(kind: 'Research Paper'), contest_instance: ContestInstance.find_by(contest_description: contest_description3) }
-                                ])
-
-ClassLevelRequirement.create!([
-                                { class_level: ClassLevel.find_by(name: 'Second year'), contest_instance: contest_instance1 },
-                                { class_level: ClassLevel.find_by(name: 'Junior'), contest_instance: contest_instance1 },
-                                { class_level: ClassLevel.find_by(name: 'Senior'), contest_instance: contest_instance1 }
-                              ])

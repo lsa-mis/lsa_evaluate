@@ -11,6 +11,8 @@ gem 'bootsnap', require: false
 gem 'country_select'
 gem 'cssbundling-rails'
 gem 'devise', '~> 4.9'
+gem 'google-cloud-storage', '~> 1.52'
+gem 'image_processing', '~> 1.2'
 gem 'jbuilder'
 gem 'jsbundling-rails'
 gem 'mysql2', '~> 0.5.3'
@@ -22,6 +24,7 @@ gem 'redis', '~> 5.0'
 gem 'sassc-rails'
 gem 'simple_form', '~> 5.3'
 gem 'stimulus-rails'
+gem "skylight"
 gem 'turbo-rails'
 gem 'turnout2024', require: 'turnout'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
@@ -37,7 +40,7 @@ group :development do
 end
 
 group :test do
-  gem 'database_cleaner-active_record'
+  gem 'database_cleaner-active_record', '~> 2.0'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
 end

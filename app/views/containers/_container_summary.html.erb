@@ -1,0 +1,27 @@
+<!-- app/views/containers/_container_summary.html.erb -->
+<div id="<%= dom_id(container) %>" class="row mt-2">
+  <div>
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">
+          <%= container.name %>
+          <small class="text-muted">
+            <%= " (#{pluralize(container.contest_descriptions.count, 'contest')})" %>
+          </small>
+          <small class="text-muted"><%= container.visibility.kind %></small>
+        </h5>
+        <small class="text-muted">
+          <%= container.department.display_name %><br>
+          <% admins = container.assignments.container_administrators %>
+          <% if admins.any? %>
+            <%= pluralize(admins.count, admins.first.role.kind) %>:
+            <%= admins.map { |assignment| assignment.user.display_name_or_uid }.join(', ') %>
+          <% else %>
+            No Administrators Assigned
+          <% end %>
+        </small>
+        <%= link_to "View Collection", container_path(container), class: "link_to" %>
+      </div>
+    </div>
+  </div>
+</div>

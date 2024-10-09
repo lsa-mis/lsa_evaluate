@@ -1,17 +1,20 @@
-<%= simple_form_for([@container, @contest_description]) do |f| %>
-  <%= f.error_notification %>
-  <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
+<div id="contest_descriptiopn_form">
+  <%= simple_form_for([@container, @contest_description], html: { id: 'new_contest_description_form' }) do |f| %>
+    <%= f.error_notification %>
+    <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
-  <div class="form-inputs">
-    <%= f.input :name, required: true %>
-    <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
-    <%= f.input :eligibility_rules %>
-    <%= f.input :notes %>
-    <%= f.input :short_name %>
-    <%= f.association :status, as: :select, collection: Status.all, label_method: :kind, value_method: :id %>
-  </div>
+    <div class="form-inputs">
+      <%= f.input :name, required: true %>
+      <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
+      <%= f.input :eligibility_rules, as: :rich_text_area, hint: "Displays on the entry form" %>
+      <%= f.input :notes, as: :rich_text_area, hint: "Does not display on the entry form" %>
+      <%= f.input :short_name %>
+      <%= f.input :active, hint: "Specify whether this contest is currently accepting entries." %>
+      <%= f.input :archived %>
+    </div>
 
-  <div class="form-actions">
-    <%= f.button :submit %>
-  </div>
-<% end %>
+    <div class="form-actions">
+      <%= f.button :submit, (f.object.new_record? ? "Create Contest" : "Update Contest"), class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

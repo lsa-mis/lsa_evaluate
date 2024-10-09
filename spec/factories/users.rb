@@ -11,10 +11,11 @@
 #  email                  :string(255)      default(""), not null
 #  encrypted_password     :string(255)      default(""), not null
 #  failed_attempts        :integer          default(0), not null
+#  first_name             :string(255)      default(""), not null
+#  last_name              :string(255)      default(""), not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string(255)
 #  locked_at              :datetime
-#  person_affiliation     :string(255)
 #  principal_name         :string(255)
 #  provider               :string(255)
 #  remember_created_at    :datetime
@@ -35,9 +36,42 @@
 #
 FactoryBot.define do
   factory :user do
-    uniqname { Faker::String.random(length: 3..8) }
     email { Faker::Internet.email }
-    password { Faker::Internet.password(min_length: 15) }
+    first_name { Faker::Name.first_name }
+    last_name { Faker::Name.last_name }
+    password { 'passwordpassword' }
+    password_confirmation { 'passwordpassword' }
+    uniqname { Faker::Internet.username }
+    uid { uniqname }
+    principal_name { email }
     display_name { Faker::Name.name }
+
+    trait :employee do
+      after(:create) do |user|
+        # create(:affiliation, user: user, name: 'employee')
+        user.affiliations << create(:affiliation, name: 'staff')
+      end
+    end
+
+    trait :student do
+      after(:create) do |user|
+        user.affiliations << create(:affiliation, name: 'student')
+      end
+    end
+
+    trait :faculty do
+      after(:create) do |user|
+        user.affiliations << create(:affiliation, name: 'faculty')
+      end
+    end
+
+    trait :with_axis_mundi_role do
+      after(:create) do |user|
+        axis_mundi_role = Role.find_or_create_by!(kind: 'Axis mundi') do |role|
+          role.description = 'Axis Mundi Role Description'
+        end
+        create(:user_role, user: user, role: axis_mundi_role)
+      end
+    end
   end
 end

@@ -3,6 +3,8 @@
 # Table name: contest_instances
 #
 #  id                                   :bigint           not null, primary key
+#  active                               :boolean          default(FALSE), not null
+#  archived                             :boolean          default(FALSE), not null
 #  course_requirement_description       :text(65535)
 #  created_by                           :string(255)
 #  date_closed                          :datetime         not null
@@ -14,34 +16,30 @@
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
+#  require_campus_employment_info       :boolean          default(FALSE), not null
+#  require_finaid_info                  :boolean          default(FALSE), not null
+#  require_pen_name                     :boolean          default(FALSE), not null
 #  transcript_required                  :boolean          default(FALSE), not null
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
 #  contest_description_id               :bigint           not null
-#  status_id                            :bigint           not null
 #
 # Indexes
 #
 #  contest_description_id_idx                         (contest_description_id)
 #  id_unq_idx                                         (id) UNIQUE
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
-#  index_contest_instances_on_status_id               (status_id)
-#  status_id_idx                                      (status_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
-#  fk_rails_...  (status_id => statuses.id)
 #
+# spec/models/contest_instance_spec.rb
+
 require 'rails_helper'
 
-RSpec.describe ContestInstance do
+RSpec.describe ContestInstance, type: :model do
   describe 'associations' do
-    it 'belongs to status' do
-      association = described_class.reflect_on_association(:status)
-      expect(association.macro).to eq(:belongs_to)
-    end
-
     it 'belongs to contest_description' do
       association = described_class.reflect_on_association(:contest_description)
       expect(association.macro).to eq(:belongs_to)
@@ -56,6 +54,12 @@ RSpec.describe ContestInstance do
     it 'has many category_contest_instances' do
       association = described_class.reflect_on_association(:category_contest_instances)
       expect(association.macro).to eq(:has_many)
+    end
+
+    it 'has many class_levels through class_level_requirements' do
+      association = described_class.reflect_on_association(:class_levels)
+      expect(association.macro).to eq(:has_many)
+      expect(association.options[:through]).to eq(:class_level_requirements)
     end
 
     it 'has many class_level_requirements' do
@@ -155,46 +159,74 @@ RSpec.describe ContestInstance do
       expect(contest_instance.errors[:transcript_required]).to include('is not included in the list')
     end
 
-    it 'is invalid without at least one class_level_requirement' do
-      contest_instance.class_level_requirements.clear
+    it 'is invalid without at least one class_level selected' do
+      contest_instance.class_levels.clear
       expect(contest_instance).not_to be_valid
-      expect(contest_instance.errors[:base]).to include('At least one class level requirement must be added.')
+      expect(contest_instance.errors[:base]).to include('At least one class level requirement must be selected.')
+    end
+
+    it 'is invalid without at least one category selected' do
+      contest_instance.categories.clear
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:base]).to include('At least one category must be selected.')
+    end
+
+    it 'is invalid with more than one active contest instance for a contest description' do
+      contest_description = create(:contest_description)
+      create(:contest_instance, contest_description: contest_description, active: true)
+      contest_instance = build(:contest_instance, contest_description: contest_description, active: true)
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:active]).to include('There can only be one active contest instance for a contest description.')
+    end
+
+    it 'is invalid if date_open is after date_closed' do
+      contest_instance.date_open = 2.days.from_now
+      contest_instance.date_closed = 2.days.ago
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:date_closed]).to include('must be after date contest opens')
     end
   end
 
   describe 'Factory' do
     it 'is valid with valid attributes' do
-      contest_instance = FactoryBot.build(:contest_instance)
+      contest_instance = build(:contest_instance)
       expect(contest_instance).to be_valid
     end
   end
 
-  describe '#is_open?' do
-    context 'when the current date is between date_open and date_closed and status is active' do
+  describe '#open?' do
+    context 'when the current date is between date_open and date_closed and is active' do
       it 'returns true' do
         contest_instance = create(:contest_instance, date_open: 2.days.ago, date_closed: 2.days.from_now)
-        expect(contest_instance.is_open?).to be(true)
+        expect(contest_instance.open?).to be(true)
       end
     end
 
-    context 'when the current date is between date_open and date_closed but status is not active' do
+    context 'when the current date is between date_open and date_closed but is not active' do
       it 'returns false' do
-        contest_instance = create(:contest_instance, status: create(:status_archived), date_open: 2.days.ago, date_closed: 2.days.from_now)
-        expect(contest_instance.is_open?).to be(false)
+        contest_instance = create(:contest_instance, active: false, date_open: 2.days.ago, date_closed: 2.days.from_now)
+        expect(contest_instance.open?).to be(false)
       end
     end
 
     context 'when the current date is before date_open' do
       it 'returns false' do
         contest_instance = create(:contest_instance, date_open: 2.days.from_now, date_closed: 4.days.from_now)
-        expect(contest_instance.is_open?).to be(false)
+        expect(contest_instance.open?).to be(false)
       end
     end
 
     context 'when the current date is after date_closed' do
       it 'returns false' do
         contest_instance = create(:contest_instance, date_open: 4.days.ago, date_closed: 2.days.ago)
-        expect(contest_instance.is_open?).to be(false)
+        expect(contest_instance.open?).to be(false)
+      end
+    end
+
+    context 'when it is archived' do
+      it 'returns false' do
+        contest_instance = create(:contest_instance, archived: true)
+        expect(contest_instance.open?).to be(false)
       end
     end
   end
@@ -202,12 +234,86 @@ RSpec.describe ContestInstance do
   describe '.active_and_open' do
     let!(:active_open_contest) { create(:contest_instance, date_open: 1.day.ago, date_closed: 1.day.from_now) }
     let!(:active_closed_contest) { create(:contest_instance, date_open: 3.days.ago, date_closed: 1.day.ago) }
-    let!(:archived_contest) { create(:contest_instance, status: create(:status_archived), date_open: 1.day.ago, date_closed: 1.day.from_now) }
+    let!(:archived_contest) { create(:contest_instance, archived: true, date_open: 1.day.ago, date_closed: 1.day.from_now) }
 
     it 'returns only active contests within the date range' do
       expect(ContestInstance.active_and_open).to include(active_open_contest)
       expect(ContestInstance.active_and_open).not_to include(active_closed_contest)
       expect(ContestInstance.active_and_open).not_to include(archived_contest)
+    end
+  end
+
+  describe '.for_class_level' do
+    let(:class_level1) { create(:class_level) }
+    let(:class_level2) { create(:class_level) }
+
+    let!(:contest_with_class_level1) do
+      contest_instance = create(:contest_instance, class_levels: [ class_level1 ])
+      contest_instance
+    end
+
+    let!(:contest_with_class_level2) do
+      contest_instance = create(:contest_instance, class_levels: [ class_level2 ])
+      contest_instance
+    end
+
+    let!(:contest_with_both_class_levels) do
+      contest_instance = create(:contest_instance, class_levels: [ class_level1, class_level2 ])
+      contest_instance
+    end
+
+    it 'returns contests matching the specified class level' do
+      result = ContestInstance.for_class_level(class_level1.id)
+      expect(result).to include(contest_with_class_level1, contest_with_both_class_levels)
+      expect(result).not_to include(contest_with_class_level2)
+    end
+
+    it 'returns contests matching the specified class level (class_level2)' do
+      result = ContestInstance.for_class_level(class_level2.id)
+      expect(result).to include(contest_with_class_level2, contest_with_both_class_levels)
+      expect(result).not_to include(contest_with_class_level1)
+    end
+
+    it 'does not return contests without the specified class level' do
+      class_level3 = create(:class_level)
+      result = ContestInstance.for_class_level(class_level3.id)
+      expect(result).to be_empty
+    end
+
+    it 'returns unique contests when multiple class levels are associated' do
+      result = ContestInstance.for_class_level(class_level1.id)
+      expect(result.count).to eq(2)
+    end
+  end
+
+  describe '#dup_with_associations' do
+    let!(:contest_instance) { create(:contest_instance) }
+
+    before do
+      # Ensure associations are present
+      contest_instance.class_levels << create(:class_level)
+      contest_instance.categories << create(:category)
+    end
+
+    it 'creates a new instance with the same attributes except specified ones' do
+      new_instance = contest_instance.dup_with_associations
+      expect(new_instance).to be_a_new(ContestInstance)
+      expect(new_instance.active).to be(false)
+      expect(new_instance.created_by).to be_nil
+      expect(new_instance.date_closed).to be_nil
+      expect(new_instance.date_open).to be_nil
+      expect(new_instance.judging_open).to be(false)
+      expect(new_instance.archived).to be(false)
+    end
+
+    it 'duplicates class_levels associations' do
+      new_instance = contest_instance.dup_with_associations
+      expect(new_instance.class_levels).to match_array(contest_instance.class_levels)
+    end
+
+    it 'duplicates categories associations' do
+      new_instance = contest_instance.dup_with_associations
+      expect(new_instance.categories).to match_array(contest_instance.categories)
     end
   end
 end

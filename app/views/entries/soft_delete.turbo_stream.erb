@@ -1,0 +1,6 @@
+<!-- app/views/entries/soft_delete.turbo_stream.erb -->
+<%= turbo_stream.replace "flash" do %>
+  <%= render "shared/flash_messages" %>
+<% end %>
+
+<%= turbo_stream.remove dom_id(@entry) %>

@@ -1,3 +1,4 @@
+# app/policies/application_policy.rb
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -6,16 +7,17 @@ class ApplicationPolicy
     @record = record
   end
 
+  # Default to check axis_mundi? for all actions
   def index?
-    false
+    axis_mundi?
   end
 
   def show?
-    scope.exists?(id: record.id)
+    axis_mundi?
   end
 
   def create?
-    false
+    axis_mundi?
   end
 
   def new?
@@ -23,7 +25,7 @@ class ApplicationPolicy
   end
 
   def update?
-    false
+    axis_mundi?
   end
 
   def edit?
@@ -31,17 +33,15 @@ class ApplicationPolicy
   end
 
   def destroy?
-    false
+    axis_mundi?
   end
 
-  def scope
-    Pundit.policy_scope!(user, record.class)
+  # Common method to check for Axis mundi role
+  def axis_mundi?
+    user&.axis_mundi? || false
   end
 
-  def admin_user?
-    user.user_roles.joins(:role).exists?(roles: { kind: 'Axis Mundi' })
-  end
-
+  # Default Scope
   class Scope
     attr_reader :user, :scope
 
@@ -51,34 +51,11 @@ class ApplicationPolicy
     end
 
     def resolve
-      if admin_user?
+      if user&.axis_mundi?
         scope.all
       else
-        specific_scope
+        scope.none
       end
     end
-
-    private
-
-    def admin_user?
-      user.user_roles.joins(:role).exists?(roles: { kind: 'Axis Mundi' })
-    end
-
-    def specific_scope
-      # This method can be overridden in the specific policy if needed.
-      scope.none
-    end
-  end
-
-  # Override the `authorize` method to allow admin users
-  def authorized_action?
-    admin_user? || specific_action?
-  end
-
-  private
-
-  # Implement specific action rules in derived policies
-  def specific_action?
-    false
   end
 end

@@ -6,25 +6,56 @@
     <table class="table table-bordered table-hover table-striped mt-3">
       <thead>
         <tr>
-          <th></th>
-          <th>Status</th>
           <th>Contest Name</th>
-          <th>Open Date</th>
-          <th>Close Date</th>
+          <th>Title</th>
+          <th>Entry Type</th>
+          <th>Submitted</th>
+          <th class="text-center">Entry</th>
+          <th class="text-center">Remove</th>
         </tr>
       </thead>
       <tbody>
         <% @entries.each do |entry| %>
-          <tr>
+          <tr id="<%= dom_id(entry) %>" data-controller="fade-out">
+            <td><%= "#{entry.contest_instance.contest_description.name } - #{entry.contest_instance.date_open.year}" %></td>
+            <td><%= entry.title %></td>
+            <td><%= entry.category.kind %></td>
+            <td><%= entry.created_at.strftime("%B %d, %Y") %></td>
             <td class="text-center">
-              <%= link_to entry_path(entry), class: 'btn-icon' do %>
-                <i class="bi bi-eye"></i>
+              <% if entry.entry_file.attached? %>
+                <div class="d-flex justify-content-center align-items-center gap-3">
+                  <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"),
+                              target: "_blank", 
+                              rel: "noopener",
+                              data: { 'bs-toggle': 'tooltip' },
+                              title: 'Download entry',
+                              aria: { label: 'Download entry' } do %>
+                    <i class="bi bi-download" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                    <span class="visually-hidden">Download entry</span>
+                  <% end %>
+                </div>
+              <% else %>
+                No file attached
               <% end %>
             </td>
-            <td><%= entry.status.kind %></td> <!-- Assuming status has a `kind` attribute -->
-            <td><%= entry.contest_instance.contest_description.name %></td>
-            <td><%= entry.contest_instance.date_open.strftime("%B %d, %Y") %></td>
-            <td><%= entry.contest_instance.date_closed.strftime("%B %d, %Y") %></td>
+            <td class="text-center text-danger">
+              <% if entry.soft_deletable? %>
+                <%= button_to soft_delete_entry_path(entry),
+                              method: :patch,
+                              data: { turbo_confirm: 'Are you sure you want to remove this entry?' },
+                              form: { data: { turbo_frame: "_top" } },
+                              class: 'btn btn-link p-0 d-inline-block',
+                              title: 'Delete entry',
+                              aria: { label: 'Delete entry' } do %>
+                  <i class="text-danger bi bi-trash" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  <span class="visually-hidden">Delete entry</span>
+                <% end %>
+              <% else %>
+                <span class="text-muted" title="Cannot remove after contest has closed">
+                  <i class="text-danger bi bi-trash disabled" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                </span>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>

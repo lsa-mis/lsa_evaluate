@@ -9,7 +9,7 @@
     <% if user_signed_in? %>
       <div class="user-controls d-flex flex-column align-items-end" data-controller="dropdown">
         <div id="avatar" class="avatar bg-warning mb-2" data-action="click->dropdown#toggle" aria-haspopup="true" aria-expanded="false">
-          <span><%= current_user.display_initials_or_email %><i class="bi bi-caret-down-fill" style="font-size: .75rem;"></i></span>
+          <span><%= current_user.display_initials_or_uid %><i class="bi bi-caret-down-fill" style="font-size: .75rem;"></i></span>
         </div>
         <div class="dropdown-menu" aria-labelledby="avatar-menu" data-dropdown-target="menu">
           <% profile = current_user.profile %>

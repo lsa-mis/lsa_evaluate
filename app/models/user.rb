@@ -11,10 +11,11 @@
 #  email                  :string(255)      default(""), not null
 #  encrypted_password     :string(255)      default(""), not null
 #  failed_attempts        :integer          default(0), not null
+#  first_name             :string(255)      default(""), not null
+#  last_name              :string(255)      default(""), not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string(255)
 #  locked_at              :datetime
-#  person_affiliation     :string(255)
 #  principal_name         :string(255)
 #  provider               :string(255)
 #  remember_created_at    :datetime
@@ -41,6 +42,9 @@ class User < ApplicationRecord
          :trackable, :lockable, :timeoutable,
          :omniauthable, omniauth_providers: [ :saml ]
 
+  has_many :affiliations, dependent: :destroy
+  accepts_nested_attributes_for :affiliations
+
   has_many :user_roles, dependent: :destroy
   has_many :roles, through: :user_roles
   has_many :assignments, dependent: :destroy
@@ -59,61 +63,60 @@ class User < ApplicationRecord
     end
   end
 
-  # Method to check for a specific role
-  def role?(role_name)
-    roles.exists?(kind: role_name)
-  end
-
   def axis_mundi?
-    role?('Axis mundi')
+    @axis_mundi ||= roles.exists?(kind: 'Axis mundi')
   end
 
   def administrator?
-    role?('Container Administrator')
+    @administrator ||= roles.exists?(kind: 'Collection Administrator')
   end
 
   def manager?
-    role?('Container Manager')
+    @manager ||= roles.exists?(kind: 'Collection Manager')
   end
 
   def judge?
-    role?('Judge')
+    @judge ||= roles.exists?(kind: 'Judge')
   end
 
   def admin_for_container?(container_id)
-    assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Administrator'))
+    assignments.exists?(container_id:, role: Role.find_by(kind: 'Collection Administrator'))
   end
 
   def manager_for_container?(container_id)
-    assignments.exists?(container_id:, role: Role.find_by(kind: 'Container Manager'))
+    assignments.exists?(container_id:, role: Role.find_by(kind: 'Collection Manager'))
   end
 
-  def display_initials_or_email
-    if display_name.present?
-      display_name.split.map { |name| name[0].upcase }.join
-    else
-      email.split('@').first
-    end
+  def has_container_role?(container, role_kinds = [ 'Collection Manager', 'Collection Administrator' ])
+    assignments.joins(:role)
+              .exists?(container: container, roles: { kind: role_kinds })
   end
 
   def is_employee?
-    Rails.logger.info "@@@@@@@@@@ email: #{email} - Person affiliation: #{person_affiliation}"
-    %w[employee staff].any? { |affiliation| person_affiliation&.include?(affiliation) }
-  end
-
-  def display_firstname_or_email
-    if display_name.present?
-      display_name.split.first
-    else
-      email.split('@').first
-    end
-  end
-
-  def display_name_or_email
-    display_name.presence || email
+    affiliations.exists?(name: [ 'staff' ])
   end
 
   def profile_exists?
     profile.present?
+  end
+
+  def display_initials_or_uid
+    if display_name.present?
+      display_name.split.map { |name| name[0].upcase }.join
+    else
+      uid[0].upcase
+    end
+  end
+
+  def display_name_or_uid
+    display_name.presence || uid
+  end
+
+  def display_name_and_uid
+    if display_name.present?
+      "#{display_name} (#{uid})"
+    else
+      uid
+    end
   end
 end

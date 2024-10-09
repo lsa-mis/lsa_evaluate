@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row justify-content-start">
     <div class="col-12 col-md-8">
-      <%= simple_form_for @profile do |f| %>
+      <%= simple_form_for @profile, html: { data: { turbo: false } } do |f| %>
         <%= f.error_notification %>
         <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
@@ -10,18 +10,22 @@
           <div class= "ms-4">
             <div class="row">
               <%= f.input :user_id, as: :hidden, input_html: { value: current_user.id } %>
-              <div class="col">
-                <%= f.input :first_name %>
-              </div>
-              <div class="col">
-                <%= f.input :last_name %>
-              </div>
+            <div class="col">
+              <%= f.input :preferred_first_name, input_html: { value: @profile.preferred_first_name.presence || current_user.first_name } %>
+            </div>
+
+            <div class="col">
+              <%= f.input :preferred_last_name, input_html: { value: @profile.preferred_last_name.presence || current_user.last_name } %>
+            </div>
             </div>
             <div class="row">
               <div class="col">
                 <% if action_name == 'new' || action_name == 'create' %>
                   <%= f.input :umid %>
                 <% end %>
+              </div>
+              <div class="col">
+                <%= f.input :pen_name, label: "Pen Name (optional)", hint: "Set a default pen name to use for future contest entries that require one. You can leave this blank if you prefer to enter a pen name each time." %>
               </div>
             </div>
 
@@ -52,9 +56,6 @@
                     <%= address_form.input :country, priority: ["United States"], input_html: { data: { target: "address-copy.campusCountry" } } %>
                     <%= address_form.input :address_type_id, as: :hidden, input_html: { value: AddressType.find_by(kind: 'Campus').id } %>
                   </div>
-                </div>
-                <div class="row">
-                  <%= address_form.input :phone, input_html: { data: { target: "address-copy.campusPhone" } } %>
                 </div>
               <% end %>
 
@@ -87,9 +88,6 @@
                     <%= address_form.input :address_type_id, as: :hidden, input_html: { value: AddressType.find_by(kind: 'Home').id } %>
                   </div>
                 </div>
-                <div class="row">
-                  <%= address_form.input :phone, input_html: { data: { target: "address-copy.homePhone" } } %>
-                </div>
               <% end %>
             </div>
           </div>
@@ -107,45 +105,19 @@
             <%= f.input :campus_id, collection: Campus.all, label_method: :campus_descr, value_method: :id, label: "Primary Campus Class Location" %>
             <%= f.input :major, label: "Major (if undergraduate)" %>
             <%= f.input :department_id, collection: Department.all, label_method: :name, value_method: :id, label: "Department (if graduate)" %>
-
             <%= f.input :grad_date, as: :date, start_year: Date.today.year,
                                       end_year: Date.today.year + 12, discard_day: true,
                                       order: [:month, :year],
                                       lebel: "Expected Graduation Date" %>
             <%= f.input :degree %>
-            
-
-          </div>
-
-          <h2 class="mt-4">Employment Information</h2>
-          <p>In the event you are a contest winnner.....</p>
-          <div class= "ms-4">
-            <%= f.input :campus_employee, as: :boolean, label: "I am currently an active campus employee (workstudy, GSI, etc)?" %>
-          </div>
-
-          <h2 class="mt-4">Financial Aid</h2>
-          <div class= "ms-4">
-            <% if (content = render_editable_content('profiles', 'finaid_information')) %>
-                <strong>Important note for students receiving needs-based financial aid:</strong>
-                <p class="">
-                  <%= content %>
-                </p>
-            <% end %>
-            <%= f.input :accepted_financial_aid_notice, as: :boolean, label: "I have read and understood the above statement about the potential impact of prize money on financial aid." %>
-            <%= f.input :receiving_financial_aid, as: :boolean, label: "I currently receive NEED-BASED financial aid?" %>
-            <%= f.input :financial_aid_description %>
           </div>
 
           <h2 class="mt-4">Publicity</h2>
-          <p>If your manuscript earns a Hopwood or other award.....</p>
           <div class= "ms-4">
             <div class="row">
 
               <div class="col">
                 <%= f.input :hometown_publication, label: "Name of hometown newspaper..." %>
-              </div>
-              <div class="col">
-                <%= f.input :pen_name %>
               </div>
             </div>
           </div>
@@ -158,7 +130,7 @@
             </p>
           <% end %>
         </div>
-        <div class="form-actions">
+        <div class="form-actions pb-1">
           <%= f.button :submit, class: "btn btn-primary" %>
         </div>
       <% end %>

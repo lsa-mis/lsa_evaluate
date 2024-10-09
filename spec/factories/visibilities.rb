@@ -12,7 +12,15 @@ require 'factory_bot_rails'
 
 FactoryBot.define do
   factory :visibility do
-    kind { %w[Public Private].sample }
-    description { Faker::Lorem.paragraph }
+    kind { 'Public' }
+    description { Faker::Lorem.sentence(word_count: 5) }
+
+    trait :public do
+      kind { 'Public' }
+    end
+
+    trait :private do
+      kind { 'Private' }
+    end
   end
 end

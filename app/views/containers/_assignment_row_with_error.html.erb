@@ -1,0 +1,24 @@
+<!-- app/views/containers/_assignment_row_with_error.html.erb -->
+<tr id="<%= dom_id(assignment) %>">
+  <td>
+    <%= assignment.user.display_name_and_uid %>
+    <% if assignment.errors.any? %>
+      <div class="alert alert-danger my-2">
+        <strong>Error:</strong> <%= assignment.errors.full_messages.to_sentence %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+  </td>
+  <td><%= assignment.role.kind %></td>
+  <td class="text-center">
+    <%= button_to container_assignment_path(container, assignment),
+                  method: :delete,
+                  data: { turbo_confirm: "Are you sure?", 'bs-toggle': 'tooltip' },
+                  form: { data: { turbo_frame: "_top" } },
+                  class: "btn btn-link p-0",
+                  title: 'Delete entry',
+                  aria: { label: 'Delete entry' } do %>
+      <i class="text-danger bi bi-trash" style="font-size: 1.5rem;" aria-hidden="true"></i>
+    <% end %>
+  </td>
+</tr>

@@ -1,0 +1,8 @@
+<!-- app/views/entries/toggle_disqualified.turbo_stream.erb -->
+<%= turbo_stream.replace dom_id(@entry) do %>
+  <%= render partial: "contest_instances/entry", locals: { entry: @entry } %>
+<% end %>
+
+<%= turbo_stream.replace "flash" do %>
+  <%= render "shared/flash_messages" %>
+<% end %>

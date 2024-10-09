@@ -1,0 +1,9 @@
+<!-- app/views/contest_descriptions/_eligibility_rules.html.erb -->
+
+<div>
+  <% if contest_description.eligibility_rules.present? %>
+    <%= contest_description.eligibility_rules %>
+  <% else %>
+    <p>No eligibility rules provided.</p>
+  <% end %>
+</div>

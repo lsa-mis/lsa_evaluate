@@ -1,0 +1,34 @@
+<div class="container-contest-section mt-4">
+  <h3><%= container.name %> - <%= container.department.name %></h3>
+  <table class="table table-bordered table-hover table-striped mt-3">
+    <thead>
+      <tr>
+        <th>Contest Name</th>
+        <th>Rules</th>
+        <th>Close Date</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% contests.each do |contest| %>
+        <tr>
+          <td class="strong"><%= contest.contest_description.name %></td>
+          <td class="card-text">
+            <%= display_eligibility_rules(contest) %>
+          </td>
+          <td class="card-text"><%= contest.date_closed.strftime("%B %d, %Y - %I:%M %p") %></td>
+          <td class="text-center">
+            <%= link_to new_entry_path(contest_instance_id: contest.id),
+                        class: 'd-block',
+                        data: { 'bs-toggle': 'tooltip' },
+                        title: 'Enter contest',
+                        aria: { label: 'Enter contest' } do %>
+              <i class="bi bi-pencil" style="font-size: 1.5rem;" aria-hidden="true"></i>
+              <span class="visually-hidden">Enter instance</span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

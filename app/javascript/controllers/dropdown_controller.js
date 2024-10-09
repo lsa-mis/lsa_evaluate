@@ -4,7 +4,7 @@ export default class extends Controller {
   static targets = ["menu"]
 
   connect() {
-    console.log("Dropdown controller connected");
+    // console.log("Dropdown controller connected");
   }
   
   toggle(event) {

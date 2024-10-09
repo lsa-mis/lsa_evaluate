@@ -1,30 +1,53 @@
-<div class="container-fluid mt-4">
+<!-- app/views/applicant_dashboard/index.html.erb -->
+<h1>Applicant Dashboard</h1>
+<div class="container-fluid mt-4" data-controller="eligibility-modal">
   <div class="row">
-    <%= render 'profiles/profile_summary', profile: @profile %>
+    <!-- Profile summary: Displayed on all screens, order changes based on viewport size -->
+    <div class="col-8 col-xxl-2 order-2 order-xxl-1">
+      <%= render 'profiles/profile_summary', profile: @profile %>
+    </div>
 
-    <div class="col-10 mt-4">
-      <div class="row mb-4 ms-2">
+    <!-- Main content -->
+    <div class="col-12 col-xxl-10 mt-4 order-1 order-xxl-2">
+      <div class="row mb-4">
         <div class="">
           <div class="card text-center">
             <div class="card-body">
               <small class="text-muted"><%= Time.now.strftime("%B %d, %Y - %I:%M %p") %></small>
-              <%= render 'static_pages/opportunities' %>
-              <p class="card-text"><%= "Currently there are #{@active_contests.count} Open contests!"%></p>
+              <%= render 'applicant_dashboard/opportunities' %>
+              <p class="card-text">Currently there <%= @active_contests.count == 1 ? 'is' : 'are' %> <%= pluralize(@active_contests.count, 'contest') %> available to you!</p>
             </div>
           </div>
         </div>
       </div>
-      <div class="row ms-2">
+      <div class="row">
         <div class="col-12 submissions-summary">
           <%= render 'applicant_dashboard/submissions_summary', submissions: @submissions %>
         </div>
       </div>
-      <div class="row ms-2">
-        <div class="col-12 available-contests">
+      <div class="row">
+        <div class="col-12 available-contests" id="available-contests">
           <%= render 'applicant_dashboard/available_contests' %>
         </div>
       </div>
+    </div>
+  </div>
 
+  <!-- Reusable Modal -->
+  <div class="modal fade" id="eligibilityModal" tabindex="-1" aria-labelledby="eligibilityModalLabel" aria-hidden="true" data-eligibility-modal-target="modal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eligibilityModalLabel">Eligibility Rules</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" data-eligibility-modal-target="content">
+          <!-- Full eligibility rules will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

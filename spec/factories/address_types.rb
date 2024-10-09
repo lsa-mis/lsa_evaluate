@@ -15,6 +15,7 @@
 #
 FactoryBot.define do
   factory :address_type do
+    # kind { 'Home' }
     sequence(:kind) { |n| "Kind #{n}" } # Use a unique sequence for kind
     description { Faker::Lorem.sentence }
 

@@ -3,17 +3,37 @@
 Rails.application.routes.draw do
   root 'static_pages#home'
 
-  resources :entries
-  get 'applicant_dashboard/index'
-  resources :testingrsmokes
+  resources :entries do
+    member do
+      patch 'soft_delete'
+      patch :toggle_disqualified
+    end
+  end
 
-  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' } do
-    delete 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
+  # get 'applicant_dashboard/index'
+
+  # devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' } do
+  #   delete 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
+  # end
+  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }
+
+  devise_scope :user do
+    delete 'sign_out', to: 'users/sessions#destroy'
   end
 
   resources :containers do
+    collection do
+      get 'lookup_user'
+    end
     resources :contest_descriptions do
       resources :contest_instances, path: 'instances'
+      member do
+        get 'eligibility_rules'
+      end
+      collection do
+        get 'contest_descriptions_for_container'
+        post 'create_instances_for_selected_descriptions', to: 'contest_instances#create_instances_for_selected_descriptions'
+      end
     end
     resources :assignments, only: %i[create destroy]
   end
@@ -27,11 +47,8 @@ Rails.application.routes.draw do
     end
   end
   resources :editable_contents, only: %i[index edit update]
-  resources :statuses
   resources :categories
-  # resources :contest_descriptions
   resources :class_levels
-  # resources :contest_instances
   resources :address_types
   resources :campuses
   resources :schools
@@ -39,9 +56,15 @@ Rails.application.routes.draw do
   resources :profiles, only: %i[index show new create edit update destroy]
   resources :user_roles
   get 'applicant_dashboard', to: 'applicant_dashboard#index'
+  get '/404', to: 'errors#not_found', as: 'not_found'
+  get '/500', to: 'errors#internal_server_error', as: 'internal_server_error'
 
+  mount ActiveStorage::Engine => '/rails/active_storage', as: 'active_storage'
   mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
 
   # Place this at the very end of the file to catch all undefined routes
-  get '*path', to: 'application#render404', via: :all
+  match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|
+    req.path.exclude?('/rails/active_storage') &&
+    req.path.exclude?('/letter_opener')
+  }
 end

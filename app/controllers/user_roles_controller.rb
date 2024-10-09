@@ -3,20 +3,26 @@ class UserRolesController < ApplicationController
   before_action :set_user_role, only: %i[show edit update destroy]
 
   def index
-    @user_roles = UserRole.all
+    authorize UserRole
+    @user_roles = policy_scope(UserRole)
   end
 
-  def show; end
+  def show
+    authorize @user_role
+  end
 
   def new
     @user_role = UserRole.new
+    authorize @user_role
   end
 
-  def edit; end
+  def edit
+    authorize @user_role
+  end
 
   def create
     @user_role = UserRole.new(user_role_params)
-
+    authorize @user_role
     respond_to do |format|
       if @user_role.save
         format.html { redirect_to @user_role, notice: 'UserRole was successfully created.' }
@@ -27,6 +33,7 @@ class UserRolesController < ApplicationController
   end
 
   def update
+    authorize @user_role
     respond_to do |format|
       if @user_role.update(user_role_params)
         format.html { redirect_to @user_role, notice: 'UserRole was successfully updated.' }
@@ -37,6 +44,7 @@ class UserRolesController < ApplicationController
   end
 
   def destroy
+    authorize @user_role
     @user_role.destroy
     respond_to do |format|
       format.html { redirect_to user_roles_url, notice: 'UserRole was successfully destroyed.' }

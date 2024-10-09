@@ -3,6 +3,8 @@
 # Table name: contest_instances
 #
 #  id                                   :bigint           not null, primary key
+#  active                               :boolean          default(FALSE), not null
+#  archived                             :boolean          default(FALSE), not null
 #  course_requirement_description       :text(65535)
 #  created_by                           :string(255)
 #  date_closed                          :datetime         not null
@@ -14,38 +16,35 @@
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
+#  require_campus_employment_info       :boolean          default(FALSE), not null
+#  require_finaid_info                  :boolean          default(FALSE), not null
+#  require_pen_name                     :boolean          default(FALSE), not null
 #  transcript_required                  :boolean          default(FALSE), not null
 #  created_at                           :datetime         not null
 #  updated_at                           :datetime         not null
 #  contest_description_id               :bigint           not null
-#  status_id                            :bigint           not null
 #
 # Indexes
 #
 #  contest_description_id_idx                         (contest_description_id)
 #  id_unq_idx                                         (id) UNIQUE
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
-#  index_contest_instances_on_status_id               (status_id)
-#  status_id_idx                                      (status_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
-#  fk_rails_...  (status_id => statuses.id)
 #
 class ContestInstance < ApplicationRecord
   has_many :class_level_requirements, dependent: :destroy
   has_many :class_levels, through: :class_level_requirements
   has_many :category_contest_instances, dependent: :destroy
   has_many :categories, through: :category_contest_instances
-  has_many :entries
-
-  belongs_to :status
+  has_many :entries, dependent: :restrict_with_error
   belongs_to :contest_description
 
   scope :active_and_open, -> {
-    joins(:status)
-    .where(statuses: { kind: 'Active' })
+    where(active: true)
+    .where(archived: false)
     .where('date_open <= ? AND date_closed >= ?', Time.zone.now, Time.zone.now)
   }
 
@@ -55,8 +54,14 @@ class ContestInstance < ApplicationRecord
     .where(contest_descriptions: { container_id: container_id })
   }
 
-  accepts_nested_attributes_for :category_contest_instances, allow_destroy: true
-  accepts_nested_attributes_for :class_level_requirements, allow_destroy: true
+  scope :for_class_level, ->(class_level_id) {
+    joins(:class_levels).where(class_levels: { id: class_level_id }).distinct
+  }
+
+  scope :with_public_visibility, -> {
+    joins(contest_description: { container: :visibility })
+    .where(visibilities: { kind: 'Public' })
+  }
 
   validates :date_open, presence: true
   validates :date_closed, presence: true
@@ -69,18 +74,59 @@ class ContestInstance < ApplicationRecord
   validates :maximum_number_entries_per_applicant, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :created_by, presence: true
   validate :must_have_at_least_one_class_level_requirement
+  validate :must_have_at_least_one_category
+  validate :only_one_active_per_contest_description
+  validate :date_closed_after_date_open
+
+  def dup_with_associations
+    new_instance = dup
+    new_instance.active = false
+    new_instance.created_by = nil
+    new_instance.date_closed = nil
+    new_instance.date_open = nil
+    new_instance.judging_open = false
+    new_instance.archived = false
+
+    # Duplicate class_levels association
+    new_instance.class_levels = self.class_levels
+
+    # Duplicate categories association
+    new_instance.categories = self.categories
+
+    new_instance
+  end
 
   def display_name
     "#{contest_description.name} - #{date_open.strftime('%Y-%m-%d')} to #{date_closed.strftime('%Y-%m-%d')}"
   end
 
-  def is_open?
-    status.kind.downcase == 'active' && DateTime.now.between?(date_open, date_closed)
+  def open?
+    active && !archived && Time.current.between?(date_open, date_closed)
   end
 
+  private
+
   def must_have_at_least_one_class_level_requirement
-    if class_level_requirements.empty?
-      errors.add(:base, 'At least one class level requirement must be added.')
+    if class_levels.empty?
+      errors.add(:base, 'At least one class level requirement must be selected.')
+    end
+  end
+
+  def must_have_at_least_one_category
+    if categories.empty?
+      errors.add(:base, 'At least one category must be selected.')
+    end
+  end
+
+  def only_one_active_per_contest_description
+    if active && contest_description.contest_instances.where(active: true).where.not(id: id).exists?
+      errors.add(:active, 'There can only be one active contest instance for a contest description.')
+    end
+  end
+
+  def date_closed_after_date_open
+    if date_open && date_closed && date_closed < date_open
+      errors.add(:date_closed, 'must be after date contest opens')
     end
   end
 end

@@ -1,55 +1,52 @@
+# app/policies/container_policy.rb
 class ContainerPolicy < ApplicationPolicy
-  class Scope < ApplicationPolicy::Scope
+  class Scope < Scope
+    def resolve
+      if user&.axis_mundi?
+        scope.all
+      else
+        scope.where(id: user_containers_ids)
+      end
+    end
+
     private
 
-    def specific_scope
-      scope.joins(:assignments).where(assignments: { user_id: user.id, role_id: [ container_admin_role.id, container_manager_role.id ] })
-    end
-
-    def container_admin_role
-      @container_admin_role ||= Role.find_by(kind: 'Container Administrator')
-    end
-
-    def container_manager_role
-      @container_manager_role ||= Role.find_by(kind: 'Container Manager')
+    def user_containers_ids
+      user&.containers&.pluck(:id) || []
     end
   end
 
   def index?
-    user_has_assignment_role? || admin_user?
+    user_has_containers? || axis_mundi?
   end
 
   def show?
-    user_has_assignment_role? || admin_user?
+    owns_container? || axis_mundi?
   end
 
   def create?
-    user_is_employee? || admin_user?
+    user_is_employee? || axis_mundi?
   end
 
   def update?
-    user_has_assignment_role? || admin_user?
+    owns_container? || axis_mundi?
   end
 
   def destroy?
-    user_has_assignment_role? || admin_user?
+    owns_container? || axis_mundi?
   end
 
   private
 
-  def user_has_assignment_role?
-    record.assignments.exists?(user_id: user.id, role_id: [ container_admin_role.id, container_manager_role.id ])
+  def user_has_containers?
+    user&.containers&.exists?
+  end
+
+  def owns_container?
+    user&.has_container_role?(record)
   end
 
   def user_is_employee?
-    user.person_affiliation == 'employee'
-  end
-
-  def container_admin_role
-    Role.find_by(kind: 'Container Administrator')
-  end
-
-  def container_manager_role
-    Role.find_by(kind: 'Container Manager')
+    user&.is_employee?
   end
 end

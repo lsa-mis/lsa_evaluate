@@ -25,13 +25,28 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class Assignment < ApplicationRecord
+  attr_accessor :uid
   belongs_to :user
   belongs_to :container
   belongs_to :role
 
-  scope :container_administrators, -> { joins(:role).where(roles: { kind: 'Container Administrator' }) }
+  scope :container_administrators, -> { joins(:role).where(roles: { kind: 'Collection Administrator' }) }
 
   validates :role_id,
             uniqueness: { scope: %i[user_id container_id],
-                          message: 'combination with user and container must be unique' }
+                          message: 'combination with user and collection must be unique' }
+  before_destroy :ensure_at_least_one_admin_remains, if: :is_container_administrator?
+
+  private
+
+  def is_container_administrator?
+    role.kind == 'Collection Administrator'
+  end
+
+  def ensure_at_least_one_admin_remains
+    if container.assignments.container_administrators.count <= 1
+      errors.add(:base, 'Cannot delete the last Container Administrator.')
+      throw :abort
+    end
+  end
 end

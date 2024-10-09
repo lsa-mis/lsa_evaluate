@@ -1,0 +1,56 @@
+<div class="d-flex justify-content-between align-items-center">
+  <h1><%= @container.name %></h1>
+  <%= link_to "Return to Manage Collections", containers_path, class: "link_to mt-4" %>
+</div>
+<p>
+Please select dates for a new contest period and descriptions to carry forward. Then click the button to create new contest instances.
+</p>
+<div>
+  <%= simple_form_for :dates, url: create_instances_for_selected_descriptions_container_contest_descriptions_url, method: :post, 
+    data: { controller: "checkboxselect",
+            target: "form",
+            action: "submit->checkboxselect#submitForm",
+            turbo_frame: "_top" 
+          } do |form| %>
+    <div class="flex md:flex justify-between items-center ml-2 mb-2">
+      <div>
+        <%= submit_tag 'Create Instances for Selected Contest Descriptions', class: "btn btn-sm btn-secondary" %>
+      </div>
+    </div>
+    <input type="hidden" id="container" name="container" value="<%= @container %>">
+    <div class="my-4">
+      <%= form.label :date_open, "Date Open *:", class: "form-label" %>
+      <%= form.datetime_field :date_open, class: "mx-2 form-control", "data-checkboxselect-target": "date_open", aria: { label: "Date Open" } %>
+      <%= form.label :date_closed, "Date Closed *:", class: "form-label" %>
+      <%= form.datetime_field :date_closed, class: "mx-2 form-control", "data-checkboxselect-target": "date_closed", aria: { label: "Date Closed" } %>
+    </div>
+    <div class="text-danger my-2" id="checkbox_error" aria-live="polite">
+    </div>
+    <h2>Contest Descriptions</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <td>
+            <span hidden id="select_all">Select All</span>
+            <input type="checkbox" aria-labelledby="select_all" class="check_box ml-2" data-checkboxselect-target="checkbox_all" data-action="change->checkboxselect#toggleCheckbox">
+          </td>
+          <th>Name</th>
+          <th>Short Name</th>
+          <th>Eligibility Rules</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @contest_descriptions.each do |description| %>
+          <tr>
+            <td class="mi_tbody_td">
+              <input type="checkbox" aria-labelledby="descr_ids_<%= description.id %>" name="checkbox[<%= description.id %>]" id="descr_ids_<%= description.id %>" value="<%= description.id %>" class="check_box" data-checkboxselect-target="checkbox" data-action="change->checkboxselect#toggleCheckboxAll">
+            </td>
+            <td><%= description.name %></td>
+            <td><%= description.short_name %></td>
+            <td><%= description.eligibility_rules %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</div>

@@ -1,32 +1,52 @@
+<!-- app/views/applicant_dashboard/_available_contests.html.erb -->
 <div class="mt-4">
-
-  <h2 class="">Contests available</h2>
-
-  <table class="table table-bordered table-hover table-striped mt-3">
-    <thead>
-      <tr>
-        <th>Contest Name</th>
-        <th>Rules</th>
-        <th>Contest Container</th>
-        <th>Close Date</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @active_contests.each do |contest| %>
-        <tr>
-          <td class="strong"><%= contest.contest_description.name %></td>
-          <td class="card-text"><%= contest.contest_description.eligibility_rules %></td>
-          <td class="card-text"><%= "#{contest.contest_description.container.name} - #{contest.contest_description.container.department.name}" %></td>
-          <td class="card-text"><%= contest.date_closed.strftime("%B %d, %Y - %I:%M %p") %></td>
-          <td class="text-center">
-            <%= link_to new_entry_path(contest_instance_id: contest.id), class: 'btn-icon' do %>
-              <i class="bi bi-pencil"></i>
-            <% end %>
-          </td>
-        </tr>
+  <% if params[:department_id].present? || params[:container_id].present? %>
+    <h2>Filtered Contests</h2>
+    <p>
+      Showing contests for 
+      <% if params[:department_id].present? %>
+        <% department = Department.find_by(id: params[:department_id]) %>
+        <% if department %>
+          Department: <strong><%= department.name %></strong>
+        <% end %>
       <% end %>
-    </tbody>
-  </table>
-
+      <% if params[:department_id].present? && params[:container_id].present? %>
+        and
+      <% end %>
+      <% if params[:container_id].present? %>
+        <% container = Container.find_by(id: params[:container_id]) %>
+        <% if container %>
+          Collection: <strong><%= container.name %></strong>
+        <% end %>
+      <% end %>
+    </p>
+  <% else %>
+    <h2>All Available Contests</h2>
+  <% end %>
+  <!-- Active Filters -->
+  <div class="active-filters mb-3">
+    <% if params[:department_id].present? || params[:container_id].present? %>
+      <span>Currently filtering by:</span>
+      <% if params[:department_id].present? %>
+        <% department = Department.find_by(id: params[:department_id]) %>
+        <% if department %>
+          <span class="badge bg-primary">Department: <%= department.name %></span>
+        <% end %>
+      <% end %>
+      <% if params[:container_id].present? %>
+        <% container = Container.find_by(id: params[:container_id]) %>
+        <% if container %>
+          <span class="badge bg-success">Collection: <%= container.name %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+  
+  <% if @active_contests_by_container.any? %>
+    <% @active_contests_by_container.each do |container, contests| %>
+      <%= render partial: 'contest_table', locals: { container: container, contests: contests } %>
+    <% end %>
+  <% else %>
+    <p>No active contests available for your class level.</p>
+  <% end %>
 </div>
