@@ -25,9 +25,8 @@ set :tmp_dir, '/home/deployer/tmp'
 set :keep_releases, 3
 
 # Default value for :linked_files and linked_dirs is []
-set :linked_files, %w[config/puma.rb config/nginx.conf config/master.key config/lsa-was-base-efc3d7203bbd.json] # config/lsa-was-base-c096c776ead3.json mysql/InCommon.CA.crt}
+set :linked_files, %w[config/puma.rb config/nginx.conf config/master.key config/lsa-was-base-efc3d7203bbd.json]
 set :linked_dirs,  %w[log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system]
-# set :linked_dirs, fetch(:linked_dirs, []).push('public/packs', 'node_modules')
 
 namespace :puma do
   desc 'Stop the PUMA service'
