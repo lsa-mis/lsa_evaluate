@@ -1,6 +1,13 @@
-import { Controller } from "@hotwired/stimulus"
+// app/javascript/controllers/filter_controller.js
+import { Controller } from "@hotwired/stimulus";
+
 export default class extends Controller {
-  static targets = ["filterRow", "statusFilter"]
+  static targets = ["filterRow", "statusFilter"];
+
+  connect() {
+    console.log("Filter controller connected");
+    this.toggleFilter(); // Apply filter on page load
+  }
 
   toggleFilter() {
     const showOnlyActive = this.statusFilterTarget.checked;
