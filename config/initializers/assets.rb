@@ -5,11 +5,17 @@
 # Version of your assets, change this if you want to expire all your assets.
 Rails.application.config.assets.version = '1.0'
 
+# Add node_modules to the asset load path for Sprockets
+Rails.application.config.assets.paths << Rails.root.join('node_modules')
+
 # Add additional assets to the asset load path.
-# Rails.application.config.assets.paths << Emoji.images_path
 Rails.application.config.assets.paths << Rails.root.join('node_modules/bootstrap-icons/font')
 
+# Adjust precompilation settings
+Rails.application.config.assets.precompile -= %w( actiontext.css actiontext.scss )
+Rails.application.config.assets.precompile += %w( application.bootstrap.css )
+
 # Precompile additional assets.
-# application.js, application.css, and all non-JS/CSS in the app/assets
+# application.js, application.bootstrap.css, and all non-JS/CSS in the app/assets
 # folder are already added.
 # Rails.application.config.assets.precompile += %w( admin.js admin.css )

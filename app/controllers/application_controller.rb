@@ -30,7 +30,7 @@ class ApplicationController < ActionController::Base
   def handle_exceptions
     yield
   rescue Pundit::NotAuthorizedError => exception
-    Rails.logger.info('!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
+    # Rails.logger.info('!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
     user_not_authorized(exception)
   rescue ActiveRecord::RecordNotFound => exception
     Rails.logger.info('!!!! Handling ActiveRecord::RecordNotFound in ApplicationController')
