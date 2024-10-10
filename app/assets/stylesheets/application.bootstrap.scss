@@ -4,6 +4,8 @@
 
 @import "custom";
 @import "custom_layout";
-// Import Trix before ActionText
-@import "trix";
-@import 'actiontext';
+// Import Trix's CSS from node_modules
+@import "trix/dist/trix.css";
+
+// Import ActionText's styles
+@import "actiontext";
