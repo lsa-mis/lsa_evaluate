@@ -15,7 +15,7 @@
     "postcss": "^8.4.35",
     "postcss-cli": "^11.0.0",
     "sass": "^1.70.0",
-    "trix": "^2.1.4"
+    "trix": "^2.1.6"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
