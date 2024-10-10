@@ -1,11 +1,19 @@
 <!-- app/views/containers/_assignment_form.html.erb -->
-<%= simple_form_for [container, new_assignment], remote: true, html: { class: "assignment-form" } do |f| %>
+<%= simple_form_for [container, assignment], remote: true, html: { class: "assignment-form" } do |f| %>
+  <% if assignment.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(assignment.errors.count, "error") %> prohibited this assignment from being saved:</h4>
+      <ul>
+        <% assignment.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
   <div class="mb-3" data-controller="uid-lookup" data-action="input->uid-lookup#lookup">
     <%= f.input :uid, label: 'User UID', input_html: { class: 'form-control', data: { uid_lookup_target: 'input' } } %>
     <div data-uid-lookup-target="results" class="autocomplete-results"></div>
-    <% if new_assignment.errors[:uid].present? %>
-      <div class="error-message"><%= new_assignment.errors[:uid].first %></div>
-    <% end %>
   </div>
 
   <div class="mb-3">
