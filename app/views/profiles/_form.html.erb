@@ -30,7 +30,7 @@
             </div>
 
             <div class= "mt-4 ms-2">
-              <h3 class="my-4" >Campus Address</h3>
+              <h3 class="my-4" >Local(campus) Address</h3>
               <%= f.simple_fields_for :campus_address do |address_form| %>
                 <div class="row">
                   <div class="col">
@@ -61,7 +61,7 @@
 
               <button type="button" data-action="click->address-copy#copy" class="btn btn-sm btn-secondary">Copy Campus Address to Home Address</button>
 
-              <h3 class="my-4" >Home Address</h3>
+              <h3 class="my-4" >Hometown Address</h3>
               <%= f.simple_fields_for :home_address do |address_form| %>
                 <div class="row">
                   <div class="col">
