@@ -67,17 +67,17 @@ module Users
 
       # Extract new affiliations from session
       new_affiliations = session[:raw_info_hash]['urn:oid:1.3.6.1.4.1.5923.1.1.1.1']&.map { |value| value.to_s.downcase } || []
-      Rails.logger.info("@@@@@@ New Affiliations: #{new_affiliations}")
+      # Rails.logger.info("@@@@@@ New Affiliations: #{new_affiliations}")
 
       # Safely retrieve current affiliations
       current_affiliations = user.affiliations.pluck(:name).map { |name| name.to_s.downcase }
-      Rails.logger.info("@@@@@@ Current Affiliations: #{current_affiliations}")
+      # Rails.logger.info("@@@@@@ Current Affiliations: #{current_affiliations}")
 
       ActiveRecord::Base.transaction do
         # Add new affiliations that are not already present
         (new_affiliations - current_affiliations).each do |affiliation_name|
           user.affiliations.create!(name: affiliation_name)
-          Rails.logger.info("Added affiliation: #{affiliation_name}")
+          # Rails.logger.info("Added affiliation: #{affiliation_name}")
         end
 
         # Remove affiliations that are no longer present
@@ -85,7 +85,7 @@ module Users
           affiliation = user.affiliations.find_by(name: affiliation_name)
           if affiliation
             affiliation.destroy!
-            Rails.logger.info("Removed affiliation: #{affiliation_name}")
+            # Rails.logger.info("Removed affiliation: #{affiliation_name}")
           else
             Rails.logger.warn("Affiliation not found for removal: #{affiliation_name}")
           end
