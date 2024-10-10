@@ -5,7 +5,6 @@ export default class extends Controller {
   static targets = ["filterRow", "statusFilter"];
 
   connect() {
-    console.log("Filter controller connected");
     this.toggleFilter(); // Apply filter on page load
   }
 
