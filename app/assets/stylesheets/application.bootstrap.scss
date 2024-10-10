@@ -4,4 +4,6 @@
 
 @import "custom";
 @import "custom_layout";
+// Import Trix before ActionText
+@import "trix";
 @import 'actiontext';
