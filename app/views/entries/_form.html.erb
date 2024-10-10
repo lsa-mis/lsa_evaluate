@@ -28,7 +28,7 @@
     <% if @entry.contest_instance.require_campus_employment_info %>
       <%= f.input :campus_employee,
                   as: :boolean,
-                  label: "I am currently an active campus employee (workstudy, GSI, etc)",
+                  label: "I am currently an active campus employee. (workstudy, GSI, etc)",
                   hint: "Select this option if you are a campus employee." %>
     <% end %>
     <% if @entry.contest_instance.require_finaid_info %>
@@ -44,7 +44,7 @@
                   label: "I have read and understood the above statement about the potential impact of prize money on financial aid."%>
       <%= f.input :receiving_financial_aid,
                   as: :boolean,
-                  label: "I currently receive NEED-BASED financial aid",
+                  label: "I currently receive needs-based financial aid.",
                   hint: "Select this option if you are currently receiving needs-based financial aid." %>
       <%= f.input :financial_aid_description,
                   label: "Financial Aid Description",
@@ -53,6 +53,7 @@
   </div>
 
   <div class="form-actions">
-    <%= f.button :submit, class: "btn btn-primary"  %>
+    <%= f.button :submit, "Submit Entry", class: "btn btn-primary" %> 
+    <%= link_to "Cancel", applicant_dashboard_path, class: "text-danger link_to" %>
   </div>
 <% end %>
