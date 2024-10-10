@@ -3,41 +3,42 @@
 <div>
   <% if user_signed_in? %>
     <div class="row">
-      <div class=" w-100 bg-secondary-subtle">
-        <heading><h1 class="text-start mt-6 ms-6"><%= "Welcome #{current_user.display_name_or_uid}!" %></h1></heading>
-        <div class="row mx-6">
-          <h2 class="mt-4">How to use LSA Evaluate</h2>
+      <div class="w-100 bg-secondary-subtle">
+        <header>
+          <h1 class="text-start mt-6 ms-6">Welcome <%= current_user.display_name_or_uid %>!</h1>
+        </header>
+        <div class="row mx-6 mb-4">
+          <h2>How to use LSA Evaluate</h2>
           <% if (content = render_editable_content('home', 'instructions')) %>
-            <p class="">
               <%= content %>
-            </p>
           <% end %>
         </div>
       </div>
-      <div data-controller="interaction" data-interaction-target="content" >
+      <div data-controller="interaction" data-interaction-target="content">
         <%= render 'choose_interaction' %>
       </div>
     </div>
-
   <% else %>
     <div class="row">
       <div class="col-md-8 col-lg-6 w-100 bg-secondary-subtle">
-        <heading><h1 class="text-start mt-6 ms-6">Welcome to LSA Evaluate</h1></heading>
+        <header>
+          <h1 class="text-start mt-6 ms-6">Welcome to LSA Evaluate</h1>
+        </header>
+        <div class="row mx-6">
           <% if (content = render_editable_content('home', 'description')) %>
-            <p class="lead mt-4 ms-6">
               <%= content %>
-            </p>
           <% end %>
+        </div>
         <div class="d-grid w-25 ms-6 mt-6 mb-8">
-          <%= button_to "Login to LSA Evaluate", user_saml_omniauth_authorize_path, class: "btn btn-warning btn-sm mb-4", data: {turbo: "false"} %>
+          <%= button_to "Login to LSA Evaluate", user_saml_omniauth_authorize_path, class: "btn btn-warning btn-sm mb-4", data: { turbo: "false" } %>
         </div>
       </div>
       <div class="row">
-        <heading><h2 class="mt-4">How to use LSA Evaluate</h2></heading>
+        <header>
+          <h2 class="mt-4">How to use LSA Evaluate</h2>
+        </header>
         <% if (content = render_editable_content('home', 'instructions')) %>
-          <p class="">
             <%= content %>
-          </p>
         <% end %>
       </div>
     </div>

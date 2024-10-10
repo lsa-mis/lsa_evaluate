@@ -6,9 +6,7 @@
         <h3 class="m-2">Explore / Submit Entry / Update Profile</h3>
         <div class="card-body">
           <% if (content = render_editable_content('home', 'submit_entry')) %>
-            <p>
               <%= content %>
-            </p>
           <% end %>
 
           <div>
@@ -28,9 +26,7 @@
           <h3 class="m-2">Create/Manage Contest Collections</h3>
           <div class="card-body">
             <% if (content = render_editable_content('home', 'manage_submissions')) %>
-              <p class="">
                 <%= content %>
-              </p>
             <% end %>
             <div>
               <%= link_to 'Contest Collections', containers_path, method: :get, class: 'btn btn-primary' %>

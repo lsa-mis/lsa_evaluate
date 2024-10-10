@@ -23,16 +23,6 @@ EditableContent.create([
                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt
                            ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation
                            ullamco laboris nisi ut aliquip ex ea  commodo consequat.') },
-                         { page: 'home', section: 'view_submissions',
-                           content: ActionText::RichText.new(body: 'Information on the view_submissions section.
-                           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt
-                           ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation
-                           ullamco laboris nisi ut aliquip ex ea  commodo consequat.') },
-                         { page: 'home', section: 'manage_profile',
-                           content: ActionText::RichText.new(body: 'Information on the manage_profile section.
-                           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod  tempor incididunt
-                           ut labore et dolore magna aliqua. Ut enim ad minim  veniam, quis nostrud exercitation
-                           ullamco laboris nisi ut aliquip ex ea  commodo consequat.') },
                          { page: 'profiles', section: 'finaid_information',
                            content: ActionText::RichText.new(body: "Financial assistance from all sources during the
                            academic year (September thru August), including prize money earned from Hopwood Award

@@ -19,20 +19,7 @@ class EditableContent < ApplicationRecord
   validates :page, uniqueness: { scope: :section, message: 'and section combination must be unique' }
   has_rich_text :content
 
-  before_save :sanitize_content
-
   def display_name
     "#{self.page.titleize} #{self.section.titleize}"
   end
-
-  private
-
-  def sanitize_content
-    # Strip outer trix-content div if it exists
-    return unless content.body.to_html.match?(/<div class="trix-content">/)
-
-    sanitized_html = content.body.to_html.gsub(%r{<div class="trix-content">(.*)</div>}m, '\1')
-    content.body = ActionText::Content.new(sanitized_html)
-  end
-
 end

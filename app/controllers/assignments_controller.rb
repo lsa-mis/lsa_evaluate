@@ -32,7 +32,7 @@ class AssignmentsController < ApplicationController
 
   def destroy
     @assignment = @container.assignments.find(params[:id])
-  
+
     if @assignment.destroy
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.remove(ActionView::RecordIdentifier.dom_id(@assignment)) }
