@@ -10,7 +10,14 @@
 <!-- Add a checkbox to filter only Active contest instances -->
 <div data-controller="filter">
   <div class="form-check mb-3">
-    <input class="form-check-input" type="checkbox" id="statusFilter" data-action="change->filter#toggleFilter" data-filter-target="statusFilter">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="statusFilter"
+      checked
+      data-action="change->filter#toggleFilter"
+      data-filter-target="statusFilter"
+    />
     <label class="form-check-label" for="statusFilter">
       Show only <span class="fw-bolder">Active</span> contest instances
     </label>
@@ -39,7 +46,10 @@
         </thead>
         <tbody>
           <% @contest_instances.each do |contest_instance| %>
-            <tr data-status="<%= contest_instance.active %>" data-filter-target="filterRow" data-status="<%= contest_instance.active %>" data-filter-target="filterRow">
+            <tr
+              data-status="<%= contest_instance.active %>"
+              data-filter-target="filterRow"
+            >
               <td><%= boolean_to_yes_no(contest_instance.active) %></td>
               <td><%= boolean_to_yes_no(contest_instance.archived) %></td>
               <td><%= contest_instance.contest_description.name %></td>
