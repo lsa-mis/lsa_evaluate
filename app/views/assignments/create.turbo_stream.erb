@@ -1,7 +1,7 @@
 <!-- app/views/assignments/create.turbo_stream.erb -->
 <% if @assignment.errors.any? %>
   <%= turbo_stream.replace "new_assignment" do %>
-    <%= render partial: 'containers/assignments_form', locals: { container: @container, assignment: @assignment } %>
+    <%= render partial: 'containers/assignment_form', locals: { container: @container, assignment: @assignment } %>
   <% end %>
 <% else %>
 
@@ -14,6 +14,6 @@
 
 
   <%= turbo_stream.replace "new_assignment" do %>
-    <%= render partial: 'containers/assignment_form', locals: { container: @container, new_assignment: @container.assignments.build } %>
+    <%= render partial: 'containers/assignment_form', locals: { container: @container, assignment: @container.assignments.build } %>
   <% end %>
 <% end %>
