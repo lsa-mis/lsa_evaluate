@@ -40,10 +40,17 @@ EditableContent.create([
 # Seed data for School
 School.create([
                 { name: 'LSA' },
-                { name: 'School of Nursing' },
-                { name: 'Ross Business School' },
-                { name: 'College of Engineering' },
-                { name: 'Rackham' }
+                { name: 'Nursing' },
+                { name: 'Business' },
+                { name: 'Engineering' },
+                { name: 'Arts and Sciences' },
+                { name: 'Public Policy' },
+                { name: 'Information' },
+                { name: 'Kinesiology' },
+                { name: 'Law' },
+                { name: 'Art and Design' },
+                { name: 'Education' },
+                { name: 'Other' }
               ])
 
 AddressType.create([
