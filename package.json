@@ -26,5 +26,8 @@
   },
   "browserslist": [
     "defaults"
-  ]
+  ],
+  "devDependencies": {
+    "postcss-import": "^16.1.0"
+  }
 }
