@@ -20,13 +20,13 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-xxl-1">
       <div class="col">
         <p class="text-white m-0">
-          Home Address
+          Hometown Address
           <%= simple_format(@profile.home_address.full_address, class: "text-white fw-light lh-1 pt-1 small") if @profile.home_address %>
         </p>
       </div>
       <div class="col">
         <p class="text-white m-0">
-          Campus Address
+          Local(campus) Address
           <%= simple_format(@profile.campus_address.full_address, class: "text-white fw-light lh-1 pt-1 small") if @profile.campus_address %>
         </p>
       </div>
@@ -112,7 +112,7 @@
         <!-- Hometown News -->
         <div class="col">
           <p class="text-white">
-            Hometown News:<br>
+            Preferred Media Outlet:<br>
             <span class="fw-light"><%= @profile.hometown_publication %></span>
           </p>
         </div>
@@ -131,7 +131,7 @@
   </div>
 
   <!-- Last Updated -->
-  <div class="mt-2">
+  <div class="pb-1">
     <p class="text-white">
       <small><em>Last updated:<br> <%= @profile.updated_at.strftime("%B %d, %Y") %></em></small>
     </p>
