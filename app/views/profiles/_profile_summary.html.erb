@@ -84,13 +84,6 @@
           <span class="fw-light"><%= @profile.degree %></span>
         </p>
       </div>
-      <!-- Campus Employee -->
-      <div class="col">
-        <p class="text-white">
-          Current (workstudy, GSI, etc)<br>
-          <span class="fw-light"><%= @profile.campus_employee ? 'Yes' : 'No' %></span>
-        </p>
-      </div>
       <!-- Financial Aid -->
     <% if @profile.receiving_financial_aid && @profile.financial_aid_description.present? %>
       <div class="col">
