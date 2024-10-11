@@ -63,6 +63,16 @@ class ContestInstance < ApplicationRecord
     .where(visibilities: { kind: 'Public' })
   }
 
+  scope :available_for_profile, ->(profile) {
+    maxed_out_contest_instance_ids = Entry.where(profile_id: profile.id, deleted: false)
+      .joins(:contest_instance)
+      .group('entries.contest_instance_id', 'contest_instances.maximum_number_entries_per_applicant')
+      .having('COUNT(entries.id) >= contest_instances.maximum_number_entries_per_applicant')
+      .pluck('entries.contest_instance_id')
+
+    where.not(id: maxed_out_contest_instance_ids)
+  }
+
   validates :date_open, presence: true
   validates :date_closed, presence: true
   validates :judging_open, inclusion: { in: [ true, false ] }

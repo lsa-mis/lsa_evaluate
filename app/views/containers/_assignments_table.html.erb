@@ -7,7 +7,7 @@
       <th class="text-center">Actions</th> <!-- New column for actions -->
     </tr>
   </thead>
-  <tbody id="assignments">
+  <tbody id="assignments_tbody">
     <% assignments.each do |assignment| %>
       <%= render partial: 'containers/assignment_row', locals: { assignment: assignment, container: container } %>
     <% end %>

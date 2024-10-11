@@ -185,6 +185,24 @@ RSpec.describe ContestInstance, type: :model do
       expect(contest_instance).not_to be_valid
       expect(contest_instance.errors[:date_closed]).to include('must be after date contest opens')
     end
+
+    it 'is invalid without a maximum_number_entries_per_applicant' do
+      contest_instance.maximum_number_entries_per_applicant = nil
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:maximum_number_entries_per_applicant]).to include("can't be blank")
+    end
+
+    it 'is invalid with non-integer maximum_number_entries_per_applicant' do
+      contest_instance.maximum_number_entries_per_applicant = 'one'
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:maximum_number_entries_per_applicant]).to include('is not a number')
+    end
+
+    it 'is invalid with maximum_number_entries_per_applicant less than 1' do
+      contest_instance.maximum_number_entries_per_applicant = 0
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:maximum_number_entries_per_applicant]).to include('must be greater than 0')
+    end
   end
 
   describe 'Factory' do
@@ -314,6 +332,72 @@ RSpec.describe ContestInstance, type: :model do
     it 'duplicates categories associations' do
       new_instance = contest_instance.dup_with_associations
       expect(new_instance.categories).to match_array(contest_instance.categories)
+    end
+  end
+
+  describe '.available_for_profile' do
+    let(:profile) { create(:profile) }
+    let(:other_profile) { create(:profile) }
+    let(:contest_instance_with_limit) { create(:contest_instance, maximum_number_entries_per_applicant: 1) }
+    let(:contest_instance_high_limit) { create(:contest_instance, maximum_number_entries_per_applicant: 1000) }
+    let(:contest_instance_closed) { create(:contest_instance, date_open: 2.days.ago, date_closed: 1.day.ago) }
+
+    context 'when the profile has not reached the maximum number of entries' do
+      it 'includes the contest instance' do
+        available_contests = ContestInstance.available_for_profile(profile)
+        expect(available_contests).to include(contest_instance_with_limit)
+      end
+    end
+
+    context 'when the profile has reached the maximum number of entries' do
+      before do
+        create(:entry, profile: profile, contest_instance: contest_instance_with_limit)
+      end
+
+      it 'excludes the contest instance' do
+        available_contests = ContestInstance.available_for_profile(profile)
+        expect(available_contests).not_to include(contest_instance_with_limit)
+      end
+
+      it 'includes the contest instance for other profiles' do
+        available_contests = ContestInstance.available_for_profile(other_profile)
+        expect(available_contests).to include(contest_instance_with_limit)
+      end
+    end
+
+    context 'when the profile has soft-deleted entries' do
+      before do
+        create(:entry, profile: profile, contest_instance: contest_instance_with_limit, deleted: true)
+      end
+
+      it 'includes the contest instance' do
+        available_contests = ContestInstance.available_for_profile(profile)
+        expect(available_contests).to include(contest_instance_with_limit)
+      end
+    end
+
+    context 'when the contest instance has a high entry limit' do
+      before do
+        create_list(:entry, 5, profile: profile, contest_instance: contest_instance_high_limit)
+      end
+
+      it 'includes the contest instance as limit is not reached' do
+        available_contests = ContestInstance.available_for_profile(profile)
+        expect(available_contests).to include(contest_instance_high_limit)
+      end
+
+      it 'excludes the contest instance when limit is reached' do
+        create_list(:entry, 995, profile: profile, contest_instance: contest_instance_high_limit)
+        available_contests = ContestInstance.available_for_profile(profile)
+        expect(available_contests).not_to include(contest_instance_high_limit)
+      end
+    end
+
+    context 'when the contest instance is closed' do
+      it 'includes the contest instance if active_and_open is not applied' do
+        available_contests = ContestInstance.available_for_profile(profile)
+        expect(available_contests).to include(contest_instance_closed)
+      end
     end
   end
 end

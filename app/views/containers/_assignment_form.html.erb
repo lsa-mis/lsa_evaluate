@@ -1,5 +1,12 @@
 <!-- app/views/containers/_assignment_form.html.erb -->
-<%= simple_form_for [container, assignment], remote: true, html: { class: "assignment-form" } do |f| %>
+<%= simple_form_for [container, assignment], remote: true,
+  html: {
+    class: "assignment-form",
+    data: {
+      controller: 'uid-lookup',
+      action: 'submit->uid-lookup#submit'
+    }
+  } do |f| %>
   <% if assignment.errors.any? %>
     <div class="alert alert-danger">
       <h4><%= pluralize(assignment.errors.count, "error") %> prohibited this assignment from being saved:</h4>
@@ -11,8 +18,15 @@
     </div>
   <% end %>
 
-  <div class="mb-3" data-controller="uid-lookup" data-action="input->uid-lookup#lookup">
-    <%= f.input :uid, label: 'User UID', input_html: { class: 'form-control', data: { uid_lookup_target: 'input' } } %>
+  <div class="mb-3">
+    <%= f.label :uid_display, 'User' %>
+    <%= text_field_tag :uid_display, nil,
+      class: 'form-control',
+      data: {
+        uid_lookup_target: 'displayInput',
+        action: 'input->uid-lookup#lookup'
+      } %>
+    <%= f.hidden_field :uid, data: { uid_lookup_target: 'uidInput' } %>
     <div data-uid-lookup-target="results" class="autocomplete-results"></div>
   </div>
 
@@ -29,4 +43,5 @@
   </div>
 
   <%= f.submit 'Add User', class: "btn btn-primary my-2" %>
+  <%= link_to "Cancel", container_path(container), class: "text-danger link_to" %>
 <% end %>

@@ -30,7 +30,8 @@
             </div>
 
             <div class= "mt-4 ms-2">
-              <h3 class="my-4" >Campus Address</h3>
+              <h3 class="mt-4">Local (campus) Address</h3>
+              <small class="text-muted">(Please provide your current campus address)</small>
               <%= f.simple_fields_for :campus_address do |address_form| %>
                 <div class="row">
                   <div class="col">
@@ -59,9 +60,9 @@
                 </div>
               <% end %>
 
-              <button type="button" data-action="click->address-copy#copy" class="btn btn-sm btn-secondary">Copy Campus Address to Home Address</button>
+              <button type="button" data-action="click->address-copy#copy" class="btn btn-sm btn-secondary">Copy Local (campus) Address to Hometown Address</button>
 
-              <h3 class="my-4" >Home Address</h3>
+              <h3 class="mt-4" >Hometown Address</h3>
               <%= f.simple_fields_for :home_address do |address_form| %>
                 <div class="row">
                   <div class="col">
@@ -116,9 +117,9 @@
           <div class= "ms-4">
             <div class="row">
 
-              <div class="col">
-                <%= f.input :hometown_publication, label: "Name of hometown newspaper..." %>
-              </div>
+                <div class="col">
+                <%= f.input :hometown_publication, label: "Name of your hometown newspaper or preferred media outlet:", hint: "For some contests, if your manuscript earns an award, the award’s committee will forward a press release to your local newspaper or media outlet." %>
+                </div>
             </div>
           </div>
 
@@ -132,6 +133,7 @@
         </div>
         <div class="form-actions pb-1">
           <%= f.button :submit, class: "btn btn-primary" %>
+          <%= link_to "Cancel", applicant_dashboard_path, class: "text-danger link_to" %>
         </div>
       <% end %>
     </div>

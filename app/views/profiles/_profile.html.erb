@@ -11,14 +11,14 @@
       <h2>Contact Information</h2>
     </div>
     <div class="card-body">
-      <div class="header h5 ps-2">
-        email: <%= profile.user.email %>
+      <div class="ps-2  me-8">
+        Email: <%= profile.user.email %>
       </div>
-      <div class="d-flex justify-content-start">
-        <div class="ps-2 me-8"><p class="m-0">Home Address<%= simple_format(profile.home_address.full_address, {class:"fw-light"}) if profile.home_address %></p></div>
-        <div class="ps-2"><p class="m-0">Campus Address<%= simple_format(profile.campus_address.full_address, {class:"fw-light"}) if profile.campus_address %></p></div>
+      <div class="justify-content-start">
+        <div class="ps-2 me-8"><p class="m-0">Hometown Address:<%= simple_format(profile.home_address.full_address, {class:"fw-light"}) if profile.home_address %></p></div>
+        <div class="ps-2"><p class="m-0">Local(campus) Address:<%= simple_format(profile.campus_address.full_address, {class:"fw-light"}) if profile.campus_address %></p></div>
         <% if profile.pen_name.present? %>
-          <div class="ps-2"><p class="m-0">Pen Name:<%= profile.pen_name %></p></div>
+          <div class="ps-2"><p class="m-0">Pen Name: <%= profile.pen_name %></p></div>
         <% end %>
       </div>
     </div>
@@ -38,20 +38,6 @@
           <p>Department (if graduate):<br><span class="fw-light"> <%= profile.department.name if profile.department %></span></p>
           <p>Expected Graduation Date:<br><span class="fw-light"> <%= profile.grad_date.strftime("%B %Y") %></span></p>
           <p>Degree:<br><span class="fw-light"> <%= profile.degree %></span></p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card mt-5">
-    <div class="header card-header">
-      <h2>Employment Information</h2>
-      <p>In the event you are a contest winnner.....</p>
-    </div>
-    <div class="card-body">
-      <div class="d-flex justify-content-start">
-        <div class="text-start ms-4">
-          <p>Are you currently an active campus employee (workstudy, GSI, etc)?<br><span class="fw-light"> <%= profile.campus_employee ? 'Yes' : 'No' %></span></p>
         </div>
       </div>
     </div>
@@ -84,7 +70,7 @@
         <div class=" text-start ms-4">
           <p>Entrant’s name as it will appear in publicity: <br><span class="fw-light"> <%= profile.display_name %></span></p>
           <% if profile.hometown_publication.present? %>
-            <p>Name of hometown newspaper:<br><span class="fw-light"> <%= profile.hometown_publication %></span></p>
+            <p>Name of your hometown newspaper or preferred media outlet:<br><span class="fw-light"> <%= profile.hometown_publication %></span></p>
           <% end %>
         </div>
       </div>

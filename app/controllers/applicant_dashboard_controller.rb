@@ -31,6 +31,7 @@ class ApplicantDashboardController < ApplicationController
     @active_contests = ContestInstance.active_and_open
                                       .for_class_level(@profile.class_level_id)
                                       .with_public_visibility
+                                      .available_for_profile(@profile)
                                       .includes(contest_description: { container: :visibility })
                                       .order('containers.name ASC')
                                       .distinct

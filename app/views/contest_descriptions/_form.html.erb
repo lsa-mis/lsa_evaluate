@@ -1,4 +1,4 @@
-<div id="contest_descriptiopn_form">
+<div id="contest_description_form" class="mb-1">
   <%= simple_form_for([@container, @contest_description], html: { id: 'new_contest_description_form' }) do |f| %>
     <%= f.error_notification %>
     <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
