@@ -11,10 +11,11 @@
 #
 # Indexes
 #
-#  index_assignments_on_container_id         (container_id)
-#  index_assignments_on_role_id              (role_id)
-#  index_assignments_on_role_user_container  (role_id,user_id,container_id) UNIQUE
-#  index_assignments_on_user_id              (user_id)
+#  index_assignments_on_container_id              (container_id)
+#  index_assignments_on_role_id                   (role_id)
+#  index_assignments_on_role_user_container       (role_id,user_id,container_id) UNIQUE
+#  index_assignments_on_user_id                   (user_id)
+#  index_assignments_on_user_id_and_container_id  (user_id,container_id) UNIQUE
 #
 # Foreign Keys
 #
