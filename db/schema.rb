@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_02_183537) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_11_164833) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -90,6 +90,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_02_183537) do
     t.index ["container_id"], name: "index_assignments_on_container_id"
     t.index ["role_id", "user_id", "container_id"], name: "index_assignments_on_role_user_container", unique: true
     t.index ["role_id"], name: "index_assignments_on_role_id"
+    t.index ["user_id", "container_id"], name: "index_assignments_on_user_id_and_container_id", unique: true
     t.index ["user_id"], name: "index_assignments_on_user_id"
   end
 
