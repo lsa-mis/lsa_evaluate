@@ -1,17 +1,17 @@
-// app/javascript/controllers/uid_lookup_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "results"]
+  static targets = ["displayInput", "uidInput", "results"]
 
   connect() {
     this.timeout = null
   }
 
   lookup(event) {
+    this.uidInputTarget.value = '' // Clear UID when typing
     clearTimeout(this.timeout)
     this.timeout = setTimeout(() => {
-      const query = event.target.value.trim()
+      const query = this.displayInputTarget.value.trim()
       if (query.length > 0) {
         fetch(`/containers/lookup_user?uid=${encodeURIComponent(query)}`)
           .then(response => response.json())
@@ -31,7 +31,8 @@ export default class extends Controller {
       option.textContent = user.display_name_and_uid
       option.classList.add('suggestion')
       option.addEventListener('click', () => {
-        this.inputTarget.value = user.uid
+        this.displayInputTarget.value = user.display_name_and_uid
+        this.uidInputTarget.value = user.uid
         this.clearSuggestions()
       })
       this.resultsTarget.appendChild(option)
@@ -40,5 +41,12 @@ export default class extends Controller {
 
   clearSuggestions() {
     this.resultsTarget.innerHTML = ''
+  }
+
+  submit(event) {
+    if (this.uidInputTarget.value.trim() === '') {
+      event.preventDefault()
+      alert('Please select a valid user.')
+    }
   }
 }

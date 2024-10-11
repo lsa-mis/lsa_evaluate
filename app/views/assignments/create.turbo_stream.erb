@@ -5,10 +5,11 @@
   <% end %>
 <% else %>
 
-  <%= turbo_stream.append "assignments" do %>
+  <%= turbo_stream.append "assignments_tbody" do %>
     <tr id="<%= dom_id(@assignment) %>">
       <td><%= @assignment.user.display_name_or_uid %></td>
       <td><%= @assignment.role.kind %></td>
+      <td></td>
     </tr>
   <% end %>
 
