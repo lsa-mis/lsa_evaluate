@@ -26,23 +26,31 @@
   <div id="contest_instances" class="table-responsive">
       <table class="table table-striped table-bordered">
         <thead class="thead-light">
-          <tr>
-            <th>Active</th>
-            <th>Archived</th>
-            <th>Max entries per user</th>
-            <th>Total entries submitted</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Judging Open</th>
-            <th>Judging Rounds</th>
-            <th>Category</th>
-            <th>Judge Evaluations Complete</th>
-            <th>Class Level</th>
-            <th>Pen Name Rqd</th>
-            <th>Campus Employment Info Rqd</th>
-            <th>Finaid Info Rqd</th>
-            <th>Actions</th>
-          </tr>
+    <tr>
+      <th style="font-size: .75rem;" rowspan="2">Active</th>
+      <th style="font-size: .75rem;" rowspan="2">Archived</th>
+      <th style="font-size: .75rem;" rowspan="2">Entries per user</th>
+      <th style="font-size: .75rem;" rowspan="2">Total entries submitted</th>
+      <th style="font-size: .75rem;" rowspan="2">Start</th>
+      <th style="font-size: .75rem;" rowspan="2">End</th>
+      
+      <!-- Judging Info Header with colspan -->
+      <th style="font-size: .75rem;" colspan="3">Judging Info</th>
+      
+      <th style="font-size: .75rem;" rowspan="2">Category</th>
+      <th style="font-size: .75rem;" rowspan="2">Class Level</th>
+      <th style="font-size: .75rem;" rowspan="2">Pen Name Rqd</th>
+      <th style="font-size: .75rem;" rowspan="2">Campus Employment Info Rqd</th>
+      <th style="font-size: .75rem;" rowspan="2">Finaid Info Rqd</th>
+      <th style="font-size: .75rem;" rowspan="2">Actions</th>
+    </tr>
+    
+    <!-- Second Header Row for Judging Info Subcolumns -->
+    <tr>
+      <th style="font-size: .75rem;">Open</th>
+      <th style="font-size: .75rem;">Rounds</th>
+      <th style="font-size: .75rem;">Evaluations Complete</th>
+    </tr>
         </thead>
         <tbody>
           <% @contest_instances.each do |contest_instance| %>
@@ -58,8 +66,8 @@
               <td><%= format_datetime(contest_instance.date_closed) %></td>
               <td><%= boolean_to_yes_no(contest_instance.judging_open) %></td>
               <td><%= contest_instance.judging_rounds %></td>
-              <td><%= contest_instance.categories.map(&:kind).join(', ') %></td>
               <td><%= boolean_to_yes_no(contest_instance.judge_evaluations_complete) %></td>
+              <td><%= contest_instance.categories.map(&:kind).join(', ') %></td>
               <td><%= contest_instance.class_levels.map(&:name).join(', ') %></td>
               <td><%= contest_instance.require_pen_name %></td>
               <td><%= contest_instance.require_campus_employment_info %></td>
