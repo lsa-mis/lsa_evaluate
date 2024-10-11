@@ -3,7 +3,8 @@ class AssignmentsController < ApplicationController
   before_action :set_container
 
   def create
-    @user = User.find_by(uid: assignment_params[:uid])
+    uid = params[:assignment][:uid]
+    @user = User.find_by(uid: uid)
 
     if @user.nil?
       @assignment = @container.assignments.build
@@ -13,7 +14,8 @@ class AssignmentsController < ApplicationController
         format.html { render :new, status: :unprocessable_entity }
       end
     else
-      @assignment = @container.assignments.build(user: @user, role_id: assignment_params[:role_id])
+      @assignment = @container.assignments.build(assignment_params)
+      @assignment.user = @user
 
       if @assignment.save
         @assignments = @container.assignments.includes(:user, :role)
@@ -54,6 +56,6 @@ class AssignmentsController < ApplicationController
   end
 
   def assignment_params
-    params.require(:assignment).permit(:uid, :role_id)
+    params.require(:assignment).permit(:role_id)
   end
 end
