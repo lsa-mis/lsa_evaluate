@@ -13,10 +13,11 @@
 #
 # Indexes
 #
-#  index_assignments_on_container_id         (container_id)
-#  index_assignments_on_role_id              (role_id)
-#  index_assignments_on_role_user_container  (role_id,user_id,container_id) UNIQUE
-#  index_assignments_on_user_id              (user_id)
+#  index_assignments_on_container_id              (container_id)
+#  index_assignments_on_role_id                   (role_id)
+#  index_assignments_on_role_user_container       (role_id,user_id,container_id) UNIQUE
+#  index_assignments_on_user_id                   (user_id)
+#  index_assignments_on_user_id_and_container_id  (user_id,container_id) UNIQUE
 #
 # Foreign Keys
 #
@@ -32,9 +33,12 @@ class Assignment < ApplicationRecord
 
   scope :container_administrators, -> { joins(:role).where(roles: { kind: 'Collection Administrator' }) }
 
+  validates :user_id, presence: true
   validates :role_id,
             uniqueness: { scope: %i[user_id container_id],
                           message: 'combination with user and collection must be unique' }
+  validates :user_id, uniqueness: { scope: :container_id, message: 'is already assigned to this container' }
+
   before_destroy :ensure_at_least_one_admin_remains, if: :is_container_administrator?
 
   private
