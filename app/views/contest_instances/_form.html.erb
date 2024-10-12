@@ -6,8 +6,14 @@
     <%= f.input :active, hint: "Specify whether this contest is currently accepting entries." %>
     <%= f.input :archived %>
     <%= f.association :contest_description, label_method: :name %>
-    <%= f.input :date_open, as: :datetime %>
-    <%= f.input :date_closed, as: :datetime %>
+    <%= f.input :date_open, 
+                as: :datetime, 
+                label: "Select Contest Open Date", 
+                input_html: { class: "form-control" } %>
+    <%= f.input :date_closed,
+                as: :datetime, 
+                label: "Select Contest Close Date", 
+                input_html: { class: "form-control" } %>
     <%= f.input :notes %>
     <%= f.input :judging_open %>
     <%= f.input :judging_rounds %>
