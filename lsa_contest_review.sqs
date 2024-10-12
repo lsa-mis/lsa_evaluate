@@ -908,7 +908,7 @@ Text-Image]]></comment>
             <type><![CDATA[integer]]></type>
             <primaryKey>1</primaryKey>
             <autoIncrement><![CDATA[1]]></autoIncrement>
-            <forcedUnique><![CDATA[1]]></forcedUnique>
+            <forcedUnique><![CDATA[0]]></forcedUnique>
             <notNull><![CDATA[1]]></notNull>
             <uid><![CDATA[D15F3D60-C735-4E28-AF80-1EACC1BA8F07]]></uid>
             <unique><![CDATA[1]]></unique>
@@ -1126,7 +1126,7 @@ Text-Image]]></comment>
             <uid><![CDATA[40C70716-C71A-4C73-A3DD-B70DFB89FA24]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[department_dept_id]]></name>
+            <name><![CDATA[department_id]]></name>
             <type><![CDATA[integer]]></type>
             <referencesField>dept_id</referencesField>
             <referencesTable>Department</referencesTable>
@@ -1535,19 +1535,11 @@ committee_viewable]]></comment>
             <uid><![CDATA[4194DB73-522E-44A7-94D1-339F17D924CB]]></uid>
         </SQLField>
         <SQLField>
-            <name><![CDATA[department_id]]></name>
-            <type><![CDATA[integer]]></type>
-            <referencesField>id</referencesField>
-            <referencesTable>Department</referencesTable>
-            <referencesField><![CDATA[id]]></referencesField>
-            <referencesTable><![CDATA[Department]]></referencesTable>
-            <sourceCardinality>5</sourceCardinality>
-            <destinationCardinality>1</destinationCardinality>
-            <referencesFieldUID><![CDATA[D15F3D60-C735-4E28-AF80-1EACC1BA8F07]]></referencesFieldUID>
-            <referencesTableUID><![CDATA[9D519985-DBAE-4DF9-84FC-009752308FFE]]></referencesTableUID>
+            <name><![CDATA[department]]></name>
+            <type><![CDATA[string]]></type>
             <hidden><![CDATA[0]]></hidden>
             <noQuoteDefault><![CDATA[0]]></noQuoteDefault>
-            <notNull><![CDATA[1]]></notNull>
+            <notNull><![CDATA[0]]></notNull>
             <uid><![CDATA[33BBB51B-8D25-48C1-84BE-FCF3FE72E2D3]]></uid>
         </SQLField>
         <SQLField>
@@ -2520,17 +2512,17 @@ Evaluations submitted successfully(to Judge)
         <overviewPanelHidden><![CDATA[0]]></overviewPanelHidden>
         <pageBoundariesVisible><![CDATA[0]]></pageBoundariesVisible>
         <PageGridVisible><![CDATA[0]]></PageGridVisible>
-        <RightSidebarWidth><![CDATA[2016.000000]]></RightSidebarWidth>
+        <RightSidebarWidth><![CDATA[2330.000000]]></RightSidebarWidth>
         <sidebarIndex><![CDATA[0]]></sidebarIndex>
         <snapToGrid><![CDATA[0]]></snapToGrid>
         <SourceSidebarWidth><![CDATA[312.000000]]></SourceSidebarWidth>
         <SQLEditorFileFormatVersion><![CDATA[4]]></SQLEditorFileFormatVersion>
         <uid><![CDATA[E2FE8E50-306B-4494-BAFB-41EE3761C01D]]></uid>
         <windowHeight><![CDATA[1415.000000]]></windowHeight>
-        <windowLocationX><![CDATA[1728.000000]]></windowLocationX>
+        <windowLocationX><![CDATA[2561.000000]]></windowLocationX>
         <windowLocationY><![CDATA[-323.000000]]></windowLocationY>
-        <windowScrollOrigin><![CDATA[{0, 76}]]></windowScrollOrigin>
-        <windowWidth><![CDATA[2293.000000]]></windowWidth>
+        <windowScrollOrigin><![CDATA[{297, 0}]]></windowScrollOrigin>
+        <windowWidth><![CDATA[2607.000000]]></windowWidth>
     </SQLDocumentInfo>
     <AllowsIndexRenamingOnInsert><![CDATA[1]]></AllowsIndexRenamingOnInsert>
     <defaultLabelExpanded><![CDATA[1]]></defaultLabelExpanded>
