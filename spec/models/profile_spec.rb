@@ -8,6 +8,7 @@
 #  accepted_financial_aid_notice :boolean          default(FALSE), not null
 #  campus_employee               :boolean          default(FALSE), not null
 #  degree                        :string(255)      not null
+#  department                    :string(255)
 #  financial_aid_description     :text(65535)
 #  grad_date                     :date             not null
 #  hometown_publication          :string(255)
@@ -22,7 +23,6 @@
 #  campus_address_id             :bigint
 #  campus_id                     :bigint
 #  class_level_id                :bigint
-#  department_id                 :bigint
 #  home_address_id               :bigint
 #  school_id                     :bigint
 #  user_id                       :bigint           not null
@@ -35,9 +35,9 @@
 #  index_profiles_on_campus_address_id  (campus_address_id)
 #  index_profiles_on_campus_id          (campus_id)
 #  index_profiles_on_class_level_id     (class_level_id)
-#  index_profiles_on_department_id      (department_id)
 #  index_profiles_on_home_address_id    (home_address_id)
 #  index_profiles_on_school_id          (school_id)
+#  index_profiles_on_umid               (umid) UNIQUE
 #  index_profiles_on_user_id            (user_id)
 #  school_id_idx                        (school_id)
 #  user_id_idx                          (user_id)
@@ -47,7 +47,6 @@
 #  fk_rails_...  (campus_address_id => addresses.id)
 #  fk_rails_...  (campus_id => campuses.id)
 #  fk_rails_...  (class_level_id => class_levels.id)
-#  fk_rails_...  (department_id => departments.id)
 #  fk_rails_...  (home_address_id => addresses.id)
 #  fk_rails_...  (school_id => schools.id)
 #  fk_rails_...  (user_id => users.id)
@@ -63,7 +62,6 @@ RSpec.describe Profile do
       class_level: create(:class_level),
       school: create(:school),
       campus: create(:campus),
-      department: create(:department),
       home_address: addresses.first,
       campus_address: addresses.second
     }
@@ -160,10 +158,6 @@ RSpec.describe Profile do
 
     it 'belongs to campus' do
       expect(profile.campus).to  eq(associated_records[:campus])
-    end
-
-    it 'belongs to department' do
-      expect(profile.department).to eq(associated_records[:department])
     end
 
     it 'belongs to home_address' do

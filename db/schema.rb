@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_11_164833) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_12_141831) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -236,7 +236,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_11_164833) do
     t.bigint "school_id"
     t.bigint "campus_id"
     t.string "major"
-    t.bigint "department_id"
     t.date "grad_date", null: false
     t.string "degree", null: false
     t.boolean "receiving_financial_aid", default: false, null: false
@@ -250,16 +249,17 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_11_164833) do
     t.bigint "campus_address_id"
     t.integer "umid", null: false
     t.boolean "campus_employee", default: false, null: false
+    t.string "department"
     t.index ["campus_address_id"], name: "index_profiles_on_campus_address_id"
     t.index ["campus_id"], name: "campus_id_idx"
     t.index ["campus_id"], name: "index_profiles_on_campus_id"
     t.index ["class_level_id"], name: "class_level_id_idx"
     t.index ["class_level_id"], name: "index_profiles_on_class_level_id"
-    t.index ["department_id"], name: "index_profiles_on_department_id"
     t.index ["home_address_id"], name: "index_profiles_on_home_address_id"
     t.index ["id"], name: "id_unq_idx", unique: true
     t.index ["school_id"], name: "index_profiles_on_school_id"
     t.index ["school_id"], name: "school_id_idx"
+    t.index ["umid"], name: "index_profiles_on_umid", unique: true
     t.index ["user_id"], name: "index_profiles_on_user_id"
     t.index ["user_id"], name: "user_id_idx"
   end
@@ -345,7 +345,6 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_11_164833) do
   add_foreign_key "profiles", "addresses", column: "home_address_id"
   add_foreign_key "profiles", "campuses"
   add_foreign_key "profiles", "class_levels"
-  add_foreign_key "profiles", "departments"
   add_foreign_key "profiles", "schools"
   add_foreign_key "profiles", "users"
   add_foreign_key "user_roles", "roles"

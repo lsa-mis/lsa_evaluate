@@ -84,7 +84,7 @@ class ProfilesController < ApplicationController
   def profile_params
     params.require(:profile).permit(:user_id, :umid, :preferred_first_name, :preferred_last_name, :class_level_id, :school_id, :campus_id,
                                     :major,
-                                    :department_id, :grad_date, :degree, :receiving_financial_aid,
+                                    :department, :grad_date, :degree, :receiving_financial_aid,
                                     :accepted_financial_aid_notice, :financial_aid_description,
                                     :hometown_publication, :pen_name,
                                     home_address_attributes: %i[id address1 address2 city state zip phone country address_type_id],
