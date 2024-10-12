@@ -66,7 +66,6 @@ Address.create([
                    city: Faker::Address.city,
                    state: Faker::Address.state_abbr,
                    zip: Faker::Address.zip_code,
-                   phone: Faker::PhoneNumber.phone_number,
                    country: Faker::Address.country_code,
                    address_type: AddressType.find_by(kind: 'Home')
                  },
@@ -76,7 +75,6 @@ Address.create([
                    city: Faker::Address.city,
                    state: Faker::Address.state_abbr,
                    zip: Faker::Address.zip_code,
-                   phone: Faker::PhoneNumber.phone_number,
                    country: Faker::Address.country_code,
                    address_type: AddressType.find_by(kind: 'Campus')
                  },
@@ -86,7 +84,6 @@ Address.create([
                    city: Faker::Address.city,
                    state: Faker::Address.state_abbr,
                    zip: Faker::Address.zip_code,
-                   phone: Faker::PhoneNumber.phone_number,
                    country: Faker::Address.country_code,
                    address_type: AddressType.find_by(kind: 'Home')
                  }

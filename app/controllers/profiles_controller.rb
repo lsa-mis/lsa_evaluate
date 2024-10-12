@@ -87,7 +87,7 @@ class ProfilesController < ApplicationController
                                     :department, :grad_date, :degree, :receiving_financial_aid,
                                     :accepted_financial_aid_notice, :financial_aid_description,
                                     :hometown_publication, :pen_name,
-                                    home_address_attributes: %i[id address1 address2 city state zip phone country address_type_id],
-                                    campus_address_attributes: %i[id address1 address2 city state zip phone country address_type_id])
+                                    home_address_attributes: %i[id address1 address2 city state zip country address_type_id],
+                                    campus_address_attributes: %i[id address1 address2 city state zip country address_type_id])
   end
 end
