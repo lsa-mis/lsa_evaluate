@@ -9,7 +9,6 @@
     <%= f.input :city %>
     <%= f.input :state %>
     <%= f.input :zip %>
-    <%= f.input :phone %>
     <%= f.input :country, priority: [ "United States" ] %>
     <%= f.input :address_type_id, collection: AddressType.all, label_method: :kind, value_method: :id, label: "Address Type" %>
   </div>

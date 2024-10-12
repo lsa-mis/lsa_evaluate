@@ -4,6 +4,6 @@ allowed_paths:
 allowed_ips:
 # UMVPN - All Traffic or UMVPN - Only U-M Traffic range
 # - 35.7.0.0/18
-- 35.7.37.16
+- 35.7.44.112
 response_code: 503
 retry_after: 3600
