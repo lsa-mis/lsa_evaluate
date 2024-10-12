@@ -105,7 +105,7 @@
             <%= f.input :school_id, collection: School.all, label_method: :name, value_method: :id, label: "School or College" %>
             <%= f.input :campus_id, collection: Campus.all, label_method: :campus_descr, value_method: :id, label: "Primary Campus Class Location" %>
             <%= f.input :major, label: "Major (if undergraduate)" %>
-            <%= f.input :department_id, collection: Department.all, label_method: :name, value_method: :id, label: "Department (if graduate)" %>
+            <%= f.input :department, label: "Department (if graduate)" %>
             <%= f.input :grad_date, as: :date, start_year: Date.today.year,
                                       end_year: Date.today.year + 12, discard_day: true,
                                       order: [:month, :year],

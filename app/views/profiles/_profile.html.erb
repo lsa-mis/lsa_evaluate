@@ -34,8 +34,12 @@
           <p>Class Level:<br><span class="fw-light"> <%= profile.class_level.name if profile.class_level %></span></p>
           <p>School or College:<br><span class="fw-light"> <%= profile.school.name if profile.school %></span></p>
           <p>Primary Campus Class Location:<br><span class="fw-light"> <%= profile.campus.campus_descr if profile.campus %></span></p>
-          <p>Major (if undergraduate):<br><span class="fw-light"> <%= profile.major %></span></p>
-          <p>Department (if graduate):<br><span class="fw-light"> <%= profile.department.name if profile.department %></span></p>
+          <% if @profile&.major.present? %>
+            <p>Major (if undergraduate):<br><span class="fw-light"> <%= profile.major %></span></p>
+          <% end %>
+          <% if @profile&.department.present? %>
+            <p>Department (if graduate):<br><span class="fw-light"> <%= profile.department if profile.department %></span></p>
+          <% end %>
           <p>Expected Graduation Date:<br><span class="fw-light"> <%= profile.grad_date.strftime("%B %Y") %></span></p>
           <p>Degree:<br><span class="fw-light"> <%= profile.degree %></span></p>
         </div>

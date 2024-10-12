@@ -8,6 +8,7 @@
 #  accepted_financial_aid_notice :boolean          default(FALSE), not null
 #  campus_employee               :boolean          default(FALSE), not null
 #  degree                        :string(255)      not null
+#  department                    :string(255)
 #  financial_aid_description     :text(65535)
 #  grad_date                     :date             not null
 #  hometown_publication          :string(255)
@@ -22,7 +23,6 @@
 #  campus_address_id             :bigint
 #  campus_id                     :bigint
 #  class_level_id                :bigint
-#  department_id                 :bigint
 #  home_address_id               :bigint
 #  school_id                     :bigint
 #  user_id                       :bigint           not null
@@ -35,9 +35,9 @@
 #  index_profiles_on_campus_address_id  (campus_address_id)
 #  index_profiles_on_campus_id          (campus_id)
 #  index_profiles_on_class_level_id     (class_level_id)
-#  index_profiles_on_department_id      (department_id)
 #  index_profiles_on_home_address_id    (home_address_id)
 #  index_profiles_on_school_id          (school_id)
+#  index_profiles_on_umid               (umid) UNIQUE
 #  index_profiles_on_user_id            (user_id)
 #  school_id_idx                        (school_id)
 #  user_id_idx                          (user_id)
@@ -47,7 +47,6 @@
 #  fk_rails_...  (campus_address_id => addresses.id)
 #  fk_rails_...  (campus_id => campuses.id)
 #  fk_rails_...  (class_level_id => class_levels.id)
-#  fk_rails_...  (department_id => departments.id)
 #  fk_rails_...  (home_address_id => addresses.id)
 #  fk_rails_...  (school_id => schools.id)
 #  fk_rails_...  (user_id => users.id)
@@ -59,7 +58,6 @@ class Profile < ApplicationRecord
   belongs_to :class_level, optional: true
   belongs_to :school, optional: true
   belongs_to :campus, optional: true
-  belongs_to :department, optional: true
   has_many :entries, dependent: :restrict_with_error
 
   belongs_to :home_address, class_name: 'Address', optional: true
@@ -74,7 +72,6 @@ class Profile < ApplicationRecord
   validates :grad_date, presence: true
   validates :degree, presence: true
   validates :receiving_financial_aid, inclusion: { in: [ true, false ] }
-  # validates :accepted_financial_aid_notice, acceptance: true
   validates :class_level_id, presence: true
   validates :campus_id, presence: true
   validates :school_id, presence: true

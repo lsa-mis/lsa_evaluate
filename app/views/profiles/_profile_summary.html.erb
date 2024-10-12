@@ -21,13 +21,13 @@
       <div class="col">
         <p class="text-white m-0">
           Hometown Address:
-          <%= simple_format(@profile.home_address.full_address, class: "text-white fw-light lh-1 pt-1 small") if @profile.home_address %>
+          <%= simple_format(@profile.home_address.full_address, class: "text-white fw-light lh-1 pt-1 ms-2 small") if @profile.home_address %>
         </p>
       </div>
       <div class="col">
         <p class="text-white m-0">
           Local(campus) Address:
-          <%= simple_format(@profile.campus_address.full_address, class: "text-white fw-light lh-1 pt-1 small") if @profile.campus_address %>
+          <%= simple_format(@profile.campus_address.full_address, class: "text-white fw-light lh-1 ms-2 pt-1 small") if @profile.campus_address %>
         </p>
       </div>
     </div>
@@ -39,49 +39,53 @@
       <div class="col">
         <p class="text-white">
           Grade Level:<br>
-          <span class="fw-light"><%= @profile.class_level&.name %></span>
+          <span class="fw-light ms-2"><%= @profile.class_level&.name %></span>
         </p>
       </div>
       <!-- School -->
       <div class="col">
         <p class="text-white">
           School:<br>
-          <span class="fw-light"><%= @profile.school&.name %></span>
+          <span class="fw-light ms-2"><%= @profile.school&.name %></span>
         </p>
       </div>
       <!-- Campus -->
       <div class="col">
         <p class="text-white">
           Campus:<br>
-          <span class="fw-light"><%= @profile.campus&.campus_descr %></span>
+          <span class="fw-light ms-2"><%= @profile.campus&.campus_descr %></span>
         </p>
       </div>
       <!-- Major -->
-      <div class="col">
-        <p class="text-white">
-          Major:<br>
-          <span class="fw-light"><%= @profile.major %></span>
-        </p>
-      </div>
+      <% if @profile&.major.present? %>
+        <div class="col">
+          <p class="text-white">
+            Major:<br>
+            <span class="fw-light ms-2"><%= @profile.major %></span>
+          </p>
+        </div>
+      <% end %>
       <!-- Department -->
-      <div class="col">
-        <p class="text-white">
-          Dept:<br>
-          <span class="fw-light"><%= @profile.department&.name %></span>
-        </p>
-      </div>
+      <% if @profile.department.present? %>
+        <div class="col">
+          <p class="text-white">
+        Dept:<br>
+        <span class="fw-light ms-2"><%= @profile.department %></span>
+          </p>
+        </div>
+      <% end %>
       <!-- Graduation Date -->
       <div class="col">
         <p class="text-white">
           Graduation Date:<br>
-          <span class="fw-light"><%= @profile.grad_date.strftime("%B %Y") %></span>
+          <span class="fw-light ms-2"><%= @profile.grad_date.strftime("%B %Y") %></span>
         </p>
       </div>
       <!-- Degree -->
       <div class="col">
         <p class="text-white">
           Degree:<br>
-          <span class="fw-light"><%= @profile.degree %></span>
+          <span class="fw-light ms-2"><%= @profile.degree %></span>
         </p>
       </div>
       <!-- Financial Aid -->
@@ -89,14 +93,14 @@
       <div class="col">
         <p class="text-white">
           Financial Aid:<br>
-          <span class="fw-light"><%= boolean_to_yes_no(@profile.receiving_financial_aid) %></span>
+          <span class="fw-light ms-2"><%= boolean_to_yes_no(@profile.receiving_financial_aid) %></span>
         </p>
       </div>
         <!-- Financial Aid Description -->
         <div class="col">
           <p class="text-white">
             Financial Aid Description:<br>
-            <span class="fw-light"><%= @profile.financial_aid_description %></span>
+            <span class="fw-light ms-2"><%= @profile.financial_aid_description %></span>
           </p>
         </div>
       <% end %>
@@ -104,7 +108,7 @@
       <div class="col">
         <p class="text-white">
           Name for Publication:<br>
-          <span class="fw-light"><%= @profile.display_name %></span>
+          <span class="fw-light ms-2"><%= @profile.display_name %></span>
         </p>
       </div>
 
@@ -113,7 +117,7 @@
         <div class="col">
           <p class="text-white">
             Preferred Media Outlet:<br>
-            <span class="fw-light"><%= @profile.hometown_publication %></span>
+            <span class="fw-light ms-2"><%= @profile.hometown_publication %></span>
           </p>
         </div>
       <% end %>
@@ -123,7 +127,7 @@
         <div class="col">
           <p class="text-white">
             Pen Name (default):<br>
-            <span class="fw-light"><%= @profile.pen_name %></span>
+            <span class="fw-light ms-2"><%= @profile.pen_name %></span>
           </p>
         </div>
       <% end %>
