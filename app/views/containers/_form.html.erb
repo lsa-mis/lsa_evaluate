@@ -22,6 +22,7 @@
 
     <div class="form-actions">
       <%= f.button :submit, (f.object.new_record? ? "Create Collection" : "Update Collection"), class: "btn btn-sm btn-primary" %>
+      <%= link_to "Cancel", containers_path, class: "text-danger link_to" %>
     </div>
   <% end %>
 </div>
