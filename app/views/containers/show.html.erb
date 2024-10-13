@@ -1,8 +1,5 @@
 <%# app/views/containers/show.html.erb %>
-<div class="d-flex justify-content-evenly">
-  <div>
-    <%= render 'container_detail', container: @container, container_contest_descriptions: @container_contest_descriptions %>
-  </div>
+<div class="d-flex justify-content-end">
   <div>
     <%= link_to "Back to Collections", containers_path, class: "link_to text-nowrap" %>
 
@@ -14,8 +11,17 @@
     </div>
   </div>
 </div>
+<% if (content = render_editable_content('container', 'information')) %>
+    <%= content %>
+<% end %>
+<div>
+  <%= render 'container_detail', container: @container, container_contest_descriptions: @container_contest_descriptions %>
+</div>
 
 <h3 class="mt-4">User Permissions</h3>
+  <% if (content = render_editable_content('container', 'permissions')) %>
+      <%= content %>
+  <% end %>
 <%= turbo_frame_tag "assignments" do %>
   <%= render partial: "containers/assignments_table", locals: { container: @container, assignments: @assignments } %>
 <% end %>
