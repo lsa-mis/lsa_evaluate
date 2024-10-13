@@ -1,7 +1,12 @@
 <div class="container d-flex justify-content-between mt-4">
-  <h1>Manage Contest Collections</h1> 
   <div>
-    <%= link_to "Create Contest Collection", new_container_path, class: 'btn btn-sm btn-primary' %>
+    <h1>Manage Contest Collections</h1>
+    <% if (content = render_editable_content('container', 'instructions')) %>
+        <%= content %>
+    <% end %> 
+  </div>
+  <div>
+    <%= link_to "Create a Contest Collection", new_container_path, class: 'btn btn-sm btn-primary' %>
   </div>
 </div>
 
