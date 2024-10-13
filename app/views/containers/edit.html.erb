@@ -1,9 +1,9 @@
 <div class="d-flex justify-content-between">
   <div>
-    <h1><%= action_name.capitalize %> Contest</h1>
+    <h1><%= action_name.capitalize %> Collection</h1>
   </div>
   <div>
-    <%= link_to "Back to Collections", containers_path, class: "link_to" %>
+    <%= link_to "Back to #{@container.name}", @container %>
   </div>
 </div>
 
@@ -11,8 +11,4 @@
   <%= render 'form' %>
 </div>
 
-<br>
 
-<div>
-  <%= link_to "Back to #{@container.name}", @container %>
-</div>
