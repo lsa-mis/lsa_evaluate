@@ -43,5 +43,6 @@
   </div>
 
   <%= f.submit 'Add User', class: "btn btn-primary my-2" %>
-  <%= link_to "Cancel", container_path(container), class: "text-danger link_to" %>
+  <%= link_to "Cancel", container_path(container), class: "text-danger link_to", data: { turbo: false, method: :get } %>
 <% end %>
+
