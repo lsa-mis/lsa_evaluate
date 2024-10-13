@@ -3,7 +3,7 @@
 </div>
 
 <div>
-  <h1><%= @contest_description.name %></h1><p class="text-muted"> <%= pluralize(@contest_instances.count, "instance") %></p>
+  <h1><%= @contest_description.name %></h1><p class="text-muted"> <%= "#{pluralize(@contest_instances.count, "instance")} of this contest" %></p>
 </div>
 
 <!-- Add a checkbox to filter only Active contest instances -->
