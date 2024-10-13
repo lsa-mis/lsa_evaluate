@@ -1,15 +1,15 @@
-<div class="container d-flex justify-content-between mt-4">
-  <div>
-    <h1>Manage Contest Collections</h1>
-    <% if (content = render_editable_content('container', 'instructions')) %>
-        <%= content %>
-    <% end %> 
-  </div>
-  <div>
-    <%= link_to "Create a Contest Collection", new_container_path, class: 'btn btn-sm btn-primary' %>
-  </div>
+<div class="container d-flex justify-content-end mt-2">
+  <% if current_user.is_employee? %>
+      <%= link_to "Create a Contest Collection", new_container_path, class: 'btn btn-sm btn-primary' %>
+  <% end %>
 </div>
 
+<div>
+  <h1>Manage Contest Collections</h1>
+  <% if (content = render_editable_content('containers', 'instructions')) %>
+      <%= content %>
+  <% end %> 
+</div>
 <div class="container-fluid d-flex flex-column justify-content-between mt-4" id="containers">
   <% if @containers.any? %>
     <%= render partial: 'container_summary', collection: @containers, as: :container %>
