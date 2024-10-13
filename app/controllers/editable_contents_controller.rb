@@ -6,7 +6,7 @@ class EditableContentsController < ApplicationController
 
   def index
     authorize EditableContent
-    @editable_contents = policy_scope(EditableContent)
+    @editable_contents = policy_scope(EditableContent).order(:page, :section)
   end
 
   def edit
