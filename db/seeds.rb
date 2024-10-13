@@ -34,8 +34,12 @@ EditableContent.create([
                            consult with someone about your particular situation, please contact OFA.") },
                          { page: 'profiles', section: 'information',
                            content: ActionText::RichText.new(body: "Be sure keep your profile up to date.") },
-                         { page: "container", section: "instructions",
-                           content: ActionText::RichText.new(body: "Instructions for the container index page") }
+                         { page: "containers", section: "instructions",
+                           content: ActionText::RichText.new(body: "Instructions for the containers index page") },
+                         { page: "container", section: "information",
+                           content: ActionText::RichText.new(body: "Information for the container page") },
+                         { page: "container", section: "permissions",
+                           content: ActionText::RichText.new(body: "Instructions for the container permissions") }
                        ])
 
 # Seed data for School

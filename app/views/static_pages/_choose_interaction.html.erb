@@ -1,9 +1,7 @@
 <div id="choose-interaction" class="my-4">
   <div class="row g-4 align-items-top justify-content-center">
-
     <div id="student-submit-entry" class="col mb-4">
       <div class="card">
-        <h3 class="m-2">Explore / Submit Entry / Update Profile</h3>
         <div class="card-body">
           <% if (content = render_editable_content('home', 'submit_entry')) %>
               <%= content %>
@@ -23,7 +21,6 @@
     <% if current_user.is_employee? %>
       <div id="manage-submissions" class="col mb-4">
         <div class="card">
-          <h3 class="m-2">Create/Manage Contest Collections</h3>
           <div class="card-body">
             <% if (content = render_editable_content('home', 'manage_submissions')) %>
                 <%= content %>

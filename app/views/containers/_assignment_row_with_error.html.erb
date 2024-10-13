@@ -3,9 +3,13 @@
   <td>
     <%= assignment.user.display_name_and_uid %>
     <% if assignment.errors.any? %>
-      <div class="alert alert-danger my-2">
-        <strong>Error:</strong> <%= assignment.errors.full_messages.to_sentence %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      <div class="d-flex justify-content-between alert alert-danger my-2">
+        <div>
+          <strong>Error:</strong> <%= assignment.errors.full_messages.to_sentence %>
+        </div>
+        <button type="button" class="text-red btn btn-sm btn-outline-danger" data-bs-dismiss="alert" aria-label="Close">
+          <i class="bi bi-x"></i>
+        </button>
       </div>
     <% end %>
   </td>

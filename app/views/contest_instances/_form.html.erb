@@ -19,20 +19,30 @@
     <%= f.input :judging_rounds %>
     <%= f.input :judge_evaluations_complete %>
     <%= f.input :maximum_number_entries_per_applicant %>
-    <%= f.input :require_pen_name, as: :boolean, label: "Require Pen Name for entries?" %>
-    <%= f.input :require_campus_employment_info, as: :boolean, label: "Require campus employment check" %>
-    <%= f.input :require_finaid_info, as: :boolean, label: "Require financial aid check" %>
+    <%= f.input :require_pen_name, 
+          as: :boolean, 
+          label: "Require Pen Name for entries?",
+          hint: "Check this box if applicants must use a pen name to submit their entries." %>
+    <%= f.input :require_campus_employment_info, 
+                as: :boolean, 
+                label: "Require campus employment check",
+                hint: "Check this box if you require the applicant to notify you of their on campus employment (GSI, workstudy ...)." %>
+    <%= f.input :require_finaid_info, 
+                as: :boolean, 
+                label: "Require financial aid check",
+                hint: "Check this box if you want the applicant to describe any financial aid they are receiving." %>
     <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
 
     <h3>Categories</h3>
     <div class="form-group">
       <%= f.collection_check_boxes :category_ids, Category.all, :id, :kind do |b| %>
-        <div class="checkbox">
-          <label>
-            <%= b.check_box %> <%= b.text %>
-          </label>
-        </div>
+      <div class="checkbox">
+        <label>
+        <%= b.check_box %> <%= b.text %>
+        </label>
+      </div>
       <% end %>
+      <small class="form-text text-muted">Select the categories that apply to this contest.</small>
     </div>
 
     <h3>Class Level Requirements</h3>
@@ -44,11 +54,12 @@
           </label>
         </div>
       <% end %>
+      <small class="form-text text-muted">Select the class levels of applicants that are eligible for this contest.</small>
     </div>
 
   </div>
 
-  <div class="form-actions">
+  <div class="form-actions py-2">
     <%= f.button :submit, class: "btn btn-primary" %>
     <%= link_to "Cancel", container_contest_description_contest_instances_path(@container, @contest_description), class: "text-danger link_to" %>
   </div>

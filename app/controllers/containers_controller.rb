@@ -10,6 +10,7 @@ class ContainersController < ApplicationController
   def show
     @assignments = @container.assignments.includes(:user, :role)
     @assignment = @container.assignments.build
+    @container_contest_descriptions = @container.contest_descriptions.reorder('contest_descriptions.name ASC')
   end
 
   def new
@@ -43,8 +44,8 @@ class ContainersController < ApplicationController
 
     if @container.update(container_params)
       respond_to do |format|
-        format.html { redirect_to containers_path, notice: 'Collection was successfully updated.' }
-        format.turbo_stream { redirect_to containers_path, notice: 'Collection was successfully updated.' }
+        format.html { redirect_to container_path(@container), notice: 'Collection was successfully updated.' }
+        format.turbo_stream { redirect_to container_path(@container), notice: 'Collection was successfully updated.' }
       end
     else
       respond_to do |format|

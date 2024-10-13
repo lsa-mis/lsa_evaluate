@@ -33,14 +33,6 @@
           <%= button_to "Login to LSA Evaluate", user_saml_omniauth_authorize_path, class: "btn btn-warning btn-sm mb-4", data: { turbo: "false" } %>
         </div>
       </div>
-      <div class="row">
-        <header>
-          <h2 class="mt-4">How to use LSA Evaluate</h2>
-        </header>
-        <% if (content = render_editable_content('home', 'instructions')) %>
-            <%= content %>
-        <% end %>
-      </div>
     </div>
   <% end %>
 </div>

@@ -1,12 +1,9 @@
-<div class="d-flex justify-content-between">
-  <div>
-    <h1><%= @contest_description.name %></h1>
-  </div>
-  <div>
-    <%= link_to "Return to Manage Collection", container_path(@container), class: "link_to" %>
-  </div>
+<div class="d-flex justify-content-end">
+  <%= link_to "Return to Manage Collection", container_path(@container), class: "link_to" %>
 </div>
-
+<div>
+  <h1><%= @contest_description.name %></h1>
+</div>
 <div id="contest_description_form">
   <%= render 'form' %>
 </div>

@@ -17,10 +17,15 @@
                   collection: Visibility.all, 
                   label_method: :kind, 
                   value_method: :id,
+                  hint: safe_join([
+                    content_tag(:strong, "Public"), " visibility means that this collection of contests will be visible in the applicant's dashboard. ",
+                    tag(:br),
+                    content_tag(:strong, "Private"), " visibility requires you provide a special link to applicants in order for them to apply to this collection of contests, it will NOT be visible in the applicant's dashboard."
+                  ]),
                   required: true %> <!-- Required visibility -->
     </div>
 
-    <div class="form-actions">
+    <div class="form-actions py-2">
       <%= f.button :submit, (f.object.new_record? ? "Create Collection" : "Update Collection"), class: "btn btn-sm btn-primary" %>
       <%= link_to "Cancel", containers_path, class: "text-danger link_to" %>
     </div>
