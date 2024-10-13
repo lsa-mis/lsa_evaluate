@@ -1,7 +1,7 @@
 <%# app/views/containers/show.html.erb %>
 <div class="d-flex justify-content-evenly">
   <div>
-    <%= render 'container_detail', container: @container %>
+    <%= render 'container_detail', container: @container, container_contest_descriptions: @container_contest_descriptions %>
   </div>
   <div>
     <%= link_to "Back to Collections", containers_path, class: "link_to text-nowrap" %>

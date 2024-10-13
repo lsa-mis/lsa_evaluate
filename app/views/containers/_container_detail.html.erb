@@ -18,7 +18,7 @@
     </div>
 
     <div class="container w-100 mx-auto">
-      <% if container.contest_descriptions.present? %>
+      <% if container_contest_descriptions.present? %>
         <div class="table-responsive">
           <table class="table table-striped w-100">
             <thead>
@@ -32,7 +32,7 @@
               </tr>
             </thead>
             <tbody>
-              <% container.contest_descriptions.each do |description| %>
+              <% container_contest_descriptions.each do |description| %>
                 <tr data-status="<%= description.active %>" data-filter-target="filterRow">
                   <td>
                     <%= description.name %>
