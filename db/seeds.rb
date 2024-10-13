@@ -32,9 +32,10 @@ EditableContent.create([
                            reduced from previously received assistance. You can learn more about financial aid terms
                            and conditions on the Office of Financial Aid's website. If you have questions or want to
                            consult with someone about your particular situation, please contact OFA.") },
-                         { page: 'profiles', section: 'submission_ownership',
-                          content: ActionText::RichText.new(body: "By submitting your profile you are agreeing that
-                          submission belongs to the University of Michigan") }
+                         { page: 'profiles', section: 'information',
+                           content: ActionText::RichText.new(body: "Be sure keep your profile up to date.") },
+                         { page: "container", section: "instructions",
+                           content: ActionText::RichText.new(body: "Instructions for the container index page") }
                        ])
 
 # Seed data for School
