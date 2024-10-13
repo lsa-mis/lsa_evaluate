@@ -1,5 +1,6 @@
 class EntriesController < ApplicationController
   before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified ]
+  before_action :authorize_entry, only: %i[show edit update destroy]
 
   # GET /entries or /entries.json
   def index
@@ -122,6 +123,9 @@ class EntriesController < ApplicationController
       @entry = Entry.find(params[:id])
     end
 
+    def authorize_entry
+      authorize @entry
+    end
     # Only allow a list of trusted parameters through.
     def entry_params 
       params.require(:entry).permit(:title, :disqualified, :deleted, :contest_instance_id, 

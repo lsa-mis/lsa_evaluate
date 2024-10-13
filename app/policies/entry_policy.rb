@@ -1,16 +1,6 @@
 class EntryPolicy < ApplicationPolicy
-  # class Scope < Scope
-  #   def resolve
-  #     if axis_mundi?
-  #       scope.all
-  #     else
-  #       scope.where(profile: user.profile)
-  #     end
-  #   end
-  # end
-
   def show?
-    record.profile.user == user || axis_mundi?
+    (record.profile.user == user && !record.deleted) || axis_mundi?
   end
 
   def create?
@@ -18,7 +8,7 @@ class EntryPolicy < ApplicationPolicy
   end
 
   def update?
-    (record.profile.user == user && record.contest_instance.open?) || axis_mundi?
+    (record.profile.user == user && record.contest_instance.open? && !record.deleted) || axis_mundi?
   end
 
   # def destroy?

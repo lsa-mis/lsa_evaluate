@@ -1,20 +1,28 @@
+# app/controllers/addresses_controller.rb
 class AddressesController < ApplicationController
   before_action :set_address, only: %i[show edit update destroy]
 
   def index
-    @addresses = Address.all
+    authorize Address
+    @addresses = policy_scope(Address)
   end
 
-  def show; end
+  def show
+    authorize @address
+  end
 
   def new
     @address = Address.new
+    authorize @address
   end
 
-  def edit; end
+  def edit
+    authorize @address
+  end
 
   def create
     @address = Address.new(address_params)
+    authorize @address
 
     respond_to do |format|
       if @address.save
@@ -26,6 +34,8 @@ class AddressesController < ApplicationController
   end
 
   def update
+    authorize @address
+
     respond_to do |format|
       if @address.update(address_params)
         format.html { redirect_to @address, notice: 'Address was successfully updated.' }
@@ -36,15 +46,15 @@ class AddressesController < ApplicationController
   end
 
   def destroy
+    authorize @address
     @address.destroy
-    if @contest_description.destroy
-      respond_to do |format|
-        format.html { redirect_to addresses_url, notice: 'Address was successfully destroyed.' }
-      end
+
+    respond_to do |format|
+      format.html { redirect_to addresses_url, notice: 'Address was successfully destroyed.' }
     end
   rescue ActiveRecord::DeleteRestrictionError => e
     flash[:error] = e.message
-    redirect_to contest_descriptions_path
+    redirect_to addresses_path
   end
 
   private
