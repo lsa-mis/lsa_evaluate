@@ -20,7 +20,7 @@ class ProfilePolicy < ApplicationPolicy
   end
 
   def destroy?
-    user_is_owner? || axis_mundi?
+    axis_mundi?
   end
 
   private
