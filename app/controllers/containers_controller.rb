@@ -10,6 +10,7 @@ class ContainersController < ApplicationController
   def show
     @assignments = @container.assignments.includes(:user, :role)
     @assignment = @container.assignments.build
+    @container_contest_descriptions = @container.contest_descriptions.reorder('contest_descriptions.name ASC')
   end
 
   def new
