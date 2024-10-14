@@ -7,11 +7,6 @@ class ApplicantDashboardController < ApplicationController
       return
     end
 
-    unless @profile && @profile.class_level_id
-      redirect_to edit_profile_path, alert: 'Please complete your profile with your class level information.'
-      return
-    end
-
     @departments = Department.all
     @class_levels = ClassLevel.all
     @containers = Container.visible
