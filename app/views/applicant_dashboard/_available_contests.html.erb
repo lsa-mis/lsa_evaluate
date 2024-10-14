@@ -44,7 +44,7 @@
   
   <% if @active_contests_by_container.any? %>
     <% @active_contests_by_container.each do |container, contests| %>
-      <%= render partial: 'contest_table', locals: { container: container, contests: contests } %>
+      <%= render partial: 'applicant_dashboard/contest_table', locals: { container: container, contests: contests } %>
     <% end %>
   <% else %>
     <p>No active contests available for your class level.</p>
