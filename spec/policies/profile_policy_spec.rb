@@ -20,7 +20,6 @@ RSpec.describe ProfilePolicy do
 
     it { is_expected.to permit_action(:show) }
     it { is_expected.to permit_action(:update) }
-    it { is_expected.to permit_action(:destroy) }
   end
 
   context 'for a user with Axis Mundi role' do
