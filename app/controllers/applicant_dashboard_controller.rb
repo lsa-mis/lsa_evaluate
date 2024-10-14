@@ -1,7 +1,7 @@
 # app/controllers/applicant_dashboard_controller.rb
 class ApplicantDashboardController < ApplicationController
   def index
-    @profile = current_user.profile
+    @profile = current_user&.profile
     unless @profile
       redirect_to new_profile_path, alert: 'Please create your profile first.'
       return
