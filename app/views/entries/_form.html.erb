@@ -25,7 +25,6 @@
                     "The same pen name should be used for each submission entered across this year's contests. 
                     Your real name should not appear anywhere in the manuscript or on the title page."
                   ]) %>
-
       <% if current_user.profile.pen_name.blank? %>
         <%= f.input :save_pen_name_to_profile,
                     as: :boolean,
@@ -36,8 +35,11 @@
     <% if @entry.contest_instance.require_campus_employment_info %>
       <%= f.input :campus_employee,
                   as: :boolean,
-                  label: "I am currently an active campus employee. (workstudy, GSI, etc)",
-                  hint: "Select this option if you are a campus employee." %>
+                  label: "I have been a campus employee within the past 12 months (including GSI, workstudy, etc.)",
+                  hint: "Winners and finalists who are or have been employed by the university within the past 
+                        calendar year can expect to receive their award in the form of additional pay through 
+                        the university payroll system. Awards processed through payroll will include a payroll 
+                        tax deduction." %>
     <% end %>
     <% if @entry.contest_instance.require_finaid_info %>
       <% if (content = render_editable_content('profiles', 'finaid_information')) %>
