@@ -40,7 +40,18 @@
     <%= f.input :require_campus_employment_info, 
                 as: :boolean, 
                 label: "Require campus employment check",
-                hint: "Check this box if you require the applicant to notify you of their on campus employment (GSI, workstudy ...)." %>
+                hint: safe_join([
+                      "Check this box if you require the applicant to notify you of their on campus employment (GSI, workstudy ...).",
+                      tag(:br),
+                      content_tag(:em, "This will add the following hint to the applicants entry form"),
+                      tag(:br),
+                      content_tag(:div, class: "alert alert-secondary", style: "padding: 5px;") do
+                        "Winners and finalists who are or have been employed by the university within the past 
+                        calendar year can expect to receive their award in the form of additional pay through 
+                        the university payroll system. Awards processed through payroll will include a payroll 
+                        tax deduction."
+                        end
+                      ]) %>
     <%= f.input :require_finaid_info, 
                 as: :boolean, 
                 label: "Require financial aid check",

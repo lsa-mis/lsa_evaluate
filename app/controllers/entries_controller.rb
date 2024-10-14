@@ -1,4 +1,5 @@
 class EntriesController < ApplicationController
+  include AvailableContestsConcern
   before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified ]
   before_action :authorize_entry, only: %i[show edit update destroy]
 
@@ -78,6 +79,10 @@ class EntriesController < ApplicationController
     authorize @entry, :soft_delete?
     if @entry.soft_deletable?
       if @entry.update(deleted: true)
+        @profile = current_user.profile
+        @entries = Entry.active.where(profile: @profile)
+        available_contests
+
         flash.now[:notice] = 'Entry was successfully removed.'
         respond_to do |format|
           format.html { redirect_to applicant_dashboard_path, notice: 'Entry was successfully removed.' }
@@ -94,7 +99,7 @@ class EntriesController < ApplicationController
       flash.now[:alert] = 'Cannot delete entry after contest has closed.'
       respond_to do |format|
         format.html { redirect_to applicant_dashboard_path, alert: 'Cannot delete entry after contest has closed.' }
-        format.turbo_stream { render turbo_stream: turbo_stream.replace('flash', partial: 'shared/flash_messages', locals: { alert: 'Cannot delete entry after contest has closed.' }) }
+        format.turbo_stream
       end
     end
   end

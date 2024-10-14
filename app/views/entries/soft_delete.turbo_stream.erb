@@ -1,6 +1,14 @@
 <!-- app/views/entries/soft_delete.turbo_stream.erb -->
+<%= turbo_stream.replace 'submissions-summary' do %>
+  <%= render 'applicant_dashboard/submissions_summary', submissions: @entries %>
+<% end %>
+
+<%= turbo_stream.replace 'available-contests' do %>
+  <%= render 'applicant_dashboard/available_contests' %>
+<% end %>
+
 <%= turbo_stream.replace "flash" do %>
   <%= render "shared/flash_messages" %>
 <% end %>
 
-<%= turbo_stream.remove dom_id(@entry) %>
+<%= turbo_stream.replace dom_id(@entry) %>
