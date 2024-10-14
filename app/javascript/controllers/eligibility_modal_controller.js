@@ -46,10 +46,25 @@ export default class extends Controller {
         return response.text()
       })
       .then(html => {
-        this.contentTarget.innerHTML = html
-        this.isLoaded[url] = html // Cache the content
+        // Parse the HTML string into a DOM object
+        const parser = new DOMParser()
+        const doc = parser.parseFromString(html, "text/html")
+
+        // Modify all <a> tags
+        doc.querySelectorAll('a').forEach(link => {
+          link.setAttribute('target', '_blank')
+          link.setAttribute('rel', 'noopener noreferrer')
+        })
+
+        // Serialize the modified DOM back to a string
+        const modifiedHtml = doc.body.innerHTML
+
+        // Set the modified HTML as the content
+        this.contentTarget.innerHTML = modifiedHtml
+        this.isLoaded[url] = modifiedHtml // Cache the content
       })
       .catch(error => {
+        console.error(error)
         this.contentTarget.innerHTML = "<p>Error loading content.</p>"
       })
   }
