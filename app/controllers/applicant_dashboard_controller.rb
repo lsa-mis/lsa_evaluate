@@ -2,6 +2,11 @@
 class ApplicantDashboardController < ApplicationController
   def index
     @profile = current_user.profile
+    unless @profile
+      redirect_to new_profile_path, alert: 'Please create your profile first.'
+      return
+    end
+
     unless @profile && @profile.class_level_id
       redirect_to edit_profile_path, alert: 'Please complete your profile with your class level information.'
       return
