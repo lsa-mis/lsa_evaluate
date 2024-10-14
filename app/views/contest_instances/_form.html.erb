@@ -14,7 +14,8 @@
                 as: :datetime, 
                 label: "Select Contest Close Date", 
                 input_html: { class: "form-control" } %>
-    <%= f.input :notes %>
+    <%= f.input :notes,
+                hint: "These notes are not visible on the applicant entry form" %>
     <%= f.input :judging_open %>
     <%= f.input :judging_rounds %>
     <%= f.input :judge_evaluations_complete %>
