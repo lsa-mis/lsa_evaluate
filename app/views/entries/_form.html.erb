@@ -10,13 +10,21 @@
     <%= f.hidden_field :profile_id, value: @entry.profile_id %>
 
     <%= f.association :category, collection: @entry.contest_instance.categories, label_method: :kind %>
-    <%= f.input :entry_file, as: :file, required: true %>
+    <%= f.input :entry_file, 
+                as: :file, 
+                required: true,
+                hint: "Only PDF files under 30 MB are allowed." %>
     <% if @entry.contest_instance.require_pen_name %>
       <%= f.input :pen_name,
                   required: true,
                   input_html: { value: @entry.pen_name.presence || current_user.profile.pen_name },
                   label: "Pen Name",
-                  hint: "Enter the pen name you wish to use for this entry." %>
+                  hint: safe_join([
+                    "Enter the pen name you wish to use for this entry.",
+                    tag(:br),
+                    "The same pen name should be used for each submission entered across this year's contests. 
+                    Your real name should not appear anywhere in the manuscript or on the title page."
+                  ]) %>
 
       <% if current_user.profile.pen_name.blank? %>
         <%= f.input :save_pen_name_to_profile,

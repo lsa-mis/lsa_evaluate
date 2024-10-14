@@ -8,7 +8,6 @@
           <h1 class="text-start mt-6 ms-6">Welcome <%= current_user.display_name_or_uid %>!</h1>
         </header>
         <div class="row mx-6 mb-4">
-          <h2>How to use LSA Evaluate</h2>
           <% if (content = render_editable_content('home', 'instructions')) %>
               <%= content %>
           <% end %>

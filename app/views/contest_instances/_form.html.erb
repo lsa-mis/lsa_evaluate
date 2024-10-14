@@ -14,7 +14,8 @@
                 as: :datetime, 
                 label: "Select Contest Close Date", 
                 input_html: { class: "form-control" } %>
-    <%= f.input :notes %>
+    <%= f.input :notes,
+                hint: "These notes are not visible on the applicant entry form" %>
     <%= f.input :judging_open %>
     <%= f.input :judging_rounds %>
     <%= f.input :judge_evaluations_complete %>
@@ -22,7 +23,20 @@
     <%= f.input :require_pen_name, 
           as: :boolean, 
           label: "Require Pen Name for entries?",
-          hint: "Check this box if applicants must use a pen name to submit their entries." %>
+            hint: safe_join([
+                "Check this box if applicants must use a pen name to submit their entries.",
+                tag(:br),
+                content_tag(:em, "This will add the following hint to the applicants entry form"),
+                tag(:br),
+                content_tag(:div, class: "alert alert-secondary", style: "padding: 5px;") do
+                  safe_join([
+                  "Enter the pen name you wish to use for this entry.",
+                  tag(:br),
+                  "The same pen name should be used for each submission entered across this year's contests. 
+                  Your real name should not appear anywhere in the manuscript or on the title page."
+                  ])
+                end
+                  ])%>
     <%= f.input :require_campus_employment_info, 
                 as: :boolean, 
                 label: "Require campus employment check",
