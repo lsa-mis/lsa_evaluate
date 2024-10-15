@@ -9,7 +9,7 @@ module AvailableContestsConcern
                                       .with_public_visibility
                                       .available_for_profile(@profile)
                                       .includes(contest_description: { container: :visibility })
-                                      .order('containers.name ASC')
+                                      .order('contest_descriptions.name ASC')
                                       .distinct
 
     # Apply filtering if container_id is provided
