@@ -5,7 +5,7 @@
       <div class="d-xxl-none"></div>
       <div class="text-center">
         <h2>Welcome<br><%= @profile.preferred_first_name %>!</h2>
-        <p class="text-white fw-light"><small>UM ID: <%= @profile.umid %></small></p>
+        <p class="text-white fw-light"><small>UMID: <%= @profile.umid %></small></p>
       </div>
       <!-- Edit Profile Link -->
       <div>
@@ -108,6 +108,7 @@
       <div class="col">
         <p class="text-white">
           Name for Publication:<br>
+          <small><em class="fw-light">(AKA. preferred name)</em></small><br>
           <span class="fw-light ms-2"><%= @profile.display_name %></span>
         </p>
       </div>
@@ -126,7 +127,7 @@
         <!-- Pen Name -->
         <div class="col">
           <p class="text-white">
-            Pen Name (default):<br>
+            Default pen name:<br>
             <span class="fw-light ms-2"><%= @profile.pen_name %></span>
           </p>
         </div>
