@@ -8,7 +8,7 @@
         <p class="text-white fw-light"><small>UMID: <%= @profile.umid %></small></p>
       </div>
       <!-- Edit Profile Link -->
-      <div>
+      <div class="align-self-start pt-2">
         <%= link_to edit_profile_path(@profile), class: 'text-white link-underline link-underline-opacity-0' do %>
           <i class="bi bi-pencil"></i> <span class="fw-light">Edit</span>
         <% end %>
@@ -108,7 +108,6 @@
       <div class="col">
         <p class="text-white">
           Name for Publication:<br>
-          <small><em class="fw-light">(AKA. preferred name)</em></small><br>
           <span class="fw-light ms-2"><%= @profile.display_name %></span>
         </p>
       </div>
