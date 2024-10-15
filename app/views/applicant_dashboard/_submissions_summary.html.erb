@@ -1,6 +1,9 @@
 <div class="mt-4">
   <div class="">
     <h2 class="">Contests You Have Entered:</h2>
+    <% if (content = render_editable_content('applicant_dashboard', 'submission_summary')) %>
+      <%= content %>
+    <% end %>
   </div>
   <div class="">
     <table class="table table-bordered table-hover table-striped mt-3">

@@ -12,13 +12,13 @@
     </div>
     <div class="card-body">
       <div class="ps-2  me-8">
-        Email: <%= profile.user.email %>
+        Email: <%= simple_format(profile.user.email, {class:"fw-light"}) %>
       </div>
       <div class="justify-content-start">
         <div class="ps-2 me-8"><p class="m-0">Hometown Address:<%= simple_format(profile.home_address.full_address, {class:"fw-light"}) if profile.home_address %></p></div>
         <div class="ps-2"><p class="m-0">Local(campus) Address:<%= simple_format(profile.campus_address.full_address, {class:"fw-light"}) if profile.campus_address %></p></div>
         <% if profile.pen_name.present? %>
-          <div class="ps-2"><p class="m-0">Pen Name: <%= profile.pen_name %></p></div>
+          <div class="ps-2"><p class="m-0">Default pen name: <%= simple_format(profile.pen_name, {class:"fw-light"}) %></p></div>
         <% end %>
       </div>
     </div>
@@ -72,7 +72,9 @@
     <div class="card-body">
       <div class="d-flex justify-content-start">
         <div class=" text-start ms-4">
-          <p>Entrant’s name as it will appear in publicity: <br><span class="fw-light"> <%= profile.display_name %></span></p>
+            Entrant’s name as it will appear in publicity:<br>
+             <small><em class="fw-light">(This is the name you entered as your preferred name.)</em></small>
+            <%= simple_format(profile.display_name, {class:"fw-light"}) %>
           <% if profile.hometown_publication.present? %>
             <p>Name of your hometown newspaper or preferred media outlet:<br><span class="fw-light"> <%= profile.hometown_publication %></span></p>
           <% end %>

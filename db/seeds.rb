@@ -39,7 +39,11 @@ EditableContent.create([
                          { page: "container", section: "information",
                            content: ActionText::RichText.new(body: "Information for the container page") },
                          { page: "container", section: "permissions",
-                           content: ActionText::RichText.new(body: "Instructions for the container permissions") }
+                          content: ActionText::RichText.new(body: "Instructions for the container permissions") },
+                         { page: "applicant_dashboard", section: "submission_summary",
+                          content: ActionText::RichText.new(body: "Instructions for the submission_summary") },
+                         { page: "applicant_dashboard", section: "available_contests",
+                          content: ActionText::RichText.new(body: "Instructions for the available_contests") }
                        ])
 
 # Seed data for School

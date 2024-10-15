@@ -22,6 +22,9 @@
     </p>
   <% else %>
     <h2>All Available Contests:</h2>
+    <% if (content = render_editable_content('applicant_dashboard', 'available_contests')) %>
+      <%= content %>
+    <% end %>
   <% end %>
   <!-- Active Filters -->
   <div class="active-filters mb-3">
