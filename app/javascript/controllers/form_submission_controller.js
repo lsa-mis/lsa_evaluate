@@ -6,11 +6,13 @@ export default class extends Controller {
 
   connect() {
     this.element.addEventListener('turbo:submit-start', this.showLoading.bind(this));
+    console.log("Form submission controller connected");
   }
 
   showLoading() {
     this.loadingTarget.style.display = "block";
     this.submitButtonTarget.disabled = true; 
-    this.submitButtonTarget.classList.add('disabled'); // Disable the submit button
+    this.submitButtonTarget.classList.add('disabled');
+    console.log("finished") // Disable the submit button
   }
 }
