@@ -1,4 +1,4 @@
-<%= simple_form_for(@entry, html: { data: { turbo: false } }) do |f| %>
+<%= simple_form_for(@entry, html: { data: { controller: "form-submission", action: "turbo:submit-start->form-submission#showLoading", turbo: false } }) do |f| %>
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
@@ -62,8 +62,16 @@
     <% end %>
   </div>
 
+  <!-- Bootstrap 5 spinner -->
+  <div class="d-flex justify-content-center mt-3 d-none" data-form-submission-target="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Uploading file, please wait...</span>
+    </div>
+  </div>
+
+
   <div class="form-actions">
-    <%= f.button :submit, "Submit Entry", class: "btn btn-primary" %> 
+    <%= f.button :submit, "Submit Entry", class: "btn btn-primary", data: { "form-submission-target" => "submitButton" } %> 
     <%= link_to "Cancel", applicant_dashboard_path, class: "text-danger link_to" %>
   </div>
 <% end %>

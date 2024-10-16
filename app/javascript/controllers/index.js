@@ -28,6 +28,9 @@ application.register("filter", FilterController)
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
 
+import FormSubmissionController from "./form_submission_controller"
+application.register("form-submission", FormSubmissionController)
+
 import InteractionController from "./interaction_controller"
 application.register("interaction", InteractionController)
 

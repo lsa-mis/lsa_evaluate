@@ -337,7 +337,7 @@ RSpec.describe ContestInstance, type: :model do
 
   describe '.available_for_profile' do
     let(:profile) { create(:profile) }
-    let(:other_profile) { create(:profile) }
+    let(:other_profile) { create(:profile, campus: profile.campus) }
     let(:contest_instance_with_limit) { create(:contest_instance, maximum_number_entries_per_applicant: 1) }
     let(:contest_instance_high_limit) { create(:contest_instance, maximum_number_entries_per_applicant: 1000) }
     let(:contest_instance_closed) { create(:contest_instance, date_open: 2.days.ago, date_closed: 1.day.ago) }

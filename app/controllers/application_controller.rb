@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
     # Rails.logger.info('!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
     user_not_authorized(exception)
   rescue ActiveRecord::RecordNotFound => exception
-    Rails.logger.info('!!!! Handling ActiveRecord::RecordNotFound in ApplicationController')
+    Rails.logger.info('!!!!!!! Handling ActiveRecord::RecordNotFound in ApplicationController')
     redirect_to not_found_path
   end
 
@@ -41,10 +41,10 @@ class ApplicationController < ActionController::Base
   def user_not_authorized(exception)
     logger.info('!!!!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
     policy_name = exception.policy.class.to_s.underscore
-    message = "You are not authorized to perform #{exception.query} on #{policy_name.humanize}."
+    message = '!!! Not authorized !!!'
 
     flash[:alert] = message
-    Rails.logger.error("Pundit error: #{message} - User: #{current_user&.id}, Action: #{exception.query}, Policy: #{policy_name}")
+    Rails.logger.error("#!#!#!# Pundit error: #{message} - User: #{current_user&.id}, Action: #{exception.query}, Policy: #{policy_name.humanize}")
 
     # Redirect back or to root if referer is not available
     redirect_to(request.referer || root_path)
@@ -52,7 +52,7 @@ class ApplicationController < ActionController::Base
 
   # Log exceptions in detail
   def log_exception(exception)
-    logger.error("!!!!!!!!!!! StandardError: #{exception.class} - #{exception.message}")
+    logger.error("!!!!!!! StandardError: #{exception.class} - #{exception.message}")
     logger.error(exception.backtrace.join("\n"))
   end
 end

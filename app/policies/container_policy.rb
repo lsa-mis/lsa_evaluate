@@ -17,7 +17,7 @@ class ContainerPolicy < ApplicationPolicy
   end
 
   def index?
-    user_has_containers? || axis_mundi?
+    user_is_employee? || user_has_containers? || axis_mundi?
   end
 
   def show?
@@ -33,7 +33,7 @@ class ContainerPolicy < ApplicationPolicy
   end
 
   def destroy?
-    owns_container? || axis_mundi?
+    axis_mundi?
   end
 
   private
