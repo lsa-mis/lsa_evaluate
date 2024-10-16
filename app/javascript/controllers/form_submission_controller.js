@@ -10,8 +10,9 @@ export default class extends Controller {
   }
 
   showLoading() {
+    console.log("started") // Show the loading spinner
     this.loadingTarget.style.display = "block";
-    this.submitButtonTarget.disabled = true; 
+    this.submitButtonTarget.disabled = true;
     this.submitButtonTarget.classList.add('disabled');
     console.log("finished") // Disable the submit button
   }
