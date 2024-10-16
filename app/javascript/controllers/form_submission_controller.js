@@ -6,7 +6,6 @@ export default class extends Controller {
 
   connect() {
     this.element.addEventListener('turbo:submit-start', this.showLoading.bind(this));
-    console.log("Form submission controller connected");
   }
 
   showLoading() {
