@@ -1,4 +1,4 @@
-<%= simple_form_for(@entry, html: { data: { controller: "form-submission", turbo: false } }) do |f| %>
+<%= simple_form_for(@entry, html: { data: { controller: "form-submission", action: "turbo:submit-start->form-submission#showLoading", turbo: false } }) do |f| %>
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
