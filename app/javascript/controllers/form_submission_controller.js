@@ -10,6 +10,7 @@ export default class extends Controller {
 
   showLoading() {
     this.loadingTarget.style.display = "block";
-    this.submitButtonTarget.disabled = true;  // Disable the submit button
+    this.submitButtonTarget.disabled = true; 
+    this.submitButtonTarget.classList.add('disabled'); // Disable the submit button
   }
 }
