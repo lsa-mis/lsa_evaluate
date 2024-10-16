@@ -25,7 +25,7 @@ RSpec.describe "Containers", type: :request do
 
       it "denies access to the index" do
         get containers_path
-        expect(flash[:alert]).to eq("You are not authorized to perform index? on Container policy.")
+        expect(flash[:alert]).to eq("!!! Not authorized !!!")
       end
     end
 
