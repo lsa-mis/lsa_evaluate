@@ -2,6 +2,7 @@ class EntriesController < ApplicationController
   include AvailableContestsConcern
   before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified ]
   before_action :authorize_entry, only: %i[show edit update destroy]
+  before_action :authorize_index, only: [ :index ]
 
   # GET /entries or /entries.json
   def index
@@ -131,10 +132,14 @@ class EntriesController < ApplicationController
     def authorize_entry
       authorize @entry
     end
+
+    def authorize_index
+      authorize Entry
+    end
     # Only allow a list of trusted parameters through.
-    def entry_params 
-      params.require(:entry).permit(:title, :disqualified, :deleted, :contest_instance_id, 
-                                    :profile_id, :category_id, :entry_file, :pen_name, 
+    def entry_params
+      params.require(:entry).permit(:title, :disqualified, :deleted, :contest_instance_id,
+                                    :profile_id, :category_id, :entry_file, :pen_name,
                                     :save_pen_name_to_profile, :campus_employee, :accepted_financial_aid_notice,
                                     :receiving_financial_aid, :financial_aid_description)
     end
