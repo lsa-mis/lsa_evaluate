@@ -1,7 +1,7 @@
 # app/controllers/containers_controller.rb
 class ContainersController < ApplicationController
   before_action :set_container, only: %i[show edit update destroy]
-  before_action :authorize_container, only: %i[edit update destroy]
+  before_action :authorize_container, only: %i[edit show update destroy]
   before_action :authorize_index, only: [ :index ]
 
   def index
