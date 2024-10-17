@@ -88,6 +88,29 @@ namespace :debug do
   end
 end
 
+namespace :debug do
+  desc 'Print Ruby version, Ruby path, asdf Ruby list, and Rails version'
+  task :print_versions do
+    on roles(:app) do
+      within current_path do
+        with rails_env: fetch(:rails_env) do
+          # Capture the output of each command
+          ruby_version = capture(:ruby, '-v')
+          which_ruby = capture(:which, 'ruby')
+          asdf_ruby_list = capture(:asdf, 'list ruby')
+          rails_version = capture(:bundle, 'exec rails -v')
+
+          # Log the captured outputs
+          info "Ruby Version: #{ruby_version.strip}"
+          info "Ruby Path: #{which_ruby.strip}"
+          info "asdf Ruby Versions: #{asdf_ruby_list.strip}"
+          info "Rails Version: #{rails_version.strip}"
+        end
+      end
+    end
+  end
+end
+
 namespace :maintenance do
   desc 'Maintenance start (edit config/maintenance_template.yml to provide parameters)'
   task :start do
