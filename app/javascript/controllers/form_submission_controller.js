@@ -5,15 +5,14 @@ export default class extends Controller {
   static targets = ["loading", "submitButton"]
 
   connect() {
-    this.element.addEventListener('turbo:submit-start', this.showLoading.bind(this));
-    console.log("Form submission controller connected");
+    // console.log("Form submission controller connected");
   }
 
-  showLoading() {
-    console.log("started") // Show the loading spinner
-    this.loadingTarget.style.display = "block";
+  showLoading(event) {
+    // console.log("Form submission started");
+    this.loadingTarget.classList.remove("d-none");
     this.submitButtonTarget.disabled = true;
     this.submitButtonTarget.classList.add('disabled');
-    console.log("finished") // Disable the submit button
+    // console.log("Spinner displayed and submit button disabled");
   }
 }

@@ -1,4 +1,10 @@
-<%= simple_form_for(@entry, html: { data: { controller: "form-submission", action: "turbo:submit-start->form-submission#showLoading", turbo: false } }) do |f| %>
+<%= simple_form_for(@entry, html: { 
+      'data-turbo' => false,
+      data: { 
+        controller: "form-submission", 
+        action: "submit->form-submission#showLoading" 
+      } 
+    }) do |f| %>
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
@@ -68,7 +74,6 @@
       <span class="visually-hidden">Uploading file, please wait...</span>
     </div>
   </div>
-
 
   <div class="form-actions">
     <%= f.button :submit, "Submit Entry", class: "btn btn-primary", data: { "form-submission-target" => "submitButton" } %> 

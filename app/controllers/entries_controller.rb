@@ -31,23 +31,21 @@ class EntriesController < ApplicationController
     authorize @entry
   end
 
-  # POST /entries or /entries.json
   def create
     @entry = current_user.profile.entries.build(entry_params)
-    # @entry.contest_instance = ContestInstance.find(params[:contest_instance_id])
     authorize @entry
-    respond_to do |format|
-      if @entry.save
-        save_pen_name = ActiveModel::Type::Boolean.new.cast(@entry.save_pen_name_to_profile)
-        if save_pen_name && current_user.profile.pen_name.blank?
-          current_user.profile.update(pen_name: @entry.pen_name)
-        end
-        format.html { redirect_to applicant_dashboard_path, notice: 'Entry was successfully created.' }
-        format.json { render :show, status: :created, location: @entry }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @entry.errors, status: :unprocessable_entity }
+    if @entry.save
+      # Simulate a delay (remove in production)
+      # sleep(3)
+
+      save_pen_name = ActiveModel::Type::Boolean.new.cast(@entry.save_pen_name_to_profile)
+      if save_pen_name && current_user.profile.pen_name.blank?
+        current_user.profile.update(pen_name: @entry.pen_name)
       end
+
+      redirect_to applicant_dashboard_path, notice: 'Entry was successfully created.'
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
