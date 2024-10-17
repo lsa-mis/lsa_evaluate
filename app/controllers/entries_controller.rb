@@ -36,7 +36,7 @@ class EntriesController < ApplicationController
     authorize @entry
     if @entry.save
       # Simulate a delay (remove in production)
-      sleep(3)
+      # sleep(3)
 
       save_pen_name = ActiveModel::Type::Boolean.new.cast(@entry.save_pen_name_to_profile)
       if save_pen_name && current_user.profile.pen_name.blank?
