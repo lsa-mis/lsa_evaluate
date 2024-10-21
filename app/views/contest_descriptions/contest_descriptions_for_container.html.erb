@@ -6,24 +6,37 @@
 Please select dates for a new contest period and descriptions to carry forward. Then click the button to create new contest instances.
 </p>
 <div>
-  <%= simple_form_for :dates, url: create_instances_for_selected_descriptions_container_contest_descriptions_url, method: :post, 
-    data: { controller: "checkboxselect",
-            target: "form",
-            action: "submit->checkboxselect#submitForm",
-            turbo_frame: "_top" 
-          } do |form| %>
-    <div class="flex md:flex justify-between items-center ml-2 mb-2">
-      <div>
-        <%= submit_tag 'Create Instances for Selected Contest Descriptions', class: "btn btn-sm btn-secondary" %>
-      </div>
+<%= simple_form_for :dates, url: create_instances_for_selected_descriptions_container_contest_descriptions_url, method: :post, 
+  data: { controller: "checkboxselect form-validation",
+  form_validation_target: "form",
+          target: "form",
+          action: "submit->checkboxselect#submitForm submit->form-validation#submitForm",
+          turbo_frame: "_top" 
+        } do |form| %>
+  <div class="flex md:flex justify-between items-center ml-2 mb-2">
+    <div>
+      <%= submit_tag 'Create Instances for Selected Contest Descriptions', class: "btn btn-sm btn-secondary" %>
     </div>
-    <input type="hidden" id="container" name="container" value="<%= @container %>">
-    <div class="my-4">
-      <%= form.label :date_open, "Date Open *:", class: "form-label" %>
-      <%= form.datetime_field :date_open, class: "mx-2 form-control", "data-checkboxselect-target": "date_open", aria: { label: "Date Open" } %>
-      <%= form.label :date_closed, "Date Closed *:", class: "form-label" %>
-      <%= form.datetime_field :date_closed, class: "mx-2 form-control", "data-checkboxselect-target": "date_closed", aria: { label: "Date Closed" } %>
-    </div>
+  </div>
+  <input type="hidden" id="container" name="container" value="<%= @container %>">
+  <div class="my-4">
+    <%= form.label :date_open, "Date Open *:", class: "form-label" %>
+    <%= form.datetime_field :date_open, class: "mx-2 form-control", 
+        data: { 
+          checkboxselect_target: "date_open",
+          form_validation_target: "dateOpen",
+          action: "change->form-validation#validateDates"
+        }, 
+        aria: { label: "Date Open" } %>
+    <%= form.label :date_closed, "Date Closed *:", class: "form-label" %>
+    <%= form.datetime_field :date_closed, class: "mx-2 form-control", 
+        data: { 
+          checkboxselect_target: "date_closed",
+          form_validation_target: "dateClosed",
+          action: "change->form-validation#validateDates"
+        }, 
+        aria: { label: "Date Closed" } %>
+  </div>
     <div class="text-danger my-2" id="checkbox_error" aria-live="polite">
     </div>
     <h2>Contest Descriptions</h2>
