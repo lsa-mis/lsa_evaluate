@@ -24,13 +24,13 @@
             <td><%= entry.title %></td>
             <td><%= entry.category.kind %></td>
             <td><%= entry.created_at.strftime("%B %d, %Y") %></td>
-            <td>
+            <td class="text-center">
               <% if entry.entry_file.attached? %>
-                <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"), target: "_blank", rel: "noopener", class: "me-2" do %>
+                <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"), target: "_blank", rel: "noopener", class: "me-2", title: "View in new tab" do %>
                   <i class="bi bi-eye" style="font-size: 1.5rem;" aria-hidden="true"></i>
                   <span class="visually-hidden">View file</span>
                 <% end %>
-                <%= link_to rails_blob_path(entry.entry_file, disposition: "attachment"), download: "", class: "me-2" do %>
+                <%= link_to rails_blob_path(entry.entry_file, disposition: "attachment"), download: "", class: "me-2", title: "Download file" do %>
                   <i class="bi bi-download" style="font-size: 1.5rem;" aria-hidden="true"></i>
                   <span class="visually-hidden">Download file</span>
                 <% end %>
