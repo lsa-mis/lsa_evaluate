@@ -2,6 +2,7 @@ class ContestInstancesController < ApplicationController
   before_action :set_container
   before_action :set_contest_description
   before_action :set_contest_instance, only: %i[show edit update destroy]
+  before_action :authorize_container_access
 
   # GET /contest_instances
   def index
@@ -78,6 +79,10 @@ class ContestInstancesController < ApplicationController
   end
 
   private
+
+  def authorize_container_access
+    authorize @container, :access_contest_instances?
+  end
 
   def set_contest_instance
     @contest_instance = @contest_description.contest_instances.find(params[:id])

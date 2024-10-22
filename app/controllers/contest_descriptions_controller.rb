@@ -1,6 +1,7 @@
 class ContestDescriptionsController < ApplicationController
   before_action :set_container
   before_action :set_contest_description, only: %i[show edit update destroy eligibility_rules]
+  before_action :authorize_container_access
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
@@ -31,14 +32,14 @@ class ContestDescriptionsController < ApplicationController
 
   def create_multiple_instances
     @contest_descriptions = @container.contest_descriptions.where(id: params[:contest_instance][:contest_description_ids])
-  
+
     if @contest_descriptions.empty?
       redirect_to multiple_instances_container_contest_descriptions_path(@container), alert: 'Please select at least one contest description.'
       return
     end
-  
+
     result = ContestDescription.create_multiple_instances(@contest_descriptions, multiple_instance_params, current_user)
-  
+
     if result[:success]
       redirect_to container_path(@container), notice: "Successfully created #{result[:count]} new contest instances."
     else
@@ -71,6 +72,10 @@ class ContestDescriptionsController < ApplicationController
   end
 
   private
+
+  def authorize_container_access
+    authorize @container, :access_contest_descriptions?
+  end
 
   def handle_save(success, action)
     respond_to do |format|
