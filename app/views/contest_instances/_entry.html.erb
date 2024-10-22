@@ -1,6 +1,6 @@
 <%# app/views/contest_instances/_entry.html.erb %>
 <tr id="<%= dom_id(entry) %>">
-  <td><%= entry.id %></td>
+  <td><small><%= entry.id %></small></td>
   <td>
     <% if entry.entry_file.attached? %>
       <%= link_to rails_blob_path(entry.entry_file, disposition: "attachment"), target: "_blank", rel: "noopener" do %>
@@ -11,9 +11,7 @@
     <% end %>
   </td>
   <td><%= entry.profile.display_name %></td>
-  <td>
-    <%= link_to entry.profile.user.uniqname, "https://webapps.lsa.umich.edu/UGStuFileV2/App/Cover/Cover.aspx?ID=#{entry.profile.umid}", target: "_blank", title: "View applicant's student file" %>
-  </td>
+  <td><%= entry.profile.user.uniqname %></td>
   <td><%= entry.title %></td>
   <% if entry.contest_instance.require_pen_name %>
     <td><%= entry.pen_name %></td>
