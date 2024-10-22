@@ -1,4 +1,11 @@
-<%= simple_form_for([@container, @contest_description, @contest_instance]) do |f| %>
+<%= simple_form_for([@container, @contest_description, @contest_instance], 
+    html: { 
+      data: { 
+        controller: "form-validation",
+        action: "submit->form-validation#submitForm",
+        form_validation_target: "form"
+      }
+    }) do |f| %>
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
@@ -6,14 +13,36 @@
     <%= f.input :active, hint: "Specify whether this contest is currently accepting entries." %>
     <%= f.input :archived %>
     <%= f.association :contest_description, label_method: :name %>
-    <%= f.input :date_open, 
-                as: :datetime, 
-                label: "Select Contest Open Date", 
-                input_html: { class: "form-control" } %>
-    <%= f.input :date_closed,
-                as: :datetime, 
-                label: "Select Contest Close Date", 
-                input_html: { class: "form-control" } %>
+    <div class="row">
+      <div class="col-md-6">
+        <%= f.label :date_open, "Contest Open Date and Time", class: "form-label" %>
+        <%= f.input :date_open, 
+                    as: :datetime_local,
+                    html5: true,
+                    input_html: { 
+                      class: "form-control datetime-picker",
+                      data: { 
+                        form_validation_target: "dateOpen",
+                        action: "change->form-validation#validateDates"
+                      }
+                    },
+                    label: false %>
+      </div>
+      <div class="col-md-6">
+        <%= f.label :date_closed, "Contest Close Date and Time", class: "form-label" %>
+        <%= f.input :date_closed,
+                    as: :datetime_local,
+                    html5: true,
+                    input_html: { 
+                      class: "form-control datetime-picker",
+                      data: { 
+                        form_validation_target: "dateClosed",
+                        action: "change->form-validation#validateDates"
+                      }
+                    },
+                    label: false %>
+      </div>
+    </div>
     <%= f.input :notes,
                 hint: "These notes are not visible on the applicant entry form" %>
     <%= f.input :judging_open %>

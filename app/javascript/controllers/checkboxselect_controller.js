@@ -1,54 +1,41 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["checkbox_all", "checkbox", "form", "date_open", "date_closed"]
+  static targets = ["checkboxAll", "checkbox", "errorMessage"]
+  static values = { errorText: String }
 
   connect() {
-    this.checkboxTargets.map(x => x.checked = false)
-    this.checkbox_allTarget.checked = false
+    this.resetCheckboxes()
+  }
+
+  resetCheckboxes() {
+    this.checkboxTargets.forEach(checkbox => checkbox.checked = false)
+    this.checkboxAllTarget.checked = false
   }
 
   toggleCheckbox() {
-    this.clearErrorMessage();
-    const isChecked = this.checkbox_allTarget.checked;
-    this.checkboxTargets.forEach(checkbox => checkbox.checked = isChecked);
+    const isChecked = this.checkboxAllTarget.checked
+    this.checkboxTargets.forEach(checkbox => checkbox.checked = isChecked)
   }
 
   toggleCheckboxAll() {
-    this.clearErrorMessage();
-    const allChecked = this.checkboxTargets.every(checkbox => checkbox.checked);
-    this.checkbox_allTarget.checked = allChecked;
+    this.checkboxAllTarget.checked = this.checkboxTargets.every(checkbox => checkbox.checked)
   }
 
   submitForm(event) {
-    this.clearErrorMessage();
-    const date_open = this.date_openTarget.value;
-    const date_closed = this.date_closedTarget.value;
-    let errorMessage = '';
-
-    if (!date_open || !date_closed) {
-      errorMessage = "Please select dates. ";
-    } else if (date_open > date_closed) {
-      errorMessage = "Date Open should occur before Date Closed. ";
-    }
-
     if (!this.checkboxTargets.some(checkbox => checkbox.checked)) {
-      errorMessage += "Please select descriptions.";
-    }
-
-    if (errorMessage) {
-      this.setErrorMessage(errorMessage);
-      event.preventDefault();
+      event.preventDefault()
+      this.setErrorMessage(this.errorTextValue || "Please select at least one description.")
+    } else {
+      this.clearErrorMessage()
     }
   }
 
   clearErrorMessage() {
-    const checkbox_error_place = document.getElementById('checkbox_error');
-    checkbox_error_place.innerHTML = '';
+    this.errorMessageTarget.innerHTML = ''
   }
 
   setErrorMessage(message) {
-    const checkbox_error_place = document.getElementById('checkbox_error');
-    checkbox_error_place.innerHTML = message;
+    this.errorMessageTarget.innerHTML = message
   }
 }

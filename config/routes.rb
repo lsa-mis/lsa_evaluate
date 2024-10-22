@@ -10,11 +10,6 @@ Rails.application.routes.draw do
     end
   end
 
-  # get 'applicant_dashboard/index'
-
-  # devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' } do
-  #   delete 'sign_out', to: 'users/sessions#destroy', as: :destroy_user_session
-  # end
   devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }
 
   devise_scope :user do
@@ -22,18 +17,18 @@ Rails.application.routes.draw do
   end
 
   resources :containers do
-    collection do
-      get 'lookup_user'
-    end
     resources :contest_descriptions do
+      collection do
+        get 'multiple_instances'
+        post 'create_multiple_instances'
+      end
       resources :contest_instances, path: 'instances'
       member do
         get 'eligibility_rules'
       end
-      collection do
-        get 'contest_descriptions_for_container'
-        post 'create_instances_for_selected_descriptions', to: 'contest_instances#create_instances_for_selected_descriptions'
-      end
+    end
+    collection do
+      get 'lookup_user'
     end
     resources :assignments, only: %i[create destroy]
   end

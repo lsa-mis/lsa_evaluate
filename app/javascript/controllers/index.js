@@ -31,6 +31,9 @@ application.register("flash", FlashController)
 import FormSubmissionController from "./form_submission_controller"
 application.register("form-submission", FormSubmissionController)
 
+import FormValidationController from "./form_validation_controller"
+application.register("form-validation", FormValidationController)
+
 import InteractionController from "./interaction_controller"
 application.register("interaction", InteractionController)
 

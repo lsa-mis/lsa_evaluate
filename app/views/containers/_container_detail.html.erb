@@ -5,10 +5,11 @@
   <p><strong>Description:</strong> <%= container.description %></p>
   <p><strong>Department:</strong> <%= container.department.name %></p>
   <p><strong>Visibility:</strong> <%= container.visibility.kind %></p>
-<hr>
-  <%= link_to "Create New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
-  <%#= link_to "Create Multiple Instances", contest_descriptions_for_container_container_contest_descriptions_path(container), class: "btn btn-sm btn-secondary" %>
-
+  <hr>
+  <div class="d-flex justify-content-between">
+    <%= link_to "Create New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
+    <%= link_to "Create Multiple Instances of these Contests", multiple_instances_container_contest_descriptions_path(container), class: "link_to" %>
+  </div>
   <div data-controller="filter">
     <div class="form-check mb-3">
       <input class="form-check-input" type="checkbox" id="statusFilter" checked data-action="change->filter#toggleFilter" data-filter-target="statusFilter">
@@ -34,13 +35,8 @@
             <tbody>
               <% container_contest_descriptions.each do |description| %>
                 <tr data-status="<%= description.active %>" data-filter-target="filterRow">
-                  <td>
-                    <%= description.name %>
-                    <p class="text-muted"><%= pluralize(description.contest_instances.count, "instance")%></p>
-                  
-                  </td>
+                  <td><%= contest_description_summary(description) %></td>
                   <td><%= description.short_name %></td>
-
                   <td class="card-text">
                     <% eligibility_plain = description.eligibility_rules.to_plain_text %>
                     <% if eligibility_plain.length > 100 %>
@@ -54,7 +50,11 @@
                       <%= description.eligibility_rules %>
                     <% end %>
                   </td>
-                  <td><%= description.notes %></td>
+                  <td>
+                    <% if description.notes.present? %>
+                      <%= link_to "view", container_contest_description_contest_instances_path(container, description) %>
+                    <% end %>
+                  </td>
                   <td><%= boolean_to_yes_no(description.active) %></td>
                   <td class="text-center">
                     <div class="d-flex flex-column">

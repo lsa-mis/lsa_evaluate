@@ -88,19 +88,21 @@ class ContestInstance < ApplicationRecord
   validate :only_one_active_per_contest_description
   validate :date_closed_after_date_open
 
-  def dup_with_associations
+  def dup_with_associations(overrides = {})
     new_instance = dup
-    new_instance.active = false
-    new_instance.created_by = nil
-    new_instance.date_closed = nil
-    new_instance.date_open = nil
-    new_instance.judging_open = false
-    new_instance.archived = false
+    default_attributes = {
+      active: false,
+      created_by: nil,
+      date_closed: nil,
+      date_open: nil,
+      judging_open: false,
+      archived: false
+    }
 
-    # Duplicate class_levels association
+    new_instance.assign_attributes(default_attributes.merge(overrides))
+
+    # Duplicate associations
     new_instance.class_levels = self.class_levels
-
-    # Duplicate categories association
     new_instance.categories = self.categories
 
     new_instance

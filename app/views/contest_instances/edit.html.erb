@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-end">
-  <%= link_to "Back to #{@contest_description.name}", container_contest_description_contest_instances_path(@container, @contest_description) %>
+  <%= link_to "Return to #{@contest_description.name}", container_contest_description_contest_instances_path(@container, @contest_description), class: "link_to" %>
 </div>
 <div>
   <%= render "form", contest_instance: @contest_instance %>

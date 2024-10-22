@@ -252,7 +252,7 @@ RSpec.describe ContestInstance, type: :model do
   describe '.active_and_open' do
     let!(:active_open_contest) { create(:contest_instance, date_open: 1.day.ago, date_closed: 1.day.from_now) }
     let!(:active_closed_contest) { create(:contest_instance, date_open: 3.days.ago, date_closed: 1.day.ago) }
-    let!(:archived_contest) { create(:contest_instance, archived: true, date_open: 1.day.ago, date_closed: 1.day.from_now) }
+    let!(:archived_contest) { create(:contest_instance, archived: true, date_open: 5.days.ago, date_closed: 2.days.ago) }
 
     it 'returns only active contests within the date range' do
       expect(ContestInstance.active_and_open).to include(active_open_contest)

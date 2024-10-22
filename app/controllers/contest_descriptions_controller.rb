@@ -1,6 +1,7 @@
 class ContestDescriptionsController < ApplicationController
   before_action :set_container
   before_action :set_contest_description, only: %i[show edit update destroy eligibility_rules]
+  before_action :authorize_container_access
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
@@ -25,8 +26,25 @@ class ContestDescriptionsController < ApplicationController
     handle_save(@contest_description.update(contest_description_params), 'updated')
   end
 
-  def contest_descriptions_for_container
-    @contest_descriptions = @container.contest_descriptions
+  def multiple_instances
+    @contest_descriptions = @container.contest_descriptions.active
+  end
+
+  def create_multiple_instances
+    @contest_descriptions = @container.contest_descriptions.where(id: params[:contest_instance][:contest_description_ids])
+
+    if @contest_descriptions.empty?
+      redirect_to multiple_instances_container_contest_descriptions_path(@container), alert: 'Please select at least one contest description.'
+      return
+    end
+
+    result = ContestDescription.create_multiple_instances(@contest_descriptions, multiple_instance_params, current_user)
+
+    if result[:success]
+      redirect_to container_path(@container), notice: "Successfully created #{result[:count]} new contest instances."
+    else
+      redirect_to multiple_instances_container_contest_descriptions_path(@container), alert: result[:errors].join(', ')
+    end
   end
 
   def destroy
@@ -55,6 +73,10 @@ class ContestDescriptionsController < ApplicationController
 
   private
 
+  def authorize_container_access
+    authorize @container, :access_contest_descriptions?
+  end
+
   def handle_save(success, action)
     respond_to do |format|
       if success
@@ -75,6 +97,17 @@ class ContestDescriptionsController < ApplicationController
 
   def set_contest_description
     @contest_description = ContestDescription.find(params[:id])
+  end
+
+  def multiple_instance_params
+    params.require(:contest_instance).permit(
+      :date_open, :date_closed, :active, :archived, :notes,
+      :judging_open, :judging_rounds, :judge_evaluations_complete,
+      :maximum_number_entries_per_applicant, :require_pen_name,
+      :require_campus_employment_info, :require_finaid_info,
+      :has_course_requirement, :course_requirement_description,
+      :recletter_required, :transcript_required
+    )
   end
 
   def contest_description_params
