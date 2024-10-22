@@ -32,7 +32,11 @@ module ApplicationHelper
   end
 
   def boolean_to_yes_no(value)
-    value ? 'Yes' : 'No'
+    if value
+      content_tag(:span, 'Yes', class: 'text-success fw-bold')
+    else
+      content_tag(:span, 'No', class: 'text-danger fw-bold')
+    end
   end
 
   def sortable(column, title, container, contest_description, contest_instance)
