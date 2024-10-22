@@ -1,0 +1,75 @@
+<div class="d-flex justify-content-end">
+  <%= link_to "Return to Manage Collection", container_path(@container), class: "link_to" %>
+</div>
+<div>
+  <h1><%= @container.name %></h1>
+</div>
+
+<% if (content = render_editable_content('multiple_instances', 'instructions')) %>
+    <%= content %>
+<% end %> 
+
+<%= simple_form_for :contest_instance, 
+  url: create_multiple_instances_container_contest_descriptions_path(@container), 
+  method: :post,
+  html: { class: 'needs-validation', novalidate: true },
+  data: { 
+    controller: "checkboxselect form-validation",
+    checkboxselect_error_text_value: "Please select at least one contest description.",
+    form_validation_target: "form",
+    action: "submit->checkboxselect#submitForm submit->form-validation#submitForm"
+  } do |form| %>
+
+  <%= form.hidden_field :container, value: @container.id %>
+
+  <!-- Date inputs -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <%= form.input :date_open, as: :datetime, html5: true, required: true,
+          input_html: { data: { form_validation_target: "dateOpen", action: "change->form-validation#validateDates" } } %>
+    </div>
+    <div class="col-md-6">
+      <%= form.input :date_closed, as: :datetime, html5: true, required: true,
+          input_html: { data: { form_validation_target: "dateClosed", action: "change->form-validation#validateDates" } } %>
+    </div>
+  </div>
+
+  <div class="alert alert-danger d-none" data-checkboxselect-target="errorMessage" role="alert"></div>
+
+  <h2 class="mb-3">Contest Descriptions</h2>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead class="table-light">
+        <tr>
+          <th class="checkbox-column" style="width: 40px;">
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" id="select_all" data-checkboxselect-target="checkboxAll" data-action="change->checkboxselect#toggleCheckbox">
+              <label class="form-check-label" for="select_all">
+                <i class="bi bi-check-all" aria-hidden="true"></i>
+                <span class="visually-hidden">Select All</span>
+              </label>
+            </div>
+          </th>
+          <th>Name</th>
+          <th>Short Name</th>
+          <th>Eligibility Rules</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @contest_descriptions.each do |description| %>
+          <tr>
+            <td>
+              <%= form.check_box :contest_description_ids, { multiple: true, id: "contest_description_ids_#{description.id}", data: { checkboxselect_target: "checkbox", action: "change->checkboxselect#toggleCheckboxAll" } }, description.id, nil %>
+            </td>
+            <td><%= description.name %></td>
+            <td><%= description.short_name %></td>
+            <% eligibility_plain = description.eligibility_rules.to_plain_text %>
+            <td><%= truncate(eligibility_plain, length: 100) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%= form.submit 'Create Contest Instances', class: "btn btn-primary mt-4" %>
+<% end %>
