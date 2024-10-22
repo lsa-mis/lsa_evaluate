@@ -5,10 +5,11 @@
   <p><strong>Description:</strong> <%= container.description %></p>
   <p><strong>Department:</strong> <%= container.department.name %></p>
   <p><strong>Visibility:</strong> <%= container.visibility.kind %></p>
-<hr>
-  <%= link_to "Create New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
-  <%= link_to "Create Multiple Instances", contest_descriptions_for_container_container_contest_descriptions_path(container), class: "btn btn-sm btn-secondary" %>
-
+  <hr>
+  <div class="d-flex justify-content-between">
+    <%= link_to "Create New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
+    <%= link_to "Create Multiple Instances of these Contests", multiple_instances_container_contest_descriptions_path(container), class: "link_to" %>
+  </div>
   <div data-controller="filter">
     <div class="form-check mb-3">
       <input class="form-check-input" type="checkbox" id="statusFilter" checked data-action="change->filter#toggleFilter" data-filter-target="statusFilter">
