@@ -1,15 +1,13 @@
 <div data-controller="scroll" data-scroll-scroll-to-top-value="<%= params[:scroll_to_top].present? %>">
-  <div class="my-2 d-flex justify-content-center" >
-    <div class="col-10">
-      <%= render @profile %>
-    </div>
+  <div class="d-flex justify-content-end">
     <div>
-      <div>
-        <%= button_to "Edit Profile", edit_profile_path(@profile), class: "btn btn-warning", method: :get %>
-      </div>
-      <div>
-        <%= link_to "Return to Dashboard", applicant_dashboard_path, class: "link_to" %>
-      </div>
+      <%= link_to "Return to Dashboard", applicant_dashboard_path, class: "link_to" %>
+      <%= button_to "Edit Profile", edit_profile_path(@profile), class: "btn btn-warning", method: :get %>
+    </div>
+  </div>
+  <div class="my-2 d-flex justify-content-center" >
+    <div class="col-12">
+      <%= render @profile %>
     </div>
   </div>
 </div>

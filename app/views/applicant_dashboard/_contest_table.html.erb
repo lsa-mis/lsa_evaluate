@@ -1,34 +1,36 @@
 <div class="container-contest-section mt-4">
-  <h3><%= container.name %> - <%= container.department.name %></h3>
-  <table class="table table-bordered table-hover table-striped mt-3">
-    <thead>
-      <tr>
-        <th>Contest Name</th>
-        <th>Rules</th>
-        <th>Close Date</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% contests.each do |contest| %>
+  <h3 class="text-break"><%= container.name %> - <%= container.department.name %></h3>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover table-striped mt-3">
+      <thead>
         <tr>
-          <td class="strong"><%= contest.contest_description.name %></td>
-          <td class="card-text">
-            <%= display_eligibility_rules(contest) %>
-          </td>
-          <td class="card-text"><%= contest.date_closed.strftime("%B %d, %Y - %I:%M %p") %></td>
-          <td class="text-center">
-            <%= link_to new_entry_path(contest_instance_id: contest.id),
-                        class: 'd-block',
-                        data: { 'bs-toggle': 'tooltip' },
-                        title: 'Enter contest',
-                        aria: { label: 'Enter contest' } do %>
-              <i class="bi bi-pencil" style="font-size: 1.5rem;" aria-hidden="true"></i>
-              <span class="visually-hidden">Enter instance</span>
-            <% end %>
-          </td>
+          <th>Contest Name</th>
+          <th>Rules</th>
+          <th>Close Date</th>
+          <th class="text-center">Actions</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% contests.each do |contest| %>
+          <tr>
+            <td class="text-break"><%= contest.contest_description.name %></td>
+            <td class="text-break">
+              <%= display_eligibility_rules(contest) %>
+            </td>
+            <td class="text-nowrap"><%= contest.date_closed.strftime("%B %d, %Y") %></td>
+            <td class="text-center">
+              <%= link_to new_entry_path(contest_instance_id: contest.id),
+                          class: 'd-block',
+                          data: { 'bs-toggle': 'tooltip' },
+                          title: 'Enter contest',
+                          aria: { label: 'Enter contest' } do %>
+                <i class="bi bi-pencil" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                <span class="visually-hidden">Enter instance</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>

@@ -1,20 +1,20 @@
 <!-- app/views/applicant_dashboard/_available_contests.html.erb -->
 <div class="mt-4">
-  <% if params[:department_id].present? || params[:container_id].present? %>
+  <% if params[:filter] && (params[:filter][:department_id].present? || params[:filter][:container_id].present?) %>
     <h2>Filtered Contests</h2>
     <p>
       Showing contests for 
-      <% if params[:department_id].present? %>
-        <% department = Department.find_by(id: params[:department_id]) %>
+      <% if params[:filter][:department_id].present? %>
+        <% department = Department.find_by(id: params[:filter][:department_id]) %>
         <% if department %>
           Department: <strong><%= department.name %></strong>
         <% end %>
       <% end %>
-      <% if params[:department_id].present? && params[:container_id].present? %>
+      <% if params[:filter][:department_id].present? && params[:filter][:container_id].present? %>
         and
       <% end %>
-      <% if params[:container_id].present? %>
-        <% container = Container.find_by(id: params[:container_id]) %>
+      <% if params[:filter][:container_id].present? %>
+        <% container = Container.find_by(id: params[:filter][:container_id]) %>
         <% if container %>
           Collection: <strong><%= container.name %></strong>
         <% end %>
@@ -28,16 +28,16 @@
   <% end %>
   <!-- Active Filters -->
   <div class="active-filters mb-3">
-    <% if params[:department_id].present? || params[:container_id].present? %>
+    <% if params[:filter] && (params[:filter][:department_id].present? || params[:filter][:container_id].present?) %>
       <span>Currently filtering by:</span>
-      <% if params[:department_id].present? %>
-        <% department = Department.find_by(id: params[:department_id]) %>
+      <% if params[:filter][:department_id].present? %>
+        <% department = Department.find_by(id: params[:filter][:department_id]) %>
         <% if department %>
           <span class="badge bg-primary">Department: <%= department.name %></span>
         <% end %>
       <% end %>
-      <% if params[:container_id].present? %>
-        <% container = Container.find_by(id: params[:container_id]) %>
+      <% if params[:filter][:container_id].present? %>
+        <% container = Container.find_by(id: params[:filter][:container_id]) %>
         <% if container %>
           <span class="badge bg-success">Collection: <%= container.name %></span>
         <% end %>

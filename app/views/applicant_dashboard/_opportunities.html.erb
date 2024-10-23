@@ -1,31 +1,41 @@
-<!-- app/views/applicant_dashboard/_opportunities.html.erb -->
-<div id="opportunity-partial" class="my-4">
-  <h2>Explore Contests</h2>
-  
-  <%= form_with url: applicant_dashboard_path, method: :get, local: false do |form| %>
-    <div class="row g-4 align-items-end">
-      <!-- Department Selection -->
-      <div class="col">
-        <%= form.label :department_id, 'Department', class: 'form-label visually-hidden' %>
-        <%= form.select :department_id,
-                        options_from_collection_for_select(@departments, :id, :name, params[:department_id]),
-                        { include_blank: 'Choose a department…' },
-                        { class: 'form-select', id: 'department-select', onchange: 'this.form.requestSubmit()' } %>
+<div class="opportunities-wrapper border rounded p-3 mb-3">
+  <small class="text-muted d-block mb-2"><%= Time.zone.now.strftime("%B %d, %Y - %l:%M %p") %></small>
+  <%= simple_form_for :filter, url: applicant_dashboard_path, method: :get, html: { data: { turbo: false }, class: 'opportunities-form' } do |form| %>
+    <div class="row g-3">
+      <div class="col-12">
+        <%= form.input :department_id, 
+                       collection: @departments,
+                       label: 'Department',
+                       label_html: { class: 'visually-hidden' },
+                       include_blank: 'Choose a department…',
+                       selected: params.dig(:filter, :department_id),
+                       input_html: { 
+                         class: 'form-select', 
+                         id: 'department-select', 
+                         onchange: 'this.form.requestSubmit()' 
+                       } %>
       </div>
 
-      <!-- Container Selection -->
-      <div class="col">
-        <%= form.label :container_id, 'Collections', class: 'form-label visually-hidden' %>
-        <%= form.select :container_id,
-                        options_from_collection_for_select(@containers, :id, :name, params[:container_id]),
-                        { include_blank: 'Choose a contest collection…' },
-                        { class: 'form-select', id: 'container-select', onchange: 'this.form.requestSubmit()' } %>
+      <div class="col-12">
+        <%= form.input :container_id, 
+                       collection: @containers,
+                       label: 'Collections',
+                       label_html: { class: 'visually-hidden' },
+                       include_blank: 'Choose a collection…',
+                       selected: params.dig(:filter, :container_id),
+                       input_html: { 
+                         class: 'form-select', 
+                         id: 'container-select', 
+                         onchange: 'this.form.requestSubmit()' 
+                       } %>
       </div>
-      <% if params[:department_id].present? || params[:container_id].present? %>
-        <div class="col">
-          <%= link_to 'Clear Filters', applicant_dashboard_path, class: 'btn btn-secondary' %>
+
+      <% if params[:filter] && (params[:filter][:department_id].present? || params[:filter][:container_id].present?) %>
+        <div class="col-12">
+          <%= link_to 'Clear Filters', applicant_dashboard_path, class: 'btn btn-secondary w-100' %>
         </div>
       <% end %>
     </div>
   <% end %>
+  <p class="text-center mt-3 mb-0">Currently there <%= @active_contests.count == 1 ? 'is' : 'are' %> <%= pluralize(@active_contests.count, 'contest') %> available to you!</p>
 </div>
