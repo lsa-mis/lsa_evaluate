@@ -1,3 +1,4 @@
+// Base styles
 html,
 body {
   height: 100%;
@@ -15,6 +16,150 @@ body {
   flex-direction: column;
 }
 
+// Typography
+h1, h2, h3, h4, h5, h6 {
+  font-family: Roboto;
+  margin-top: 1rem;
+}
+
+h1 {
+  font-size: 45px;
+  font-weight: 900;
+  line-height: 54px;
+  letter-spacing: 0em;
+  margin-top: 2rem;
+}
+
+h2 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 38.4px;
+  letter-spacing: 0em;
+}
+
+p {
+  font-family: Noto Sans;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #212529;
+}
+
+// Header styles
+.header {
+  h1 {
+    color: #000;
+    font-size: 2.8125rem;
+    font-style: normal;
+    font-weight: 900;
+    line-height: 120%;
+  }
+
+  h2 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 38.4px;
+    letter-spacing: 0em;
+  }
+
+  h5 {
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    letter-spacing: 0em;
+  }
+}
+
+// Navigation
+#LSAlogo {
+  display: flex;
+  align-items: center;
+  padding-left: 15px;
+
+  .navbar-brand {
+    margin-right: 10px;
+  }
+
+  .nav-title {
+    position: relative;
+    letter-spacing: 0em;
+    text-align: left;
+    color: white;
+    font-family: Noto Sans;
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 100%;
+    text-transform: uppercase;
+  }
+}
+
+.user-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: 15px;
+}
+
+@media (max-width: 991px) {
+  .user-controls {
+    align-items: flex-start;
+    margin-right: 0;
+    margin-top: 15px;
+  }
+}
+
+// Avatar and Dropdown
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+#avatar {
+  cursor: pointer;
+  background-color: #ffc107;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  width: auto;
+  min-width: 10rem;
+  padding: 0.5rem 0;
+  background-color: #FFCB05;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: none;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 4px 16px;
+  clear: both;
+  font-weight: 400;
+  color: #212529;
+  text-align: inherit;
+  white-space: nowrap;
+  background: none;
+  border: 0;
+
+  &:hover {
+    background-color: #f8f9fa;
+    color: #0056b3;
+  }
+}
+
+// Footer
 .footer {
   flex-shrink: 0;
   border-top: 1px solid $um_blue;
@@ -42,173 +187,13 @@ body {
   }
 }
 
-h1 {
-  font-family: Roboto;
-  font-size: 45px;
-  font-weight: 900;
-  line-height: 54px;
-  letter-spacing: 0em;
-  margin-top: 2rem;
-}
-
-h2 {
-  font-family: Roboto;
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 38.4px;
-  letter-spacing: 0em;
-  margin-top: 1rem;
-}
-
-h3,
-h4,
-h5,
-h6 {
-  font-family: Roboto;
-  margin-top: 1rem;
-}
-
-.header h1 {
-  color: #000;
-
-  font-family: Roboto;
-  font-size: 2.8125rem;
-  font-style: normal;
-  font-weight: 900;
-  line-height: 120%;
-  /* 3.375rem */
-}
-
-.header h2 {
-  font-family: Roboto;
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 38.4px;
-  letter-spacing: 0em;
-}
-
-.header h5 {
-  font-family: Roboto;
-  font-size: 1.25rem;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 120%;
-  /* 1.5rem */
-  letter-spacing: 0em;
-}
-
-p {
-  font-family: Noto Sans;
-  font-size: 1rem; // 16px
-  line-height: 1.5;
-  color: #212529;
-}
-
-.edit-link {
-  margin-left: 10px;
-  color: inherit;
-  text-decoration: none;
-}
-
-.edit-link:hover {
-  text-decoration: underline;
-}
-
-#LSAlogo {
-  display: flex;
-  align-items: flex-end;
-  padding-left: 82px;
-
-  .navbar-brand {
-    margin-right: auto;
-
-  }
-
-  .nav-title {
-    position: relative;
-    letter-spacing: 0em;
-    text-align: left;
-    color: white;
-    font-family: Noto Sans;
-    font-size: 3rem;
-    font-style: normal;
-    font-weight: 300;
-    line-height: 100%;
-    text-transform: uppercase;
-    margin-left: 10px;
-  }
-}
-
-.user-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  margin-right: 100px;
-}
-
-.avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-
-}
-
-#avatar {
-  cursor: pointer;
-  background-color: #ffc107;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  z-index: 1000;
-  width: auto;
-  min-width: 10rem;
-  padding: 0.5rem 0;
-
-  background-color: #FFCB05;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  display: none;
-
-}
-
-.dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 4px, 16px;
-  clear: both;
-  font-weight: 400;
-  color: #212529;
-  text-align: inherit;
-  white-space: nowrap;
-  background: none;
-  border: 0;
-
-  &:hover {
-    background-color: #f8f9fa;
-    color: #0056b3;
-  }
-}
-
+// Utility classes
 .show {
   display: block;
 }
 
 .bold {
   font-weight: 700;
-}
-
-svg.wh6 {
-  width: 24px;
-  height: 24px;
 }
 
 .btn-as-link {
@@ -219,6 +204,17 @@ svg.wh6 {
   cursor: pointer;
 }
 
+.link_to {
+  color: $um_blue;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+// Form styles
 #error_explanation {
   background-color: $warning;
   border: solid $rigorous_red 1px;
@@ -247,8 +243,9 @@ svg.wh6 {
   }
 }
 
+// Card styles
 .card {
-  max-width: 1/2;
+  max-width: 50%;
   margin: auto;
 }
 
@@ -285,58 +282,11 @@ svg.wh6 {
   color: var(--bs-heading-color);
 }
 
+// Responsive styles
 @media (min-width: 1400px) {
   .nowrap-card {
     white-space: nowrap;
   }
-}
-
-.search-input {
-  margin-bottom: 10px;
-  width: 200px;
-}
-
-.btn-icon {
-  border: none;
-  background: none;
-  cursor: pointer;
-}
-
-.btn-icon:hover {
-  color: #007bff;
-}
-
-.profile-sidebar {
-  padding: 20px;
-}
-
-.profile-sidebar h1 {
-  font-size: 2rem;
-}
-
-.profile-sidebar p {
-  margin-bottom: 1rem;
-}
-
-/* Submissions Table */
-.submissions-summary {
-  margin-top: 20px;
-}
-
-.submissions-summary table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.submissions-summary th,
-.submissions-summary td {
-  padding: 10px;
-  border: 1px solid #ddd;
-}
-
-.submissions-summary th {
-  background-color: #f8f9fa;
-  text-align: left;
 }
 
 @media (max-width: 576px) {
@@ -353,18 +303,70 @@ svg.wh6 {
   }
 }
 
+// Miscellaneous
+.edit-link {
+  margin-left: 10px;
+  color: inherit;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+svg.wh6 {
+  width: 24px;
+  height: 24px;
+}
+
+.search-input {
+  margin-bottom: 10px;
+  width: 200px;
+}
+
+.btn-icon {
+  border: none;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    color: #007bff;
+  }
+}
+
+.profile-sidebar {
+  padding: 20px;
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  p {
+    margin-bottom: 1rem;
+  }
+}
+
+.submissions-summary {
+  margin-top: 20px;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f8f9fa;
+    text-align: left;
+  }
+}
+
 .address p {
   margin: 0;
-}
-
-.link_to {
-  color: $um_blue;
-  text-decoration: none;
-}
-
-.link_to:hover {
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 .fade-out {
@@ -385,7 +387,6 @@ svg.wh6 {
   background-color: #f8f9fa;
 }
 
-/* app/assets/stylesheets/application.scss or a relevant CSS file */
 .autocomplete-results {
   position: relative;
   border: 1px solid #ccc;
@@ -393,15 +394,15 @@ svg.wh6 {
   overflow-y: auto;
   background-color: #fff;
   z-index: 1000;
-}
 
-.autocomplete-results .suggestion {
-  padding: 8px;
-  cursor: pointer;
-}
+  .suggestion {
+    padding: 8px;
+    cursor: pointer;
 
-.autocomplete-results .suggestion:hover {
-  background-color: #f0f0f0;
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
 }
 
 .datetime-picker {
@@ -415,12 +416,12 @@ svg.wh6 {
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
 
-.datetime-picker:focus {
-  color: #495057;
-  background-color: #fff;
-  border-color: #80bdff;
-  outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  &:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
 }
