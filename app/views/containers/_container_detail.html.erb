@@ -37,7 +37,7 @@
                 <tr data-status="<%= description.active %>" data-filter-target="filterRow">
                   <td><%= contest_description_summary(description) %></td>
                   <td><%= description.short_name %></td>
-                  <td class="card-text">
+                  <td class="card-text w-50">
                     <% eligibility_plain = description.eligibility_rules.to_plain_text %>
                     <% if eligibility_plain.length > 100 %>
                       <%= truncate(eligibility_plain, length: 100) %>
