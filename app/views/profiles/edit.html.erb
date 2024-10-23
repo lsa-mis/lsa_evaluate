@@ -1,3 +1,6 @@
+<div class="d-flex justify-content-end">
+  <%= link_to "Return to Dashboard", applicant_dashboard_path, class: "link_to" %>
+</div>
 <div class="d-flex justify-content-between">
   <div>
     <h1 class=" mb-0" ><%= @profile.preferred_first_name %> <%= @profile.preferred_last_name %></h1>
@@ -5,9 +8,6 @@
         <span class="text-body-tertiary"><small><em>Last updated: <%= @profile.updated_at.strftime("%B %d, %Y") %></em></small></span><br>
         <span class="fw-light">UMID: <%= @profile.umid %></span>
       </div>
-  </div>
-  <div>
-    <%= link_to "Return to Dashboard", applicant_dashboard_path, class: "link_to" %>
   </div>
 </div>
 
