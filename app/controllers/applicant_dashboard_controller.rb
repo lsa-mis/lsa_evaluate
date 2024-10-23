@@ -13,6 +13,10 @@ class ApplicantDashboardController < ApplicationController
     @class_levels = ClassLevel.all
     @containers = Container.visible
 
+    filter_params = params[:filter] || {}
+    @department_id = filter_params[:department_id]
+    @container_id = filter_params[:container_id]
+
     available_contests
 
     if @active_contests.empty?
