@@ -37,7 +37,7 @@ class ContainerPolicy < ApplicationPolicy
   end
 
   def access_contest_descriptions?
-    owns_container? || axis_mundi?
+    true
   end
 
   def access_contest_instances?

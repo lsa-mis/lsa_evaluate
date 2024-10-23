@@ -1,21 +1,41 @@
 class ContestDescriptionPolicy < ApplicationPolicy
+  # def index?
+  #   user&.has_container_role?(record.container) || axis_mundi?
+  # end
+
+  # def show?
+  #   user&.has_container_role?(record.container) || axis_mundi?
+  # end
+
   def index?
-    user&.has_container_role?(record.container) || axis_mundi?
+    true
   end
 
   def show?
-    user&.has_container_role?(record.container) || axis_mundi?
+    true
   end
 
   def create?
     user&.has_container_role?(record.container) || axis_mundi?
   end
 
+  def new?
+    create?
+  end
+
   def update?
     user&.has_container_role?(record.container) || axis_mundi?
   end
 
+  def edit?
+    update?
+  end
+
   def destroy?
-    user&.has_container_role?(record.container) || axis_mundi?
+    axis_mundi?
+  end
+
+  def eligibility_rules?
+    true
   end
 end
