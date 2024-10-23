@@ -17,7 +17,12 @@ body {
 }
 
 // Typography
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: Roboto;
   margin-top: 1rem;
 }
@@ -86,12 +91,16 @@ p {
     text-align: left;
     color: white;
     font-family: Noto Sans;
-    font-size: 2rem;
+    font-size: 3rem;
     font-style: normal;
     font-weight: 300;
     line-height: 100%;
     text-transform: uppercase;
   }
+}
+
+.user-controls-wrapper {
+  position: relative;
 }
 
 .user-controls {
@@ -101,24 +110,16 @@ p {
   margin-right: 15px;
 }
 
-@media (max-width: 991px) {
-  .user-controls {
-    align-items: flex-start;
-    margin-right: 0;
-    margin-top: 15px;
-  }
-}
-
 // Avatar and Dropdown
 .avatar {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  object-fit: cover;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  cursor: pointer;
+  background-color: #ffc107;
 }
 
 #avatar {
@@ -156,6 +157,20 @@ p {
   &:hover {
     background-color: #f8f9fa;
     color: #0056b3;
+  }
+}
+
+@media (max-width: 991px) {
+  .user-controls-wrapper {
+    position: static;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
   }
 }
 
@@ -245,7 +260,7 @@ p {
 
 // Card styles
 .card {
-  max-width: 50%;
+  max-width: 100%;
   margin: auto;
 }
 
@@ -286,6 +301,38 @@ p {
 @media (min-width: 1400px) {
   .nowrap-card {
     white-space: nowrap;
+  }
+}
+
+.opportunities-wrapper {
+  overflow-x: hidden;
+  padding-bottom: 15px;
+}
+
+.opportunities-form .row {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.opportunities-form .col-12 {
+  padding-right: 0;
+  padding-left: 0;
+}
+
+@media (max-width: 767px) {
+  .opportunities-wrapper {
+    padding: 10px;
+  }
+
+  .opportunities-form .form-select {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-contest-section table {
+    font-size: 0.9rem;
   }
 }
 
@@ -354,7 +401,8 @@ svg.wh6 {
     border-collapse: collapse;
   }
 
-  th, td {
+  th,
+  td {
     padding: 10px;
     border: 1px solid #ddd;
   }
@@ -380,6 +428,7 @@ svg.wh6 {
 }
 
 .container-contest-section {
+  overflow-x: hidden;
   border: 1px solid #dee2e6;
   padding: 20px;
   margin-bottom: 30px;
