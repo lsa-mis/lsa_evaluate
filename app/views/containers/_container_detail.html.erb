@@ -25,6 +25,7 @@
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Summary</th>
                 <th>Short Name</th>
                 <th>Eligibility Rules</th>
                 <th>Notes</th>
@@ -35,6 +36,7 @@
             <tbody>
               <% container_contest_descriptions.each do |description| %>
                 <tr data-status="<%= description.active %>" data-filter-target="filterRow">
+                  <td><%= description.name %></td>
                   <td><%= contest_description_summary(description) %></td>
                   <td><%= description.short_name %></td>
                   <td class="card-text w-50">
