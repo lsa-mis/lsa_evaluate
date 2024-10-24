@@ -2,13 +2,6 @@
 <div class="d-flex justify-content-end">
   <div>
     <%= link_to "Return to Collections", containers_path, class: "link_to text-nowrap" %>
-
-    <div class="d-flex">
-      <% if policy(@container).update? %>
-        <%= link_to "Edit", edit_container_path(@container), class: "btn btn-sm btn-primary" %> |
-        <%= link_to "Archive", @container, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' }, class: "link_to" %>
-      <% end %>
-    </div>
   </div>
 </div>
 <% if (content = render_editable_content('container', 'information')) %>
