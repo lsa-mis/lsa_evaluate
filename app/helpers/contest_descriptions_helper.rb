@@ -6,15 +6,13 @@ module ContestDescriptionsHelper
     if active_instances.any?
       first_active = active_instances.first
       entry_count = first_active.entries.where(deleted: false).count
-
-      summary += 'The active instance has '
+      summary += '<small class="text-nowrap">Active instance</small><br>'
       summary += link_to(pluralize(entry_count, 'entry'),
-                         container_contest_description_contest_instance_path(description.container, description, first_active))
+                         container_contest_description_contest_instance_path(description.container, description, first_active), class: 'btn btn-sm btn-primary')
       summary += '<br>'
     end
-    summary += "Total of #{pluralize(total_instances, 'instance')}"
+    summary += "<small>#{pluralize(total_instances, 'instance')}</small>"
 
-    content_tag(:div, description.name) +
     content_tag(:div, summary.html_safe, class: 'text-muted')
   end
 end
