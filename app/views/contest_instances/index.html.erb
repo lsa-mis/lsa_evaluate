@@ -9,9 +9,26 @@
     <div>Active: <%= boolean_to_yes_no(@contest_description.active) %></div> 
     <div>Archived: <%= boolean_to_yes_no(@contest_description.archived) %></div>
 </div>
+<div data-controller="eligibility-modal">
+    <% eligibility_plain = @contest_description.eligibility_rules.to_plain_text %>
+    <% if eligibility_plain.length > 100 %>
+      <%= truncate(eligibility_plain, length: 100) %>
+      <a href="#" 
+        data-action="click->eligibility-modal#open" 
+        data-url="<%= eligibility_rules_container_contest_description_path(@contest_description.container, @contest_description) %>">
+        ...more
+      </a>
+    <% else %>
+      <%= @contest_description.eligibility_rules %>
+    <% end %>
+    <%= render partial: 'applicant_dashboard/eligibility_modal' %>
 <div>
   Notes:<br>
   <%= @contest_description.notes %>
+</div>
+<div>
+  <%= link_to "Edit", edit_container_contest_description_path(@container, @contest_description), class: "btn btn-sm btn-primary" %>
+  <%= link_to "Archive", container_contest_description_path(@container, @contest_description), data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' } %>
 </div>
 <hr>
 <h2><%= "#{pluralize(@contest_instances.count, "instance")} of this contest" %></h2>
