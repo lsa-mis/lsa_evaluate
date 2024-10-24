@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-um-blue">
   <div class="container-fluid">
-    <div id="LSAlogo" class="d-flex align-items-center">
-      <a class="navbar-brand" href="/"><%= image_tag 'LSA_Logo.svg', alt: 'LSA Logo' %></a>
-      <a href="/" class="nav-title d-none d-lg-block text-decoration-none mb-1">
+    <div id="LSAlogo" class="d-flex align-items-center flex-shrink-1">
+      <a class="navbar-brand me-2" href="/"><%= image_tag 'LSA_Logo.svg', alt: 'LSA Logo', class: 'img-fluid', style: 'max-height: 60px;' %></a>
+      <a href="/" class="nav-title text-decoration-none mb-1 text-truncate">
         Evaluate
       </a>
     </div>
@@ -10,7 +10,10 @@
       <div class="user-controls-wrapper">
         <div class="user-controls" data-controller="dropdown">
           <div id="avatar" class="avatar bg-warning mb-2" data-action="click->dropdown#toggle" aria-haspopup="true" aria-expanded="false">
-            <span><%= current_user.display_initials_or_uid %><i class="bi bi-caret-down-fill ms-1" style="font-size: .75rem;"></i></span>
+            <span class="initials-caret-container">
+              <%= current_user.display_initials_or_uid %>
+              <i class="bi bi-caret-down-fill initials-caret"></i>
+            </span>
           </div>
           <div id="avatar-menu" class="dropdown-menu" aria-labelledby="avatar-menu" data-dropdown-target="menu">
             <% profile = current_user.profile %>
