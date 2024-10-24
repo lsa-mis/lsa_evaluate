@@ -5,6 +5,12 @@
   <p><strong>Description:</strong> <%= container.description %></p>
   <p><strong>Department:</strong> <%= container.department.name %></p>
   <p><strong>Visibility:</strong> <%= container.visibility.kind %></p>
+  <div class="d-flex">
+    <% if policy(@container).update? %>
+      <%= link_to "Edit", edit_container_path(@container), class: "btn btn-sm btn-primary" %> |
+      <%= link_to "Archive", @container, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' }, class: "link_to" %>
+    <% end %>
+  </div>
   <hr>
   <div class="d-flex justify-content-between">
     <%= link_to "Create New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
