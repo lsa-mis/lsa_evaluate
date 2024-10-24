@@ -65,7 +65,7 @@
                   Your real name should not appear anywhere in the manuscript or on the title page."
                   ])
                 end
-                  ])%>
+                  ]) %>
     <%= f.input :require_campus_employment_info, 
                 as: :boolean, 
                 label: "Require campus employment check",
@@ -84,7 +84,15 @@
     <%= f.input :require_finaid_info, 
                 as: :boolean, 
                 label: "Require financial aid check",
-                hint: "Check this box if you want the applicant to describe any financial aid they are receiving." %>
+                hint: safe_join([
+                      "Check this box if you want the applicant to describe any financial aid they are receiving.",
+                      tag(:br),
+                      content_tag(:em, "This will add the following hint to the applicants entry form"),
+                      tag(:br),
+                      content_tag(:div, class: "alert alert-secondary", style: "padding: 5px;") do
+                        finaid_info_hint
+                      end
+                    ]) %>
     <%= f.input :created_by, as: :hidden, input_html: { value: current_user.email} %>
 
     <h3>Categories</h3>
