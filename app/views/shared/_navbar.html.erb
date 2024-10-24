@@ -12,7 +12,7 @@
           <div id="avatar" class="avatar bg-warning mb-2" data-action="click->dropdown#toggle" aria-haspopup="true" aria-expanded="false">
             <span><%= current_user.display_initials_or_uid %><i class="bi bi-caret-down-fill ms-1" style="font-size: .75rem;"></i></span>
           </div>
-          <div class="dropdown-menu" aria-labelledby="avatar-menu" data-dropdown-target="menu">
+          <div id="avatar-menu" class="dropdown-menu" aria-labelledby="avatar-menu" data-dropdown-target="menu">
             <% profile = current_user.profile %>
             <% if profile&.persisted? %>
               <%= button_to "Dashboard", applicant_dashboard_path, method: :get, class: 'dropdown-item btn-as-link' %>
