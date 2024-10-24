@@ -53,6 +53,11 @@
           <strong>Important note for students receiving needs-based financial aid:</strong>
           <p>
             <%= content %>
+            <br>
+            <%= link_to "https://finaid.umich.edu", target: "_blank", class: "link_to" do %>
+              Learn more about financial aid terms and conditions on the Office of Financial Aid's website
+              <i class="bi bi-box-arrow-up-right"></i>
+            <% end %>
           </p>
         <% end %>
         <%= f.input :accepted_financial_aid_notice,
