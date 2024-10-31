@@ -43,9 +43,7 @@ EditableContent.create([
                          { page: "applicant_dashboard", section: "submission_summary",
                           content: ActionText::RichText.new(body: "Instructions for the submission_summary") },
                          { page: "applicant_dashboard", section: "available_contests",
-                          content: ActionText::RichText.new(body: "Instructions for the available_contests") },
-                         { page: "multiple_instances", section: "instructions",
-                          content: ActionText::RichText.new(body: "Instructions for the contest_descriptions index page") }
+                          content: ActionText::RichText.new(body: "Instructions for the available_contests") }
                        ])
 
 # Seed data for School
@@ -184,22 +182,22 @@ user3 = User.create!(email: 'sallystu@example.com',
                                                 { name: 'member' }
                                               ]
 )
-# user4 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
+user4 = User.create!(email: 'rsmoke@umich.edu', password: 'passwordpassword')
 user5 = User.create!(email: 'brita@umich.edu', password: 'passwordpassword')
 user6 = User.create!(email: 'jjsantos@umich.edu', password: 'passwordpassword')
 user7 = User.create!(email: 'mlaitan@umich.edu', password: 'passwordpassword')
 
 # Seed data for Roles
 Role.create!([
-               { kind: 'Collection Administrator' },
                { kind: 'Axis mundi' },
+               { kind: 'Collection Administrator' },
                { kind: 'Collection Manager' }
              ])
 role_container_admin = Role.find_by(kind: 'Collection Administrator')
 axis_mundi = Role.find_by(kind: 'Axis mundi')
 
 UserRole.create!([
-                  # { user: user4, role: axis_mundi },
+                  { user: user4, role: axis_mundi },
                   { user: user5, role: axis_mundi },
                   { user: user6, role: axis_mundi },
                   { user: user7, role: axis_mundi }
@@ -207,7 +205,7 @@ UserRole.create!([
 
 # Seed data for Containers
 container1 = Container.create!(
-  name: 'Hopwood Contests',
+  name: 'Hopwood Contest Awards',
   description: 'The Hopwood Contest.',
   department: Department.find_by(name: 'LSA English Language & Lit.'),
   visibility: Visibility.find_by(kind: 'Public'),
@@ -254,7 +252,7 @@ contest_description3 = ContestDescription.create!(
 )
 
 # Seed data for ContestInstance
-contest_instance1 = ContestInstance.new(
+contest_instance1 = ContestInstance.create!(
   active: true,
   contest_description: contest_description1,
   date_open: DateTime.now - 30,
@@ -267,17 +265,15 @@ contest_instance1 = ContestInstance.new(
   course_requirement_description: 'No course requirement',
   recletter_required: false,
   transcript_required: false,
+  require_pen_name: true,
   maximum_number_entries_per_applicant: 1,
-  created_by: user1.email
+  created_by: user1.email,
+  class_levels: [ ClassLevel.find_by(name: 'First year') ],
+  categories: [ Category.find_by(kind: 'Drama') ]
 )
 
-# Build the associated ClassLevelRequirement
-contest_instance1.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'First year'))
-contest_instance1.category_contest_instances.build(category: Category.find_by(kind: 'Drama'))
-contest_instance1.save!
-
-# Repeat the same pattern for other ContestInstances
-contest_instance2 = ContestInstance.new(
+# Do the same for the other contest instances
+contest_instance2 = ContestInstance.create!(
   archived: true,
   contest_description: contest_description2,
   date_open: DateTime.now - 60,
@@ -286,19 +282,18 @@ contest_instance2 = ContestInstance.new(
   judging_open: true,
   judging_rounds: 2,
   has_course_requirement: false,
-  judge_evaluations_complete: true,
+  judge_evaluations_complete: false,
   course_requirement_description: 'No course requirement',
   recletter_required: true,
   transcript_required: true,
+  require_pen_name: true,
   maximum_number_entries_per_applicant: 2,
-  created_by: user1.email
+  created_by: user1.email,
+  class_levels: [ ClassLevel.find_by(name: 'Second year') ],
+  categories: [ Category.find_by(kind: 'Fiction') ]
 )
 
-contest_instance2.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'Second year'))
-contest_instance2.category_contest_instances.build(category: Category.find_by(kind: 'Fiction'))
-contest_instance2.save!
-
-contest_instance3 = ContestInstance.new(
+contest_instance3 = ContestInstance.create!(
   active: true,
   contest_description: contest_description3,
   date_open: DateTime.now - 30,
@@ -306,15 +301,14 @@ contest_instance3 = ContestInstance.new(
   notes: 'Third contest instance',
   judging_open: false,
   judging_rounds: 1,
-  has_course_requirement: true,
+  has_course_requirement: false,
   judge_evaluations_complete: false,
   course_requirement_description: 'Course required',
   recletter_required: false,
-  transcript_required: false,
+  transcript_required: true,
+  require_pen_name: false,
   maximum_number_entries_per_applicant: 1,
-  created_by: user1.email
+  created_by: user1.email,
+  class_levels: [ ClassLevel.find_by(name: 'Second year'), ClassLevel.find_by(name: 'Junior') ],
+  categories: [ Category.find_by(kind: 'Research Paper') ]
 )
-
-contest_instance3.class_level_requirements.build(class_level: ClassLevel.find_by(name: 'Junior'))
-contest_instance3.category_contest_instances.build(category: Category.find_by(kind: 'Research Paper'))
-contest_instance3.save!

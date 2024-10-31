@@ -18,10 +18,6 @@ Rails.application.routes.draw do
 
   resources :containers do
     resources :contest_descriptions do
-      collection do
-        get 'multiple_instances'
-        post 'create_multiple_instances'
-      end
       resources :contest_instances, path: 'instances'
       member do
         get 'eligibility_rules'
