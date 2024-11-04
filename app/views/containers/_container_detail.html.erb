@@ -14,6 +14,9 @@
   <hr>
   <div class="d-flex justify-content-between">
     <%= link_to "Create New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
+    <%= link_to "Bulk Create Contest Instances", 
+                new_container_bulk_contest_instance_path(container), 
+                class: "link_to" if container.contest_descriptions.any? %>
   </div>
   <div data-controller="filter">
     <div class="form-check mb-3">
