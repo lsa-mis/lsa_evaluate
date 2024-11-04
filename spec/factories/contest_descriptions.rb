@@ -23,7 +23,7 @@
 FactoryBot.define do
   factory :contest_description do
     container
-    name { Faker::Lorem.word }
+    sequence(:name) { |n| Faker::Lorem.word + " #{n}" }
     short_name { Faker::Lorem.unique.word }
     created_by { Faker::Name.name }
 
