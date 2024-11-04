@@ -25,7 +25,7 @@ export default class extends Controller {
   submitForm(event) {
     if (!this.checkboxTargets.some(checkbox => checkbox.checked)) {
       event.preventDefault()
-      this.setErrorMessage(this.errorTextValue || "Please select at least one description.")
+      this.setErrorMessage(this.errorTextValue || "Please select at least one.")
     } else {
       this.clearErrorMessage()
     }
