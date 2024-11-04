@@ -10,12 +10,17 @@ class BulkContestInstancesController < ApplicationController
   end
 
   def create
-    if params[:bulk_contest_instance_form][:date_open].blank? || params[:bulk_contest_instance_form][:date_closed].blank?
+    @bulk_contest_instance = BulkContestInstanceForm.new(
+      date_open: params[:bulk_contest_instance_form][:date_open],
+      date_closed: params[:bulk_contest_instance_form][:date_closed]
+    )
+
+    if @bulk_contest_instance.date_open.blank? || @bulk_contest_instance.date_closed.blank?
       setup_error_for_missing_dates
       return render :new, status: :unprocessable_entity
     end
 
-    if Date.parse(params[:bulk_contest_instance_form][:date_closed]) < Date.parse(params[:bulk_contest_instance_form][:date_open])
+    if Date.parse(@bulk_contest_instance.date_closed) < Date.parse(@bulk_contest_instance.date_open)
       setup_error_for_invalid_dates
       return render :new, status: :unprocessable_entity
     end
@@ -86,8 +91,8 @@ class BulkContestInstancesController < ApplicationController
   def setup_error_for_missing_dates
     @contest_descriptions = @container.contest_descriptions.joins(:contest_instances).distinct
     flash.now[:alert] = []
-    flash.now[:alert] << "Date open can't be blank" if params[:bulk_contest_instance_form][:date_open].blank?
-    flash.now[:alert] << "Date closed can't be blank" if params[:bulk_contest_instance_form][:date_closed].blank?
+    flash.now[:alert] << "Date open can't be blank" if @bulk_contest_instance.date_open.blank?
+    flash.now[:alert] << "Date closed can't be blank" if @bulk_contest_instance.date_closed.blank?
   end
 
   def setup_error_for_invalid_dates

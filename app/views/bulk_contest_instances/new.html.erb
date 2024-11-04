@@ -65,7 +65,7 @@
       <div class="col-md-6">
         <%= f.label :date_open, "Contest Open Date and Time", class: "form-label" %>
         <%= f.input :date_open,
-                    as: :datetime_local,
+                    as: :datetime,
                     html5: true,
                     input_html: { class: "form-control datetime-picker" },
                     required: true,
@@ -75,7 +75,7 @@
       <div class="col-md-6">
         <%= f.label :date_closed, "Contest Close Date and Time", class: "form-label" %>
         <%= f.input :date_closed,
-                    as: :datetime_local,
+                    as: :datetime,
                     html5: true,
                     input_html: { class: "form-control datetime-picker" },
                     required: true,
