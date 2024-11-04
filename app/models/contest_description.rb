@@ -27,33 +27,11 @@ class ContestDescription < ApplicationRecord
   has_rich_text :eligibility_rules
   has_rich_text :notes
 
-  accepts_nested_attributes_for :contest_instances, allow_destroy: true
+  # accepts_nested_attributes_for :contest_instances, allow_destroy: true
 
   validates :created_by, presence: true
   validates :name, presence: true, uniqueness: true
 
   scope :active, -> { where(active: true) }
   scope :archived, -> { where(archived: true) }
-
-  def self.create_multiple_instances(contest_descriptions, params, current_user)
-    success_count = 0
-    errors = []
-
-    ApplicationRecord.transaction do
-      contest_descriptions.each do |description|
-        instance = description.contest_instances.new(params)
-        instance.created_by = current_user.email
-
-        if instance.save
-          success_count += 1
-        else
-          errors << "Failed to create instance for '#{description.name}': #{instance.errors.full_messages.join(', ')}"
-        end
-      end
-
-      raise ActiveRecord::Rollback if errors.any?
-    end
-
-    { success: errors.empty?, count: success_count, errors: errors }
-  end
 end

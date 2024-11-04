@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  get 'bulk_contest_instances/new'
+  get 'bulk_contest_instances/create'
   root 'static_pages#home'
 
   resources :entries do
@@ -18,15 +20,12 @@ Rails.application.routes.draw do
 
   resources :containers do
     resources :contest_descriptions do
-      collection do
-        get 'multiple_instances'
-        post 'create_multiple_instances'
-      end
-      resources :contest_instances, path: 'instances'
+      resources :contest_instances
       member do
         get 'eligibility_rules'
       end
     end
+    resources :bulk_contest_instances, only: [ :new, :create ]
     collection do
       get 'lookup_user'
     end

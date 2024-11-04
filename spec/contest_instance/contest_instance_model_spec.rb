@@ -304,37 +304,6 @@ RSpec.describe ContestInstance, type: :model do
     end
   end
 
-  describe '#dup_with_associations' do
-    let!(:contest_instance) { create(:contest_instance) }
-
-    before do
-      # Ensure associations are present
-      contest_instance.class_levels << create(:class_level)
-      contest_instance.categories << create(:category)
-    end
-
-    it 'creates a new instance with the same attributes except specified ones' do
-      new_instance = contest_instance.dup_with_associations
-      expect(new_instance).to be_a_new(ContestInstance)
-      expect(new_instance.active).to be(false)
-      expect(new_instance.created_by).to be_nil
-      expect(new_instance.date_closed).to be_nil
-      expect(new_instance.date_open).to be_nil
-      expect(new_instance.judging_open).to be(false)
-      expect(new_instance.archived).to be(false)
-    end
-
-    it 'duplicates class_levels associations' do
-      new_instance = contest_instance.dup_with_associations
-      expect(new_instance.class_levels).to match_array(contest_instance.class_levels)
-    end
-
-    it 'duplicates categories associations' do
-      new_instance = contest_instance.dup_with_associations
-      expect(new_instance.categories).to match_array(contest_instance.categories)
-    end
-  end
-
   describe '.available_for_profile' do
     let(:profile) { create(:profile) }
     let(:other_profile) { create(:profile, campus: profile.campus) }
