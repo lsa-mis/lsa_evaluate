@@ -17,7 +17,7 @@
 #  preferred_first_name          :string(255)      default(""), not null
 #  preferred_last_name           :string(255)      default(""), not null
 #  receiving_financial_aid       :boolean          default(FALSE), not null
-#  umid                          :integer          not null
+#  umid                          :string(255)
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
 #  campus_address_id             :bigint
@@ -68,7 +68,11 @@ class Profile < ApplicationRecord
 
   validates :preferred_first_name, presence: true, length: { in: 1..255 }
   validates :preferred_last_name, presence: true, length: { in: 1..255 }
-  validates :umid, presence: true, uniqueness: true, length: { is: 8 }
+  validates :umid, 
+    presence: true, 
+    uniqueness: true, 
+    length: { is: 8 },
+    format: { with: /\A\d{8}\z/, message: "must be exactly 8 digits" }
   validates :grad_date, presence: true
   validates :degree, presence: true
   validates :receiving_financial_aid, inclusion: { in: [ true, false ] }

@@ -17,7 +17,7 @@
 #  preferred_first_name          :string(255)      default(""), not null
 #  preferred_last_name           :string(255)      default(""), not null
 #  receiving_financial_aid       :boolean          default(FALSE), not null
-#  umid                          :integer          not null
+#  umid                          :string(255)
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
 #  campus_address_id             :bigint
@@ -57,7 +57,7 @@ FactoryBot.define do
     user
     preferred_first_name { Faker::Name.first_name }
     preferred_last_name { Faker::Name.last_name }
-    umid { Faker::Number.number(digits: 8) }
+    umid { format('%08d', Faker::Number.number(digits: 8)) }
     class_level
     school
     campus
