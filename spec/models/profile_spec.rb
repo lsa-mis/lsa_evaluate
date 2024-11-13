@@ -218,6 +218,11 @@ RSpec.describe Profile do
         expect(profile).to be_valid
       end
 
+      it 'is valid with an 8-digit number starting with 0' do
+        profile.umid = '00345678'
+        expect(profile).to be_valid
+      end
+
       it 'is invalid with letters' do
         profile.umid = '1234567a'
         expect(profile).not_to be_valid
