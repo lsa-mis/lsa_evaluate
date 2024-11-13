@@ -71,7 +71,6 @@ FactoryBot.define do
     financial_aid_description { Faker::Lorem.paragraph }
     hometown_publication { Faker::Address.city }
     pen_name { Faker::Book.author }
-
     home_address { association :address }
     campus_address { association :address }
   end
