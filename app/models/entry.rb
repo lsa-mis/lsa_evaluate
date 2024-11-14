@@ -40,7 +40,6 @@ class Entry < ApplicationRecord
   has_one_attached :entry_file
 
   validates :title, presence: true
-  validates :contest_instance, presence: true
   validate :entry_file_validation, on: :create
   validate :pen_name_required_if_contest_requires_it, on: :create
   validate :accepted_financial_aid_notice_if_contest_requires_it, on: :create
