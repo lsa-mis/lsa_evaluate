@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_12_223208) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_14_205248) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -228,6 +228,45 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_12_223208) do
     t.index ["profile_id"], name: "profile_id_idx"
   end
 
+  create_table "entry_rankings", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "entry_id", null: false
+    t.bigint "judging_round_id", null: false
+    t.bigint "user_id", null: false
+    t.integer "rank"
+    t.text "notes"
+    t.boolean "selected_for_next_round", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry_id", "judging_round_id", "user_id"], name: "index_entry_rankings_uniqueness", unique: true
+    t.index ["entry_id"], name: "index_entry_rankings_on_entry_id"
+    t.index ["judging_round_id"], name: "index_entry_rankings_on_judging_round_id"
+    t.index ["user_id"], name: "index_entry_rankings_on_user_id"
+  end
+
+  create_table "judging_assignments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "contest_instance_id", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contest_instance_id"], name: "index_judging_assignments_on_contest_instance_id"
+    t.index ["user_id", "contest_instance_id"], name: "index_judging_assignments_on_user_id_and_contest_instance_id", unique: true
+    t.index ["user_id"], name: "index_judging_assignments_on_user_id"
+  end
+
+  create_table "judging_rounds", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "contest_instance_id", null: false
+    t.integer "round_number", null: false
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.boolean "active", default: false, null: false
+    t.boolean "completed", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contest_instance_id", "round_number"], name: "index_judging_rounds_on_contest_instance_id_and_round_number", unique: true
+    t.index ["contest_instance_id"], name: "index_judging_rounds_on_contest_instance_id"
+  end
+
   create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "preferred_first_name", default: "", null: false
@@ -341,6 +380,12 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_12_223208) do
   add_foreign_key "entries", "categories"
   add_foreign_key "entries", "contest_instances"
   add_foreign_key "entries", "profiles"
+  add_foreign_key "entry_rankings", "entries"
+  add_foreign_key "entry_rankings", "judging_rounds"
+  add_foreign_key "entry_rankings", "users"
+  add_foreign_key "judging_assignments", "contest_instances"
+  add_foreign_key "judging_assignments", "users"
+  add_foreign_key "judging_rounds", "contest_instances"
   add_foreign_key "profiles", "addresses", column: "campus_address_id"
   add_foreign_key "profiles", "addresses", column: "home_address_id"
   add_foreign_key "profiles", "campuses"
