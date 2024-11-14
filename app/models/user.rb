@@ -50,6 +50,9 @@ class User < ApplicationRecord
   has_many :assignments, dependent: :destroy
   has_many :containers, through: :assignments
   has_one :profile, dependent: :destroy
+  has_many :judging_assignments, dependent: :restrict_with_error
+  has_many :entry_rankings, dependent: :restrict_with_error
+  has_many :contest_instances, through: :judging_assignments
 
   validates :email, :encrypted_password, presence: true
   validates :email, uniqueness: { case_sensitive: false }
