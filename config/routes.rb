@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  get "judge_dashboard/index"
   get 'bulk_contest_instances/new'
   get 'bulk_contest_instances/create'
   root 'static_pages#home'
@@ -16,6 +17,16 @@ Rails.application.routes.draw do
 
   devise_scope :user do
     delete 'sign_out', to: 'users/sessions#destroy'
+  end
+
+  get 'judge_dashboard', to: 'judge_dashboard#index'
+
+  resources :judging_rounds, only: [ :show ] do
+    resources :entry_rankings, only: [ :create, :update ]
+    member do
+      post 'select_entries_for_next_round'
+      patch 'complete_round'
+    end
   end
 
   resources :containers do
