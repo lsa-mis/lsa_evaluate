@@ -41,7 +41,9 @@ class ContestInstance < ApplicationRecord
   has_many :categories, through: :category_contest_instances
   has_many :entries, dependent: :restrict_with_error
   belongs_to :contest_description
-
+  has_many :judging_assignments, dependent: :restrict_with_error
+  has_many :judges, through: :judging_assignments, source: :user
+  has_many :judging_rounds, dependent: :restrict_with_error
   scope :active_and_open, -> {
     where(active: true)
     .where(archived: false)
