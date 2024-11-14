@@ -4,7 +4,8 @@ lock '~> 3.19.1'
 set :default_env, {
   'NODE_OPTIONS' => '--openssl-legacy-provider',
   'PATH' => '$HOME/.asdf/shims:$HOME/.asdf/bin:$PATH',
-  'SKIP_ECHO_ENV' => 'true'
+  'SKIP_ECHO_ENV' => 'true',
+  'SKIP_SEEDS' => 'true'
 }
 
 SSHKit.config.command_map[:bundle] = '/home/deployer/.asdf/shims/bundle'
