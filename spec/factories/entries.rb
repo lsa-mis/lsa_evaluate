@@ -50,7 +50,7 @@ FactoryBot.define do
     # If you want to add an attached file, you can use this
     after(:build) do |entry|
       entry.entry_file.attach(
-        io: File.open(Rails.root.join("spec/support/files/sample_test.pdf")),
+        io: Rails.root.join("spec/support/files/sample_test.pdf").open,
         filename: 'sample_test.pdf',
         content_type: 'application/pdf'
       )
