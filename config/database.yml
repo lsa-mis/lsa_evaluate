@@ -12,6 +12,10 @@ development:
   <<: *default
   database: lsa_evaluate_development
 
+development_feature:
+  <<: *default
+  database: lsa_evaluate_development_feature
+
 test:
   <<: *default
   database: lsa_evaluate_test

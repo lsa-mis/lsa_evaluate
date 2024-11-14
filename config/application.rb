@@ -22,6 +22,10 @@ Bundler.require(*Rails.groups)
 
 module LsaEvaluate
   class Application < Rails::Application # rubocop:disable Style/Documentation
+    # Detect the feature branch and set RAILS_ENV to development_feature
+    if `git rev-parse --abbrev-ref HEAD`.chomp == 'evaluator_tables_2'
+      ENV['RAILS_ENV'] = 'development_feature'
+    end
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
     # Add lib to the eager load paths
