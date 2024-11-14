@@ -72,7 +72,7 @@ RSpec.describe Entry, type: :model do
     it 'is not valid without a contest_instance' do
       entry = build(:entry, contest_instance: nil, category: category, profile: profile)
       expect(entry).not_to be_valid
-      expect(entry.errors[:contest_instance]).to include("can't be blank")
+      expect(entry.errors[:contest_instance]).to include("must exist")
     end
 
     it 'is not valid without a profile' do
