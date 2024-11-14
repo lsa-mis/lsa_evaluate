@@ -22,6 +22,9 @@ Bundler.require(*Rails.groups)
 
 module LsaEvaluate
   class Application < Rails::Application # rubocop:disable Style/Documentation
+    config.before_configuration do
+      require 'stringio'
+    end
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
     # Add lib to the eager load paths
