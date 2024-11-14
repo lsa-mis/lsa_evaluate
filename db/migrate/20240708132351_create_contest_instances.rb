@@ -1,7 +1,6 @@
 class CreateContestInstances < ActiveRecord::Migration[7.1]
   def change
     create_table :contest_instances do |t|
-      t.references :status, null: false, foreign_key: true
       t.references :contest_description, null: false, foreign_key: true
       t.datetime :date_open, null: false
       t.datetime :date_closed, null: false
@@ -21,7 +20,6 @@ class CreateContestInstances < ActiveRecord::Migration[7.1]
     end
 
     add_index :contest_instances, :id, unique: true, name: 'id_unq_idx'
-    add_index :contest_instances, :status_id, name: 'status_id_idx'
     add_index :contest_instances, :contest_description_id, name: 'contest_description_id_idx'
     add_index :contest_instances, :category_id, name: 'category_id_idx'
   end
