@@ -1,5 +1,4 @@
 class ContestDescriptionPolicy < ApplicationPolicy
-
   def index?
     true
   end
