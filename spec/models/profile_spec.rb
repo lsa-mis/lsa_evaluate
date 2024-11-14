@@ -196,4 +196,93 @@ RSpec.describe Profile do
       end
     end
   end
+
+  describe 'UMID validations' do
+    let(:associated_records) do
+      {
+        class_level: create(:class_level),
+        school: create(:school),
+        campus: create(:campus),
+        home_address: create(:address),
+        campus_address: create(:address)
+      }
+    end
+
+    let(:profile) do
+      build(:profile, **associated_records)
+    end
+
+    context 'format validation' do
+      it 'is valid with an 8-digit number' do
+        profile.umid = '12345678'
+        expect(profile).to be_valid
+      end
+
+      it 'is valid with an 8-digit number starting with 0' do
+        profile.umid = '00345678'
+        expect(profile).to be_valid
+      end
+
+      it 'is invalid with letters' do
+        profile.umid = '1234567a'
+        expect(profile).not_to be_valid
+        expect(profile.errors[:umid]).to include('must be exactly 8 digits')
+      end
+
+      it 'is invalid with special characters' do
+        profile.umid = '1234567!'
+        expect(profile).not_to be_valid
+        expect(profile.errors[:umid]).to include('must be exactly 8 digits')
+      end
+
+      it 'is invalid with spaces' do
+        profile.umid = '1234 567'
+        expect(profile).not_to be_valid
+        expect(profile.errors[:umid]).to include('must be exactly 8 digits')
+      end
+    end
+
+    context 'length validation' do
+      it 'is invalid with less than 8 digits' do
+        profile.umid = '1234567'
+        expect(profile).not_to be_valid
+        expect(profile.errors[:umid]).to include('is the wrong length (should be 8 characters)')
+      end
+
+      it 'is invalid with more than 8 digits' do
+        profile.umid = '123456789'
+        expect(profile).not_to be_valid
+        expect(profile.errors[:umid]).to include('is the wrong length (should be 8 characters)')
+      end
+    end
+
+    context 'uniqueness validation' do
+      it 'is invalid with a duplicate UMID' do
+        create(:profile, umid: '87654321', **associated_records)
+        profile.umid = '87654321'
+        expect(profile).not_to be_valid
+        expect(profile.errors[:umid]).to include('has already been taken')
+      end
+    end
+
+    context 'presence validation' do
+      it 'is invalid when nil' do
+        profile.umid = nil
+        expect(profile).not_to be_valid
+        expect(profile.errors[:umid]).to include("can't be blank")
+      end
+
+      it 'is invalid when empty string' do
+        profile.umid = ''
+        expect(profile).not_to be_valid
+        expect(profile.errors[:umid]).to include("can't be blank")
+      end
+
+      it 'is invalid when only spaces' do
+        profile.umid = '        '
+        expect(profile).not_to be_valid
+        expect(profile.errors[:umid]).to include('must be exactly 8 digits')
+      end
+    end
+  end
 end

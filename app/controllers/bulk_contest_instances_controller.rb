@@ -97,7 +97,7 @@ class BulkContestInstancesController < ApplicationController
 
   def setup_error_for_invalid_dates
     @contest_descriptions = @container.contest_descriptions.joins(:contest_instances).distinct
-    flash.now[:alert] = "Date closed must be after date contest opens"
+    flash.now[:alert] = 'Date closed must be after date contest opens'
   end
 
   def setup_error_for_failed_creation
