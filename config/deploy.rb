@@ -81,6 +81,14 @@ namespace :deploy do
 end
 
 namespace :debug do
+  desc 'Print Ruby version and which ruby'
+  task :print_ruby_version do
+    on roles(:app) do
+      execute 'ruby -v'
+      execute 'which ruby'
+    end
+  end
+
   desc 'Print Ruby version, Ruby path, asdf Ruby list, and Rails version'
   task :print_versions do
     on roles(:app) do
