@@ -1,0 +1,54 @@
+<h1>Judge Dashboard</h1>
+
+<% @judging_assignments.each do |assignment| %>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h2><%= assignment.contest_instance.contest_description.name %></h2>
+      <p class="text-muted">
+        Round: <%= assignment.contest_instance.current_judging_round&.round_number || 'Not started' %>
+      </p>
+    </div>
+    
+    <div class="card-body">
+      <% if assignment.contest_instance.judging_open? %>
+        <h3>Entries to Judge</h3>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Entry ID</th>
+                <th>Title</th>
+                <th>Your Ranking</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% assignment.contest_instance.current_round_entries.each do |entry| %>
+                <tr>
+                  <td><%= entry.id %></td>
+                  <td><%= entry.title %></td>
+                  <td>
+                    <%= form_with(model: EntryRanking.find_or_initialize_by(
+                      entry: entry,
+                      judging_round: assignment.contest_instance.current_judging_round,
+                      user: current_user
+                    ), local: true) do |f| %>
+                      <%= f.number_field :rank, min: 1, class: 'form-control' %>
+                      <%= f.submit 'Save Ranking', class: 'btn btn-sm btn-primary' %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"), 
+                        target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p>Judging is not currently open for this contest.</p>
+      <% end %>
+    </div>
+  </div>
+<% end %>
