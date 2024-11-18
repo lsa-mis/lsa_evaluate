@@ -1,0 +1,47 @@
+<div class="d-flex flex-column align-items-end">
+  <%= link_to "Return to Instance Judging Assignments", container_contest_description_contest_instance_judging_assignments_path(@container, @contest_description, @contest_instance), class: "link_to" %>
+</div>
+
+<div class="container mt-4">
+  <h2>Create New Judging Round</h2>
+  <h3 class="text-muted"><%= @contest_instance.contest_description.name %></h3>
+
+  <div class="card">
+    <div class="card-body">
+      <%= form_with(model: [@container, @contest_description, @contest_instance, @judging_round], local: true) do |f| %>
+        <% if @judging_round.errors.any? %>
+          <div class="alert alert-danger">
+            <h4><%= pluralize(@judging_round.errors.count, "error") %> prohibited this judging round from being saved:</h4>
+            <ul>
+              <% @judging_round.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="form-group">
+          <%= f.label :round_number %>
+          <%= f.number_field :round_number, value: @round_number, class: 'form-control' %>
+        </div>
+
+        <div class="form-group mt-3">
+          <%= f.label :start_date %>
+          <%= f.datetime_local_field :start_date, class: 'form-control' %>
+        </div>
+
+        <div class="form-group mt-3">
+          <%= f.label :end_date %>
+          <%= f.datetime_local_field :end_date, class: 'form-control' %>
+        </div>
+
+        <div class="form-actions py-2">
+          <%= f.submit 'Create Round', class: 'btn btn-primary' %>
+          <%= link_to 'Cancel', container_contest_description_contest_instance_judging_assignments_path(
+              @container, @contest_description, @contest_instance
+            ), class: 'text-danger link_to' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -24,4 +24,8 @@ class JudgingRoundPolicy < ApplicationPolicy
   def select_entries_for_next_round?
     user&.has_container_role?(record.contest_instance.contest_description.container) || axis_mundi?
   end
+
+  def manage_judges?
+    user&.has_container_role?(record.contest_instance.contest_description.container) || axis_mundi?
+  end
 end
