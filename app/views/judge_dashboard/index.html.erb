@@ -4,9 +4,13 @@
   <div class="card mb-4">
     <div class="card-header">
       <h2><%= assignment.contest_instance.contest_description.name %></h2>
-      <p class="text-muted">
-        Round: <%= assignment.contest_instance.current_judging_round&.round_number || 'Not started' %>
-      </p>
+      <% if assignment.contest_instance.current_judging_round %>
+        <p class="text-muted">
+          Round: <%= assignment.contest_instance.current_judging_round.round_number %>
+        </p>
+      <% else %>
+        <p class="text-muted">No active round</p>
+      <% end %>
     </div>
     
     <div class="card-body">
@@ -23,32 +27,61 @@
               </tr>
             </thead>
             <tbody>
-              <% assignment.contest_instance.current_round_entries.each do |entry| %>
+              <% if assignment.contest_instance.current_round_entries.any? %>
+                <% assignment.contest_instance.current_round_entries.each do |entry| %>
+                  <tr>
+                    <td><%= entry.id %></td>
+                    <td><%= entry.title %></td>
+                    <td>
+                      <%= form_with(
+                        model: EntryRanking.find_or_initialize_by(
+                          entry: entry,
+                          judging_round: assignment.contest_instance.current_judging_round,
+                          user: current_user
+                        ),
+                        url: container_contest_description_contest_instance_judging_round_entry_rankings_path(
+                          assignment.contest_instance.contest_description.container,
+                          assignment.contest_instance.contest_description,
+                          assignment.contest_instance,
+                          assignment.contest_instance.current_judging_round
+                        ),
+                        method: :post,
+                        local: true
+                      ) do |f| %>
+                        <div class="input-group">
+                          <%= f.hidden_field :entry_id %>
+                          <%= f.hidden_field :judging_round_id %>
+                          <%= f.hidden_field :user_id %>
+                          <%= f.number_field :rank, min: 1, class: 'form-control' %>
+                          <%= f.submit 'Save', class: 'btn btn-sm btn-primary' %>
+                        </div>
+                      <% end %>
+                    </td>
+                    <td>
+                      <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"), 
+                          target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% else %>
                 <tr>
-                  <td><%= entry.id %></td>
-                  <td><%= entry.title %></td>
-                  <td>
-                    <%= form_with(model: EntryRanking.find_or_initialize_by(
-                      entry: entry,
-                      judging_round: assignment.contest_instance.current_judging_round,
-                      user: current_user
-                    ), local: true) do |f| %>
-                      <%= f.number_field :rank, min: 1, class: 'form-control' %>
-                      <%= f.submit 'Save Ranking', class: 'btn btn-sm btn-primary' %>
-                    <% end %>
-                  </td>
-                  <td>
-                    <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"), 
-                        target: '_blank', class: 'btn btn-sm btn-secondary' %>
-                  </td>
+                  <td colspan="4" class="text-center">No entries available for judging in this round.</td>
                 </tr>
               <% end %>
             </tbody>
           </table>
         </div>
       <% else %>
-        <p>Judging is not currently open for this contest.</p>
+        <div class="alert alert-info">
+          Judging is not currently open for this contest.
+        </div>
       <% end %>
     </div>
+  </div>
+<% end %>
+
+<% if @judging_assignments.empty? %>
+  <div class="alert alert-info">
+    You have not been assigned to judge any contests.
   </div>
 <% end %>
