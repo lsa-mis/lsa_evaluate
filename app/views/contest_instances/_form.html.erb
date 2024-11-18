@@ -46,10 +46,6 @@
     <%= f.input :notes,
                 hint: "These notes are not visible on the applicant entry form" %>
     <%= f.input :judging_open %>
-    <%= f.input :judging_rounds,
-                as: :integer,
-                input_html: { min: 1 },
-                hint: "Number of judging rounds for this contest" %>
     <%= f.input :judge_evaluations_complete %>
     <%= f.input :maximum_number_entries_per_applicant %>
     <%= f.input :require_pen_name, 
