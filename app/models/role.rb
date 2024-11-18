@@ -17,7 +17,7 @@ class Role < ApplicationRecord
   has_many :users, through: :user_roles
   has_many :assignments, dependent: :destroy
 
-  scope :excluding_axis_mundi, -> { where.not(kind: 'Axis mundi') }
+  scope :container_roles, -> { where(kind: ['Collection Administrator', 'Collection Manager']) }
 
   def display_name
     kind
