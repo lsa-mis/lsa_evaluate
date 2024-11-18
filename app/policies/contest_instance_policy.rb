@@ -18,4 +18,8 @@ class ContestInstancePolicy < ApplicationPolicy
   def destroy?
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end
+
+  def manage_judges?
+    user&.has_container_role?(record.contest_description.container) || axis_mundi?
+  end
 end

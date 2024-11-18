@@ -98,6 +98,25 @@ class ContestInstance < ApplicationRecord
     active && !archived && Time.current.between?(date_open, date_closed)
   end
 
+  def current_judging_round
+    judging_rounds.order(round_number: :desc).first
+  end
+
+  def total_judging_rounds
+    judging_rounds.count
+  end
+
+  def judging_open?
+    current_judging_round.present? && 
+      date_open <= Time.zone.now && 
+      date_closed >= Time.zone.now
+  end
+
+  def current_round_entries
+    return Entry.none unless current_judging_round
+    current_judging_round.entries.where(deleted: false)
+  end
+
   private
 
   def must_have_at_least_one_class_level_requirement
