@@ -9,7 +9,7 @@ class JudgingAssignment < ApplicationRecord
   private
 
   def user_must_be_judge
-    unless user&.has_role?('Judge')
+    unless user&.judge?
       errors.add(:user, 'must have judge role')
     end
   end
