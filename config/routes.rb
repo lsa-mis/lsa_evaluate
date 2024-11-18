@@ -31,9 +31,14 @@ Rails.application.routes.draw do
 
   resources :containers do
     resources :contest_descriptions do
-      resources :contest_instances
-      member do
-        get 'eligibility_rules'
+      resources :contest_instances do
+        resources :judging_assignments, only: [:index, :create, :destroy]
+        resources :judging_rounds do
+          resources :round_judge_assignments, only: [:index, :create, :destroy]
+        end
+        member do
+          get 'eligibility_rules'
+        end
       end
     end
     resources :bulk_contest_instances, only: [ :new, :create ]

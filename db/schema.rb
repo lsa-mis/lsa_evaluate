@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_14_205248) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_18_033046) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -310,6 +310,17 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_14_205248) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "round_judge_assignments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "judging_round_id", null: false
+    t.bigint "user_id", null: false
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["judging_round_id", "user_id"], name: "index_round_judge_assignments_on_judging_round_id_and_user_id", unique: true
+    t.index ["judging_round_id"], name: "index_round_judge_assignments_on_judging_round_id"
+    t.index ["user_id"], name: "index_round_judge_assignments_on_user_id"
+  end
+
   create_table "schools", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -392,6 +403,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_14_205248) do
   add_foreign_key "profiles", "class_levels"
   add_foreign_key "profiles", "schools"
   add_foreign_key "profiles", "users"
+  add_foreign_key "round_judge_assignments", "judging_rounds"
+  add_foreign_key "round_judge_assignments", "users"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
 end
