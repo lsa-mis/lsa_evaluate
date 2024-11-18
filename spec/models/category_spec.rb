@@ -3,14 +3,10 @@
 # Table name: categories
 #
 #  id          :bigint           not null, primary key
-#  description :text(65535)
 #  kind        :string(255)
+#  description :text(65535)
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#
-# Indexes
-#
-#  index_categories_on_kind  (kind) UNIQUE
 #
 require 'rails_helper'
 

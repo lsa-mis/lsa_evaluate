@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: entry_rankings
+#
+#  id                      :bigint           not null, primary key
+#  entry_id                :bigint           not null
+#  judging_round_id        :bigint           not null
+#  user_id                 :bigint           not null
+#  rank                    :integer
+#  notes                   :text(65535)
+#  selected_for_next_round :boolean          default(FALSE), not null
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#
 # app/models/entry_ranking.rb
 class EntryRanking < ApplicationRecord
   belongs_to :entry

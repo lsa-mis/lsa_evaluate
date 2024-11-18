@@ -1,3 +1,14 @@
+# == Schema Information
+#
+# Table name: round_judge_assignments
+#
+#  id               :bigint           not null, primary key
+#  judging_round_id :bigint           not null
+#  user_id          :bigint           not null
+#  active           :boolean          default(TRUE)
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#
 class RoundJudgeAssignment < ApplicationRecord
   belongs_to :judging_round
   belongs_to :user

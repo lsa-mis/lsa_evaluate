@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: judging_rounds
+#
+#  id                  :bigint           not null, primary key
+#  contest_instance_id :bigint           not null
+#  round_number        :integer          not null
+#  start_date          :datetime
+#  end_date            :datetime
+#  active              :boolean          default(FALSE), not null
+#  completed           :boolean          default(FALSE), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
+#
 # app/models/judging_round.rb
 class JudgingRound < ApplicationRecord
   belongs_to :contest_instance

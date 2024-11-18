@@ -8,10 +8,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-# Indexes
-#
-#  index_editable_contents_on_page_and_section  (page,section) UNIQUE
-#
 require 'rails_helper'
 
 RSpec.describe EditableContent do

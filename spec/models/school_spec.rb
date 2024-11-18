@@ -7,10 +7,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-# Indexes
-#
-#  id_unq_idx  (id) UNIQUE
-#
 require 'rails_helper'
 
 RSpec.describe School, type: :model do

@@ -8,10 +8,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-# Indexes
-#
-#  index_editable_contents_on_page_and_section  (page,section) UNIQUE
-#
 FactoryBot.define do
   factory :editable_content do
     page { Faker::Lorem.word }

@@ -5,8 +5,11 @@ class JudgeDashboardController < ApplicationController
 
   def index
     @judging_assignments = current_user.judging_assignments
-                                     .includes(contest_instance: [ :contest_description, :judging_rounds ])
+                                     .includes(contest_instance: [:contest_description, 
+                                                               :judging_rounds,
+                                                               entries: [:entry_rankings]])
                                      .where(active: true)
+                                     .order('judging_rounds.round_number ASC')
   end
 
   private
