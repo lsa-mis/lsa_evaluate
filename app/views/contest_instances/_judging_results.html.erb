@@ -1,0 +1,50 @@
+<div class="card mt-4">
+  <div class="card-header">
+    <h3>Judging Results</h3>
+  </div>
+  <div class="card-body">
+    <% if @contest_instance.judging_rounds.any? %>
+      <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
+        <div class="mb-4">
+          <h4>Round <%= round.round_number %></h4>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Entry ID</th>
+                  <th>Title</th>
+                  <th>Average Rank</th>
+                  <th>Individual Rankings</th>
+                  <th>Selected for Next Round</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% round.entries.distinct.each do |entry| %>
+                  <tr>
+                    <td><%= entry.id %></td>
+                    <td><%= entry.title %></td>
+                    <td>
+                      <%= entry.entry_rankings.where(judging_round: round).average(:rank)&.round(2) || 'No rankings' %>
+                    </td>
+                    <td>
+                      <% entry.entry_rankings.where(judging_round: round).each do |ranking| %>
+                        <div>
+                          <%= ranking.user.email %>: <%= ranking.rank || 'Not ranked' %>
+                        </div>
+                      <% end %>
+                    </td>
+                    <td class="text-center">
+                      <%= boolean_to_yes_no(entry.entry_rankings.where(judging_round: round, selected_for_next_round: true).exists?) %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-muted">No judging rounds have been created yet.</p>
+    <% end %>
+  </div>
+</div>

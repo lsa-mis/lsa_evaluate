@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  get "judge_dashboard/index"
+  get 'judge_dashboard/index'
   get 'bulk_contest_instances/new'
   get 'bulk_contest_instances/create'
   root 'static_pages#home'
@@ -32,9 +32,10 @@ Rails.application.routes.draw do
   resources :containers do
     resources :contest_descriptions do
       resources :contest_instances do
-        resources :judging_assignments, only: [:index, :create, :destroy]
+        resources :judging_assignments, only: [ :index, :create, :destroy ]
         resources :judging_rounds do
-          resources :round_judge_assignments, only: [:index, :create, :destroy]
+          resources :round_judge_assignments, only: [ :index, :create, :destroy ]
+          resources :entry_rankings, only: [ :create, :update ]
         end
         member do
           get 'eligibility_rules'

@@ -19,3 +19,7 @@
 <hr>
 
 <%= render "contest_instance_entries", entries: @contest_instance_entries %>
+
+<% if policy(@contest_instance).view_judging_results? %>
+  <%= render "judging_results" %>
+<% end %>
