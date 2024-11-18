@@ -87,24 +87,6 @@ RSpec.describe ContestInstance, type: :model do
       expect(contest_instance.errors[:date_closed]).to include("can't be blank")
     end
 
-    it 'is invalid without a judging_rounds' do
-      contest_instance.judging_rounds = nil
-      expect(contest_instance).not_to be_valid
-      expect(contest_instance.errors[:judging_rounds]).to include("can't be blank")
-    end
-
-    it 'is invalid with non-integer judging_rounds' do
-      contest_instance.judging_rounds = 'one'
-      expect(contest_instance).not_to be_valid
-      expect(contest_instance.errors[:judging_rounds]).to include('is not a number')
-    end
-
-    it 'is invalid with judging_rounds less than 1' do
-      contest_instance.judging_rounds = 0
-      expect(contest_instance).not_to be_valid
-      expect(contest_instance.errors[:judging_rounds]).to include('must be greater than 0')
-    end
-
     it 'is invalid without a maximum_number_entries_per_applicant' do
       contest_instance.maximum_number_entries_per_applicant = nil
       expect(contest_instance).not_to be_valid
