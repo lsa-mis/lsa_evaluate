@@ -195,11 +195,47 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
   user6 = User.create!(email: 'jjsantos@umich.edu', password: 'passwordpassword')
   user7 = User.create!(email: 'mlaitan@umich.edu', password: 'passwordpassword')
 
+  # # Data for new users
+  # new_users_data = [
+  #   { email: "stufirst@example.com", uniqname: "stufirst", uid: "stufirst", principal_name: "stufirst@example.com", display_name: "Student First" },
+  #   { email: "stusecond@example.com", uniqname: "stusecond", uid: "stusecond", principal_name: "stusecond@example.com", display_name: "Student Second" },
+  #   { email: "stujunior@example.com", uniqname: "stujunior", uid: "stujunior", principal_name: "stujunior@example.com", display_name: "Student Junior" },
+  #   { email: "stusenior@example.com", uniqname: "stusenior", uid: "stusenior", principal_name: "stusenior@example.com", display_name: "Student Senior" },
+  #   { email: "stugrad@example.com", uniqname: "stugrad", uid: "stugrad", principal_name: "stugrad@example.com", display_name: "Student Grad" }
+  # ]
+
+  # # Shared password
+  # password = "passwordpassword"
+
+  # # Shared affiliations
+  # affiliations_attributes = [
+  #   { name: 'student' },
+  #   { name: 'member' }
+  # ]
+
+  # # Create new users
+  # new_users_data.each do |user_data|
+  #   User.create!(
+  #     email: user_data[:email],
+  #     password: password,
+  #     uniqname: user_data[:uniqname],
+  #     uid: user_data[:uid],
+  #     principal_name: user_data[:principal_name],
+  #     display_name: user_data[:display_name],
+  #     first_name: user_data[:display_name].split.first, # Extract first name
+  #     last_name: user_data[:display_name].split.last,   # Extract last name
+  #     affiliations_attributes: affiliations_attributes
+  #   )
+  # end
+
+  # puts "New users created successfully!"
+
   # Seed data for Roles
   Role.create!([
                 { kind: 'Axis mundi' },
                 { kind: 'Collection Administrator' },
-                { kind: 'Collection Manager' }
+                { kind: 'Collection Manager' },
+                { kind: 'Judge' }
               ])
   role_container_admin = Role.find_by(kind: 'Collection Administrator')
   axis_mundi = Role.find_by(kind: 'Axis mundi')
@@ -267,7 +303,6 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
     date_closed: DateTime.now + 30,
     notes: 'First contest instance',
     judging_open: false,
-    judging_rounds: 1,
     has_course_requirement: false,
     judge_evaluations_complete: false,
     course_requirement_description: 'No course requirement',
@@ -288,7 +323,6 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
     date_closed: DateTime.now - 30,
     notes: 'Second contest instance',
     judging_open: true,
-    judging_rounds: 2,
     has_course_requirement: false,
     judge_evaluations_complete: false,
     course_requirement_description: 'No course requirement',
@@ -308,7 +342,6 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
     date_closed: DateTime.now + 30,
     notes: 'Third contest instance',
     judging_open: false,
-    judging_rounds: 1,
     has_course_requirement: false,
     judge_evaluations_complete: false,
     course_requirement_description: 'Course required',
