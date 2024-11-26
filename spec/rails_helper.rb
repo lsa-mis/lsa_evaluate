@@ -1,19 +1,21 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-# require 'database_cleaner'
 require 'database_cleaner/active_record'
+require 'pundit/matchers'
+require 'faker'
 
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 
-# Prevent database truncation if the environment is production
+# Prevent database truncation if the environment is running in production
 abort('The Rails environment is running in production mode!') if Rails.env.production?
 
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'rspec/rails'
 require 'factory_bot_rails'
 require 'pundit/rspec'
+require 'selenium-webdriver'
 
 puts "!*!*!*! Running in environment: #{Rails.env} !*!*!*!"
 
