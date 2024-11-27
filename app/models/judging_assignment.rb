@@ -3,13 +3,23 @@
 # Table name: judging_assignments
 #
 #  id                  :bigint           not null, primary key
-#  user_id             :bigint           not null
-#  contest_instance_id :bigint           not null
 #  active              :boolean          default(TRUE), not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  contest_instance_id :bigint           not null
+#  user_id             :bigint           not null
 #
-# app/models/judging_assignment.rb
+# Indexes
+#
+#  index_judging_assignments_on_contest_instance_id              (contest_instance_id)
+#  index_judging_assignments_on_user_id                          (user_id)
+#  index_judging_assignments_on_user_id_and_contest_instance_id  (user_id,contest_instance_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (contest_instance_id => contest_instances.id)
+#  fk_rails_...  (user_id => users.id)
+#
 class JudgingAssignment < ApplicationRecord
   belongs_to :user
   belongs_to :contest_instance

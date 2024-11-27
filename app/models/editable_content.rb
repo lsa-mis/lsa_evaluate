@@ -10,6 +10,10 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
+# Indexes
+#
+#  index_editable_contents_on_page_and_section  (page,section) UNIQUE
+#
 class EditableContent < ApplicationRecord
   validates :page, :section, :content, presence: true
   validates :page, uniqueness: { scope: :section, message: 'and section combination must be unique' }

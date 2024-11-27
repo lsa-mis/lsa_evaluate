@@ -3,16 +3,24 @@
 # Table name: judging_rounds
 #
 #  id                  :bigint           not null, primary key
-#  contest_instance_id :bigint           not null
-#  round_number        :integer          not null
-#  start_date          :datetime
-#  end_date            :datetime
 #  active              :boolean          default(FALSE), not null
 #  completed           :boolean          default(FALSE), not null
+#  end_date            :datetime
+#  round_number        :integer          not null
+#  start_date          :datetime
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
+#  contest_instance_id :bigint           not null
 #
-# app/models/judging_round.rb
+# Indexes
+#
+#  index_judging_rounds_on_contest_instance_id                   (contest_instance_id)
+#  index_judging_rounds_on_contest_instance_id_and_round_number  (contest_instance_id,round_number) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (contest_instance_id => contest_instances.id)
+#
 class JudgingRound < ApplicationRecord
   belongs_to :contest_instance
   has_many :entry_rankings, dependent: :destroy
