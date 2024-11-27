@@ -44,18 +44,16 @@ RSpec.configure do |config|
 
   # Configure DatabaseCleaner
 
-  config.before do |example|
-    DatabaseCleaner.strategy = if example.metadata[:js] || example.metadata[:type] == :system
-                                  :truncation
+  config.around(:each) do |example|
+    if example.metadata[:type] == :system
+      DatabaseCleaner.strategy = :truncation
     else
-                                  :transaction
+      DatabaseCleaner.strategy = :transaction
     end
-    DatabaseCleaner.start
-  end
 
-  # Ensure DatabaseCleaner cleans up after each test
-  config.append_after do
-    DatabaseCleaner.clean
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 
   # Include Devise test helpers
@@ -91,7 +89,7 @@ RSpec.configure do |config|
   end
 
   # Add this to prevent OmniAuth from raising errors during testing
-  config.before(:each) do
+  config.before do
     OmniAuth.config.logger = Logger.new('/dev/null')
     OmniAuth.config.on_failure = proc { |env|
       OmniAuth::FailureEndpoint.new(env).redirect_to_failure
