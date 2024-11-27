@@ -37,9 +37,9 @@ Rails.application.routes.draw do
           resources :round_judge_assignments, only: [ :index, :create, :destroy ]
           resources :entry_rankings, only: [ :create, :update ]
         end
-        member do
-          get 'eligibility_rules'
-        end
+      end
+      member do
+        get 'eligibility_rules'
       end
     end
     resources :bulk_contest_instances, only: [ :new, :create ]
