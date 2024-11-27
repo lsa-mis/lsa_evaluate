@@ -1,6 +1,6 @@
 class JudgingAssignmentsController < ApplicationController
   before_action :set_contest_instance
-  before_action :set_judging_assignment, only: [:destroy]
+  before_action :set_judging_assignment, only: [ :destroy ]
   before_action :authorize_contest_instance
 
   def index
@@ -11,7 +11,7 @@ class JudgingAssignmentsController < ApplicationController
 
   def create
     @judging_assignment = @contest_instance.judging_assignments.build(judging_assignment_params)
-    
+
     if @judging_assignment.save
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
