@@ -17,6 +17,8 @@ class JudgingAssignment < ApplicationRecord
   validates :user_id, uniqueness: { scope: :contest_instance_id }
   validate :user_must_be_judge
 
+  scope :active, -> { where(active: true) }
+
   private
 
   def user_must_be_judge
