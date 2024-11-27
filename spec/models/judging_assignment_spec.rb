@@ -2,8 +2,6 @@ require 'rails_helper'
 
 RSpec.describe JudgingAssignment, type: :model do
   describe 'associations' do
-    # it { should belong_to(:user) }
-    # it { should belong_to(:contest_instance) }
     it 'belongs to a user' do
       association = described_class.reflect_on_association(:user)
       expect(association.macro).to eq(:belongs_to)
@@ -16,13 +14,8 @@ RSpec.describe JudgingAssignment, type: :model do
   end
 
   describe 'validations' do
-    let(:judge_role) { create(:role, kind: 'Judge') }
-    let(:judge) { create(:user) }
+    let(:judge) { create(:user, :with_judge_role) }
     let(:contest_instance) { create(:contest_instance) }
-
-    before do
-      create(:user_role, user: judge, role: judge_role)
-    end
 
     it 'is valid with valid attributes' do
       judging_assignment = build(:judging_assignment, user: judge, contest_instance: contest_instance)
@@ -77,8 +70,8 @@ RSpec.describe JudgingAssignment, type: :model do
 
   describe 'database constraints' do
     it 'has a unique index on user_id and contest_instance_id' do
-      expect(ActiveRecord::Base.connection.index_exists?(:judging_assignments, 
-        [:user_id, :contest_instance_id], unique: true)).to be true
+      expect(ActiveRecord::Base.connection.index_exists?(:judging_assignments,
+        [ :user_id, :contest_instance_id ], unique: true)).to be true
     end
 
     it 'has foreign key constraints' do
@@ -86,4 +79,4 @@ RSpec.describe JudgingAssignment, type: :model do
         .to include('user_id', 'contest_instance_id')
     end
   end
-end 
+end

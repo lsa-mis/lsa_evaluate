@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :judging_assignment do
-    user
+    user { create(:user, :with_judge_role) }
     contest_instance
     active { true }
 

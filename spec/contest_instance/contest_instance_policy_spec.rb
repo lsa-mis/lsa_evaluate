@@ -52,7 +52,7 @@ RSpec.describe ContestInstancePolicy do
   end
 
   context 'for a judge' do
-    let(:user) { create(:user) }
+    let(:user) { create(:user, :with_judge_role) }
 
     before do
       create(:judging_assignment, user: user, contest_instance: contest_instance)
