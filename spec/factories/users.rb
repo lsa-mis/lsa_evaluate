@@ -67,5 +67,14 @@ FactoryBot.define do
         create(:user_role, user: user, role: axis_mundi_role)
       end
     end
+
+    trait :with_judge_role do
+      after(:create) do |user|
+        judge_role = Role.find_or_create_by!(kind: 'Judge') do |role|
+          role.description = 'Judge Role Description'
+        end
+        create(:user_role, user: user, role: judge_role)
+      end
+    end
   end
 end
