@@ -71,7 +71,9 @@ Rails.application.routes.draw do
   get '/500', to: 'errors#internal_server_error', as: 'internal_server_error'
 
   mount ActiveStorage::Engine => '/rails/active_storage', as: 'active_storage'
-  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
+  if Rails.env.development? || Rails.env.staging?
+    mount LetterOpenerWeb::Engine, at: '/letter_opener'
+  end
 
   # Place this at the very end of the file to catch all undefined routes
   match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|
