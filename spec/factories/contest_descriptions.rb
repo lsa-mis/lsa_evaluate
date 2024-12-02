@@ -19,6 +19,7 @@
 # Foreign Keys
 #
 #  fk_rails_...  (container_id => containers.id)
+#
 
 FactoryBot.define do
   factory :contest_description do

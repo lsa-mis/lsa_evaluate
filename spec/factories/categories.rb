@@ -12,7 +12,6 @@
 #
 #  index_categories_on_kind  (kind) UNIQUE
 #
-# spec/factories/categories.rb
 FactoryBot.define do
   factory :category do
     sequence(:kind) { |n| "Category #{n}" }

@@ -12,7 +12,6 @@
 #  has_course_requirement               :boolean          default(FALSE), not null
 #  judge_evaluations_complete           :boolean          default(FALSE), not null
 #  judging_open                         :boolean          default(FALSE), not null
-#  judging_rounds                       :integer          default(1)
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
@@ -34,7 +33,6 @@
 #
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #
-# spec/factories/contest_instances.rb
 
 FactoryBot.define do
   factory :contest_instance do
@@ -45,7 +43,6 @@ FactoryBot.define do
     date_closed { 1.day.from_now }
     notes { Faker::Lorem.paragraph }
     judging_open { false }
-    judging_rounds { 1 }
     has_course_requirement { false }
     judge_evaluations_complete { false }
     course_requirement_description { Faker::Lorem.paragraph }
@@ -66,6 +63,11 @@ FactoryBot.define do
       date_closed { 1.day.from_now }
     end
 
+    trait :with_judging_round do
+      after(:create) do |contest_instance|
+        create(:judging_round, contest_instance: contest_instance)
+      end
+    end
     # Transient attributes for flexibility
     transient do
       class_levels_count { 1 }

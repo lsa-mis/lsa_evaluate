@@ -16,7 +16,6 @@
 #
 #  fk_rails_...  (user_id => users.id)
 #
-# spec/models/affiliation_spec.rb
 
 require 'rails_helper'
 

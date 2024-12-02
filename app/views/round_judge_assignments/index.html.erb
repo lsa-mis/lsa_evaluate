@@ -1,0 +1,64 @@
+<div class="d-flex flex-column align-items-end">
+  <%= link_to "Return to Manage Collection", container_path(@container), class: "link_to mb-1" %>
+  <%= link_to "Return to Instances", container_contest_description_contest_instances_path(@container, @contest_description), class: "link_to" %>
+  <%= link_to "Return to Instance Judging Assignments", container_contest_description_contest_instance_judging_assignments_path(@container, @contest_description, @contest_instance), class: "link_to" %>
+</div>
+
+<div class="container mt-4">
+  <h2>Manage Round <%= @judging_round.round_number %> Judges</h2>
+  <h3 class="text-muted"><%= @contest_instance.contest_description.name %></h3>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h3>Assign Judge to Round</h3>
+    </div>
+    <div class="card-body">
+      <%= form_with(model: [@container, @contest_description, @contest_instance, @judging_round, RoundJudgeAssignment.new], local: true) do |f| %>
+        <div class="form-group">
+          <%= f.label :user_id, "Select Judge" %>
+          <%= f.select :user_id, 
+              @available_judges.map { |u| [u.email, u.id] },
+              { prompt: "Select a judge" },
+              class: "form-control" %>
+        </div>
+        <%= f.submit "Assign to Round", class: "btn btn-primary mt-3" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Current Round Judges</h3>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Judge Email</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @round_judge_assignments.each do |assignment| %>
+              <tr>
+                <td><%= assignment.user.email %></td>
+                <td><%= assignment.active? ? 'Active' : 'Inactive' %></td>
+                <td>
+                  <%= button_to 'Remove from Round',
+                      container_contest_description_contest_instance_judging_round_round_judge_assignment_path(
+                        @container, @contest_description, @contest_instance, @judging_round, assignment
+                      ),
+                      method: :delete,
+                      class: 'btn btn-danger btn-sm',
+                      data: { confirm: 'Are you sure?' } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

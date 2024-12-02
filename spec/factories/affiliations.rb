@@ -16,7 +16,6 @@
 #
 #  fk_rails_...  (user_id => users.id)
 #
-# spec/factories/affiliations.rb
 FactoryBot.define do
   factory :affiliation do
     name { "employee" }  # Default value, can be overridden in tests

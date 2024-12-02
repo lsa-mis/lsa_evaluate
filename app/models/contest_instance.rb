@@ -12,7 +12,6 @@
 #  has_course_requirement               :boolean          default(FALSE), not null
 #  judge_evaluations_complete           :boolean          default(FALSE), not null
 #  judging_open                         :boolean          default(FALSE), not null
-#  judging_rounds                       :integer          default(1)
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
@@ -41,7 +40,9 @@ class ContestInstance < ApplicationRecord
   has_many :categories, through: :category_contest_instances
   has_many :entries, dependent: :restrict_with_error
   belongs_to :contest_description
-
+  has_many :judging_assignments, dependent: :restrict_with_error
+  has_many :judges, through: :judging_assignments, source: :user
+  has_many :judging_rounds, dependent: :restrict_with_error
   scope :active_and_open, -> {
     where(active: true)
     .where(archived: false)
@@ -76,7 +77,6 @@ class ContestInstance < ApplicationRecord
   validates :date_open, presence: true
   validates :date_closed, presence: true
   validates :judging_open, inclusion: { in: [ true, false ] }
-  validates :judging_rounds, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validates :has_course_requirement, inclusion: { in: [ true, false ] }
   validates :judge_evaluations_complete, inclusion: { in: [ true, false ] }
   validates :recletter_required, inclusion: { in: [ true, false ] }
@@ -94,6 +94,68 @@ class ContestInstance < ApplicationRecord
 
   def open?
     active && !archived && Time.current.between?(date_open, date_closed)
+  end
+
+  def current_judging_round
+    judging_rounds.where(active: true)
+                  .order(:round_number)
+                  .first || 
+    judging_rounds.order(:round_number).first
+  end
+
+  def actual_judging_rounds_count
+    judging_rounds.count
+  end
+
+  def judging_open?
+    return false unless current_judging_round
+    return false unless date_open <= Time.zone.now && date_closed >= Time.zone.now
+    
+    if current_judging_round.start_date && current_judging_round.end_date
+      current_judging_round.start_date <= Time.zone.now && 
+      current_judging_round.end_date >= Time.zone.now
+    else
+      true
+    end
+  end
+
+  def current_round_entries
+    return Entry.none unless current_judging_round
+    
+    if current_judging_round.round_number == 1
+      entries.where(deleted: false)
+    else
+      previous_round = judging_rounds.find_by(round_number: current_judging_round.round_number - 1)
+      entries.joins(:entry_rankings)
+            .where(entry_rankings: { 
+              judging_round: previous_round,
+              selected_for_next_round: true
+            })
+            .where(deleted: false)
+            .distinct
+    end
+  end
+
+  def average_rank_for_entry_in_round(entry, round)
+    entry_rankings.where(entry: entry, judging_round: round).average(:rank)
+  end
+
+  def rankings_for_entry_in_round(entry, round)
+    entry_rankings.includes(:user).where(entry: entry, judging_round: round)
+  end
+
+  def entry_selected_for_next_round?(entry, round)
+    entry_rankings.where(entry: entry, judging_round: round, selected_for_next_round: true).exists?
+  end
+
+  def judge_assigned?(user)
+    return false unless user&.judge?
+    judging_assignments.active.exists?(user: user)
+  end
+
+  def judge_assigned_to_round?(user, round)
+    return false unless judge_assigned?(user)
+    round.round_judge_assignments.active.exists?(user: user)
   end
 
   private

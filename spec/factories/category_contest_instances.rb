@@ -19,7 +19,6 @@
 #  fk_rails_...  (category_id => categories.id)
 #  fk_rails_...  (contest_instance_id => contest_instances.id)
 #
-# spec/factories/category_contest_instances.rb
 FactoryBot.define do
   factory :category_contest_instance do
     category

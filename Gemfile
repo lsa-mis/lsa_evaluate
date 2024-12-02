@@ -43,6 +43,7 @@ group :test do
   gem 'database_cleaner-active_record', '~> 2.0'
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
+  gem 'selenium-webdriver'
 end
 
 group :development, :staging do
