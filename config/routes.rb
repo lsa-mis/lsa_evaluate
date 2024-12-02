@@ -22,7 +22,6 @@ Rails.application.routes.draw do
   get 'judge_dashboard', to: 'judge_dashboard#index'
 
   resources :judging_rounds, only: [ :show ] do
-    resources :entry_rankings, only: [ :create, :update ]
     member do
       post 'select_entries_for_next_round'
       patch 'complete_round'
