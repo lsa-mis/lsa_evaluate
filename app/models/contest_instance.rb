@@ -148,6 +148,16 @@ class ContestInstance < ApplicationRecord
     entry_rankings.where(entry: entry, judging_round: round, selected_for_next_round: true).exists?
   end
 
+  def judge_assigned?(user)
+    return false unless user&.judge?
+    judging_assignments.active.exists?(user: user)
+  end
+
+  def judge_assigned_to_round?(user, round)
+    return false unless judge_assigned?(user)
+    round.round_judge_assignments.active.exists?(user: user)
+  end
+
   private
 
   def must_have_at_least_one_class_level_requirement
