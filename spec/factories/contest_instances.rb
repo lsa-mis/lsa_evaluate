@@ -12,7 +12,6 @@
 #  has_course_requirement               :boolean          default(FALSE), not null
 #  judge_evaluations_complete           :boolean          default(FALSE), not null
 #  judging_open                         :boolean          default(FALSE), not null
-#  judging_rounds                       :integer          default(1)
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
@@ -34,7 +33,6 @@
 #
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #
-# spec/factories/contest_instances.rb
 
 FactoryBot.define do
   factory :contest_instance do
