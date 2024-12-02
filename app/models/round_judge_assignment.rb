@@ -28,6 +28,8 @@ class RoundJudgeAssignment < ApplicationRecord
   validate :user_must_be_judge
   validate :user_must_be_contest_judge
 
+  scope :active, -> { where(active: true) }
+
   private
 
   def user_must_be_judge
