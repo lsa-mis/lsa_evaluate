@@ -38,6 +38,7 @@ class Entry < ApplicationRecord
   belongs_to :profile
   belongs_to :category
   has_one_attached :entry_file
+  has_many :entry_rankings, dependent: :restrict_with_error
 
   validates :title, presence: true
   validate :entry_file_validation, on: :create

@@ -90,7 +90,7 @@
               <td><%= format_datetime(contest_instance.date_open) %></td>
               <td><%= format_datetime(contest_instance.date_closed) %></td>
               <td><%= boolean_to_yes_no(contest_instance.judging_open) %></td>
-              <td><%= contest_instance.judging_rounds %></td>
+              <td><%= contest_instance.actual_judging_rounds_count %></td>
               <td><%= boolean_to_yes_no(contest_instance.judge_evaluations_complete) %></td>
               <td>
                 <ul class="list-unstyled mb-0">

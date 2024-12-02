@@ -43,7 +43,6 @@ FactoryBot.define do
     date_closed { 1.day.from_now }
     notes { Faker::Lorem.paragraph }
     judging_open { false }
-    judging_rounds { 1 }
     has_course_requirement { false }
     judge_evaluations_complete { false }
     course_requirement_description { Faker::Lorem.paragraph }
@@ -64,6 +63,11 @@ FactoryBot.define do
       date_closed { 1.day.from_now }
     end
 
+    trait :with_judging_round do
+      after(:create) do |contest_instance|
+        create(:judging_round, contest_instance: contest_instance)
+      end
+    end
     # Transient attributes for flexibility
     transient do
       class_levels_count { 1 }

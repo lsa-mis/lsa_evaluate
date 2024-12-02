@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  get 'judge_dashboard/index'
   get 'bulk_contest_instances/new'
   get 'bulk_contest_instances/create'
   root 'static_pages#home'
@@ -18,9 +19,24 @@ Rails.application.routes.draw do
     delete 'sign_out', to: 'users/sessions#destroy'
   end
 
+  get 'judge_dashboard', to: 'judge_dashboard#index'
+
+  resources :judging_rounds, only: [ :show ] do
+    member do
+      post 'select_entries_for_next_round'
+      patch 'complete_round'
+    end
+  end
+
   resources :containers do
     resources :contest_descriptions do
-      resources :contest_instances
+      resources :contest_instances do
+        resources :judging_assignments, only: [ :index, :create, :destroy ]
+        resources :judging_rounds do
+          resources :round_judge_assignments, only: [ :index, :create, :destroy ]
+          resources :entry_rankings, only: [ :create, :update ]
+        end
+      end
       member do
         get 'eligibility_rules'
       end
@@ -54,7 +70,9 @@ Rails.application.routes.draw do
   get '/500', to: 'errors#internal_server_error', as: 'internal_server_error'
 
   mount ActiveStorage::Engine => '/rails/active_storage', as: 'active_storage'
-  mount LetterOpenerWeb::Engine, at: '/letter_opener' if Rails.env.development? || Rails.env.staging?
+  if Rails.env.development? || Rails.env.staging?
+    mount LetterOpenerWeb::Engine, at: '/letter_opener'
+  end
 
   # Place this at the very end of the file to catch all undefined routes
   match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|

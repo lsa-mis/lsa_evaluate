@@ -1,19 +1,22 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-# require 'database_cleaner'
 require 'database_cleaner/active_record'
+require 'pundit/matchers'
+require 'faker'
+require 'omniauth'
 
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 
-# Prevent database truncation if the environment is production
+# Prevent database truncation if the environment is running in production
 abort('The Rails environment is running in production mode!') if Rails.env.production?
 
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'rspec/rails'
 require 'factory_bot_rails'
 require 'pundit/rspec'
+require 'selenium-webdriver'
 
 puts "!*!*!*! Running in environment: #{Rails.env} !*!*!*!"
 
@@ -41,18 +44,16 @@ RSpec.configure do |config|
 
   # Configure DatabaseCleaner
 
-  config.before do |example|
-    DatabaseCleaner.strategy = if example.metadata[:js] || example.metadata[:type] == :system
-                                  :truncation
+  config.around(:each) do |example|
+    if example.metadata[:type] == :system
+      DatabaseCleaner.strategy = :truncation
     else
-                                  :transaction
+      DatabaseCleaner.strategy = :transaction
     end
-    DatabaseCleaner.start
-  end
 
-  # Ensure DatabaseCleaner cleans up after each test
-  config.append_after do
-    DatabaseCleaner.clean
+    DatabaseCleaner.cleaning do
+      example.run
+    end
   end
 
   # Include Devise test helpers
@@ -80,4 +81,18 @@ RSpec.configure do |config|
   config.include AuthHelpers, type: :system
   config.infer_spec_type_from_file_location!
   config.filter_rails_from_backtrace!
+
+  OmniAuth.config.test_mode = true
+
+  config.before do
+    OmniAuth.config.mock_auth[:saml] = nil
+  end
+
+  # Add this to prevent OmniAuth from raising errors during testing
+  config.before do
+    OmniAuth.config.logger = Logger.new('/dev/null')
+    OmniAuth.config.on_failure = proc { |env|
+      OmniAuth::FailureEndpoint.new(env).redirect_to_failure
+    }
+  end
 end
