@@ -1,3 +1,30 @@
+# == Schema Information
+#
+# Table name: entry_rankings
+#
+#  id                      :bigint           not null, primary key
+#  notes                   :text(65535)
+#  rank                    :integer
+#  selected_for_next_round :boolean          default(FALSE), not null
+#  created_at              :datetime         not null
+#  updated_at              :datetime         not null
+#  entry_id                :bigint           not null
+#  judging_round_id        :bigint           not null
+#  user_id                 :bigint           not null
+#
+# Indexes
+#
+#  index_entry_rankings_on_entry_id          (entry_id)
+#  index_entry_rankings_on_judging_round_id  (judging_round_id)
+#  index_entry_rankings_on_user_id           (user_id)
+#  index_entry_rankings_uniqueness           (entry_id,judging_round_id,user_id) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (entry_id => entries.id)
+#  fk_rails_...  (judging_round_id => judging_rounds.id)
+#  fk_rails_...  (user_id => users.id)
+#
 FactoryBot.define do
   factory :entry_ranking do
     entry

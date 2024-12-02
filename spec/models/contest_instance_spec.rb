@@ -1,3 +1,38 @@
+# == Schema Information
+#
+# Table name: contest_instances
+#
+#  id                                   :bigint           not null, primary key
+#  active                               :boolean          default(FALSE), not null
+#  archived                             :boolean          default(FALSE), not null
+#  course_requirement_description       :text(65535)
+#  created_by                           :string(255)
+#  date_closed                          :datetime         not null
+#  date_open                            :datetime         not null
+#  has_course_requirement               :boolean          default(FALSE), not null
+#  judge_evaluations_complete           :boolean          default(FALSE), not null
+#  judging_open                         :boolean          default(FALSE), not null
+#  maximum_number_entries_per_applicant :integer          default(1), not null
+#  notes                                :text(65535)
+#  recletter_required                   :boolean          default(FALSE), not null
+#  require_campus_employment_info       :boolean          default(FALSE), not null
+#  require_finaid_info                  :boolean          default(FALSE), not null
+#  require_pen_name                     :boolean          default(FALSE), not null
+#  transcript_required                  :boolean          default(FALSE), not null
+#  created_at                           :datetime         not null
+#  updated_at                           :datetime         not null
+#  contest_description_id               :bigint           not null
+#
+# Indexes
+#
+#  contest_description_id_idx                         (contest_description_id)
+#  id_unq_idx                                         (id) UNIQUE
+#  index_contest_instances_on_contest_description_id  (contest_description_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (contest_description_id => contest_descriptions.id)
+#
 require 'rails_helper'
 
 RSpec.describe ContestInstance, type: :model do
