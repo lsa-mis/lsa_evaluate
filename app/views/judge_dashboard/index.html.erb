@@ -1,4 +1,5 @@
 <h1>Judge Dashboard</h1>
+<h2><%= "Welcome #{current_user.uid} these are your judging assignments:" %></h2>
 
 <% @judging_assignments.each do |assignment| %>
   <div class="card mb-4">
@@ -12,7 +13,7 @@
         <p class="text-muted">No active round</p>
       <% end %>
     </div>
-    
+
     <div class="card-body">
       <% if assignment.contest_instance.judging_open? %>
         <h3>Entries to Judge</h3>
@@ -58,7 +59,7 @@
                       <% end %>
                     </td>
                     <td>
-                      <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"), 
+                      <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"),
                           target: '_blank', class: 'btn btn-sm btn-secondary' %>
                     </td>
                   </tr>
