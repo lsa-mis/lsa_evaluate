@@ -9,14 +9,37 @@
 
   <div class="card mb-4">
     <div class="card-header">
+      <h3>Create New Judge</h3>
+    </div>
+    <div class="card-body">
+      <%= form_with(url: create_judge_container_contest_description_contest_instance_judging_assignments_path(@container, @contest_description, @contest_instance), local: true) do |f| %>
+        <div class="form-group mb-3">
+          <%= f.label :email, "Email Address" %>
+          <%= f.email_field :email, class: "form-control", required: true %>
+        </div>
+        <div class="form-group mb-3">
+          <%= f.label :first_name, "First Name" %>
+          <%= f.text_field :first_name, class: "form-control", required: true %>
+        </div>
+        <div class="form-group mb-3">
+          <%= f.label :last_name, "Last Name" %>
+          <%= f.text_field :last_name, class: "form-control", required: true %>
+        </div>
+        <%= f.submit "Create and Assign Judge", class: "btn btn-success" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header">
       <h3>Assign New Judge</h3>
     </div>
     <div class="card-body">
       <%= form_with(model: [@container, @contest_description, @contest_instance, JudgingAssignment.new], local: true) do |f| %>
         <div class="form-group">
           <%= f.label :user_id, "Select Judge" %>
-          <%= f.select :user_id, 
-              @available_judges.map { |u| [u.email, u.id] },
+          <%= f.select :user_id,
+              @available_judges.map { |u| ["#{u.first_name} #{u.last_name} (#{display_email(u.email)})", u.id] },
               { prompt: "Select a judge" },
               class: "form-control" %>
         </div>
@@ -34,7 +57,7 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Judge Email</th>
+              <th>Judge Name</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -42,7 +65,7 @@
           <tbody>
             <% @judging_assignments.each do |assignment| %>
               <tr>
-                <td><%= assignment.user.email %></td>
+                <td><%= "#{assignment.user.first_name} #{assignment.user.last_name} (#{display_email(assignment.user.email)})" %></td>
                 <td><%= assignment.active? ? 'Active' : 'Inactive' %></td>
                 <td>
                   <%= button_to 'Remove',
