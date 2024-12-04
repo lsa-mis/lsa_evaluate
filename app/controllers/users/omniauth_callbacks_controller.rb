@@ -99,16 +99,23 @@ module Users
     end
 
     def user_params
-      {
+      raw_first_name = session[:raw_info_hash]['urn:oid:2.5.4.42']&.first
+      raw_last_name = session[:raw_info_hash]['urn:oid:2.5.4.4']&.first
+
+      params = {
         email: session[:raw_info_hash]['urn:oid:1.3.6.1.4.1.5923.1.1.1.6']&.first,
         uniqname: session[:raw_info_hash]['urn:oid:0.9.2342.19200300.100.1.1']&.first,
         uid: session[:raw_info_hash]['http://www.itcs.umich.edu/identity/shibboleth/attributes/cosignPrincipalName']&.first,
         principal_name: session[:raw_info_hash]['http://its.umich.edu/shibboleth/attributes/umichPrincipalName']&.first,
         display_name: session[:raw_info_hash]['urn:oid:2.16.840.1.113730.3.1.241']&.first,
-        first_name: session[:raw_info_hash]['urn:oid:2.5.4.42']&.first || '',
-        last_name: session[:raw_info_hash]['urn:oid:2.5.4.4']&.first || '',
         password: Devise.friendly_token[0, 20]
       }
+
+      # Only update first_name and last_name if they are present in the SSO response
+      params[:first_name] = raw_first_name if raw_first_name.present?
+      params[:last_name] = raw_last_name if raw_last_name.present?
+
+      params
     end
   end
 end
