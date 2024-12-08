@@ -91,8 +91,8 @@ class User < ApplicationRecord
   end
 
   def has_container_role?(container, role_kinds = [ 'Collection Manager', 'Collection Administrator' ])
-    assignments.joins(:role)
-              .exists?(container: container, roles: { kind: role_kinds })
+    role_ids = Role.where(kind: role_kinds).pluck(:id)
+    assignments.exists?(container: container, role_id: role_ids)
   end
 
   def is_employee?

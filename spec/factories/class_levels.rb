@@ -10,7 +10,7 @@
 #
 FactoryBot.define do
   factory :class_level do
-    sequence(:name) { |n| "#{Faker::Educator.degree} #{n}" }
-    description { Faker::Lorem.paragraph }
+    sequence(:name) { |n| "Class Level #{n}" }
+    sequence(:description) { |n| "Description for Class Level #{n}" }
   end
 end

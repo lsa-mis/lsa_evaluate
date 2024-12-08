@@ -10,7 +10,22 @@
 #
 FactoryBot.define do
   factory :role do
-    kind { Faker::Job.title }
-    description { Faker::Lorem.paragraph }
+    sequence(:description) { |n| "Role Description #{n}" }
+    kind { 'User' }  # Default kind
+
+    trait :judge do
+      kind { 'Judge' }
+      description { 'Judge Role Description' }
+    end
+
+    trait :admin do
+      kind { 'Collection Administrator' }
+      description { 'Collection Administrator Role Description' }
+    end
+
+    trait :axis_mundi do
+      kind { 'Axis mundi' }
+      description { 'Axis mundi Role Description' }
+    end
   end
 end
