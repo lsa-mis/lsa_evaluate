@@ -20,7 +20,7 @@ RSpec.describe 'Judge login', type: :system do
 
         expect(page).to have_current_path(judge_dashboard_path)
         expect(page).to have_content('Successfully authenticated from U-M account')
-        expect(page).to have_content(judge.uniqname)
+        expect(page).to have_content(judge.email)
       end
     end
 
