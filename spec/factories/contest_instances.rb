@@ -36,25 +36,35 @@
 
 FactoryBot.define do
   factory :contest_instance do
-    active { true }
-    archived { false }
-    contest_description
+    association :contest_description, :active  # Associate with an active contest description
     date_open { 1.day.ago }
     date_closed { 1.day.from_now }
-    notes { Faker::Lorem.paragraph }
+    active { true }
+    archived { false }
+    notes { "Notes for contest instance" }
     judging_open { false }
     has_course_requirement { false }
     judge_evaluations_complete { false }
-    course_requirement_description { Faker::Lorem.paragraph }
+    course_requirement_description { "Course requirements" }
     recletter_required { false }
     transcript_required { false }
     maximum_number_entries_per_applicant { 1 }
     require_pen_name { false }
-    created_by { Faker::Name.name }
+    sequence(:created_by) { |n| "Creator #{n}" }
     require_finaid_info { false }
     require_campus_employment_info { false }
 
-    # Allow overriding date_closed in tests
+    # Ensure class levels and categories are added before validation
+    after(:build) do |contest_instance|
+      if contest_instance.class_levels.empty?
+        contest_instance.class_levels << build(:class_level)
+      end
+
+      if contest_instance.categories.empty?
+        contest_instance.categories << build(:category)
+      end
+    end
+
     trait :closed do
       date_closed { 1.day.ago }
     end
@@ -68,31 +78,25 @@ FactoryBot.define do
         create(:judging_round, contest_instance: contest_instance)
       end
     end
-    # Transient attributes for flexibility
-    transient do
-      class_levels_count { 1 }
-      categories_count { 1 }
-      class_levels { [] }
-      categories { [] }
+
+    trait :archived do
+      archived { true }
     end
 
-    after(:build) do |contest_instance, evaluator|
-      # Associate class_levels
-      if evaluator.class_levels.any?
-        contest_instance.class_levels = evaluator.class_levels
-      else
-        evaluator.class_levels_count.times do
-          contest_instance.class_levels << build(:class_level)
-        end
-      end
+    trait :inactive do
+      active { false }
+    end
 
-      # Associate categories
-      if evaluator.categories.any?
-        contest_instance.categories = evaluator.categories
-      else
-        evaluator.categories_count.times do
-          contest_instance.categories << build(:category)
-        end
+    # For testing validation failures
+    trait :without_class_levels do
+      after(:build) do |contest_instance|
+        contest_instance.class_levels = []
+      end
+    end
+
+    trait :without_categories do
+      after(:build) do |contest_instance|
+        contest_instance.categories = []
       end
     end
   end
