@@ -33,7 +33,10 @@ class EntryRanking < ApplicationRecord
   belongs_to :user
 
   validates :rank, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
-  validates :entry_id, uniqueness: { scope: [ :judging_round_id, :user_id ] }
+  validates :entry_id, uniqueness: {
+    scope: [ :judging_round_id, :user_id ],
+    message: 'has already been ranked by this judge in this round'
+  }
   validate :user_must_be_assigned_judge
   validate :validate_comment_requirements
 
