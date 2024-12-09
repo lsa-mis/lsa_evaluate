@@ -236,6 +236,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_18_175005) do
     t.boolean "selected_for_next_round", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "internal_comments"
+    t.text "external_comments"
     t.index ["entry_id", "judging_round_id", "user_id"], name: "index_entry_rankings_uniqueness", unique: true
     t.index ["entry_id"], name: "index_entry_rankings_on_entry_id"
     t.index ["judging_round_id"], name: "index_entry_rankings_on_judging_round_id"
@@ -262,6 +264,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_18_175005) do
     t.boolean "completed", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "require_internal_comments", default: false, null: false
+    t.boolean "require_external_comments", default: false, null: false
+    t.integer "min_internal_comment_words", default: 0, null: false
+    t.integer "min_external_comment_words", default: 0, null: false
     t.index ["contest_instance_id", "round_number"], name: "index_judging_rounds_on_contest_instance_id_and_round_number", unique: true
     t.index ["contest_instance_id"], name: "index_judging_rounds_on_contest_instance_id"
   end
