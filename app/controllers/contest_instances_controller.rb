@@ -109,6 +109,8 @@ class ContestInstancesController < ApplicationController
       :require_campus_employment_info, :require_finaid_info, :created_by,
       :has_course_requirement, :course_requirement_description,
       :recletter_required, :transcript_required,
+      :require_internal_comments, :require_external_comments,
+      :min_internal_comment_words, :min_external_comment_words,
       category_ids: [], class_level_ids: []
     )
   end

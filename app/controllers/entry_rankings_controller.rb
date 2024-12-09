@@ -3,21 +3,24 @@ class EntryRankingsController < ApplicationController
   before_action :ensure_judge
   before_action :ensure_contest_assignment
   before_action :ensure_round_assignment
-  
+
   def create
     @entry_ranking = EntryRanking.find_or_initialize_by(
       entry_id: entry_ranking_params[:entry_id],
       judging_round_id: entry_ranking_params[:judging_round_id],
       user_id: current_user.id
     )
-    
+
     authorize @entry_ranking
-    @entry_ranking.rank = entry_ranking_params[:rank]
-    
+    @entry_ranking.assign_attributes(entry_ranking_params)
+
     if @entry_ranking.save
       redirect_back(fallback_location: judge_dashboard_path, notice: 'Ranking saved successfully.')
     else
-      redirect_back(fallback_location: judge_dashboard_path, alert: 'Failed to save ranking.')
+      redirect_back(
+        fallback_location: judge_dashboard_path,
+        alert: "Failed to save ranking: #{@entry_ranking.errors.full_messages.join(', ')}"
+      )
     end
   end
 
@@ -26,7 +29,7 @@ class EntryRankingsController < ApplicationController
   def ensure_contest_assignment
     contest_instance = JudgingRound.find(entry_ranking_params[:judging_round_id])
                                  .contest_instance
-    
+
     unless contest_instance.judge_assigned?(current_user)
       redirect_to root_path, alert: 'You are not assigned to this contest'
     end
@@ -34,14 +37,20 @@ class EntryRankingsController < ApplicationController
 
   def ensure_round_assignment
     round = JudgingRound.find(entry_ranking_params[:judging_round_id])
-    
+
     unless round.round_judge_assignments.active.exists?(user: current_user)
       redirect_to root_path, alert: 'You are not assigned to this judging round'
     end
   end
 
   def entry_ranking_params
-    params.require(:entry_ranking).permit(:entry_id, :judging_round_id, :rank)
+    params.require(:entry_ranking).permit(
+      :entry_id,
+      :judging_round_id,
+      :rank,
+      :internal_comments,
+      :external_comments
+    )
   end
 
   def ensure_judge

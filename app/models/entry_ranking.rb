@@ -11,6 +11,8 @@
 #  entry_id                :bigint           not null
 #  judging_round_id        :bigint           not null
 #  user_id                 :bigint           not null
+#  internal_comments       :text(65535)
+#  external_comments       :text(65535)
 #
 # Indexes
 #
@@ -33,12 +35,33 @@ class EntryRanking < ApplicationRecord
   validates :rank, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :entry_id, uniqueness: { scope: [ :judging_round_id, :user_id ] }
   validate :user_must_be_assigned_judge
+  validate :validate_comment_requirements
 
   private
 
   def user_must_be_assigned_judge
     unless JudgingAssignment.exists?(user: user, contest_instance: judging_round.contest_instance)
       errors.add(:user, 'must be assigned as judge for this contest')
+    end
+  end
+
+  def validate_comment_requirements
+    if judging_round.require_internal_comments && internal_comments.blank?
+      errors.add(:internal_comments, 'are required')
+    elsif judging_round.require_internal_comments && judging_round.min_internal_comment_words > 0
+      word_count = internal_comments.to_s.split.size
+      if word_count < judging_round.min_internal_comment_words
+        errors.add(:internal_comments, "must contain at least #{judging_round.min_internal_comment_words} words")
+      end
+    end
+
+    if judging_round.require_external_comments && external_comments.blank?
+      errors.add(:external_comments, 'are required')
+    elsif judging_round.require_external_comments && judging_round.min_external_comment_words > 0
+      word_count = external_comments.to_s.split.size
+      if word_count < judging_round.min_external_comment_words
+        errors.add(:external_comments, "must contain at least #{judging_round.min_external_comment_words} words")
+      end
     end
   end
 end

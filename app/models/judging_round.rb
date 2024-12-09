@@ -2,15 +2,19 @@
 #
 # Table name: judging_rounds
 #
-#  id                  :bigint           not null, primary key
-#  active              :boolean          default(FALSE), not null
-#  completed           :boolean          default(FALSE), not null
-#  end_date            :datetime
-#  round_number        :integer          not null
-#  start_date          :datetime
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  contest_instance_id :bigint           not null
+#  id                         :bigint           not null, primary key
+#  active                     :boolean          default(FALSE), not null
+#  completed                  :boolean          default(FALSE), not null
+#  end_date                   :datetime
+#  min_external_comment_words :integer          default(0), not null
+#  min_internal_comment_words :integer          default(0), not null
+#  require_external_comments  :boolean          default(FALSE), not null
+#  require_internal_comments  :boolean          default(FALSE), not null
+#  round_number               :integer          not null
+#  start_date                 :datetime
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  contest_instance_id        :bigint           not null
 #
 # Indexes
 #
