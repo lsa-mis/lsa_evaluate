@@ -33,50 +33,93 @@ class JudgingAssignmentsController < ApplicationController
   def create_judge
     authorize @contest_instance, :manage_judges?
 
+    # Validate required parameters
+    if params[:email].blank? || params[:first_name].blank? || params[:last_name].blank?
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'Email, first name, and last name are required.'
+      return
+    end
+
+    # Validate email format
+    unless params[:email] =~ URI::MailTo::EMAIL_REGEXP
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'Please enter a valid email address.'
+      return
+    end
+
+    # Transform email if not umich.edu
+    original_email = params[:email].downcase
+    transformed_email = if original_email.end_with?('@umich.edu')
+      original_email
+    else
+      local_part, domain = original_email.split('@')
+      "#{local_part}+#{domain}@umich.edu"
+    end
+
+    # Find or create the judge role
+    judge_role = Role.find_by(kind: 'Judge')
+    unless judge_role
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'Judge role not found'
+      return
+    end
+
+    success = false
+    error_message = nil
+
     ActiveRecord::Base.transaction do
-      # Transform email if not umich.edu
-      email = params[:email]
-      unless email.downcase.end_with?('@umich.edu')
-        local_part, domain = email.split('@')
-        email = "#{local_part}+#{domain}@umich.edu"
-      end
+      begin
+        # Create the user
+        @user = User.new(
+          email: transformed_email,  # Use transformed email
+          first_name: params[:first_name],
+          last_name: params[:last_name],
+          password: SecureRandom.hex(10),  # Random password as they'll use SSO
+          uniqname: transformed_email.split('@').first, # Set uniqname from transformed email
+          display_name: "#{params[:first_name]} #{params[:last_name]}"
+        )
 
-      # Create the user
-      @user = User.new(
-        email: email,
-        first_name: params[:first_name],
-        last_name: params[:last_name],
-        password: SecureRandom.hex(10)  # Random password as they'll use SSO
-      )
+        if @user.save
+          # Create user role association
+          @user.roles << judge_role
 
-      if @user.save
-        # Assign Judge role
-        judge_role = Role.find_by(kind: 'Judge')
-        @user.roles << judge_role if judge_role
+          # Create container role association
+          Assignment.create!(user: @user, container: @container, role: judge_role)
 
-        # Create judging assignment
-        @judging_assignment = @contest_instance.judging_assignments.build(user: @user)
+          # Create judging assignment
+          @judging_assignment = @contest_instance.judging_assignments.build(user: @user)
 
-        if @judging_assignment.save
-          redirect_to container_contest_description_contest_instance_judging_assignments_path(
-            @container, @contest_description, @contest_instance
-          ), notice: 'New judge was successfully created and assigned'
+          if @judging_assignment.save
+            success = true
+          else
+            error_message = @judging_assignment.errors.full_messages.join(', ')
+            raise ActiveRecord::Rollback
+          end
         else
+          error_message = @user.errors.full_messages.join(', ')
           raise ActiveRecord::Rollback
-          redirect_to container_contest_description_contest_instance_judging_assignments_path(
-            @container, @contest_description, @contest_instance
-          ), alert: @judging_assignment.errors.full_messages.join(', ')
         end
-      else
-        redirect_to container_contest_description_contest_instance_judging_assignments_path(
-          @container, @contest_description, @contest_instance
-        ), alert: @user.errors.full_messages.join(', ')
+      rescue ActiveRecord::RecordInvalid => e
+        error_message = e.record.errors.full_messages.join(', ')
+        raise ActiveRecord::Rollback
+      rescue => e
+        error_message = e.message
+        raise ActiveRecord::Rollback
       end
     end
-  rescue => e
-    redirect_to container_contest_description_contest_instance_judging_assignments_path(
-      @container, @contest_description, @contest_instance
-    ), alert: 'An error occurred while creating the judge.'
+
+    if success
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), notice: 'New judge was successfully created and assigned.'
+    else
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: error_message || 'An error occurred while creating the judge.'
+    end
   end
 
   private

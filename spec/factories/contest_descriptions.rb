@@ -23,14 +23,16 @@
 
 FactoryBot.define do
   factory :contest_description do
+    sequence(:name) { |n| "Contest Description #{n}" }
+    sequence(:short_name) { |n| "Contest#{n}" }
+    sequence(:created_by) { |n| "Creator #{n}" }
     container
-    sequence(:name) { |n| Faker::Lorem.word + " #{n}" }
-    short_name { Faker::Lorem.unique.word }
-    created_by { Faker::Name.name }
+    active { false }
+    archived { false }
 
     transient do
-      eligibility_rules_body { Faker::Lorem.paragraphs(number: 3).join("\n\n") }
-      notes_body { Faker::Lorem.paragraph }
+      eligibility_rules_body { "Eligibility rules for #{name}" }
+      notes_body { "Notes for #{name}" }
     end
 
     after(:build) do |contest_description, evaluator|
@@ -44,6 +46,12 @@ FactoryBot.define do
 
     trait :archived do
       archived { true }
+    end
+
+    trait :with_instance do
+      after(:create) do |contest_description|
+        create(:contest_instance, contest_description: contest_description)
+      end
     end
   end
 end
