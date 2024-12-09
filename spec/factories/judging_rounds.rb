@@ -2,15 +2,19 @@
 #
 # Table name: judging_rounds
 #
-#  id                  :bigint           not null, primary key
-#  active              :boolean          default(FALSE), not null
-#  completed           :boolean          default(FALSE), not null
-#  end_date            :datetime
-#  round_number        :integer          not null
-#  start_date          :datetime
-#  created_at          :datetime         not null
-#  updated_at          :datetime         not null
-#  contest_instance_id :bigint           not null
+#  id                         :bigint           not null, primary key
+#  active                     :boolean          default(FALSE), not null
+#  completed                  :boolean          default(FALSE), not null
+#  end_date                   :datetime
+#  min_external_comment_words :integer          default(0), not null
+#  min_internal_comment_words :integer          default(0), not null
+#  require_external_comments  :boolean          default(FALSE), not null
+#  require_internal_comments  :boolean          default(FALSE), not null
+#  round_number               :integer          not null
+#  start_date                 :datetime
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  contest_instance_id        :bigint           not null
 #
 # Indexes
 #
@@ -27,23 +31,36 @@ FactoryBot.define do
     sequence(:round_number) { |n| n }
     active { true }
     completed { false }
-    
+    start_date { 1.day.from_now }
+    end_date { 2.days.from_now }
+    require_internal_comments { false }
+    require_external_comments { false }
+    min_internal_comment_words { 0 }
+    min_external_comment_words { 0 }
+
     trait :completed do
       completed { true }
     end
-    
+
     trait :inactive do
       active { false }
     end
-    
+
+    trait :with_comment_requirements do
+      require_internal_comments { true }
+      require_external_comments { true }
+      min_internal_comment_words { 5 }
+      min_external_comment_words { 10 }
+    end
+
     trait :with_round_judge_assignments do
       transient do
         judges_count { 2 }
       end
-      
+
       after(:create) do |round, evaluator|
         create_list(:round_judge_assignment, evaluator.judges_count, judging_round: round)
       end
     end
   end
-end 
+end
