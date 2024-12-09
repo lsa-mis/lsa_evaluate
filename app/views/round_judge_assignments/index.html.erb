@@ -16,8 +16,8 @@
       <%= form_with(model: [@container, @contest_description, @contest_instance, @judging_round, RoundJudgeAssignment.new], local: true) do |f| %>
         <div class="form-group">
           <%= f.label :user_id, "Select Judge" %>
-          <%= f.select :user_id, 
-              @available_judges.map { |u| [u.email, u.id] },
+          <%= f.select :user_id,
+              @available_judges.map { |u| ["#{u.first_name} #{u.last_name} (#{display_email(u.email)})", u.id] },
               { prompt: "Select a judge" },
               class: "form-control" %>
         </div>
@@ -35,7 +35,7 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Judge Email</th>
+              <th>Judge Name</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -43,7 +43,7 @@
           <tbody>
             <% @round_judge_assignments.each do |assignment| %>
               <tr>
-                <td><%= assignment.user.email %></td>
+                <td><%= "#{assignment.user.first_name} #{assignment.user.last_name} (#{display_email(assignment.user.email)})" %></td>
                 <td><%= assignment.active? ? 'Active' : 'Inactive' %></td>
                 <td>
                   <%= button_to 'Remove from Round',
