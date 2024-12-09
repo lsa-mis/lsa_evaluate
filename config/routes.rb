@@ -31,14 +31,14 @@ Rails.application.routes.draw do
   resources :containers do
     resources :contest_descriptions do
       resources :contest_instances do
+        resources :entry_rankings, only: [ :create, :update ]
         resources :judging_assignments, only: [ :index, :create, :destroy ] do
           collection do
             post 'create_judge'
           end
         end
         resources :judging_rounds do
-          resources :round_judge_assignments, only: [ :index, :create, :destroy ]
-          resources :entry_rankings, only: [ :create, :update ]
+          resources :round_judge_assignments, only: [ :index ]
         end
       end
       member do
