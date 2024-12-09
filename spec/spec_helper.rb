@@ -9,6 +9,7 @@ SimpleCov.start 'rails' do
   add_group 'Helpers', 'app/helpers'
   add_group 'Services', 'app/services'
   add_group 'Mailers', 'app/mailers'
+  add_group 'Policies', 'app/policies'
 end
 
 # frozen_string_literal: true
