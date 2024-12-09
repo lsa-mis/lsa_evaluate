@@ -24,7 +24,8 @@ RSpec.describe 'Judge Management', type: :system do
 
     context 'with non-umich email' do
       it 'creates a new judge with transformed email' do
-        within('.card', text: /Create New Judge/i) do
+        within('#createJudgeAccordion') do
+          click_button 'Create New Judge' # expand the accordion
           fill_in 'Email Address', with: 'newjudge@gmail.com'
           fill_in 'First Name', with: 'New'
           fill_in 'Last Name', with: 'Judge'
@@ -42,7 +43,8 @@ RSpec.describe 'Judge Management', type: :system do
 
     context 'with umich email' do
       it 'creates a new judge with original email' do
-        within('.card', text: /Create New Judge/i) do
+        within('#createJudgeAccordion') do
+          click_button 'Create New Judge' # expand the accordion
           fill_in 'Email Address', with: 'newjudge@umich.edu'
           fill_in 'First Name', with: 'New'
           fill_in 'Last Name', with: 'Judge'
@@ -62,7 +64,10 @@ RSpec.describe 'Judge Management', type: :system do
         initial_user_count = User.count
 
         # Try with invalid email format
-        within('.card', text: /Create New Judge/i) do
+        within('#createJudgeAccordion') do
+          click_button 'Create New Judge' # expand the accordion
+          sleep(1) # Wait for animation
+
           fill_in 'Email Address', with: 'invalid-email'
           fill_in 'First Name', with: 'New'
           fill_in 'Last Name', with: 'Judge'
@@ -73,7 +78,10 @@ RSpec.describe 'Judge Management', type: :system do
         expect(User.count).to eq(initial_user_count)
 
         # Try with missing required fields
-        within('.card', text: /Create New Judge/i) do
+        within('#createJudgeAccordion') do
+          click_button 'Create New Judge' # expand the accordion again
+          sleep(1) # Wait for animation
+
           fill_in 'Email Address', with: ''
           fill_in 'First Name', with: ''
           fill_in 'Last Name', with: ''
