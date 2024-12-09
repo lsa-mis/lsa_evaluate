@@ -1,17 +1,21 @@
 class JudgingRoundsController < ApplicationController
   before_action :set_contest_instance
-  before_action :set_judging_round, only: [:show, :edit, :update, :destroy]
+  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy ]
   before_action :authorize_contest_instance
+  before_action :check_edit_warning, only: [ :edit, :update ]
 
   def new
     @judging_round = @contest_instance.judging_rounds.build
     @round_number = @contest_instance.judging_rounds.count + 1
   end
 
+  def edit
+  end
+
   def create
     @judging_round = @contest_instance.judging_rounds.build(judging_round_params)
     @round_number = @contest_instance.judging_rounds.count + 1
-    
+
     if @judging_round.save
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
@@ -19,6 +23,24 @@ class JudgingRoundsController < ApplicationController
     else
       flash.now[:alert] = @judging_round.errors.full_messages
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    if params[:confirmed] != 'true' && editing_after_start?
+      flash.now[:warning] = 'This round has already started. Are you sure you want to make changes?'
+      @show_confirmation = true
+      render :edit
+      return
+    end
+
+    if @judging_round.update(judging_round_params)
+      redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+        @container, @contest_description, @contest_instance, @judging_round
+      ), notice: 'Judging round was successfully updated.'
+    else
+      flash.now[:alert] = @judging_round.errors.full_messages
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -39,6 +61,22 @@ class JudgingRoundsController < ApplicationController
   end
 
   def judging_round_params
-    params.require(:judging_round).permit(:round_number, :start_date, :end_date)
+    params.require(:judging_round).permit(
+      :round_number,
+      :start_date,
+      :end_date,
+      :require_internal_comments,
+      :require_external_comments,
+      :min_internal_comment_words,
+      :min_external_comment_words
+    )
+  end
+
+  def editing_after_start?
+    @judging_round.start_date && @judging_round.start_date <= Time.current
+  end
+
+  def check_edit_warning
+    @show_warning = editing_after_start?
   end
 end

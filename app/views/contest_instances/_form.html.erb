@@ -1,6 +1,6 @@
-<%= simple_form_for([@container, @contest_description, @contest_instance], 
-    html: { 
-      data: { 
+<%= simple_form_for([@container, @contest_description, @contest_instance],
+    html: {
+      data: {
         controller: "form-validation",
         action: "submit->form-validation#submitForm",
         form_validation_target: "form"
@@ -16,12 +16,12 @@
     <div class="row">
       <div class="col-md-6">
         <%= f.label :date_open, "Contest Open Date and Time", class: "form-label" %>
-        <%= f.input :date_open, 
+        <%= f.input :date_open,
                     as: :datetime_local,
                     html5: true,
-                    input_html: { 
+                    input_html: {
                       class: "form-control datetime-picker",
-                      data: { 
+                      data: {
                         form_validation_target: "dateOpen",
                         action: "change->form-validation#validateDates"
                       }
@@ -33,9 +33,9 @@
         <%= f.input :date_closed,
                     as: :datetime_local,
                     html5: true,
-                    input_html: { 
+                    input_html: {
                       class: "form-control datetime-picker",
-                      data: { 
+                      data: {
                         form_validation_target: "dateClosed",
                         action: "change->form-validation#validateDates"
                       }
@@ -48,8 +48,8 @@
     <%= f.input :judging_open %>
     <%= f.input :judge_evaluations_complete %>
     <%= f.input :maximum_number_entries_per_applicant %>
-    <%= f.input :require_pen_name, 
-          as: :boolean, 
+    <%= f.input :require_pen_name,
+          as: :boolean,
           label: "Require Pen Name for entries?",
             hint: safe_join([
                 "Check this box if applicants must use a pen name to submit their entries.",
@@ -60,13 +60,13 @@
                   safe_join([
                   "Enter the pen name you wish to use for this entry.",
                   tag(:br),
-                  "The same pen name should be used for each submission entered across this year's contests. 
+                  "The same pen name should be used for each submission entered across this year's contests.
                   Your real name should not appear anywhere in the manuscript or on the title page."
                   ])
                 end
                   ]) %>
-    <%= f.input :require_campus_employment_info, 
-                as: :boolean, 
+    <%= f.input :require_campus_employment_info,
+                as: :boolean,
                 label: "Require campus employment check",
                 hint: safe_join([
                       "Check this box if you require the applicant to notify you of their on campus employment (GSI, workstudy ...).",
@@ -74,14 +74,14 @@
                       content_tag(:em, "This will add the following hint to the applicants entry form"),
                       tag(:br),
                       content_tag(:div, class: "alert alert-secondary", style: "padding: 5px;") do
-                        "Winners and finalists who are or have been employed by the university within the past 
-                        calendar year can expect to receive their award in the form of additional pay through 
-                        the university payroll system. Awards processed through payroll will include a payroll 
+                        "Winners and finalists who are or have been employed by the university within the past
+                        calendar year can expect to receive their award in the form of additional pay through
+                        the university payroll system. Awards processed through payroll will include a payroll
                         tax deduction."
                         end
                       ]) %>
-    <%= f.input :require_finaid_info, 
-                as: :boolean, 
+    <%= f.input :require_finaid_info,
+                as: :boolean,
                 label: "Require financial aid check",
                 hint: safe_join([
                       "Check this box if you want the applicant to describe any financial aid they are receiving.",

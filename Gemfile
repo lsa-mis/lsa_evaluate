@@ -24,7 +24,7 @@ gem 'redis', '~> 5.0'
 gem 'sassc-rails'
 gem 'simple_form', '~> 5.3'
 gem 'stimulus-rails'
-gem "skylight"
+gem 'skylight'
 gem 'turbo-rails'
 gem 'turnout2024', require: 'turnout'
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
@@ -44,6 +44,7 @@ group :test do
   gem 'factory_bot_rails'
   gem 'rails-controller-testing'
   gem 'selenium-webdriver'
+  gem 'simplecov', require: false
 end
 
 group :development, :staging do

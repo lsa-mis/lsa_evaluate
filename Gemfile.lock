@@ -146,6 +146,7 @@ GEM
     diff-lcs (1.5.1)
     digest-crc (0.6.5)
       rake (>= 12.0.0, < 14.0.0)
+    docile (1.4.1)
     drb (2.2.1)
     erubi (1.13.0)
     factory_bot (6.4.6)
@@ -456,6 +457,12 @@ GEM
     simple_form (5.3.1)
       actionpack (>= 5.2)
       activemodel (>= 5.2)
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.13.1)
+    simplecov_json_formatter (0.1.4)
     skylight (6.0.4)
       activesupport (>= 5.2.0)
     sprockets (4.2.1)
@@ -561,6 +568,7 @@ DEPENDENCIES
   sassc-rails
   selenium-webdriver
   simple_form (~> 5.3)
+  simplecov
   skylight
   stimulus-rails
   turbo-rails

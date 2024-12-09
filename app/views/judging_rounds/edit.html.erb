@@ -1,14 +1,31 @@
 <div class="d-flex flex-column align-items-end">
-  <%= link_to "Return to Instance Judging Assignments", container_contest_description_contest_instance_judging_assignments_path(@container, @contest_description, @contest_instance), class: "link_to" %>
+  <%= link_to "Return to Round Judge Assignments",
+      container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+        @container, @contest_description, @contest_instance, @judging_round
+      ),
+      class: "link_to" %>
 </div>
 
 <div class="container mt-4">
-  <h2>Create New Judging Round</h2>
+  <h2>Edit Judging Round <%= @judging_round.round_number %></h2>
   <h3 class="text-muted"><%= @contest_instance.contest_description.name %></h3>
+
+  <% if @show_warning %>
+    <div class="alert alert-warning">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <strong>Warning:</strong> This round has already started. Changes may affect ongoing judging.
+    </div>
+  <% end %>
 
   <div class="card">
     <div class="card-body">
-      <%= form_with(model: [@container, @contest_description, @contest_instance, @judging_round], local: true) do |f| %>
+      <%= form_with(
+        model: [@container, @contest_description, @contest_instance, @judging_round],
+        local: true,
+        data: {
+          turbo: false
+        }
+      ) do |f| %>
         <% if @judging_round.errors.any? %>
           <div class="alert alert-danger">
             <h4><%= pluralize(@judging_round.errors.count, "error") %> prohibited this judging round from being saved:</h4>
@@ -22,7 +39,7 @@
 
         <div class="form-group">
           <%= f.label :round_number %>
-          <%= f.number_field :round_number, value: @round_number, class: 'form-control' %>
+          <%= f.number_field :round_number, class: 'form-control' %>
         </div>
 
         <div class="form-group mt-3">
@@ -74,11 +91,20 @@
           </div>
         </div>
 
+        <% if @show_confirmation %>
+          <%= hidden_field_tag :confirmed, 'true' %>
+          <div class="alert alert-warning mt-3">
+            <p><strong>Please confirm:</strong> You are making changes to a round that has already started. This may affect ongoing judging.</p>
+          </div>
+        <% end %>
+
         <div class="form-actions py-2">
-          <%= f.submit 'Create Round', class: 'btn btn-primary' %>
-          <%= link_to 'Cancel', container_contest_description_contest_instance_judging_assignments_path(
-              @container, @contest_description, @contest_instance
-            ), class: 'text-danger link_to' %>
+          <%= f.submit 'Update Round', class: 'btn btn-primary' %>
+          <%= link_to 'Cancel',
+              container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+                @container, @contest_description, @contest_instance, @judging_round
+              ),
+              class: 'text-danger link_to' %>
         </div>
       <% end %>
     </div>
