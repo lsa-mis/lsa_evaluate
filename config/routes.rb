@@ -38,7 +38,8 @@ Rails.application.routes.draw do
           end
         end
         resources :judging_rounds do
-          resources :round_judge_assignments, only: [ :index ]
+          resources :round_judge_assignments
+          resources :entry_rankings, only: [ :create, :update ]
         end
       end
       member do
