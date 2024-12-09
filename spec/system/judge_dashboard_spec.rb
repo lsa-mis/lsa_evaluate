@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'Judge Dashboard', type: :system do
+  include JudgingAssignmentsHelper  # Include the correct helper module
+
   let(:judge) { create(:user, first_name: 'John', last_name: 'Doe', email: 'judge+gmail.com@umich.edu') }
   let(:judge_role) { create(:role, :judge) }
   let(:container) { create(:container) }
@@ -17,6 +19,6 @@ RSpec.describe 'Judge Dashboard', type: :system do
 
   it 'displays the judge information correctly' do
     expect(page).to have_content('Judge Dashboard')
-    expect(page).to have_content("Welcome #{judge.first_name} #{judge.last_name} (#{judge.email})")
+    expect(page).to have_content("Welcome #{judge.first_name} #{judge.last_name} (#{display_email(judge.email)})")
   end
 end
