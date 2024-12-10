@@ -72,24 +72,45 @@ class JudgingAssignmentsController < ApplicationController
 
     ActiveRecord::Base.transaction do
       begin
-        # Create the user
-        @user = User.new(
-          email: transformed_email,  # Use transformed email
-          first_name: params[:first_name],
-          last_name: params[:last_name],
-          password: SecureRandom.hex(10),  # Random password as they'll use SSO
-          uniqname: transformed_email.split('@').first, # Set uniqname from transformed email
-          display_name: "#{params[:first_name]} #{params[:last_name]}"
-        )
+        # Try to find existing user first
+        @user = User.find_by(email: transformed_email)
 
-        if @user.save
-          # Create user role association
-          @user.roles << judge_role
+        if @user
+          # Update existing user's information
+          # @user.update!(
+          #   first_name: params[:first_name],
+          #   last_name: params[:last_name],
+          #   display_name: "#{params[:first_name]} #{params[:last_name]}"
+          # )
 
-          # Create container role association
+          # Add judge role if not already present
+          @user.roles << judge_role unless @user.roles.include?(judge_role)
+        else
+          # Create new user if not found
+          @user = User.new(
+            email: transformed_email,
+            first_name: params[:first_name],
+            last_name: params[:last_name],
+            password: SecureRandom.hex(10),
+            uniqname: transformed_email.split('@').first,
+            display_name: "#{params[:first_name]} #{params[:last_name]}"
+          )
+
+          if @user.save
+            @user.roles << judge_role
+          else
+            error_message = @user.errors.full_messages.join(', ')
+            raise ActiveRecord::Rollback
+          end
+        end
+
+        # Create container role association if not exists
+        unless Assignment.exists?(user: @user, container: @container, role: judge_role)
           Assignment.create!(user: @user, container: @container, role: judge_role)
+        end
 
-          # Create judging assignment
+        # Create judging assignment if not exists
+        unless JudgingAssignment.exists?(user: @user, contest_instance: @contest_instance)
           @judging_assignment = @contest_instance.judging_assignments.build(user: @user)
 
           if @judging_assignment.save
@@ -99,8 +120,7 @@ class JudgingAssignmentsController < ApplicationController
             raise ActiveRecord::Rollback
           end
         else
-          error_message = @user.errors.full_messages.join(', ')
-          raise ActiveRecord::Rollback
+          success = true
         end
       rescue ActiveRecord::RecordInvalid => e
         error_message = e.record.errors.full_messages.join(', ')
@@ -114,11 +134,11 @@ class JudgingAssignmentsController < ApplicationController
     if success
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
-      ), notice: 'New judge was successfully created and assigned.'
+      ), notice: 'Judge was successfully created/updated and assigned.'
     else
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
-      ), alert: error_message || 'An error occurred while creating the judge.'
+      ), alert: error_message || 'An error occurred while creating/updating the judge.'
     end
   end
 
