@@ -29,10 +29,10 @@ FactoryBot.define do
   factory :judging_round do
     contest_instance
     sequence(:round_number) { |n| n }
-    active { true }
+    active { false }
     completed { false }
-    start_date { 1.day.from_now }
-    end_date { 2.days.from_now }
+    start_date { contest_instance.date_closed + 1.day }
+    end_date { start_date + 1.day }
     require_internal_comments { false }
     require_external_comments { false }
     min_internal_comment_words { 0 }
