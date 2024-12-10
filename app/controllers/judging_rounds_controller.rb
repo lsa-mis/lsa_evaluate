@@ -1,6 +1,6 @@
 class JudgingRoundsController < ApplicationController
   before_action :set_contest_instance
-  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate ]
   before_action :authorize_contest_instance
   before_action :check_edit_warning, only: [ :edit, :update ]
 
@@ -44,6 +44,30 @@ class JudgingRoundsController < ApplicationController
     end
   end
 
+  def activate
+    if @judging_round.activate!
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), notice: 'Judging round was successfully activated.'
+    else
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'Failed to activate judging round.'
+    end
+  end
+
+  def deactivate
+    if @judging_round.deactivate!
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), notice: 'Judging round was successfully deactivated.'
+    else
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'Failed to deactivate judging round.'
+    end
+  end
+
   private
 
   def set_contest_instance
@@ -65,6 +89,7 @@ class JudgingRoundsController < ApplicationController
       :round_number,
       :start_date,
       :end_date,
+      :active,
       :require_internal_comments,
       :require_external_comments,
       :min_internal_comment_words,
