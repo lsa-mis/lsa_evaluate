@@ -25,9 +25,28 @@
               <td><%= round.round_number %></td>
               <td>
                 <%= round.completed? ? 'Completed' : (round.active? ? 'Active' : 'Pending') %>
+                <% unless round.completed? %>
+                  <% if round.active? %>
+                    <%= button_to 'Deactivate',
+                        deactivate_container_contest_description_contest_instance_judging_round_path(
+                          @container, @contest_description, @contest_instance, round
+                        ),
+                        method: :patch,
+                        class: 'btn btn-warning btn-sm ms-2',
+                        form: { style: 'display: inline-block;' } %>
+                  <% else %>
+                    <%= button_to 'Activate',
+                        activate_container_contest_description_contest_instance_judging_round_path(
+                          @container, @contest_description, @contest_instance, round
+                        ),
+                        method: :patch,
+                        class: 'btn btn-success btn-sm ms-2',
+                        form: { style: 'display: inline-block;' } %>
+                  <% end %>
+                <% end %>
               </td>
               <td>
-                <%= format_datetime(round.start_date) %> - 
+                <%= format_datetime(round.start_date) %> -
                 <%= format_datetime(round.end_date) %>
               </td>
               <td>
