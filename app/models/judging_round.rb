@@ -38,6 +38,25 @@ class JudgingRound < ApplicationRecord
   validates :start_date, :end_date, presence: true
   validate :dates_are_valid
   validate :start_date_after_previous_round
+  validate :only_one_active_round_per_contest
+
+  scope :active, -> { where(active: true) }
+
+  def activate!
+    return false unless valid?
+
+    JudgingRound.transaction do
+      contest_instance.judging_rounds.active.update_all(active: false)
+      update!(active: true)
+    end
+    true
+  rescue ActiveRecord::RecordInvalid
+    false
+  end
+
+  def deactivate!
+    update!(active: false)
+  end
 
   def assign_judge(user)
     return false unless user.judge?
@@ -49,6 +68,13 @@ class JudgingRound < ApplicationRecord
   def dates_are_valid
     if start_date && end_date && end_date < start_date
       errors.add(:end_date, 'must be after start date')
+    end
+
+    # First round must start after contest closes
+    if round_number == 1 && start_date && contest_instance&.date_closed
+      if start_date < contest_instance.date_closed
+        errors.add(:start_date, "must be after contest close date (#{I18n.l(contest_instance.date_closed, format: :long)})")
+      end
     end
   end
 
@@ -62,6 +88,12 @@ class JudgingRound < ApplicationRecord
 
     if previous_round&.end_date && start_date < previous_round.end_date
       errors.add(:start_date, "must be after the previous round's end date (#{I18n.l(previous_round.end_date, format: :long)})")
+    end
+  end
+
+  def only_one_active_round_per_contest
+    if active && contest_instance.judging_rounds.where(active: true).where.not(id: id).exists?
+      errors.add(:active, 'There can only be one active round per contest instance')
     end
   end
 end
