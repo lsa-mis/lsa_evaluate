@@ -10,8 +10,6 @@
 #  date_closed                          :datetime         not null
 #  date_open                            :datetime         not null
 #  has_course_requirement               :boolean          default(FALSE), not null
-#  judge_evaluations_complete           :boolean          default(FALSE), not null
-#  judging_open                         :boolean          default(FALSE), not null
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
@@ -34,6 +32,61 @@
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #
 class ContestInstance < ApplicationRecord
+  validates :date_open, presence: true
+  validates :date_closed, presence: true
+  validates :maximum_number_entries_per_applicant, presence: true,
+                                                 numericality: { only_integer: true, greater_than: 0 }
+  validates :created_by, presence: true
+  validates :has_course_requirement, inclusion: { in: [ true, false ] }
+  validates :recletter_required, inclusion: { in: [ true, false ] }
+  validates :transcript_required, inclusion: { in: [ true, false ] }
+  validate :must_have_at_least_one_class_level_requirement
+  validate :must_have_at_least_one_category
+  validate :only_one_active_per_contest_description
+  validate :date_closed_after_date_open
+
+  scope :active_and_open, -> { where(active: true, archived: false).where('date_open <= ? AND date_closed >= ?', Time.current, Time.current) }
+
+  def open?
+    active? && !archived? && (date_open..date_closed).cover?(Time.current)
+  end
+
+  def judging_open?
+    current_round = judging_rounds.where(active: true)
+                                .where('start_date <= ? AND end_date >= ?', Time.zone.now, Time.zone.now)
+                                .first
+    return false unless current_round
+    return false unless date_open <= Time.zone.now && date_closed >= Time.zone.now
+
+    true
+  end
+
+  def judge_evaluations_complete?
+    last_round = judging_rounds.order(end_date: :desc).first
+    return false unless last_round
+    last_round.completed?
+  end
+
+  def judge_assigned?(user)
+    return false unless user&.judge?
+    judging_assignments.active.exists?(user: user)
+  end
+
+  def judge_assigned_to_round?(user, round)
+    return false unless judge_assigned?(user)
+    round.round_assignments.active.exists?(judging_assignment: judging_assignments.find_by(user: user))
+  end
+
+  def current_judging_round
+    judging_rounds.active.where('start_date <= ? AND end_date >= ?', Time.current, Time.current).first
+  end
+
+  def self.available_for_profile(profile)
+    joins("LEFT OUTER JOIN entries ON entries.contest_instance_id = contest_instances.id AND entries.profile_id = #{profile.id} AND entries.deleted = false")
+      .group('contest_instances.id')
+      .having('COUNT(entries.id) < contest_instances.maximum_number_entries_per_applicant')
+  end
+
   has_many :class_level_requirements, dependent: :destroy
   has_many :class_levels, through: :class_level_requirements
   has_many :category_contest_instances, dependent: :destroy
@@ -76,9 +129,7 @@ class ContestInstance < ApplicationRecord
 
   validates :date_open, presence: true
   validates :date_closed, presence: true
-  validates :judging_open, inclusion: { in: [ true, false ] }
   validates :has_course_requirement, inclusion: { in: [ true, false ] }
-  validates :judge_evaluations_complete, inclusion: { in: [ true, false ] }
   validates :recletter_required, inclusion: { in: [ true, false ] }
   validates :transcript_required, inclusion: { in: [ true, false ] }
   validates :maximum_number_entries_per_applicant, presence: true, numericality: { only_integer: true, greater_than: 0 }
@@ -99,7 +150,7 @@ class ContestInstance < ApplicationRecord
   def current_judging_round
     judging_rounds.where(active: true)
                   .order(:round_number)
-                  .first || 
+                  .first ||
     judging_rounds.order(:round_number).first
   end
 
@@ -108,26 +159,24 @@ class ContestInstance < ApplicationRecord
   end
 
   def judging_open?
-    return false unless current_judging_round
+    current_round = judging_rounds.where(active: true)
+                                .where('start_date <= ? AND end_date >= ?', Time.zone.now, Time.zone.now)
+                                .first
+    return false unless current_round
     return false unless date_open <= Time.zone.now && date_closed >= Time.zone.now
-    
-    if current_judging_round.start_date && current_judging_round.end_date
-      current_judging_round.start_date <= Time.zone.now && 
-      current_judging_round.end_date >= Time.zone.now
-    else
-      true
-    end
+
+    true
   end
 
   def current_round_entries
     return Entry.none unless current_judging_round
-    
+
     if current_judging_round.round_number == 1
       entries.where(deleted: false)
     else
       previous_round = judging_rounds.find_by(round_number: current_judging_round.round_number - 1)
       entries.joins(:entry_rankings)
-            .where(entry_rankings: { 
+            .where(entry_rankings: {
               judging_round: previous_round,
               selected_for_next_round: true
             })
@@ -156,6 +205,11 @@ class ContestInstance < ApplicationRecord
   def judge_assigned_to_round?(user, round)
     return false unless judge_assigned?(user)
     round.round_judge_assignments.active.exists?(user: user)
+  end
+
+  def judge_evaluations_complete?
+    return false if judging_rounds.empty?
+    judging_rounds.order(:round_number).last.completed?
   end
 
   private
