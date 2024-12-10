@@ -17,11 +17,11 @@
 #
 FactoryBot.define do
   factory :campus do
-    sequence(:campus_cd) { |n| "CAMPUS_CD_#{n}" }
+    sequence(:campus_cd) { |n| 1000 + n }
     sequence(:campus_descr) { |n| "Campus Description #{n}" }
 
     trait :predefined do
-      campus_cd { '1001' }
+      campus_cd { 1001 }
       campus_descr { 'AnnArbor' }
     end
   end

@@ -25,6 +25,8 @@ Rails.application.routes.draw do
     member do
       post 'select_entries_for_next_round'
       patch 'complete_round'
+      patch :activate
+      patch :deactivate
     end
   end
 
@@ -38,6 +40,10 @@ Rails.application.routes.draw do
           end
         end
         resources :judging_rounds do
+          member do
+            patch :activate
+            patch :deactivate
+          end
           resources :round_judge_assignments
           resources :entry_rankings, only: [ :create, :update ]
         end

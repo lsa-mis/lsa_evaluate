@@ -10,8 +10,6 @@
 #  date_closed                          :datetime         not null
 #  date_open                            :datetime         not null
 #  has_course_requirement               :boolean          default(FALSE), not null
-#  judge_evaluations_complete           :boolean          default(FALSE), not null
-#  judging_open                         :boolean          default(FALSE), not null
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
@@ -88,4 +86,112 @@ RSpec.describe ContestInstance, type: :model do
       end
     end
   end
-end 
+
+  describe 'judging status methods' do
+    let(:contest_instance) { create(:contest_instance) }
+
+    describe '#judging_open?' do
+      let(:contest_instance) do
+        create(:contest_instance,
+              date_open: 2.days.ago,
+              date_closed: 1.day.ago)
+      end
+
+      context 'when there is no current judging round' do
+        it 'returns false' do
+          expect(contest_instance.judging_open?).to be false
+        end
+      end
+
+      context 'with an active judging round' do
+        let!(:judging_round) do
+          create(:judging_round,
+                contest_instance: contest_instance,
+                start_date: 1.hour.ago,
+                end_date: 1.day.from_now,
+                active: true)
+        end
+
+        it 'returns true when within judging round dates' do
+          expect(contest_instance.judging_open?).to be true
+        end
+
+        it 'returns false when before judging round start_date' do
+          travel_to(judging_round.start_date - 1.day) do
+            expect(contest_instance.judging_open?).to be false
+          end
+        end
+
+        it 'returns false when after judging round end_date' do
+          travel_to(judging_round.end_date + 1.day) do
+            expect(contest_instance.judging_open?).to be false
+          end
+        end
+      end
+
+      context 'with an inactive judging round' do
+        let!(:judging_round) do
+          create(:judging_round,
+                contest_instance: contest_instance,
+                start_date: Time.current,
+                end_date: 1.day.from_now,
+                active: false)
+        end
+
+        it 'returns false even when within judging round dates' do
+          expect(contest_instance.judging_open?).to be false
+        end
+      end
+    end
+
+    describe '#judge_evaluations_complete?' do
+      context 'when there are no judging rounds' do
+        it 'returns false' do
+          expect(contest_instance.judge_evaluations_complete?).to be false
+        end
+      end
+
+      context 'when there are judging rounds' do
+        let!(:round1) {
+          create(:judging_round,
+                contest_instance: contest_instance,
+                round_number: 1,
+                start_date: 1.day.from_now,
+                end_date: 2.days.from_now,
+                completed: false)
+        }
+
+        it 'returns false when the last round is not completed' do
+          expect(contest_instance.judge_evaluations_complete?).to be false
+        end
+
+        it 'returns true when the last round is completed' do
+          round1.update(completed: true)
+          expect(contest_instance.judge_evaluations_complete?).to be true
+        end
+
+        context 'with multiple rounds' do
+          let!(:round2) {
+            create(:judging_round,
+                  contest_instance: contest_instance,
+                  round_number: 2,
+                  start_date: 3.days.from_now,
+                  end_date: 4.days.from_now,
+                  completed: false)
+          }
+
+          it 'returns false when the last round is not completed, even if earlier rounds are' do
+            round1.update(completed: true)
+            expect(contest_instance.judge_evaluations_complete?).to be false
+          end
+
+          it 'returns true when the last round is completed, regardless of earlier rounds' do
+            round1.update(completed: false)
+            round2.update(completed: true)
+            expect(contest_instance.judge_evaluations_complete?).to be true
+          end
+        end
+      end
+    end
+  end
+end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_18_175005) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_10_160441) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -168,9 +168,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_18_175005) do
     t.datetime "date_open", null: false
     t.datetime "date_closed", null: false
     t.text "notes"
-    t.boolean "judging_open", default: false, null: false
     t.boolean "has_course_requirement", default: false, null: false
-    t.boolean "judge_evaluations_complete", default: false, null: false
     t.text "course_requirement_description"
     t.boolean "recletter_required", default: false, null: false
     t.boolean "transcript_required", default: false, null: false

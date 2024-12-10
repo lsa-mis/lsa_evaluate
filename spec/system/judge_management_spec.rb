@@ -32,7 +32,7 @@ RSpec.describe 'Judge Management', type: :system do
           click_button 'Create and Assign Judge'
         end
 
-        expect(page).to have_css('.alert.alert-success', text: 'New judge was successfully created and assigned')
+        expect(page).to have_css('.alert.alert-success', text: 'Judge was successfully created/updated and assigned')
         expect(page).to have_content('New Judge (newjudge@gmail.com)')
 
         new_user = User.last
@@ -51,7 +51,7 @@ RSpec.describe 'Judge Management', type: :system do
           click_button 'Create and Assign Judge'
         end
 
-        expect(page).to have_css('.alert.alert-success', text: 'New judge was successfully created and assigned')
+        expect(page).to have_css('.alert.alert-success', text: 'Judge was successfully created/updated and assigned')
         expect(page).to have_content('New Judge (newjudge@umich.edu)')
 
         new_user = User.last

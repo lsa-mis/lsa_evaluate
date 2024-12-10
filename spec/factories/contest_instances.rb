@@ -10,8 +10,6 @@
 #  date_closed                          :datetime         not null
 #  date_open                            :datetime         not null
 #  has_course_requirement               :boolean          default(FALSE), not null
-#  judge_evaluations_complete           :boolean          default(FALSE), not null
-#  judging_open                         :boolean          default(FALSE), not null
 #  maximum_number_entries_per_applicant :integer          default(1), not null
 #  notes                                :text(65535)
 #  recletter_required                   :boolean          default(FALSE), not null
@@ -42,9 +40,7 @@ FactoryBot.define do
     active { true }
     archived { false }
     notes { "Notes for contest instance" }
-    judging_open { false }
     has_course_requirement { false }
-    judge_evaluations_complete { false }
     course_requirement_description { "Course requirements" }
     recletter_required { false }
     transcript_required { false }
