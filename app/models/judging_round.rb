@@ -35,7 +35,7 @@ class JudgingRound < ApplicationRecord
   validates :round_number, presence: true,
             numericality: { greater_than: 0 }
   validates :round_number, uniqueness: { scope: :contest_instance_id }
-  validates :start_date, presence: true
+  validates :start_date, :end_date, presence: true
   validate :dates_are_valid
   validate :start_date_after_previous_round
 
