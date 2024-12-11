@@ -23,7 +23,8 @@
         model: [@container, @contest_description, @contest_instance, @judging_round],
         local: true,
         data: {
-          turbo: false
+          controller: "judging-round-form",
+          "judging-round-form-target": "form"
         }
       ) do |f| %>
         <% if @judging_round.errors.any? %>
@@ -90,13 +91,6 @@
             </div>
           </div>
         </div>
-
-        <% if @show_confirmation %>
-          <%= hidden_field_tag :confirmed, 'true' %>
-          <div class="alert alert-warning mt-3">
-            <p><strong>Please confirm:</strong> You are making changes to a round that has already started. This may affect ongoing judging.</p>
-          </div>
-        <% end %>
 
         <div class="form-actions py-2">
           <%= f.submit 'Update Round', class: 'btn btn-primary' %>
