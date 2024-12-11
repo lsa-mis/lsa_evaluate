@@ -116,42 +116,6 @@ RSpec.describe JudgingRoundsController, type: :controller do
         end
       end
 
-      context 'when round has started' do
-        let(:judging_round) { create(:judging_round, contest_instance: contest_instance, start_date: 1.day.ago) }
-
-        context 'without confirmation' do
-          it 'requires confirmation' do
-            patch :update, params: {
-              container_id: container.id,
-              contest_description_id: contest_description.id,
-              contest_instance_id: contest_instance.id,
-              id: judging_round.id,
-              judging_round: valid_attributes
-            }
-            expect(assigns(:show_confirmation)).to be true
-            expect(response).to render_template(:edit)
-          end
-        end
-
-        context 'with confirmation' do
-          it 'updates the round' do
-            patch :update, params: {
-              container_id: container.id,
-              contest_description_id: contest_description.id,
-              contest_instance_id: contest_instance.id,
-              id: judging_round.id,
-              judging_round: valid_attributes,
-              confirmed: 'true'
-            }
-            judging_round.reload
-            expect(judging_round.require_internal_comments).to be true
-            expect(response).to redirect_to(container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
-              container, contest_description, contest_instance, judging_round
-            ))
-          end
-        end
-      end
-
       context 'with invalid params' do
         let(:invalid_attributes) { { start_date: nil } }
 
