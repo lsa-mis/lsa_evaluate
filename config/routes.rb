@@ -25,15 +25,26 @@ Rails.application.routes.draw do
     member do
       post 'select_entries_for_next_round'
       patch 'complete_round'
+      patch :activate
+      patch :deactivate
     end
   end
 
   resources :containers do
     resources :contest_descriptions do
       resources :contest_instances do
-        resources :judging_assignments, only: [ :index, :create, :destroy ]
+        resources :entry_rankings, only: [ :create, :update ]
+        resources :judging_assignments, only: [ :index, :create, :destroy ] do
+          collection do
+            post 'create_judge'
+          end
+        end
         resources :judging_rounds do
-          resources :round_judge_assignments, only: [ :index, :create, :destroy ]
+          member do
+            patch :activate
+            patch :deactivate
+          end
+          resources :round_judge_assignments
           resources :entry_rankings, only: [ :create, :update ]
         end
       end

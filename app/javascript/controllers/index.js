@@ -42,3 +42,6 @@ application.register("scroll", ScrollController)
 
 import UidLookupController from "./uid_lookup_controller"
 application.register("uid-lookup", UidLookupController)
+
+import JudgingRoundFormController from "./judging_round_form_controller"
+application.register("judging-round-form", JudgingRoundFormController)

@@ -1,81 +1,135 @@
 <h1>Judge Dashboard</h1>
+<h2><%= "Welcome #{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)}) these are your judging assignments:"%></h2>
 
-<% @judging_assignments.each do |assignment| %>
-  <div class="card mb-4">
-    <div class="card-header">
-      <h2><%= assignment.contest_instance.contest_description.name %></h2>
-      <% if assignment.contest_instance.current_judging_round %>
-        <p class="text-muted">
-          Round: <%= assignment.contest_instance.current_judging_round.round_number %>
-        </p>
-      <% else %>
-        <p class="text-muted">No active round</p>
-      <% end %>
-    </div>
-    
-    <div class="card-body">
-      <% if assignment.contest_instance.judging_open? %>
-        <h3>Entries to Judge</h3>
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Entry ID</th>
-                <th>Title</th>
-                <th>Your Ranking</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if assignment.contest_instance.current_round_entries.any? %>
-                <% assignment.contest_instance.current_round_entries.each do |entry| %>
+<% @judging_assignments.each_with_index do |assignment, index| %>
+  <div class="accordion mb-4" id="contestAccordion<%= index %>">
+    <div class="accordion-item">
+      <div class="accordion-header" id="contestHeader<%= index %>">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contestCollapse<%= index %>" aria-expanded="false" aria-controls="contestCollapse<%= index %>">
+          <div class="w-100">
+            <h4 class="mb-0"><%= assignment.contest_instance.contest_description.name %></h4>
+            <% if assignment.contest_instance.current_judging_round %>
+              <p class="text-muted mb-0">
+                Round: <%= assignment.contest_instance.current_judging_round.round_number %>
+              </p>
+            <% else %>
+              <p class="text-muted mb-0">No active round</p>
+            <% end %>
+          </div>
+        </button>
+      </div>
+      <div id="contestCollapse<%= index %>" class="accordion-collapse collapse" aria-labelledby="contestHeader<%= index %>" data-bs-parent="#contestAccordion<%= index %>">
+        <div class="accordion-body">
+          <% if assignment.contest_instance.judging_open? %>
+            <h3>Entries to Judge</h3>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
                   <tr>
-                    <td><%= entry.id %></td>
-                    <td><%= entry.title %></td>
-                    <td>
-                      <%= form_with(
-                        model: EntryRanking.find_or_initialize_by(
-                          entry: entry,
-                          judging_round: assignment.contest_instance.current_judging_round,
-                          user: current_user
-                        ),
-                        url: container_contest_description_contest_instance_judging_round_entry_rankings_path(
-                          assignment.contest_instance.contest_description.container,
-                          assignment.contest_instance.contest_description,
-                          assignment.contest_instance,
-                          assignment.contest_instance.current_judging_round
-                        ),
-                        method: :post,
-                        local: true
-                      ) do |f| %>
-                        <div class="input-group">
-                          <%= f.hidden_field :entry_id %>
-                          <%= f.hidden_field :judging_round_id %>
-                          <%= f.hidden_field :user_id %>
-                          <%= f.number_field :rank, min: 1, class: 'form-control' %>
-                          <%= f.submit 'Save', class: 'btn btn-sm btn-primary' %>
-                        </div>
-                      <% end %>
-                    </td>
-                    <td>
-                      <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"), 
-                          target: '_blank', class: 'btn btn-sm btn-secondary' %>
-                    </td>
+                    <th style="width: 10%">Entry ID</th>
+                    <th style="width: 25%">Title</th>
+                    <th style="width: 10%">Your Ranking</th>
+                    <th style="width: 45%">Comments</th>
+                    <th style="width: 10%">Actions</th>
                   </tr>
-                <% end %>
-              <% else %>
-                <tr>
-                  <td colspan="4" class="text-center">No entries available for judging in this round.</td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  <% if assignment.contest_instance.current_round_entries.any? %>
+                    <% assignment.contest_instance.current_round_entries.each do |entry| %>
+                      <tr>
+                        <td><%= entry.id %></td>
+                        <td><%= entry.title %></td>
+                        <td>
+                          <%= form_with(
+                            model: EntryRanking.find_or_initialize_by(
+                              entry: entry,
+                              judging_round: assignment.contest_instance.current_judging_round,
+                              user: current_user
+                            ),
+                            url: container_contest_description_contest_instance_judging_round_entry_rankings_path(
+                              assignment.contest_instance.contest_description.container,
+                              assignment.contest_instance.contest_description,
+                              assignment.contest_instance,
+                              assignment.contest_instance.current_judging_round
+                            ),
+                            method: :post,
+                            local: true,
+                            class: 'entry-ranking-form'
+                          ) do |f| %>
+                            <%= f.hidden_field :entry_id %>
+                            <%= f.hidden_field :judging_round_id %>
+                            <%= f.hidden_field :user_id %>
+                            <div class="d-flex align-items-center">
+                              <%= f.number_field :rank, min: 1, class: 'form-control form-control-sm', style: 'width: 70px;' %>
+                            </div>
+                        </td>
+                        <td>
+                          <div class="comments-section">
+                            <% current_round = assignment.contest_instance.current_judging_round %>
+                            <% if current_round.require_internal_comments %>
+                              <div class="form-group mb-2">
+                                <%= f.label :internal_comments, class: 'form-label small' do %>
+                                  Internal Comments
+                                  <span class="text-danger">*</span>
+                                  <% if current_round.min_internal_comment_words > 0 %>
+                                    <small class="text-muted d-block">
+                                      Minimum <%= pluralize(current_round.min_internal_comment_words, 'word') %> required
+                                    </small>
+                                  <% end %>
+                                <% end %>
+                                <%= f.text_area :internal_comments, class: 'form-control form-control-sm', rows: 2 %>
+                              </div>
+                            <% else %>
+                              <div class="form-group mb-2">
+                                <%= f.label :internal_comments, "Internal Comments (Optional)", class: 'form-label small' %>
+                                <%= f.text_area :internal_comments, class: 'form-control form-control-sm', rows: 2 %>
+                              </div>
+                            <% end %>
+
+                            <% if current_round.require_external_comments %>
+                              <div class="form-group mb-2">
+                                <%= f.label :external_comments, class: 'form-label small' do %>
+                                  External Comments
+                                  <span class="text-danger">*</span>
+                                  <% if current_round.min_external_comment_words > 0 %>
+                                    <small class="text-muted d-block">
+                                      Minimum <%= pluralize(current_round.min_external_comment_words, 'word') %> required
+                                    </small>
+                                  <% end %>
+                                <% end %>
+                                <%= f.text_area :external_comments, class: 'form-control form-control-sm', rows: 2 %>
+                              </div>
+                            <% else %>
+                              <div class="form-group mb-2">
+                                <%= f.label :external_comments, "External Comments (Optional)", class: 'form-label small' %>
+                                <%= f.text_area :external_comments, class: 'form-control form-control-sm', rows: 2 %>
+                              </div>
+                            <% end %>
+                            <%= f.submit 'Save', class: 'btn btn-sm btn-primary' %>
+                          </div>
+                        <% end %>
+                        </td>
+                        <td>
+                          <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"),
+                              target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  <% else %>
+                    <tr>
+                      <td colspan="5" class="text-center">No entries available for judging in this round.</td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="alert alert-info">
+              Judging is not currently open for this contest.
+            </div>
+          <% end %>
         </div>
-      <% else %>
-        <div class="alert alert-info">
-          Judging is not currently open for this contest.
-        </div>
-      <% end %>
+      </div>
     </div>
   </div>
 <% end %>
@@ -84,4 +138,19 @@
   <div class="alert alert-info">
     You have not been assigned to judge any contests.
   </div>
+<% end %>
+
+<% content_for :head do %>
+  <style>
+    .entry-ranking-form {
+      margin-bottom: 0;
+    }
+    .comments-section {
+      margin-bottom: 0;
+    }
+    .form-label.small {
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+  </style>
 <% end %>

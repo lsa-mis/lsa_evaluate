@@ -1,0 +1,106 @@
+<div class="d-flex flex-column align-items-end">
+  <%= link_to "Return to Round Judge Assignments",
+      container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+        @container, @contest_description, @contest_instance, @judging_round
+      ),
+      class: "link_to" %>
+</div>
+
+<div class="container mt-4">
+  <h2>Edit Judging Round <%= @judging_round.round_number %></h2>
+  <h3 class="text-muted"><%= @contest_instance.contest_description.name %></h3>
+
+  <% if @show_warning %>
+    <div class="alert alert-warning">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      <strong>Warning:</strong> This round has already started. Changes may affect ongoing judging.
+    </div>
+  <% end %>
+
+  <div class="card">
+    <div class="card-body">
+      <%= form_with(
+        model: [@container, @contest_description, @contest_instance, @judging_round],
+        local: true,
+        data: {
+          controller: "judging-round-form",
+          "judging-round-form-target": "form"
+        }
+      ) do |f| %>
+        <% if @judging_round.errors.any? %>
+          <div class="alert alert-danger">
+            <h4><%= pluralize(@judging_round.errors.count, "error") %> prohibited this judging round from being saved:</h4>
+            <ul>
+              <% @judging_round.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="form-group">
+          <%= f.label :round_number %>
+          <%= f.number_field :round_number, class: 'form-control' %>
+        </div>
+
+        <div class="form-group mt-3">
+          <%= f.label :start_date %>
+          <%= f.datetime_local_field :start_date, class: 'form-control' %>
+        </div>
+
+        <div class="form-group mt-3">
+          <%= f.label :end_date %>
+          <%= f.datetime_local_field :end_date, class: 'form-control' %>
+        </div>
+
+        <h3 class="mt-4">Comment Requirements</h3>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <%= f.label :require_internal_comments, class: 'form-check-label' do %>
+                <%= f.check_box :require_internal_comments, class: 'form-check-input me-2' %>
+                Require Internal Comments
+              <% end %>
+              <small class="form-text text-muted d-block">
+                Internal comments are visible only to committee members and administrators
+              </small>
+            </div>
+
+            <div class="form-group mt-3">
+              <%= f.label :min_internal_comment_words, "Minimum Words for Internal Comments" %>
+              <%= f.number_field :min_internal_comment_words, class: 'form-control', min: 0 %>
+              <small class="form-text text-muted">Set to 0 for no minimum word requirement</small>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <%= f.label :require_external_comments, class: 'form-check-label' do %>
+                <%= f.check_box :require_external_comments, class: 'form-check-input me-2' %>
+                Require External Comments
+              <% end %>
+              <small class="form-text text-muted d-block">
+                External comments will be shared with applicants
+              </small>
+            </div>
+
+            <div class="form-group mt-3">
+              <%= f.label :min_external_comment_words, "Minimum Words for External Comments" %>
+              <%= f.number_field :min_external_comment_words, class: 'form-control', min: 0 %>
+              <small class="form-text text-muted">Set to 0 for no minimum word requirement</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions py-2">
+          <%= f.submit 'Update Round', class: 'btn btn-primary' %>
+          <%= link_to 'Cancel',
+              container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+                @container, @contest_description, @contest_instance, @judging_round
+              ),
+              class: 'text-danger link_to' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

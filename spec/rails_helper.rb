@@ -32,6 +32,7 @@ end
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.include Pundit::Matchers, type: :policy
+  config.include ActiveSupport::Testing::TimeHelpers
   config.fixture_paths = [ Rails.root.join('spec/fixtures').to_s ]
 
   # Disable transactional fixtures because we're using DatabaseCleaner
@@ -44,7 +45,7 @@ RSpec.configure do |config|
 
   # Configure DatabaseCleaner
 
-  config.around(:each) do |example|
+  config.around do |example|
     if example.metadata[:type] == :system
       DatabaseCleaner.strategy = :truncation
     else

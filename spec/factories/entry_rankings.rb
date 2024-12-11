@@ -3,6 +3,8 @@
 # Table name: entry_rankings
 #
 #  id                      :bigint           not null, primary key
+#  external_comments       :text(65535)
+#  internal_comments       :text(65535)
 #  notes                   :text(65535)
 #  rank                    :integer
 #  selected_for_next_round :boolean          default(FALSE), not null
@@ -32,6 +34,8 @@ FactoryBot.define do
     user { create(:user, :with_judge_role) }
     rank { rand(1..10) }
     notes { Faker::Lorem.paragraph }
+    internal_comments { Faker::Lorem.paragraph(sentence_count: 3) }
+    external_comments { Faker::Lorem.paragraph(sentence_count: 3) }
     selected_for_next_round { false }
 
     trait :selected do
@@ -40,9 +44,9 @@ FactoryBot.define do
 
     trait :with_assigned_judge do
       after(:build) do |entry_ranking|
-        create(:judging_assignment, 
-          user: entry_ranking.user, 
-          contest_instance: entry_ranking.judging_round.contest_instance, 
+        create(:judging_assignment,
+          user: entry_ranking.user,
+          contest_instance: entry_ranking.judging_round.contest_instance,
           active: true
         )
         create(:round_judge_assignment,
@@ -52,5 +56,15 @@ FactoryBot.define do
         )
       end
     end
+
+    trait :with_minimal_comments do
+      internal_comments { "Short internal note" }
+      external_comments { "Short external note" }
+    end
+
+    trait :with_detailed_comments do
+      internal_comments { Faker::Lorem.paragraph(sentence_count: 5) }
+      external_comments { Faker::Lorem.paragraph(sentence_count: 5) }
+    end
   end
-end 
+end

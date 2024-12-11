@@ -22,8 +22,8 @@
 #
 FactoryBot.define do
   factory :judging_assignment do
-    user { create(:user, :with_judge_role) }
     contest_instance
+    association :user, :with_judge_role
     active { true }
 
     trait :inactive do
@@ -31,7 +31,7 @@ FactoryBot.define do
     end
 
     trait :with_non_judge_user do
-      user { create(:user, :student) }
+      association :user, :student
     end
   end
 end

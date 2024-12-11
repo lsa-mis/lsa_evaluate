@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_18_175005) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_10_160441) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -168,9 +168,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_18_175005) do
     t.datetime "date_open", null: false
     t.datetime "date_closed", null: false
     t.text "notes"
-    t.boolean "judging_open", default: false, null: false
     t.boolean "has_course_requirement", default: false, null: false
-    t.boolean "judge_evaluations_complete", default: false, null: false
     t.text "course_requirement_description"
     t.boolean "recletter_required", default: false, null: false
     t.boolean "transcript_required", default: false, null: false
@@ -236,6 +234,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_18_175005) do
     t.boolean "selected_for_next_round", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "internal_comments"
+    t.text "external_comments"
     t.index ["entry_id", "judging_round_id", "user_id"], name: "index_entry_rankings_uniqueness", unique: true
     t.index ["entry_id"], name: "index_entry_rankings_on_entry_id"
     t.index ["judging_round_id"], name: "index_entry_rankings_on_judging_round_id"
@@ -262,6 +262,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_18_175005) do
     t.boolean "completed", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "require_internal_comments", default: false, null: false
+    t.boolean "require_external_comments", default: false, null: false
+    t.integer "min_internal_comment_words", default: 0, null: false
+    t.integer "min_external_comment_words", default: 0, null: false
     t.index ["contest_instance_id", "round_number"], name: "index_judging_rounds_on_contest_instance_id_and_round_number", unique: true
     t.index ["contest_instance_id"], name: "index_judging_rounds_on_contest_instance_id"
   end

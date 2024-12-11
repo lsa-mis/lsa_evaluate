@@ -26,11 +26,11 @@
       <strong>Notes:</strong>
       <%= contest_instance.notes %>
     </div>
-    
+
     <div class="row mb-3">
       <div class="col">
         <strong>Judging Open:</strong>
-        <%= boolean_to_yes_no(contest_instance.judging_open) %>
+        <%= boolean_to_yes_no(contest_instance.judging_open?) %>
       </div>
       <div class="col">
         <strong>Judging Rounds:</strong>
@@ -38,10 +38,10 @@
       </div>
       <div class="col">
         <strong>Judge Evaluations Complete:</strong>
-        <%= boolean_to_yes_no(contest_instance.judge_evaluations_complete) %>
+        <%= boolean_to_yes_no(contest_instance.judge_evaluations_complete?) %>
       </div>
     </div>
-    
+
     <div class="row mb-3">
       <div class="col">
         <strong>Category:</strong>
@@ -52,12 +52,12 @@
         <%= contest_instance.class_levels.map(&:name).join(', ') %>
       </div>
     </div>
-    
+
     <div class="mb-3">
       <strong>Maximum Number of Entries per Applicant:</strong>
       <%= contest_instance.maximum_number_entries_per_applicant %>
     </div>
-    
+
     <div class="mb-3">
       <strong>Require a Pen Name:</strong>
       <%= boolean_to_yes_no(contest_instance.require_pen_name) %>
@@ -72,7 +72,7 @@
       <strong>Notes:</strong>
       <%= contest_instance.notes %>
     </div>
-    
+
     <div class="mb-3">
       <strong>Created By:</strong>
       <%= contest_instance.created_by %>

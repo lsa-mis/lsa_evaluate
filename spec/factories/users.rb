@@ -34,21 +34,49 @@
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #  index_users_on_unlock_token          (unlock_token) UNIQUE
 #
+module UserFactoryMethods
+  def add_container_role(container)
+    container_roles.create(container: container)
+  end
+end
+
 FactoryBot.define do
   factory :user do
-    email { Faker::Internet.email }
-    first_name { Faker::Name.first_name }
-    last_name { Faker::Name.last_name }
+    sequence(:email) { |n| "user#{n}@umich.edu" }
+    sequence(:first_name) { |n| "First#{n}" }
+    sequence(:last_name) { |n| "Last#{n}" }
+    sequence(:uniqname) { |n| "uniqname#{n}" }
     password { 'passwordpassword' }
     password_confirmation { 'passwordpassword' }
-    uniqname { Faker::Internet.username }
+    display_name { "#{first_name} #{last_name}" }
     uid { uniqname }
     principal_name { email }
-    display_name { Faker::Name.name }
+
+    trait :with_judge_role do
+      after(:create) do |user|
+        user.roles << create(:role, :judge)
+      end
+    end
+
+    trait :with_container_role do
+      after(:create) do |user|
+        user.roles << create(:role, :admin)
+      end
+    end
+
+    trait :axis_mundi do
+      after(:create) do |user|
+        user.roles << create(:role, :axis_mundi)
+      end
+    end
+
+    # Alias for backward compatibility
+    trait :with_axis_mundi_role do
+      axis_mundi
+    end
 
     trait :employee do
       after(:create) do |user|
-        # create(:affiliation, user: user, name: 'employee')
         user.affiliations << create(:affiliation, name: 'staff')
       end
     end
@@ -62,24 +90,6 @@ FactoryBot.define do
     trait :faculty do
       after(:create) do |user|
         user.affiliations << create(:affiliation, name: 'faculty')
-      end
-    end
-
-    trait :with_axis_mundi_role do
-      after(:create) do |user|
-        axis_mundi_role = Role.find_or_create_by!(kind: 'Axis mundi') do |role|
-          role.description = 'Axis Mundi Role Description'
-        end
-        create(:user_role, user: user, role: axis_mundi_role)
-      end
-    end
-
-    trait :with_judge_role do
-      after(:create) do |user|
-        judge_role = Role.find_or_create_by!(kind: 'Judge') do |role|
-          role.description = 'Judge Role Description'
-        end
-        create(:user_role, user: user, role: judge_role)
       end
     end
   end

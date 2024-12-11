@@ -68,7 +68,7 @@ RSpec.describe ContestInstancePolicy do
     describe 'view_judging_results?' do
       context 'when judge evaluations are complete' do
         before do
-          contest_instance.update(judge_evaluations_complete: true)
+          create(:judging_round, contest_instance: contest_instance, completed: true)
         end
 
         it 'permits viewing results' do
@@ -78,7 +78,7 @@ RSpec.describe ContestInstancePolicy do
 
       context 'when judge evaluations are not complete' do
         before do
-          contest_instance.update(judge_evaluations_complete: false)
+          create(:judging_round, contest_instance: contest_instance, completed: false)
         end
 
         it 'does not permit viewing results' do
