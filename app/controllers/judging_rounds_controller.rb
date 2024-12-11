@@ -27,13 +27,6 @@ class JudgingRoundsController < ApplicationController
   end
 
   def update
-    if params[:confirmed] != 'true' && editing_after_start?
-      flash.now[:warning] = 'This round has already started. Are you sure you want to make changes?'
-      @show_confirmation = true
-      render :edit
-      return
-    end
-
     if @judging_round.update(judging_round_params)
       redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
         @container, @contest_description, @contest_instance, @judging_round
