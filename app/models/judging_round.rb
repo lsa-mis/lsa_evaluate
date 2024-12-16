@@ -11,6 +11,7 @@
 #  require_external_comments  :boolean          default(FALSE), not null
 #  require_internal_comments  :boolean          default(FALSE), not null
 #  round_number               :integer          not null
+#  special_instructions       :text(65535)
 #  start_date                 :datetime
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
