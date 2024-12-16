@@ -22,7 +22,7 @@
       </div>
       <div id="contestCollapse<%= index %>" class="accordion-collapse collapse" aria-labelledby="contestHeader<%= index %>" data-bs-parent="#contestAccordion<%= index %>">
         <div class="accordion-body">
-          <% if assignment.contest_instance.current_judging_round.special_instructions.present? %>
+          <% if assignment.contest_instance.current_judging_round&.special_instructions.present? %>
             <div class="alert alert-info mt-2">
               <strong>Special Instructions:</strong>
               <%= simple_format(assignment.contest_instance.current_judging_round.special_instructions) %>
