@@ -86,7 +86,8 @@ class JudgingRoundsController < ApplicationController
       :require_internal_comments,
       :require_external_comments,
       :min_internal_comment_words,
-      :min_external_comment_words
+      :min_external_comment_words,
+      :special_instructions
     )
   end
 
