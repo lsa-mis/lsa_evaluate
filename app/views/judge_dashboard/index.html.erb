@@ -1,5 +1,5 @@
 <h1>Judge Dashboard</h1>
-<h2><%= "Welcome #{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)}) these are your judging assignments:"%></h2>
+<h2><%= "Hello #{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)})! these are your judging assignments:"%></h2>
 
 <% @judging_assignments.each_with_index do |assignment, index| %>
   <div class="accordion mb-4" id="contestAccordion<%= index %>">
@@ -11,6 +11,8 @@
             <% if assignment.contest_instance.current_judging_round %>
               <p class="text-muted mb-0">
                 Round: <%= assignment.contest_instance.current_judging_round.round_number %>
+                (<%= format_datetime(assignment.contest_instance.current_judging_round.start_date) %> -
+                <%= format_datetime(assignment.contest_instance.current_judging_round.end_date) %>)
               </p>
             <% else %>
               <p class="text-muted mb-0">No active round</p>
@@ -20,6 +22,12 @@
       </div>
       <div id="contestCollapse<%= index %>" class="accordion-collapse collapse" aria-labelledby="contestHeader<%= index %>" data-bs-parent="#contestAccordion<%= index %>">
         <div class="accordion-body">
+          <% if assignment.contest_instance.current_judging_round.special_instructions.present? %>
+            <div class="alert alert-info mt-2">
+              <strong>Special Instructions:</strong>
+              <%= simple_format(assignment.contest_instance.current_judging_round.special_instructions) %>
+            </div>
+          <% end %>
           <% if assignment.contest_instance.judging_open? %>
             <h3>Entries to Judge</h3>
             <div class="table-responsive">
@@ -67,17 +75,25 @@
                           <div class="comments-section">
                             <% current_round = assignment.contest_instance.current_judging_round %>
                             <% if current_round.require_internal_comments %>
-                              <div class="form-group mb-2">
+                              <div class="form-group mb-2"
+                                   data-controller="word-counter"
+                                   data-word-counter-minimum-value="<%= current_round.min_internal_comment_words %>">
                                 <%= f.label :internal_comments, class: 'form-label small' do %>
                                   Internal Comments
                                   <span class="text-danger">*</span>
                                   <% if current_round.min_internal_comment_words > 0 %>
                                     <small class="text-muted d-block">
-                                      Minimum <%= pluralize(current_round.min_internal_comment_words, 'word') %> required
+                                      <span data-word-counter-target="counter">0/<%= current_round.min_internal_comment_words %> words</span>
                                     </small>
                                   <% end %>
                                 <% end %>
-                                <%= f.text_area :internal_comments, class: 'form-control form-control-sm', rows: 2 %>
+                                <%= f.text_area :internal_comments,
+                                    class: 'form-control form-control-sm',
+                                    rows: 2,
+                                    data: {
+                                      word_counter_target: "input",
+                                      action: "input->word-counter#updateCounter"
+                                    } %>
                               </div>
                             <% else %>
                               <div class="form-group mb-2">
@@ -87,17 +103,25 @@
                             <% end %>
 
                             <% if current_round.require_external_comments %>
-                              <div class="form-group mb-2">
+                              <div class="form-group mb-2"
+                                   data-controller="word-counter"
+                                   data-word-counter-minimum-value="<%= current_round.min_external_comment_words %>">
                                 <%= f.label :external_comments, class: 'form-label small' do %>
-                                  External Comments
+                                  Internal Comments
                                   <span class="text-danger">*</span>
                                   <% if current_round.min_external_comment_words > 0 %>
                                     <small class="text-muted d-block">
-                                      Minimum <%= pluralize(current_round.min_external_comment_words, 'word') %> required
+                                      <span data-word-counter-target="counter">0/<%= current_round.min_external_comment_words %> words</span>
                                     </small>
                                   <% end %>
                                 <% end %>
-                                <%= f.text_area :external_comments, class: 'form-control form-control-sm', rows: 2 %>
+                                <%= f.text_area :external_comments,
+                                    class: 'form-control form-control-sm',
+                                    rows: 2,
+                                    data: {
+                                      word_counter_target: "input",
+                                      action: "input->word-counter#updateCounter"
+                                    } %>
                               </div>
                             <% else %>
                               <div class="form-group mb-2">
