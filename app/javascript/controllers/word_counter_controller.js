@@ -12,7 +12,7 @@ export default class extends Controller {
     const wordCount = this.input.value.trim().split(/\s+/).filter(Boolean).length
     const minimumWords = this.minimumValue
 
-    this.counterTarget.textContent = `${wordCount}/${minimumWords} words`
+    this.counterTarget.textContent = `Words: ${wordCount}`
 
     if (minimumWords > 0) {
       if (wordCount >= minimumWords) {
