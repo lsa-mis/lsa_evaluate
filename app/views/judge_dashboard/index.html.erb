@@ -1,5 +1,5 @@
 <h1>Judge Dashboard</h1>
-<h2><%= "Hello #{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)})! these are your judging assignments:"%></h2>
+<h3><%= "Hello #{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)})! these are your judging assignments:"%></h3>
 
 <% @judging_assignments.each_with_index do |assignment, index| %>
   <div class="accordion mb-4" id="contestAccordion<%= index %>">
@@ -24,7 +24,7 @@
         <div class="accordion-body">
           <% if assignment.contest_instance.current_judging_round&.special_instructions.present? %>
             <div class="alert alert-info mt-2">
-              <strong>Special Instructions:</strong>
+              <strong>Instructions:</strong>
               <%= simple_format(assignment.contest_instance.current_judging_round.special_instructions) %>
             </div>
           <% end %>
@@ -83,7 +83,7 @@
                                   <span class="text-danger">*</span>
                                   <% if current_round.min_internal_comment_words > 0 %>
                                     <small class="text-muted d-block">
-                                      <span data-word-counter-target="counter">0/<%= current_round.min_internal_comment_words %> words</span>
+                                      <span><%= "#{ pluralize(current_round.min_internal_comment_words, 'word')} minimum" %></span>
                                     </small>
                                   <% end %>
                                 <% end %>
@@ -94,6 +94,9 @@
                                       word_counter_target: "input",
                                       action: "input->word-counter#updateCounter"
                                     } %>
+                                    <small class="text-muted d-block">
+                                      <span data-word-counter-target="counter">Words: 0</span>
+                                    </small>
                               </div>
                             <% else %>
                               <div class="form-group mb-2">
@@ -107,11 +110,11 @@
                                    data-controller="word-counter"
                                    data-word-counter-minimum-value="<%= current_round.min_external_comment_words %>">
                                 <%= f.label :external_comments, class: 'form-label small' do %>
-                                  Internal Comments
+                                  External Comments
                                   <span class="text-danger">*</span>
                                   <% if current_round.min_external_comment_words > 0 %>
                                     <small class="text-muted d-block">
-                                      <span data-word-counter-target="counter">0/<%= current_round.min_external_comment_words %> words</span>
+                                      <span><%= "#{ pluralize(current_round.min_external_comment_words, 'word')} minimum" %></span>
                                     </small>
                                   <% end %>
                                 <% end %>
@@ -122,6 +125,9 @@
                                       word_counter_target: "input",
                                       action: "input->word-counter#updateCounter"
                                     } %>
+                                  <small class="text-muted d-block">
+                                    <span data-word-counter-target="counter">Words: 0</span>
+                                  </small>
                               </div>
                             <% else %>
                               <div class="form-group mb-2">
