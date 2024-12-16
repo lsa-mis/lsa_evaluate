@@ -19,6 +19,17 @@ RSpec.describe 'Judge Dashboard', type: :system do
 
   it 'displays the judge information correctly' do
     expect(page).to have_content('Judge Dashboard')
-    expect(page).to have_content("Welcome #{judge.first_name} #{judge.last_name} (#{display_email(judge.email)})")
+    expect(page).to have_content("Hello #{judge.first_name} #{judge.last_name} (#{display_email(judge.email)})")
+
+    # Expand the accordion
+    find('.accordion-button').click
+
+    # Wait for animation to complete
+    sleep 0.5
+
+    # Now check the content inside the expanded accordion
+    within('.accordion-collapse.show') do
+      # Your expectations for accordion content here
+    end
   end
 end
