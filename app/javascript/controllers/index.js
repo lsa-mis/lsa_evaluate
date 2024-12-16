@@ -45,3 +45,6 @@ application.register("uid-lookup", UidLookupController)
 
 import JudgingRoundFormController from "./judging_round_form_controller"
 application.register("judging-round-form", JudgingRoundFormController)
+
+import WordCounterController from "./word_counter_controller"
+application.register("word-counter", WordCounterController)
