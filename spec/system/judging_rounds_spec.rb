@@ -38,24 +38,16 @@ RSpec.describe 'Judging Rounds', type: :system do
           click_button 'Create Round'
 
           if page.has_css?('.alert-danger')
-            puts "Alert Danger Messages:"
             page.all('.alert-danger').each do |alert|
-              puts alert.text
             end
           end
 
           if page.has_css?('.error')
-            puts "Error Messages:"
             page.all('.error').each do |error|
-              puts error.text
             end
           end
 
-          puts "Page Source:"
-          puts page.body
         rescue => e
-          puts "Exception occurred: #{e.message}"
-          puts e.backtrace.join("\n")
         end
       }.to change(JudgingRound, :count).by(1)
 
@@ -65,7 +57,7 @@ RSpec.describe 'Judging Rounds', type: :system do
           container, contest_description, contest_instance
         )
       )
-      click_link 'Round 1'
+      click_link_or_button 'Manage Round Judges'
       expect(page).to have_content('These are special test instructions')
     end
 
@@ -80,6 +72,9 @@ RSpec.describe 'Judging Rounds', type: :system do
 
       sign_in judge
       visit judge_dashboard_path
+
+      # Click the accordion button to expand it
+      find('.accordion-button').click
 
       expect(page).to have_content('Important judging guidelines')
     end
