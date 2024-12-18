@@ -1,76 +1,87 @@
-<div class="card mt-4">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h3>Judging Rounds</h3>
-    <%= link_to 'Create New Round',
-        new_container_contest_description_contest_instance_judging_round_path(
-          @container, @contest_description, @contest_instance
-        ),
-        class: 'btn btn-primary' %>
-  </div>
-  <div class="card-body">
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Round Number</th>
-            <th>Status</th>
-            <th>Dates</th>
-            <th>Assigned Judges</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
+<div data-controller="tooltip-email-display">
+  <div class="card mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h3>Judging Rounds</h3>
+      <%= link_to 'Create New Round',
+          new_container_contest_description_contest_instance_judging_round_path(
+            @container, @contest_description, @contest_instance
+          ),
+          class: 'btn btn-primary' %>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
             <tr>
-              <td><%= round.round_number %></td>
-              <td>
-                <%= round.completed? ? 'Completed' : (round.active? ? 'Active' : 'Pending') %>
-                <% unless round.completed? %>
-                  <% if round.active? %>
-                    <%= button_to 'Deactivate',
-                        deactivate_container_contest_description_contest_instance_judging_round_path(
-                          @container, @contest_description, @contest_instance, round
-                        ),
-                        method: :patch,
-                        class: 'btn btn-warning btn-sm ms-2',
-                        form: { style: 'display: inline-block;' } %>
-                  <% else %>
-                    <%= button_to 'Activate',
-                        activate_container_contest_description_contest_instance_judging_round_path(
-                          @container, @contest_description, @contest_instance, round
-                        ),
-                        method: :patch,
-                        class: 'btn btn-success btn-sm ms-2',
-                        form: { style: 'display: inline-block;' } %>
-                  <% end %>
-                <% end %>
-              </td>
-              <td>
-                <%= format_datetime(round.start_date) %> -
-                <%= format_datetime(round.end_date) %>
-              </td>
-              <td>
-                <% if round.judges.any? %>
-                  <span class="text-muted">
-                    <%= round.judges.map(&:email).join(', ') %>
-                  </span>
-                <% else %>
-                  <span class="text-danger opacity-50">
-                    No judges assigned
-                  </span>
-                <% end %>
-              </td>
-              <td>
-                <%= link_to 'Manage Round Judges',
-                    container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
-                      @container, @contest_description, @contest_instance, round
-                    ),
-                    class: 'btn btn-secondary btn-sm' %>
-              </td>
+              <th>Round Number</th>
+              <th>Status</th>
+              <th>Dates</th>
+              <th>Assigned Judges</th>
+              <th>Actions</th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
+              <tr>
+                <td><%= round.round_number %></td>
+                <td>
+                  <%= round.completed? ? 'Completed' : (round.active? ? 'Active' : 'Pending') %>
+                  <% unless round.completed? %>
+                    <% if round.active? %>
+                      <%= button_to 'Deactivate',
+                          deactivate_container_contest_description_contest_instance_judging_round_path(
+                            @container, @contest_description, @contest_instance, round
+                          ),
+                          method: :patch,
+                          class: 'btn btn-warning btn-sm ms-2',
+                          form: { style: 'display: inline-block;' } %>
+                    <% else %>
+                      <%= button_to 'Activate',
+                          activate_container_contest_description_contest_instance_judging_round_path(
+                            @container, @contest_description, @contest_instance, round
+                          ),
+                          method: :patch,
+                          class: 'btn btn-success btn-sm ms-2',
+                          form: { style: 'display: inline-block;' } %>
+                    <% end %>
+                  <% end %>
+                </td>
+                <td>
+                  <%= format_datetime(round.start_date) %> -
+                  <%= format_datetime(round.end_date) %>
+                </td>
+                <td>
+                  <% if round.judges.any? %>
+                    <span class="text-muted">
+                      <%= round.judges.map { |judge|
+                        content_tag(:span,
+                          display_email(judge.email),
+                          data: {
+                            'bs-toggle': 'tooltip',
+                            'bs-html': 'true',
+                            'bs-title': "#{h(judge.display_name)}<br>#{h(display_email(judge.email))}"
+                          }
+                        )
+                      }.join(', ').html_safe %>
+                    </span>
+                  <% else %>
+                    <span class="text-danger opacity-50">
+                      No judges assigned
+                    </span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= link_to 'Manage Round Judges',
+                      container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+                        @container, @contest_description, @contest_instance, round
+                      ),
+                      class: 'btn btn-secondary btn-sm' %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>
