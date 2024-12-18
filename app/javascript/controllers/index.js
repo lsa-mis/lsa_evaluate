@@ -48,3 +48,6 @@ application.register("judging-round-form", JudgingRoundFormController)
 
 import WordCounterController from "./word_counter_controller"
 application.register("word-counter", WordCounterController)
+
+import TooltipEmailDisplayController from "./tooltip_email_display_controller"
+application.register("tooltip-email-display", TooltipEmailDisplayController)
