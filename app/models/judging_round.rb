@@ -43,6 +43,8 @@ class JudgingRound < ApplicationRecord
 
   scope :active, -> { where(active: true) }
 
+  before_create :set_active_by_default
+
   def activate!
     return false unless valid?
 
@@ -96,5 +98,9 @@ class JudgingRound < ApplicationRecord
     if active && contest_instance.judging_rounds.where(active: true).where.not(id: id).exists?
       errors.add(:active, 'There can only be one active round per contest instance')
     end
+  end
+
+  def set_active_by_default
+    self.active = true
   end
 end
