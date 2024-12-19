@@ -1,4 +1,9 @@
 <h1>Judge Dashboard</h1>
+<div class="row mx-4 mb-4">
+  <% if (content = render_editable_content('judge_dashboard', 'instructions')) %>
+      <%= content %>
+  <% end %>
+</div>
 <h3><%= "Hello #{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)})! these are your judging assignments:"%></h3>
 
 <% @judging_assignments.each_with_index do |assignment, index| %>
