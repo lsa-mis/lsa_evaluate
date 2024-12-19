@@ -24,7 +24,7 @@ namespace :test do
   desc 'Run only RSpec tests'
   task rspec: :environment do
     puts "\n=== Running RSpec Tests ===\n"
-    exit 1 unless system('bundle exec rspec')
+    exit 1 unless system('bundle exec rspec --format documentation')
     puts "\n✅ RSpec tests passed!"
   end
 end
