@@ -27,8 +27,6 @@ class ContestDescription < ApplicationRecord
   has_rich_text :eligibility_rules
   has_rich_text :notes
 
-  # accepts_nested_attributes_for :contest_instances, allow_destroy: true
-
   validates :created_by, presence: true
   validates :name, presence: true, uniqueness: true
 
