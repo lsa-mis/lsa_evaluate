@@ -131,12 +131,14 @@ RSpec.describe ContestInstance, type: :model do
 
       context 'with an inactive judging round' do
         let!(:judging_round) do
-          create(:judging_round,
+          round = create(:judging_round,
                 contest_instance: contest_instance,
                 start_date: Time.current,
-                end_date: 1.day.from_now,
-                active: false)
+                end_date: 1.day.from_now)
+          round.deactivate!
+          round
         end
+
 
         it 'returns false even when within judging round dates' do
           expect(contest_instance.judging_open?).to be false
@@ -186,8 +188,12 @@ RSpec.describe ContestInstance, type: :model do
           end
 
           it 'returns true when the last round is completed, regardless of earlier rounds' do
-            round1.update(completed: false)
-            round2.update(completed: true)
+            round1.update!(completed: false, active: false)
+            expect(round2.update!(completed: true)).to be true
+
+            # Force reload of both the round and the association
+            round2.reload
+            contest_instance.reload
             expect(contest_instance.judge_evaluations_complete?).to be true
           end
         end
