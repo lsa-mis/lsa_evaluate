@@ -167,4 +167,43 @@ RSpec.describe JudgingRound, type: :model do
       expect(judging_round.reload.special_instructions).to eq(instructions)
     end
   end
+
+  describe '#complete!' do
+    let(:contest_instance) { create(:contest_instance, date_open: 1.day.ago, date_closed: 1.day.from_now) }
+
+    context 'with multiple rounds' do
+      let!(:first_round) do
+        create(:judging_round,
+              contest_instance: contest_instance,
+              round_number: 1,
+              start_date: contest_instance.date_closed + 1.day,
+              end_date: contest_instance.date_closed + 2.days)
+      end
+
+      let!(:second_round) do
+        create(:judging_round,
+              contest_instance: contest_instance,
+              round_number: 2,
+              start_date: first_round.end_date + 1.hour,
+              end_date: first_round.end_date + 2.days)
+      end
+
+      it 'prevents completing a round if previous rounds are not completed' do
+        expect(second_round.complete!).to be false
+        expect(second_round.errors[:base]).to include('All previous rounds must be completed before completing this round')
+        expect(second_round.reload.completed).to be false
+      end
+
+      it 'allows completing a round when previous rounds are completed' do
+        first_round.complete!
+        expect(second_round.complete!).to be true
+        expect(second_round.reload.completed).to be true
+      end
+
+      it 'allows completing the first round regardless of other rounds' do
+        expect(first_round.complete!).to be true
+        expect(first_round.reload.completed).to be true
+      end
+    end
+  end
 end
