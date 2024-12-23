@@ -40,7 +40,6 @@ class JudgingRound < ApplicationRecord
   validate :dates_are_valid
   validate :start_date_after_previous_round
   validate :only_one_active_round_per_contest
-  validate :validate_previous_rounds_completed
 
   scope :active, -> { where(active: true) }
 
