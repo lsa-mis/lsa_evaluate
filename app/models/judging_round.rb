@@ -40,6 +40,7 @@ class JudgingRound < ApplicationRecord
   validate :dates_are_valid
   validate :start_date_after_previous_round
   validate :only_one_active_round_per_contest
+  validate :validate_previous_rounds_completed
 
   scope :active, -> { where(active: true) }
 
@@ -47,6 +48,7 @@ class JudgingRound < ApplicationRecord
 
   def activate!
     return false unless valid?
+    return false unless validate_previous_rounds_completed
 
     JudgingRound.transaction do
       contest_instance.judging_rounds.active.update_all(active: false)
@@ -67,6 +69,20 @@ class JudgingRound < ApplicationRecord
   def assign_judge(user)
     return false unless user.judge?
     round_judge_assignments.create(user: user)
+  end
+
+  def validate_previous_rounds_completed
+    return true if contest_instance.judging_rounds.count.zero?
+
+    previous_rounds = contest_instance.judging_rounds
+                     .where('round_number < ?', round_number)
+
+    if previous_rounds.exists?(completed: false)
+      errors.add(:base, 'All previous rounds must be completed before activating this round')
+      return false
+    end
+
+    true
   end
 
   private
