@@ -28,9 +28,21 @@ class JudgingRoundsController < ApplicationController
 
   def update
     if @judging_round.update(judging_round_params)
-      redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
-        @container, @contest_description, @contest_instance, @judging_round
-      ), notice: 'Judging round was successfully updated.'
+      if judging_round_params[:active] == '1' && !@judging_round.active
+        if @judging_round.activate!
+          redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+            @container, @contest_description, @contest_instance, @judging_round
+          ), notice: 'Judging round was successfully updated and activated.'
+        else
+          redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+            @container, @contest_description, @contest_instance, @judging_round
+          ), alert: @judging_round.errors.full_messages.join(', ')
+        end
+      else
+        redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+          @container, @contest_description, @contest_instance, @judging_round
+        ), notice: 'Judging round was successfully updated.'
+      end
     else
       flash.now[:alert] = @judging_round.errors.full_messages
       render :edit, status: :unprocessable_entity
