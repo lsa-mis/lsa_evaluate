@@ -66,6 +66,22 @@ class JudgingRound < ApplicationRecord
     update!(active: false)
   end
 
+  def complete!
+    return false unless valid?
+    update!(completed: true, active: false)
+    true
+  rescue ActiveRecord::RecordInvalid
+    false
+  end
+
+  def uncomplete!
+    return false unless valid?
+    update!(completed: false)
+    true
+  rescue ActiveRecord::RecordInvalid
+    false
+  end
+
   def assign_judge(user)
     return false unless user.judge?
     round_judge_assignments.create(user: user)
