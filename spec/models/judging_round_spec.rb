@@ -118,6 +118,19 @@ RSpec.describe JudgingRound, type: :model do
 
         second_round.activate!
 
+        expect(first_round.reload.active).to be true
+        expect(second_round.reload.active).to be false
+      end
+
+      it 'maintains only one active round when manually completing' do
+        second_round = create(:judging_round,
+                            contest_instance: contest_instance,
+                            round_number: 2,
+                            start_date: first_round.end_date + 1.hour,
+                            end_date: first_round.end_date + 2.days)
+        first_round.complete!
+        second_round.activate!
+
         expect(first_round.reload.active).to be false
         expect(second_round.reload.active).to be true
       end
