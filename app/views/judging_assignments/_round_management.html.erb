@@ -25,26 +25,49 @@
               <tr>
                 <td><%= round.round_number %></td>
                 <td>
-                  <%= round.completed? ? 'Completed' : (round.active? ? 'Active' : 'Pending') %>
-                  <% unless round.completed? %>
-                    <% if round.active? %>
-                      <%= button_to 'Deactivate',
-                          deactivate_container_contest_description_contest_instance_judging_round_path(
+                  <div class="mb-1">
+                    <%= round.completed? ? 'Completed' : (round.active? ? 'Active' : 'Pending') %>
+                  </div>
+                  <div class="d-flex gap-1">
+                    <% if round.completed? %>
+                      <%= button_to 'Mark Incomplete',
+                          uncomplete_container_contest_description_contest_instance_judging_round_path(
                             @container, @contest_description, @contest_instance, round
                           ),
                           method: :patch,
-                          class: 'btn btn-warning btn-sm ms-2',
+                          class: 'btn btn-warning btn-sm py-0 px-1 text-nowrap',
+                          style: 'font-size: 0.75rem; line-height: 1.2;',
                           form: { style: 'display: inline-block;' } %>
                     <% else %>
-                      <%= button_to 'Activate',
-                          activate_container_contest_description_contest_instance_judging_round_path(
+                      <% if round.active? %>
+                        <%= button_to 'Deactivate',
+                            deactivate_container_contest_description_contest_instance_judging_round_path(
+                              @container, @contest_description, @contest_instance, round
+                            ),
+                            method: :patch,
+                            class: 'btn btn-warning btn-sm py-0 px-1 text-nowrap',
+                            style: 'font-size: 0.75rem; line-height: 1.2;',
+                            form: { style: 'display: inline-block;' } %>
+                      <% else %>
+                        <%= button_to 'Activate',
+                            activate_container_contest_description_contest_instance_judging_round_path(
+                              @container, @contest_description, @contest_instance, round
+                            ),
+                            method: :patch,
+                            class: 'btn btn-success btn-sm py-0 px-1 text-nowrap',
+                            style: 'font-size: 0.75rem; line-height: 1.2;',
+                            form: { style: 'display: inline-block;' } %>
+                      <% end %>
+                      <%= button_to 'Mark Complete',
+                          complete_container_contest_description_contest_instance_judging_round_path(
                             @container, @contest_description, @contest_instance, round
                           ),
                           method: :patch,
-                          class: 'btn btn-success btn-sm ms-2',
+                          class: 'btn btn-info btn-sm py-0 px-1 text-nowrap',
+                          style: 'font-size: 0.75rem; line-height: 1.2;',
                           form: { style: 'display: inline-block;' } %>
                     <% end %>
-                  <% end %>
+                  </div>
                 </td>
                 <td>
                   <%= format_datetime(round.start_date) %> -
