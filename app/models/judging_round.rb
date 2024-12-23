@@ -67,6 +67,7 @@ class JudgingRound < ApplicationRecord
 
   def complete!
     return false unless valid?
+    return false unless validate_previous_rounds_completed
     update!(completed: true, active: false)
     true
   rescue ActiveRecord::RecordInvalid
@@ -87,13 +88,13 @@ class JudgingRound < ApplicationRecord
   end
 
   def validate_previous_rounds_completed
-    return true if contest_instance.judging_rounds.count.zero?
+    return true if round_number == 1
 
     previous_rounds = contest_instance.judging_rounds
                      .where('round_number < ?', round_number)
 
     if previous_rounds.exists?(completed: false)
-      errors.add(:base, 'All previous rounds must be completed before activating this round')
+      errors.add(:base, 'All previous rounds must be completed before completing this round')
       return false
     end
 
