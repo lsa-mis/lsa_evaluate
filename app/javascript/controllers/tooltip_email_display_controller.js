@@ -3,7 +3,6 @@ import { Tooltip } from "bootstrap"
 
 export default class extends Controller {
   connect() {
-    console.log("TooltipEmailDisplayController connected")
     this.initializeTooltips()
   }
 
