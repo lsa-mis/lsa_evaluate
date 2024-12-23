@@ -1,6 +1,6 @@
 class JudgingRoundsController < ApplicationController
   before_action :set_contest_instance
-  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate ]
+  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete ]
   before_action :authorize_contest_instance
   before_action :check_edit_warning, only: [ :edit, :update ]
 
@@ -57,7 +57,7 @@ class JudgingRoundsController < ApplicationController
     else
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
-      ), alert: 'Failed to activate judging round.'
+      ), alert: 'Failed to activate judging round, be sure previous round is completed.'
     end
   end
 
@@ -70,6 +70,30 @@ class JudgingRoundsController < ApplicationController
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
       ), alert: 'Failed to deactivate judging round.'
+    end
+  end
+
+  def complete
+    if @judging_round.complete!
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), notice: 'Judging round was successfully marked as completed.'
+    else
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'Failed to mark judging round as completed.'
+    end
+  end
+
+  def uncomplete
+    if @judging_round.uncomplete!
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), notice: 'Judging round completion status was successfully removed.'
+    else
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'Failed to remove judging round completion status.'
     end
   end
 
