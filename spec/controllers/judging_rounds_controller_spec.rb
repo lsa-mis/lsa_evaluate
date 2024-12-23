@@ -143,6 +143,22 @@ RSpec.describe JudgingRoundsController, type: :controller do
           expect(response).to render_template(:edit)
         end
       end
+
+      context 'when activating a round' do
+        let!(:active_round) { create(:judging_round, contest_instance: contest_instance, active: true, start_date: 1.day.from_now, end_date: 2.days.from_now) }
+        let(:judging_round) { create(:judging_round, contest_instance: contest_instance, start_date: active_round.end_date + 1.day, end_date: active_round.end_date + 2.days) }
+
+        it 'sets a flash message if there is already an active round' do
+          patch :update, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            contest_instance_id: contest_instance.id,
+            id: judging_round.id,
+            judging_round: { active: '1' }
+          }
+          expect(flash[:alert]).to include('There can only be one active judging round per contest instance')
+        end
+      end
     end
 
     context 'when user is not container administrator' do
