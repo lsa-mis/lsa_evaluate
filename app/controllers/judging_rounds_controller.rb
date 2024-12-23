@@ -81,7 +81,7 @@ class JudgingRoundsController < ApplicationController
     else
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
-      ), alert: 'Failed to mark judging round as completed.'
+      ), alert: 'Failed to mark judging round as completed, be sure previous rounds are completed first.'
     end
   end
 
