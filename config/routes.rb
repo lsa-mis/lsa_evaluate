@@ -43,6 +43,8 @@ Rails.application.routes.draw do
           member do
             patch :activate
             patch :deactivate
+            patch :complete
+            patch :uncomplete
           end
           resources :round_judge_assignments
           resources :entry_rankings, only: [ :create, :update ]

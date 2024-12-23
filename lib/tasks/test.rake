@@ -20,6 +20,13 @@ namespace :test do
     puts "\n=== Running Jest Tests ===\n"
     exit 1 unless system('yarn test')
   end
+
+  desc 'Run only RSpec tests'
+  task rspec: :environment do
+    puts "\n=== Running RSpec Tests ===\n"
+    exit 1 unless system('bundle exec rspec --format documentation')
+    puts "\n✅ RSpec tests passed!"
+  end
 end
 
 # Make test:all the default when running just 'rake test'

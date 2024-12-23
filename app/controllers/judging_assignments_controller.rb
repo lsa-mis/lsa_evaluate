@@ -76,13 +76,6 @@ class JudgingAssignmentsController < ApplicationController
         @user = User.find_by(email: transformed_email)
 
         if @user
-          # Update existing user's information
-          # @user.update!(
-          #   first_name: params[:first_name],
-          #   last_name: params[:last_name],
-          #   display_name: "#{params[:first_name]} #{params[:last_name]}"
-          # )
-
           # Add judge role if not already present
           @user.roles << judge_role unless @user.roles.include?(judge_role)
         else

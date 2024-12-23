@@ -11,6 +11,7 @@
 #  require_external_comments  :boolean          default(FALSE), not null
 #  require_internal_comments  :boolean          default(FALSE), not null
 #  round_number               :integer          not null
+#  special_instructions       :text(65535)
 #  start_date                 :datetime
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
@@ -37,6 +38,7 @@ FactoryBot.define do
     require_external_comments { false }
     min_internal_comment_words { 0 }
     min_external_comment_words { 0 }
+    special_instructions { nil }
 
     trait :completed do
       completed { true }
@@ -61,6 +63,10 @@ FactoryBot.define do
       after(:create) do |round, evaluator|
         create_list(:round_judge_assignment, evaluator.judges_count, judging_round: round)
       end
+    end
+
+    trait :with_special_instructions do
+      special_instructions { "Special instructions for round #{round_number}" }
     end
   end
 end

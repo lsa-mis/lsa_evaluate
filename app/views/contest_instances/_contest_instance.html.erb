@@ -22,26 +22,6 @@
       </div>
     </div>
 
-    <div class="mb-3">
-      <strong>Notes:</strong>
-      <%= contest_instance.notes %>
-    </div>
-
-    <div class="row mb-3">
-      <div class="col">
-        <strong>Judging Open:</strong>
-        <%= boolean_to_yes_no(contest_instance.judging_open?) %>
-      </div>
-      <div class="col">
-        <strong>Judging Rounds:</strong>
-        <%= contest_instance.actual_judging_rounds_count %>
-      </div>
-      <div class="col">
-        <strong>Judge Evaluations Complete:</strong>
-        <%= boolean_to_yes_no(contest_instance.judge_evaluations_complete?) %>
-      </div>
-    </div>
-
     <div class="row mb-3">
       <div class="col">
         <strong>Category:</strong>
@@ -66,6 +46,34 @@
     <div class="mb-3">
       <strong>Require Campus Employment Info:</strong>
       <%= boolean_to_yes_no(contest_instance.require_campus_employment_info) %>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <strong>Judging Open:</strong>
+        <%= boolean_to_yes_no(contest_instance.judging_open?) %>
+      </div>
+      <div class="col">
+        <strong>Judging Rounds:</strong>
+        <%= contest_instance.actual_judging_rounds_count %>
+      </div>
+      <div class="col">
+        <strong>Judge Evaluations Complete:</strong>
+        <%= boolean_to_yes_no(contest_instance.judge_evaluations_complete?) %>
+      </div>
+      <div class="col">
+        <strong>Judges Assigned:</strong>
+        <% contest_instance.judges.each do |judge| %>
+          <%= content_tag(:span,
+                            display_email(judge.email),
+                            data: {
+                              'bs-toggle': 'tooltip',
+                              'bs-html': true,
+                              'bs-title': "#{h(judge.display_name)}<br>#{h(display_email(judge.email))}"
+                              }
+          ) %>
+        <% end %>
+      </div>
     </div>
 
     <div class="mb-3">

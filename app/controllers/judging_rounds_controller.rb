@@ -1,6 +1,6 @@
 class JudgingRoundsController < ApplicationController
   before_action :set_contest_instance
-  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate ]
+  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete ]
   before_action :authorize_contest_instance
   before_action :check_edit_warning, only: [ :edit, :update ]
 
@@ -28,9 +28,21 @@ class JudgingRoundsController < ApplicationController
 
   def update
     if @judging_round.update(judging_round_params)
-      redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
-        @container, @contest_description, @contest_instance, @judging_round
-      ), notice: 'Judging round was successfully updated.'
+      if judging_round_params[:active] == '1' && !@judging_round.active
+        if @judging_round.activate!
+          redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+            @container, @contest_description, @contest_instance, @judging_round
+          ), notice: 'Judging round was successfully updated and activated.'
+        else
+          redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+            @container, @contest_description, @contest_instance, @judging_round
+          ), alert: @judging_round.errors.full_messages.join(', ')
+        end
+      else
+        redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+          @container, @contest_description, @contest_instance, @judging_round
+        ), notice: 'Judging round was successfully updated.'
+      end
     else
       flash.now[:alert] = @judging_round.errors.full_messages
       render :edit, status: :unprocessable_entity
@@ -45,7 +57,7 @@ class JudgingRoundsController < ApplicationController
     else
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
-      ), alert: 'Failed to activate judging round.'
+      ), alert: 'Failed to activate judging round, be sure previous round is completed.'
     end
   end
 
@@ -58,6 +70,30 @@ class JudgingRoundsController < ApplicationController
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
       ), alert: 'Failed to deactivate judging round.'
+    end
+  end
+
+  def complete
+    if @judging_round.complete!
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), notice: 'Judging round was successfully marked as completed.'
+    else
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'Failed to mark judging round as completed, be sure previous rounds are completed first.'
+    end
+  end
+
+  def uncomplete
+    if @judging_round.uncomplete!
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), notice: 'Judging round completion status was successfully removed.'
+    else
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'Failed to remove judging round completion status.'
     end
   end
 
@@ -86,7 +122,8 @@ class JudgingRoundsController < ApplicationController
       :require_internal_comments,
       :require_external_comments,
       :min_internal_comment_words,
-      :min_external_comment_words
+      :min_external_comment_words,
+      :special_instructions
     )
   end
 

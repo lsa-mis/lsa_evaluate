@@ -11,6 +11,7 @@
 #  require_external_comments  :boolean          default(FALSE), not null
 #  require_internal_comments  :boolean          default(FALSE), not null
 #  round_number               :integer          not null
+#  special_instructions       :text(65535)
 #  start_date                 :datetime
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
@@ -72,6 +73,136 @@ RSpec.describe JudgingRound, type: :model do
                            start_date: first_round.end_date + 1.hour,
                            end_date: first_round.end_date + 2.days)
         expect(second_round).to be_valid
+      end
+    end
+  end
+
+  describe 'automatic activation' do
+    let(:contest_instance) { create(:contest_instance, date_closed: 1.day.from_now) }
+
+    context 'when creating the first round' do
+      it 'automatically sets active to true' do
+        first_round = create(:judging_round,
+                           contest_instance: contest_instance,
+                           round_number: 1,
+                           start_date: contest_instance.date_closed + 1.day,
+                           end_date: contest_instance.date_closed + 2.days)
+        expect(first_round.reload.active).to be true
+      end
+    end
+
+    context 'when creating subsequent rounds' do
+      let!(:first_round) do
+        create(:judging_round,
+              contest_instance: contest_instance,
+              round_number: 1,
+              start_date: contest_instance.date_closed + 1.day,
+              end_date: contest_instance.date_closed + 2.days)
+      end
+
+      it 'sets active to false by default' do
+        second_round = create(:judging_round,
+                            contest_instance: contest_instance,
+                            round_number: 2,
+                            start_date: first_round.end_date + 1.hour,
+                            end_date: first_round.end_date + 2.days)
+        expect(second_round.reload.active).to be false
+      end
+
+      it 'maintains only one active round when manually activating' do
+        second_round = create(:judging_round,
+                            contest_instance: contest_instance,
+                            round_number: 2,
+                            start_date: first_round.end_date + 1.hour,
+                            end_date: first_round.end_date + 2.days)
+
+        second_round.activate!
+
+        expect(first_round.reload.active).to be true
+        expect(second_round.reload.active).to be false
+      end
+
+      it 'maintains only one active round when manually completing' do
+        second_round = create(:judging_round,
+                            contest_instance: contest_instance,
+                            round_number: 2,
+                            start_date: first_round.end_date + 1.hour,
+                            end_date: first_round.end_date + 2.days)
+        first_round.complete!
+        second_round.activate!
+
+        expect(first_round.reload.active).to be false
+        expect(second_round.reload.active).to be true
+      end
+    end
+  end
+
+  describe 'special instructions' do
+    let(:contest_instance) { create(:contest_instance) }
+
+    it 'can be saved with special instructions' do
+      judging_round = build(:judging_round,
+        contest_instance: contest_instance,
+        special_instructions: "Please review entries carefully\nPay attention to formatting"
+      )
+      expect(judging_round).to be_valid
+      expect(judging_round.save).to be true
+    end
+
+    it 'can be saved without special instructions' do
+      judging_round = build(:judging_round,
+        contest_instance: contest_instance,
+        special_instructions: nil
+      )
+      expect(judging_round).to be_valid
+      expect(judging_round.save).to be true
+    end
+
+    it 'preserves line breaks in special instructions' do
+      instructions = "Line 1\nLine 2\nLine 3"
+      judging_round = create(:judging_round,
+        contest_instance: contest_instance,
+        special_instructions: instructions
+      )
+      expect(judging_round.reload.special_instructions).to eq(instructions)
+    end
+  end
+
+  describe '#complete!' do
+    let(:contest_instance) { create(:contest_instance, date_open: 1.day.ago, date_closed: 1.day.from_now) }
+
+    context 'with multiple rounds' do
+      let!(:first_round) do
+        create(:judging_round,
+              contest_instance: contest_instance,
+              round_number: 1,
+              start_date: contest_instance.date_closed + 1.day,
+              end_date: contest_instance.date_closed + 2.days)
+      end
+
+      let!(:second_round) do
+        create(:judging_round,
+              contest_instance: contest_instance,
+              round_number: 2,
+              start_date: first_round.end_date + 1.hour,
+              end_date: first_round.end_date + 2.days)
+      end
+
+      it 'prevents completing a round if previous rounds are not completed' do
+        expect(second_round.complete!).to be false
+        expect(second_round.errors[:base]).to include('All previous rounds must be completed before completing this round')
+        expect(second_round.reload.completed).to be false
+      end
+
+      it 'allows completing a round when previous rounds are completed' do
+        first_round.complete!
+        expect(second_round.complete!).to be true
+        expect(second_round.reload.completed).to be true
+      end
+
+      it 'allows completing the first round regardless of other rounds' do
+        expect(first_round.complete!).to be true
+        expect(first_round.reload.completed).to be true
       end
     end
   end

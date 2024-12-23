@@ -11,6 +11,7 @@
 #  require_external_comments  :boolean          default(FALSE), not null
 #  require_internal_comments  :boolean          default(FALSE), not null
 #  round_number               :integer          not null
+#  special_instructions       :text(65535)
 #  start_date                 :datetime
 #  created_at                 :datetime         not null
 #  updated_at                 :datetime         not null
@@ -42,15 +43,21 @@ class JudgingRound < ApplicationRecord
 
   scope :active, -> { where(active: true) }
 
+  before_create :set_active_by_default
+
   def activate!
     return false unless valid?
+    return false unless validate_previous_rounds_completed
 
     JudgingRound.transaction do
       contest_instance.judging_rounds.active.update_all(active: false)
       update!(active: true)
     end
     true
-  rescue ActiveRecord::RecordInvalid
+  rescue ActiveRecord::RecordInvalid => e
+    if e.record.errors.include?(:active)
+      errors.add(:base, 'There is already an active judging round for this contest')
+    end
     false
   end
 
@@ -58,9 +65,40 @@ class JudgingRound < ApplicationRecord
     update!(active: false)
   end
 
+  def complete!
+    return false unless valid?
+    return false unless validate_previous_rounds_completed
+    update!(completed: true, active: false)
+    true
+  rescue ActiveRecord::RecordInvalid
+    false
+  end
+
+  def uncomplete!
+    return false unless valid?
+    update!(completed: false)
+    true
+  rescue ActiveRecord::RecordInvalid
+    false
+  end
+
   def assign_judge(user)
     return false unless user.judge?
     round_judge_assignments.create(user: user)
+  end
+
+  def validate_previous_rounds_completed
+    return true if round_number == 1
+
+    previous_rounds = contest_instance.judging_rounds
+                     .where('round_number < ?', round_number)
+
+    if previous_rounds.exists?(completed: false)
+      errors.add(:base, 'All previous rounds must be completed before completing this round')
+      return false
+    end
+
+    true
   end
 
   private
@@ -93,7 +131,11 @@ class JudgingRound < ApplicationRecord
 
   def only_one_active_round_per_contest
     if active && contest_instance.judging_rounds.where(active: true).where.not(id: id).exists?
-      errors.add(:active, 'There can only be one active round per contest instance')
+      errors.add(:base, 'There can only be one active judging round per contest instance')
     end
+  end
+
+  def set_active_by_default
+    self.active = contest_instance.judging_rounds.count.zero?
   end
 end

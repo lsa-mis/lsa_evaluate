@@ -29,7 +29,14 @@
                     <td>
                       <% entry.entry_rankings.where(judging_round: round).each do |ranking| %>
                         <div>
-                          <%= ranking.user.email %>: <%= ranking.rank || 'Not ranked' %>
+                          <%= content_tag(:span,
+                            display_email(ranking.user.email),
+                            data: {
+                              'bs-toggle': 'tooltip',
+                              'bs-html': 'true',
+                              'bs-title': "#{h(ranking.user.display_name)}<br>#{h(display_email(ranking.user.email))}"
+                            }
+                          ) %> : <%= ranking.rank || 'Not ranked' %>
                         </div>
                       <% end %>
                     </td>
