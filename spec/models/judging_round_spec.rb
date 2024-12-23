@@ -77,6 +77,53 @@ RSpec.describe JudgingRound, type: :model do
     end
   end
 
+  describe 'automatic activation' do
+    let(:contest_instance) { create(:contest_instance, date_closed: 1.day.from_now) }
+
+    context 'when creating the first round' do
+      it 'automatically sets active to true' do
+        first_round = create(:judging_round,
+                           contest_instance: contest_instance,
+                           round_number: 1,
+                           start_date: contest_instance.date_closed + 1.day,
+                           end_date: contest_instance.date_closed + 2.days)
+        expect(first_round.reload.active).to be true
+      end
+    end
+
+    context 'when creating subsequent rounds' do
+      let!(:first_round) do
+        create(:judging_round,
+              contest_instance: contest_instance,
+              round_number: 1,
+              start_date: contest_instance.date_closed + 1.day,
+              end_date: contest_instance.date_closed + 2.days)
+      end
+
+      it 'sets active to false by default' do
+        second_round = create(:judging_round,
+                            contest_instance: contest_instance,
+                            round_number: 2,
+                            start_date: first_round.end_date + 1.hour,
+                            end_date: first_round.end_date + 2.days)
+        expect(second_round.reload.active).to be false
+      end
+
+      it 'maintains only one active round when manually activating' do
+        second_round = create(:judging_round,
+                            contest_instance: contest_instance,
+                            round_number: 2,
+                            start_date: first_round.end_date + 1.hour,
+                            end_date: first_round.end_date + 2.days)
+
+        second_round.activate!
+
+        expect(first_round.reload.active).to be false
+        expect(second_round.reload.active).to be true
+      end
+    end
+  end
+
   describe 'special instructions' do
     let(:contest_instance) { create(:contest_instance) }
 
