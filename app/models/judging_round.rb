@@ -53,7 +53,10 @@ class JudgingRound < ApplicationRecord
       update!(active: true)
     end
     true
-  rescue ActiveRecord::RecordInvalid
+  rescue ActiveRecord::RecordInvalid => e
+    if e.record.errors.include?(:active)
+      errors.add(:base, 'There is already an active judging round for this contest')
+    end
     false
   end
 
@@ -96,11 +99,11 @@ class JudgingRound < ApplicationRecord
 
   def only_one_active_round_per_contest
     if active && contest_instance.judging_rounds.where(active: true).where.not(id: id).exists?
-      errors.add(:active, 'There can only be one active round per contest instance')
+      errors.add(:base, 'There can only be one active judging round per contest instance')
     end
   end
 
   def set_active_by_default
-    self.active = true
+    self.active = contest_instance.judging_rounds.count.zero?
   end
 end
