@@ -1,0 +1,56 @@
+<%= form_with(model: [@container, @contest_description, @contest_instance, judging_round], local: true) do |f| %>
+  <% if judging_round.errors.any? %>
+    <div class="alert alert-danger">
+      <h2><%= pluralize(judging_round.errors.count, "error") %> prohibited this judging round from being saved:</h2>
+      <ul>
+        <% judging_round.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :round_number, class: 'form-label' %>
+    <%= f.number_field :round_number, class: 'form-control', value: @round_number %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :start_date, class: 'form-label' %>
+    <%= f.datetime_field :start_date, class: 'form-control' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :end_date, class: 'form-label' %>
+    <%= f.datetime_field :end_date, class: 'form-control' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :require_internal_comments, class: 'form-label' %>
+    <%= f.check_box :require_internal_comments, class: 'form-check-input' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :min_internal_comment_words, class: 'form-label' %>
+    <%= f.number_field :min_internal_comment_words, class: 'form-control', min: 0 %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :require_external_comments, class: 'form-label' %>
+    <%= f.check_box :require_external_comments, class: 'form-check-input' %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :min_external_comment_words, class: 'form-label' %>
+    <%= f.number_field :min_external_comment_words, class: 'form-control', min: 0 %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :special_instructions, class: 'form-label' %>
+    <%= f.text_area :special_instructions, class: 'form-control' %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit class: 'btn btn-primary' %>
+  </div>
+<% end %>
