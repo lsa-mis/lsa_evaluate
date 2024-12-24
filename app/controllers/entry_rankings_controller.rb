@@ -1,11 +1,13 @@
 class EntryRankingsController < ApplicationController
   before_action :authenticate_user!
-  before_action :ensure_judge
-  before_action :set_entry_ranking, only: [ :update ]
+  before_action :ensure_judge, except: [ :select_for_next_round ]
+  before_action :set_entry_ranking, only: [ :update, :select_for_next_round ]
   before_action :authorize_entry_ranking, only: [ :update ]
+  before_action :authorize_contest_admin, only: [ :select_for_next_round ]
   before_action :load_judging_round
-  before_action :ensure_contest_assignment
-  before_action :ensure_round_assignment
+  before_action :set_contest_instance
+  before_action :ensure_contest_assignment, except: [ :select_for_next_round ]
+  before_action :ensure_round_assignment, except: [ :select_for_next_round ]
 
   def create
     @entry_ranking = EntryRanking.new(entry_ranking_params)
@@ -28,6 +30,34 @@ class EntryRankingsController < ApplicationController
     end
   end
 
+  def select_for_next_round
+    if @entry_ranking.update(selected_for_next_round: params[:selected_for_next_round] == '1')
+      respond_to do |format|
+        format.html {
+          redirect_back(fallback_location: container_contest_description_contest_instance_judging_round_path(
+            @container, @contest_description, @contest_instance, @judging_round
+          ), notice: 'Entry selection updated successfully.')
+        }
+        format.turbo_stream {
+          flash.now[:notice] = 'Entry selection updated successfully'
+          render turbo_stream: turbo_stream.replace('flash', partial: 'shared/flash_messages')
+        }
+      end
+    else
+      respond_to do |format|
+        format.html {
+          redirect_back(fallback_location: container_contest_description_contest_instance_judging_round_path(
+            @container, @contest_description, @contest_instance, @judging_round
+          ), alert: 'Failed to update entry selection.')
+        }
+        format.turbo_stream {
+          flash.now[:alert] = 'Failed to update entry selection'
+          render turbo_stream: turbo_stream.replace('flash', partial: 'shared/flash_messages')
+        }
+      end
+    end
+  end
+
   private
 
   def set_entry_ranking
@@ -44,6 +74,12 @@ class EntryRankingsController < ApplicationController
     render json: { errors: [ 'Judging round not found' ] }, status: :unprocessable_entity
   rescue ActionController::ParameterMissing => e
     render json: { errors: [ 'Missing required parameters' ] }, status: :unprocessable_entity
+  end
+
+  def set_contest_instance
+    @container = Container.find(params[:container_id])
+    @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
+    @contest_instance = @contest_description.contest_instances.find(params[:contest_instance_id])
   end
 
   def authorize_entry_ranking
@@ -99,6 +135,14 @@ class EntryRankingsController < ApplicationController
   def ensure_judge
     unless current_user.judge?
       redirect_to root_path, alert: 'Access denied'
+      return false
+    end
+    true
+  end
+
+  def authorize_contest_admin
+    unless current_user.collection_admin?
+      redirect_to root_path, alert: 'Only Collection Administrators can select entries for the next round'
       return false
     end
     true
