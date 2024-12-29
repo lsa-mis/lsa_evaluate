@@ -3,7 +3,6 @@ class EntryRankingsController < ApplicationController
   before_action :ensure_judge, except: [ :select_for_next_round ]
   before_action :set_entry_ranking, only: [ :update, :select_for_next_round ]
   before_action :authorize_entry_ranking, only: [ :update ]
-  before_action :authorize_contest_admin, only: [ :select_for_next_round ]
   before_action :load_judging_round
   before_action :set_contest_instance
   before_action :ensure_contest_assignment, except: [ :select_for_next_round ]
@@ -31,6 +30,8 @@ class EntryRankingsController < ApplicationController
   end
 
   def select_for_next_round
+    authorize @entry_ranking, :select_for_next_round?
+
     if @entry_ranking.update(selected_for_next_round: params[:selected_for_next_round] == '1')
       respond_to do |format|
         format.html {
@@ -135,14 +136,6 @@ class EntryRankingsController < ApplicationController
   def ensure_judge
     unless current_user.judge?
       redirect_to root_path, alert: 'Access denied'
-      return false
-    end
-    true
-  end
-
-  def authorize_contest_admin
-    unless current_user.collection_admin?
-      redirect_to root_path, alert: 'Only Collection Administrators can select entries for the next round'
       return false
     end
     true
