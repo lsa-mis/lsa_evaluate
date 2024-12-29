@@ -122,8 +122,4 @@ class User < ApplicationRecord
       uid
     end
   end
-
-  def collection_admin?
-    roles.exists?(kind: 'Collection Administrator')
-  end
 end
