@@ -32,7 +32,11 @@ class EntryRankingsController < ApplicationController
   def select_for_next_round
     authorize @entry_ranking, :select_for_next_round?
 
-    if @entry_ranking.update(selected_for_next_round: params[:selected_for_next_round] == '1')
+    selected = params[:selected_for_next_round] == '1'
+    Rails.logger.debug { "Selected value before update: #{selected}" }
+
+    if @entry_ranking.update_column(:selected_for_next_round, selected)
+      Rails.logger.debug { "Value after update: #{@entry_ranking.reload.selected_for_next_round}" }
       respond_to do |format|
         format.html {
           redirect_back(fallback_location: container_contest_description_contest_instance_judging_round_path(
@@ -40,19 +44,18 @@ class EntryRankingsController < ApplicationController
           ), notice: 'Entry selection updated successfully.')
         }
         format.turbo_stream {
-          flash.now[:notice] = 'Entry selection updated successfully'
-          render turbo_stream: turbo_stream.replace('flash', partial: 'shared/flash_messages')
+          flash.now[:notice] = 'Entry selection updated successfully.'
+          render turbo_stream: [
+            turbo_stream.replace('flash', partial: 'shared/flash_messages'),
+            turbo_stream.replace(dom_id(@entry_ranking), partial: 'entry_ranking', locals: { entry_ranking: @entry_ranking })
+          ]
         }
       end
     else
+      flash.now[:alert] = 'Failed to update entry selection.'
       respond_to do |format|
-        format.html {
-          redirect_back(fallback_location: container_contest_description_contest_instance_judging_round_path(
-            @container, @contest_description, @contest_instance, @judging_round
-          ), alert: 'Failed to update entry selection.')
-        }
+        format.html { redirect_back(fallback_location: root_path, alert: 'Failed to update entry selection.') }
         format.turbo_stream {
-          flash.now[:alert] = 'Failed to update entry selection'
           render turbo_stream: turbo_stream.replace('flash', partial: 'shared/flash_messages')
         }
       end

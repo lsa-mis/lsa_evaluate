@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" data-controller="judging-round-show">
   <h1>Review Rankings for Round <%= @judging_round.round_number %></h1>
 
   <div class="card mt-4">
@@ -14,7 +14,9 @@
               <th>Title</th>
               <th>Average Rank</th>
               <th>Individual Rankings</th>
-              <th>Select for Next Round</th>
+              <% if @judging_round.round_number < @contest_instance.judging_rounds.count %>
+                <th>Select for Next Round</th>
+              <% end %>
             </tr>
           </thead>
           <tbody>
@@ -54,22 +56,29 @@
                     </div>
                   <% end %>
                 </td>
-                <td class="text-center">
-                  <%= form_with(url: select_for_next_round_container_contest_description_contest_instance_judging_round_entry_ranking_path(
-                    @container, @contest_description, @contest_instance, @judging_round, entry.entry_rankings.find_by(judging_round: @judging_round)
-                  ), method: :patch) do |f| %>
-                    <div class="form-check">
-                      <%= check_box_tag 'selected_for_next_round', '1',
+                <% if @judging_round.round_number < @contest_instance.judging_rounds.count %>
+                  <td class="text-center">
+                    <%= form_with(
+                      url: select_for_next_round_container_contest_description_contest_instance_judging_round_entry_ranking_path(
+                        @container, @contest_description, @contest_instance, @judging_round, entry.entry_rankings.find_by(judging_round: @judging_round)
+                      ),
+                      method: :patch,
+                      data: { turbo: true }
+                    ) do |f| %>
+                      <div class="form-check">
+                        <%= hidden_field_tag 'selected_for_next_round', '0' %>
+                        <%= check_box_tag 'selected_for_next_round', '1',
                           entry.entry_rankings.where(judging_round: @judging_round, selected_for_next_round: true).exists?,
                           class: 'form-check-input',
+                          id: "selected_for_next_round_#{entry.id}",
                           data: {
-                            turbo_frame: 'flash',
-                            action: 'change->form#submit'
+                            action: "change->form#submit"
                           }
-                      %>
-                    </div>
-                  <% end %>
-                </td>
+                        %>
+                      </div>
+                    <% end %>
+                  </td>
+                <% end %>
               </tr>
             <% end %>
           </tbody>
@@ -86,22 +95,3 @@
         class: 'btn btn-secondary' %>
   </div>
 </div>
-
-<% content_for :javascript do %>
-  <script>
-    document.addEventListener('turbo:load', function() {
-      // Enable tooltips
-      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-      })
-
-      // Auto-submit form on checkbox change
-      document.querySelectorAll('input[type="checkbox"][data-action="change->form#submit"]').forEach(function(checkbox) {
-        checkbox.addEventListener('change', function() {
-          this.closest('form').submit()
-        })
-      })
-    })
-  </script>
-<% end %>
