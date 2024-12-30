@@ -39,114 +39,45 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th style="width: 10%">Entry ID</th>
-                    <th style="width: 25%">Title</th>
-                    <th style="width: 10%">Your Ranking</th>
-                    <th style="width: 45%">Comments</th>
-                    <th style="width: 10%">Actions</th>
+                    <th class="text-xs">Entry ID</th>
+                    <th>Title</th>
+                    <th>Current Ranking</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <% if assignment.contest_instance.current_round_entries.any? %>
                     <% assignment.contest_instance.current_round_entries.each do |entry| %>
+                      <% entry_ranking = EntryRanking.find_by(
+                        entry: entry,
+                        judging_round: assignment.contest_instance.current_judging_round,
+                        user: current_user
+                      ) %>
                       <tr>
-                        <td><%= entry.id %></td>
+                        <td class="text-xs"><%= entry.id %></td>
                         <td><%= entry.title %></td>
+                        <td><%= entry_ranking&.rank || 'Not ranked' %></td>
                         <td>
-                          <%= form_with(
-                            model: EntryRanking.find_or_initialize_by(
-                              entry: entry,
-                              judging_round: assignment.contest_instance.current_judging_round,
-                              user: current_user
-                            ),
-                            url: container_contest_description_contest_instance_judging_round_entry_rankings_path(
-                              assignment.contest_instance.contest_description.container,
-                              assignment.contest_instance.contest_description,
-                              assignment.contest_instance,
-                              assignment.contest_instance.current_judging_round
-                            ),
-                            method: :post,
-                            local: true,
-                            class: 'entry-ranking-form'
-                          ) do |f| %>
-                            <%= f.hidden_field :entry_id %>
-                            <%= f.hidden_field :judging_round_id %>
-                            <%= f.hidden_field :user_id %>
-                            <div class="d-flex align-items-center">
-                              <%= f.number_field :rank, min: 1, class: 'form-control form-control-sm', style: 'width: 70px;' %>
-                            </div>
-                        </td>
-                        <td>
-                          <div class="comments-section">
-                            <% current_round = assignment.contest_instance.current_judging_round %>
-                            <% if current_round.require_internal_comments %>
-                              <div class="form-group mb-2"
-                                   data-controller="word-counter"
-                                   data-word-counter-minimum-value="<%= current_round.min_internal_comment_words %>">
-                                <%= f.label :internal_comments, class: 'form-label small' do %>
-                                  Internal Comments
-                                  <span class="text-danger">*</span>
-                                  <% if current_round.min_internal_comment_words > 0 %>
-                                    <small class="text-muted d-block">
-                                      <span><%= "#{ pluralize(current_round.min_internal_comment_words, 'word')} minimum" %></span>
-                                    </small>
-                                  <% end %>
-                                <% end %>
-                                <%= f.text_area :internal_comments,
-                                    class: 'form-control form-control-sm',
-                                    rows: 2,
-                                    data: {
-                                      word_counter_target: "input",
-                                      action: "input->word-counter#updateCounter"
-                                    } %>
-                                    <small class="text-muted d-block">
-                                      <span data-word-counter-target="counter">Words: 0</span>
-                                    </small>
-                              </div>
-                            <% else %>
-                              <div class="form-group mb-2">
-                                <%= f.label :internal_comments, "Internal Comments (Optional)", class: 'form-label small' %>
-                                <%= f.text_area :internal_comments, class: 'form-control form-control-sm', rows: 2 %>
-                              </div>
-                            <% end %>
-
-                            <% if current_round.require_external_comments %>
-                              <div class="form-group mb-2"
-                                   data-controller="word-counter"
-                                   data-word-counter-minimum-value="<%= current_round.min_external_comment_words %>">
-                                <%= f.label :external_comments, class: 'form-label small' do %>
-                                  External Comments
-                                  <span class="text-danger">*</span>
-                                  <% if current_round.min_external_comment_words > 0 %>
-                                    <small class="text-muted d-block">
-                                      <span><%= "#{ pluralize(current_round.min_external_comment_words, 'word')} minimum" %></span>
-                                    </small>
-                                  <% end %>
-                                <% end %>
-                                <%= f.text_area :external_comments,
-                                    class: 'form-control form-control-sm',
-                                    rows: 2,
-                                    data: {
-                                      word_counter_target: "input",
-                                      action: "input->word-counter#updateCounter"
-                                    } %>
-                                  <small class="text-muted d-block">
-                                    <span data-word-counter-target="counter">Words: 0</span>
-                                  </small>
-                              </div>
-                            <% else %>
-                              <div class="form-group mb-2">
-                                <%= f.label :external_comments, "External Comments (Optional)", class: 'form-label small' %>
-                                <%= f.text_area :external_comments, class: 'form-control form-control-sm', rows: 2 %>
-                              </div>
-                            <% end %>
-                            <%= f.submit 'Save', class: 'btn btn-sm btn-primary' %>
-                          </div>
-                        <% end %>
+                          <% if entry_ranking&.persisted? %>
+                            <span class="badge bg-success">Evaluated</span>
+                          <% else %>
+                            <span class="badge bg-warning text-dark">Pending</span>
+                          <% end %>
                         </td>
                         <td>
                           <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"),
-                              target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                              target: '_blank', class: 'btn btn-sm btn-secondary me-2' %>
+                          <%= link_to 'Evaluate',
+                              evaluate_container_contest_description_contest_instance_judging_round_entry_ranking_path(
+                                assignment.contest_instance.contest_description.container,
+                                assignment.contest_instance.contest_description,
+                                assignment.contest_instance,
+                                assignment.contest_instance.current_judging_round,
+                                entry_ranking || 'new',
+                                entry_id: entry.id
+                              ),
+                              class: 'btn btn-sm btn-primary' %>
                         </td>
                       </tr>
                     <% end %>
