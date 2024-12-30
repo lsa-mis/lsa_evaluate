@@ -25,9 +25,9 @@ class EntryRankingsController < ApplicationController
     @entry_ranking.judging_round = @judging_round
 
     if @entry_ranking.save
-      redirect_to judge_dashboard_path, notice: 'Evaluation saved successfully.'
+      redirect_to judge_dashboard_path, notice: 'Entry ranking was successfully created.'
     else
-      render :evaluate
+      render json: { errors: @entry_ranking.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
