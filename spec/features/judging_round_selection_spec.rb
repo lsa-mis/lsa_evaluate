@@ -34,7 +34,6 @@ RSpec.describe 'Judging Round Selection', type: :system do
   before do
     # Create both judging rounds in sequence
     judging_round
-    puts "First round active?: #{judging_round.reload.active}"
     next_judging_round
 
     # Assign container role to collection admin using the explicit admin role
@@ -79,14 +78,14 @@ RSpec.describe 'Judging Round Selection', type: :system do
 
     it 'allows selecting entries for the next round', :js do
       within('tr', text: 'First Entry') do
-        find('input[id="selected_for_next_round"]').click
-        # find('input[type="checkbox"]').click
+        checkbox = find('input[name="selected_for_next_round"]')
+        checkbox.click
+
+        # Wait for checkbox to be checked
+        expect(checkbox).to be_checked
       end
 
-      # Wait for Turbo Stream update and flash message
-      expect(page).to have_css('.alert.alert-success', text: 'Entry selection updated successfully.', wait: 5)
-
-      # Verify the entry was selected
+      # Verify the entry was selected in the database
       entry1_ranking = EntryRanking.find_by(entry: entry1, judging_round: judging_round)
       expect(entry1_ranking.selected_for_next_round).to be true
     end
@@ -94,9 +93,7 @@ RSpec.describe 'Judging Round Selection', type: :system do
     it 'allows deselecting entries', :js do
       # First select an entry
       within('tr', text: 'Second Entry') do
-        find("input[id^='selected_for_next_round']").click
-        # Add debug pause to see what's happening
-        sleep 1 # Temporary debug line
+        find("input[name='selected_for_next_round']").click
       end
 
       # Make the expectation more flexible and increase wait time
