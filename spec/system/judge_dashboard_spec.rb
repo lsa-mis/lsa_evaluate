@@ -20,10 +20,13 @@ RSpec.describe 'Judge Dashboard', type: :system do
       start_date: 2.weeks.ago,
       end_date: 1.week.from_now,
       active: true,
-      round_number: 1
+      round_number: 1,
+      require_internal_comments: true,
+      min_internal_comment_words: 10
     )
   }
   let!(:entry) { create(:entry, contest_instance: contest_instance, deleted: false, title: 'Sample Entry Title') }
+  let!(:entry_ranking) { nil }
 
   context 'when user is not authenticated' do
     it 'redirects to login page' do
@@ -73,6 +76,45 @@ RSpec.describe 'Judge Dashboard', type: :system do
         expect(page).to have_content('Entry ID')
         expect(page).to have_content(entry.id)
         expect(page).to have_content('Sample Entry Title')
+        expect(page).to have_content('Not ranked')
+        expect(page).to have_content('Pending')
+        expect(page).to have_link('View Entry')
+        expect(page).to have_link('Evaluate')
+      end
+    end
+
+    it 'allows evaluating an entry' do
+      # Expand the accordion
+      find('.accordion-button').click
+      sleep 0.5
+
+      within('.accordion-collapse.show') do
+        click_link 'Evaluate'
+      end
+
+      # Check evaluation page content
+      expect(page).to have_content("Entry: #{entry.title}")
+      expect(page).to have_content('Test Contest')
+      expect(page).to have_content("Round: #{judging_round.round_number}")
+
+      # Fill in evaluation
+      fill_in 'entry_ranking[rank]', with: '1'
+      fill_in 'entry_ranking[internal_comments]', with: 'This is a detailed evaluation of the entry with more than ten words to meet the minimum requirement.'
+
+      # Submit the form
+      click_button 'Save Evaluation'
+
+      # Should redirect back to dashboard
+      expect(page).to have_current_path(judge_dashboard_path)
+      expect(page).to have_content('Evaluation saved successfully')
+
+      # Expand accordion again to check updated status
+      find('.accordion-button').click
+      sleep 0.5
+
+      within('.accordion-collapse.show') do
+        expect(page).to have_content('1') # The ranking we entered
+        expect(page).to have_content('Evaluated')
       end
     end
 
@@ -140,6 +182,48 @@ RSpec.describe 'Judge Dashboard', type: :system do
 
         expect(page).to have_current_path(root_path)
         expect(page).to have_content('!!! Not authorized !!!')
+      end
+    end
+
+    context 'when updating an existing evaluation' do
+      it 'allows updating an existing evaluation' do
+        # Create the entry_ranking after all assignments are set up
+        entry_ranking = create(:entry_ranking,
+          entry: entry,
+          judging_round: judging_round,
+          user: judge,
+          rank: 2,
+          internal_comments: 'Initial evaluation comments that need to be updated with new information.'
+        )
+
+        visit judge_dashboard_path
+        find('.accordion-button').click
+        sleep 0.5
+
+        within('.accordion-collapse.show') do
+          expect(page).to have_content('2') # Initial ranking
+          expect(page).to have_content('Evaluated')
+          click_link 'Evaluate'
+        end
+
+        expect(page).to have_field('entry_ranking[rank]', with: '2')
+        expect(page).to have_field('entry_ranking[internal_comments]', with: entry_ranking.internal_comments)
+
+        fill_in 'entry_ranking[rank]', with: '3'
+        fill_in 'entry_ranking[internal_comments]', with: 'Updated evaluation with new insights and detailed comments about the entry.'
+
+        click_button 'Save Evaluation'
+
+        expect(page).to have_current_path(judge_dashboard_path)
+        expect(page).to have_content('Evaluation updated successfully')
+
+        # Verify the updates are shown on the dashboard
+        find('.accordion-button').click
+        sleep 0.5
+
+        within('.accordion-collapse.show') do
+          expect(page).to have_content('3') # Updated ranking
+        end
       end
     end
   end
