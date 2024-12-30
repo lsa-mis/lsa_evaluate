@@ -106,7 +106,7 @@ RSpec.describe 'Judge Dashboard', type: :system do
 
       # Should redirect back to dashboard
       expect(page).to have_current_path(judge_dashboard_path)
-      expect(page).to have_content('Evaluation saved successfully')
+      expect(page).to have_content('Entry ranking was successfully created')
 
       # Expand accordion again to check updated status
       find('.accordion-button').click
