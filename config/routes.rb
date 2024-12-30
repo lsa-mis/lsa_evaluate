@@ -45,6 +45,12 @@ Rails.application.routes.draw do
             member do
               patch :select_for_next_round
             end
+            collection do
+              get 'new/evaluate', action: :evaluate, as: :evaluate
+            end
+            member do
+              get :evaluate
+            end
           end
         end
         resources :entry_rankings, only: [ :create, :update ]
