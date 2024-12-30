@@ -58,25 +58,13 @@
                 </td>
                 <% if @judging_round.round_number < @contest_instance.judging_rounds.count %>
                   <td class="text-center">
-                    <%= form_with(
-                      url: select_for_next_round_container_contest_description_contest_instance_judging_round_entry_ranking_path(
-                        @container, @contest_description, @contest_instance, @judging_round, entry.entry_rankings.find_by(judging_round: @judging_round)
-                      ),
-                      method: :patch,
-                      data: { turbo: true }
-                    ) do |f| %>
-                      <div class="form-check">
-                        <%= hidden_field_tag 'selected_for_next_round', '0' %>
-                        <%= check_box_tag 'selected_for_next_round', '1',
-                          entry.entry_rankings.where(judging_round: @judging_round, selected_for_next_round: true).exists?,
-                          class: 'form-check-input',
-                          id: "selected_for_next_round_#{entry.id}",
-                          data: {
-                            action: "change->form#submit"
-                          }
-                        %>
-                      </div>
-                    <% end %>
+                    <%= render 'entry_checkbox',
+                      entry: entry,
+                      judging_round: @judging_round,
+                      container: @container,
+                      contest_description: @contest_description,
+                      contest_instance: @contest_instance
+                    %>
                   </td>
                 <% end %>
               </tr>
