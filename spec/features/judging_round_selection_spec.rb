@@ -80,10 +80,10 @@ RSpec.describe 'Judging Round Selection', type: :system do
       within('tr', text: 'First Entry') do
         checkbox = find('input[name="selected_for_next_round"]')
         checkbox.click
-
-        # Wait for checkbox to be checked
-        expect(checkbox).to be_checked
       end
+
+      # Wait for the flash message to appear
+      expect(page).to have_css('.alert.alert-success', text: 'Entry selection updated successfully', wait: 5)
 
       # Verify the entry was selected in the database
       entry1_ranking = EntryRanking.find_by(entry: entry1, judging_round: judging_round)
@@ -91,26 +91,25 @@ RSpec.describe 'Judging Round Selection', type: :system do
     end
 
     it 'allows deselecting entries', :js do
-      # First select an entry
+      # First select an entry (this will be HTML format)
       within('tr', text: 'Second Entry') do
         find("input[name='selected_for_next_round']").click
       end
 
-      # Make the expectation more flexible and increase wait time
-      expect(page).to have_css('.alert', text: /Entry selection updated/i, wait: 10)
+      # Wait for the flash message to appear
+      expect(page).to have_css('.alert.alert-success', text: 'Entry selection updated successfully', wait: 5)
 
-      # Verify the selection
+      # Now verify the database state after the first click
       entry2_ranking = EntryRanking.find_by(entry: entry2, judging_round: judging_round)
       expect(entry2_ranking.selected_for_next_round).to be true
 
-      # Then deselect it
+      # Then deselect it (this will be Turbo Stream format)
       within('tr', text: 'Second Entry') do
-        find("input[id^='selected_for_next_round']").click
-        sleep 1 # Temporary debug line
+        find("input[name='selected_for_next_round']").click
       end
 
-      # Make the expectation more flexible and increase wait time
-      expect(page).to have_css('.alert', text: /Entry selection updated/i, wait: 10)
+      # Wait for the checkbox to be unchecked via Turbo Stream
+      expect(page).to have_css("input[name='selected_for_next_round']:not(:checked)", wait: 5)
 
       # Force a reload to ensure we get the latest database state
       entry2_ranking.reload
