@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     member do
       patch 'soft_delete'
       patch :toggle_disqualified
+      get :applicant_profile
     end
   end
 
