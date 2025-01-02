@@ -54,17 +54,21 @@ class EntryRankingsController < ApplicationController
           ), notice: 'Entry selection updated successfully.')
         }
         format.turbo_stream {
-          render turbo_stream: turbo_stream.replace(
-            "selected_for_next_round_#{@entry_ranking.entry.id}",
-            partial: 'judging_rounds/entry_checkbox',
-            locals: {
-              entry: @entry_ranking.entry,
-              judging_round: @judging_round,
-              container: @container,
-              contest_description: @contest_description,
-              contest_instance: @contest_instance
-            }
-          )
+          flash.now[:notice] = 'Entry selection updated successfully'
+          render turbo_stream: [
+            turbo_stream.replace(
+              "selected_for_next_round_#{@entry_ranking.entry.id}",
+              partial: 'judging_rounds/entry_checkbox',
+              locals: {
+                entry: @entry_ranking.entry,
+                judging_round: @judging_round,
+                container: @container,
+                contest_description: @contest_description,
+                contest_instance: @contest_instance
+              }
+            ),
+            turbo_stream.replace('flash', partial: 'shared/flash_messages')
+          ]
         }
       end
     else
