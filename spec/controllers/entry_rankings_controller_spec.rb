@@ -40,11 +40,6 @@ RSpec.describe EntryRankingsController, type: :controller do
             }
           }.to change(EntryRanking, :count).by(1)
 
-          # Add debugging for failures
-          if response.status == 422
-            puts "Validation errors: #{JSON.parse(response.body)['errors']}"
-          end
-
           entry_ranking = EntryRanking.last
           expect(entry_ranking.internal_comments).to eq('These are internal comments for the judging committee')
           expect(entry_ranking.external_comments).to eq('These are external comments for the applicant')
@@ -76,11 +71,6 @@ RSpec.describe EntryRankingsController, type: :controller do
                 entry_ranking: invalid_attributes
               }
             }.not_to change(EntryRanking, :count)
-
-            # Add debugging for failures
-            if response.status == 422
-              puts "Validation errors: #{JSON.parse(response.body)['errors']}"
-            end
           end
 
           it 'returns unprocessable entity status' do
@@ -172,12 +162,6 @@ RSpec.describe EntryRankingsController, type: :controller do
           id: entry_ranking.id,
           selected_for_next_round: '1'
         }
-
-        # Add debugging
-        puts "Response status: #{response.status}"
-        puts "Response body: #{response.body}" if response.body.present?
-        puts "Entry ranking selected: #{entry_ranking.reload.selected_for_next_round}"
-        puts "Flash messages: #{flash.to_hash}"
 
         expect(entry_ranking.reload.selected_for_next_round).to be true
         expect(response).to redirect_to(
