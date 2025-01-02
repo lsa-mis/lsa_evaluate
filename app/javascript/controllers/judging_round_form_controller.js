@@ -4,6 +4,7 @@ export default class extends Controller {
   static targets = ["form"]
 
   connect() {
+    console.log("JudgingRoundFormController connected")
     this.formTarget.addEventListener("submit", this.handleSubmit.bind(this))
   }
 

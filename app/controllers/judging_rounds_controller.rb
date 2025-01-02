@@ -4,6 +4,10 @@ class JudgingRoundsController < ApplicationController
   before_action :authorize_contest_instance
   before_action :check_edit_warning, only: [ :edit, :update ]
 
+  def show
+    @entries = @judging_round.entries.distinct.includes(:entry_rankings)
+  end
+
   def new
     @judging_round = @contest_instance.judging_rounds.build
     @round_number = @contest_instance.judging_rounds.count + 1
@@ -77,7 +81,7 @@ class JudgingRoundsController < ApplicationController
     if @judging_round.complete!
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
-      ), notice: 'Judging round was successfully marked as completed.'
+      ), notice: 'Judging round was successfully completed. You can now review rankings and select entries for the next round.'
     else
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance

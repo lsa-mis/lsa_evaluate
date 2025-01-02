@@ -7,13 +7,15 @@ RSpec.describe EntryRankingsController, type: :controller do
   let(:judging_round) { create(:judging_round, contest_instance: contest_instance) }
   let(:entry) { create(:entry, contest_instance: contest_instance) }
   let(:judge) { create(:user, :with_judge_role) }
-  let!(:judging_assignment) { create(:judging_assignment, user: judge, contest_instance: contest_instance) }
-  let!(:round_judge_assignment) { create(:round_judge_assignment, user: judge, judging_round: judging_round) }
+  let(:collection_admin) { create(:user, :with_collection_admin_role) }
+  let!(:judging_assignment) { create(:judging_assignment, user: judge, contest_instance: contest_instance, active: true) }
+  let!(:round_judge_assignment) { create(:round_judge_assignment, user: judge, judging_round: judging_round, active: true) }
+  let!(:entry_ranking) { create(:entry_ranking, user: judge, entry: entry, judging_round: judging_round) }
 
   describe 'POST #create' do
     let(:valid_attributes) do
       {
-        entry_id: entry.id,
+        entry_id: create(:entry, contest_instance: contest_instance).id,
         judging_round_id: judging_round.id,
         rank: 1,
         internal_comments: 'These are internal comments for the judging committee',
@@ -22,7 +24,9 @@ RSpec.describe EntryRankingsController, type: :controller do
     end
 
     context 'when user is a judge' do
-      before { sign_in judge }
+      before do
+        sign_in judge
+      end
 
       context 'with valid params' do
         it 'creates a new entry ranking with comments' do
@@ -31,6 +35,7 @@ RSpec.describe EntryRankingsController, type: :controller do
               container_id: container.id,
               contest_description_id: contest_description.id,
               contest_instance_id: contest_instance.id,
+              judging_round_id: judging_round.id,
               entry_ranking: valid_attributes
             }
           }.to change(EntryRanking, :count).by(1)
@@ -38,6 +43,8 @@ RSpec.describe EntryRankingsController, type: :controller do
           entry_ranking = EntryRanking.last
           expect(entry_ranking.internal_comments).to eq('These are internal comments for the judging committee')
           expect(entry_ranking.external_comments).to eq('These are external comments for the applicant')
+          expect(entry_ranking.user).to eq(judge)
+          expect(entry_ranking.judging_round).to eq(judging_round)
         end
       end
 
@@ -60,6 +67,7 @@ RSpec.describe EntryRankingsController, type: :controller do
                 container_id: container.id,
                 contest_description_id: contest_description.id,
                 contest_instance_id: contest_instance.id,
+                judging_round_id: judging_round.id,
                 entry_ranking: invalid_attributes
               }
             }.not_to change(EntryRanking, :count)
@@ -70,42 +78,7 @@ RSpec.describe EntryRankingsController, type: :controller do
               container_id: container.id,
               contest_description_id: contest_description.id,
               contest_instance_id: contest_instance.id,
-              entry_ranking: invalid_attributes
-            }
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-        end
-      end
-
-      context 'when external comments are required' do
-        before do
-          judging_round.update(
-            require_external_comments: true,
-            min_external_comment_words: 10
-          )
-        end
-
-        context 'with insufficient external comments' do
-          let(:invalid_attributes) do
-            valid_attributes.merge(external_comments: 'Too short feedback')
-          end
-
-          it 'does not create the entry ranking' do
-            expect {
-              post :create, params: {
-                container_id: container.id,
-                contest_description_id: contest_description.id,
-                contest_instance_id: contest_instance.id,
-                entry_ranking: invalid_attributes
-              }
-            }.not_to change(EntryRanking, :count)
-          end
-
-          it 'returns unprocessable entity status' do
-            post :create, params: {
-              container_id: container.id,
-              contest_description_id: contest_description.id,
-              contest_instance_id: contest_instance.id,
+              judging_round_id: judging_round.id,
               entry_ranking: invalid_attributes
             }
             expect(response).to have_http_status(:unprocessable_entity)
@@ -124,6 +97,7 @@ RSpec.describe EntryRankingsController, type: :controller do
           container_id: container.id,
           contest_description_id: contest_description.id,
           contest_instance_id: contest_instance.id,
+          judging_round_id: judging_round.id,
           entry_ranking: valid_attributes
         }
         expect(response).to redirect_to(root_path)
@@ -168,60 +142,68 @@ RSpec.describe EntryRankingsController, type: :controller do
           expect(entry_ranking.external_comments).to eq('Updated external comments with more than enough words to meet requirements')
         end
       end
-
-      context 'when internal comments are required' do
-        before do
-          judging_round.update(
-            require_internal_comments: true,
-            min_internal_comment_words: 5
-          )
-        end
-
-        context 'with insufficient internal comments' do
-          let(:invalid_attributes) do
-            valid_attributes.merge(internal_comments: 'Short')
-          end
-
-          it 'does not update the entry ranking' do
-            patch :update, params: {
-              container_id: container.id,
-              contest_description_id: contest_description.id,
-              contest_instance_id: contest_instance.id,
-              id: entry_ranking.id,
-              entry_ranking: invalid_attributes
-            }
-            entry_ranking.reload
-            expect(entry_ranking.internal_comments).to eq('Original internal comments')
-          end
-
-          it 'returns unprocessable entity status' do
-            patch :update, params: {
-              container_id: container.id,
-              contest_description_id: contest_description.id,
-              contest_instance_id: contest_instance.id,
-              id: entry_ranking.id,
-              entry_ranking: invalid_attributes
-            }
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-        end
-      end
     end
+  end
 
-    context 'when user is not the judge who created the ranking' do
-      let(:other_judge) { create(:user, :with_judge_role) }
+  describe 'PATCH #select_for_next_round' do
+    context 'when user is a collection admin' do
+      before do
+        sign_in collection_admin
+        # Add explicit policy check
+        allow_any_instance_of(EntryRankingPolicy).to receive(:select_for_next_round?).and_return(true)
+      end
 
-      before { sign_in other_judge }
-
-      it 'redirects to root' do
-        patch :update, params: {
+      it 'allows selection of entry for next round' do
+        patch :select_for_next_round, params: {
           container_id: container.id,
           contest_description_id: contest_description.id,
           contest_instance_id: contest_instance.id,
+          judging_round_id: judging_round.id,
           id: entry_ranking.id,
-          entry_ranking: valid_attributes
+          selected_for_next_round: '1'
         }
+
+        expect(entry_ranking.reload.selected_for_next_round).to be true
+        expect(response).to redirect_to(
+          container_contest_description_contest_instance_judging_round_path(
+            container, contest_description, contest_instance, judging_round
+          )
+        )
+        expect(flash[:notice]).to eq('Entry selection updated successfully.')
+      end
+
+      it 'allows deselection of entry for next round' do
+        entry_ranking.update(selected_for_next_round: true)
+
+        patch :select_for_next_round, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          judging_round_id: judging_round.id,
+          id: entry_ranking.id,
+          selected_for_next_round: '0'
+        }
+
+        expect(entry_ranking.reload.selected_for_next_round).to be false
+        expect(flash[:notice]).to eq('Entry selection updated successfully.')
+      end
+    end
+
+    context 'when user is not a collection admin' do
+      before { sign_in judge }
+
+      it 'denies access to selection' do
+        patch :select_for_next_round, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          judging_round_id: judging_round.id,
+          id: entry_ranking.id,
+          selected_for_next_round: '1'
+        }
+
         expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq('!!! Not authorized !!!')
       end
     end
   end

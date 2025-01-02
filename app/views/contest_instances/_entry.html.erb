@@ -15,16 +15,25 @@
       No file attached
     <% end %>
   </td>
-  <td><%= entry.profile.display_name %></td>
-  <td><%= entry.profile.user.uniqname %></td>
   <td><%= entry.title %></td>
+  <td><%= entry.category.kind %></td>
   <% if entry.contest_instance.require_pen_name %>
     <td><%= entry.pen_name %></td>
   <% end %>
   <% if entry.contest_instance.require_campus_employment_info %>
     <td class="text-center"><%= boolean_to_yes_no(entry.campus_employee) %></td>
   <% end %>
-  <td><%= format_datetime(entry.created_at) %></td>
+  <td>
+    <% if policy(entry).view_applicant_profile? %>
+      <%= link_to applicant_profile_entry_path(entry), class: 'badge badge bg-info text-white btn btn-sm p-0 ms-2', title: 'View Applicant Profile' do %>
+        <i class="bi bi-person" style="font-size: 1.5rem;" aria-hidden="true"></i>
+        <span class="visually-hidden">View Applicant Profile</span>
+      <% end %>
+    <% end %><%= entry.profile.display_name %>
+    </td>
+  <td><%= entry.profile.user.uniqname %></td>
+  <td><%= entry.profile.class_level.name %></td>
+  <td class="text-xs"><%= format_datetime(entry.created_at) %></td>
   <td class="text-center"><%= boolean_to_yes_no(entry.disqualified) %></td>
   <td class="text-center">
     <% if policy(entry).toggle_disqualified? %>

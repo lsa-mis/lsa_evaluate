@@ -1,6 +1,6 @@
 class EntriesController < ApplicationController
   include AvailableContestsConcern
-  before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified ]
+  before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified applicant_profile ]
   before_action :authorize_entry, only: %i[show edit update destroy]
   before_action :authorize_index, only: [ :index ]
 
@@ -104,21 +104,15 @@ class EntriesController < ApplicationController
   end
 
   def toggle_disqualified
-    authorize @entry, :toggle_disqualified?
-    @entry.disqualified = !@entry.disqualified
-    if @entry.save
-      flash.now[:notice] = 'Entry status updated successfully.'
-      respond_to do |format|
-        format.html { redirect_to container_path(@entry.contest_instance.contest_description.container), notice: 'Entry status updated successfully.' }
-        format.turbo_stream
-      end
-    else
-      flash.now[:alert] = 'Failed to update entry status.'
-      respond_to do |format|
-        format.html { redirect_to container_path(@entry.contest_instance.contest_description.container), alert: 'Failed to update entry status.' }
-        format.turbo_stream { render turbo_stream: turbo_stream.replace('flash', partial: 'shared/flash_messages', locals: { alert: 'Failed to update entry status.' }) }
-      end
-    end
+    authorize @entry
+    @entry.toggle!(:disqualified)
+    redirect_to request.referer || root_path, notice: 'Entry disqualification status has been updated.'
+  end
+
+  def applicant_profile
+    authorize @entry, :view_applicant_profile?
+    @profile = @profile = @entry.profile
+    @entries = Entry.active.where(profile: @profile)
   end
 
   private

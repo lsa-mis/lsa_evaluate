@@ -10,4 +10,10 @@ class EntryPolicy < ApplicationPolicy
   def toggle_disqualified?
     user&.has_container_role?(record.contest_instance.contest_description.container) || axis_mundi?
   end
+
+  def view_applicant_profile?
+    record.profile.user == user ||
+    user&.has_container_role?(record.contest_instance.contest_description.container) ||
+    axis_mundi?
+  end
 end

@@ -1,20 +1,20 @@
 class EntryRankingPolicy < ApplicationPolicy
   def create?
     return false unless user&.judge? || axis_mundi?
-    
+
     assignment = JudgingAssignment.find_by(
       user: user,
       contest_instance: record.judging_round.contest_instance,
       active: true
     )
-    
+
     # Also check if they're assigned to this specific round
     round_assignment = RoundJudgeAssignment.find_by(
       user: user,
       judging_round: record.judging_round,
       active: true
     )
-    
+
     (assignment.present? && round_assignment.present?) || axis_mundi?
   end
 
@@ -23,9 +23,13 @@ class EntryRankingPolicy < ApplicationPolicy
   end
 
   def show?
-    record.user == user || 
-    user&.has_container_role?(record.judging_round.contest_instance.contest_description.container) || 
+    record.user == user ||
+    user&.has_container_role?(record.judging_round.contest_instance.contest_description.container) ||
     axis_mundi?
+  end
+
+  def select_for_next_round?
+    user&.has_container_role?(record.judging_round.contest_instance.contest_description.container) || axis_mundi?
   end
 
   class Scope < Scope

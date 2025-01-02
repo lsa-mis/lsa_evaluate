@@ -1,0 +1,149 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><%= link_to 'Judge Dashboard', judge_dashboard_path %></li>
+          <li class="breadcrumb-item active">Evaluate Entry #<%= @entry_ranking.entry.id %></li>
+        </ol>
+      </nav>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <h2 class="card-title mb-0">
+            Entry: <%= @entry_ranking.entry.title %>
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5>Contest Information</h5>
+              <p class="mb-1"><strong>Contest:</strong> <%= @judging_round.contest_instance.contest_description.name %></p>
+              <p class="mb-1"><strong>Round:</strong> <%= @judging_round.round_number %></p>
+              <p class="mb-0">
+                <strong>Round Period:</strong>
+                <%= format_datetime(@judging_round.start_date) %> -
+                <%= format_datetime(@judging_round.end_date) %>
+              </p>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <%= link_to 'View Entry', rails_blob_path(@entry_ranking.entry.entry_file, disposition: "inline"),
+                  target: '_blank', class: 'btn btn-secondary' %>
+            </div>
+          </div>
+
+          <% if @judging_round.special_instructions.present? %>
+            <div class="alert alert-info">
+              <strong>Round Instructions:</strong>
+              <%= simple_format(@judging_round.special_instructions) %>
+            </div>
+          <% end %>
+
+          <%= form_with(model: @entry_ranking,
+                        url: if @entry_ranking.persisted?
+                          container_contest_description_contest_instance_judging_round_entry_ranking_path(
+                            @container,
+                            @contest_description,
+                            @contest_instance,
+                            @judging_round,
+                            @entry_ranking
+                          )
+                        else
+                          container_contest_description_contest_instance_judging_round_entry_rankings_path(
+                            @container,
+                            @contest_description,
+                            @contest_instance,
+                            @judging_round
+                          )
+                        end,
+                        method: @entry_ranking.persisted? ? :patch : :post,
+                        local: true,
+                        class: 'entry-ranking-form') do |f| %>
+
+            <%= f.hidden_field :entry_id %>
+            <%= f.hidden_field :judging_round_id %>
+
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group mb-4">
+                  <%= f.label :rank, class: 'form-label' do %>
+                    Ranking <span class="text-danger">*</span>
+                  <% end %>
+                  <%= f.number_field :rank, min: 1, class: 'form-control', required: true %>
+                  <small class="text-muted">Enter a numerical ranking for this entry</small>
+                </div>
+              </div>
+            </div>
+
+            <% if @judging_round.require_internal_comments %>
+              <div class="form-group mb-4"
+                   data-controller="word-counter"
+                   data-word-counter-minimum-value="<%= @judging_round.min_internal_comment_words %>">
+                <%= f.label :internal_comments, class: 'form-label' do %>
+                  Internal Comments <span class="text-danger">*</span>
+                  <% if @judging_round.min_internal_comment_words > 0 %>
+                    <small class="text-muted">
+                      (<%= pluralize(@judging_round.min_internal_comment_words, 'word') %> minimum)
+                    </small>
+                  <% end %>
+                <% end %>
+                <%= f.text_area :internal_comments,
+                    class: 'form-control',
+                    rows: 4,
+                    required: true,
+                    data: {
+                      word_counter_target: "input",
+                      action: "input->word-counter#updateCounter"
+                    } %>
+                <small class="text-muted">
+                  Words: <span data-word-counter-target="counter">0</span>
+                </small>
+              </div>
+            <% else %>
+              <div class="form-group mb-4">
+                <%= f.label :internal_comments, "Internal Comments (Optional)", class: 'form-label' %>
+                <%= f.text_area :internal_comments, class: 'form-control', rows: 4 %>
+              </div>
+            <% end %>
+
+            <% if @judging_round.require_external_comments %>
+              <div class="form-group mb-4"
+                   data-controller="word-counter"
+                   data-word-counter-minimum-value="<%= @judging_round.min_external_comment_words %>">
+                <%= f.label :external_comments, class: 'form-label' do %>
+                  External Comments <span class="text-danger">*</span>
+                  <% if @judging_round.min_external_comment_words > 0 %>
+                    <small class="text-muted">
+                      (<%= pluralize(@judging_round.min_external_comment_words, 'word') %> minimum)
+                    </small>
+                  <% end %>
+                <% end %>
+                <%= f.text_area :external_comments,
+                    class: 'form-control',
+                    rows: 4,
+                    required: true,
+                    data: {
+                      word_counter_target: "input",
+                      action: "input->word-counter#updateCounter"
+                    } %>
+                <small class="text-muted">
+                  Words: <span data-word-counter-target="counter">0</span>
+                </small>
+              </div>
+            <% else %>
+              <div class="form-group mb-4">
+                <%= f.label :external_comments, "External Comments (Optional)", class: 'form-label' %>
+                <%= f.text_area :external_comments, class: 'form-control', rows: 4 %>
+              </div>
+            <% end %>
+
+            <div class="form-group">
+              <%= f.submit 'Save Evaluation', class: 'btn btn-primary' %>
+              <%= link_to 'Back to Dashboard', judge_dashboard_path, class: 'btn btn-link' %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

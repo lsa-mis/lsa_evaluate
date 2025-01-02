@@ -51,3 +51,6 @@ application.register("word-counter", WordCounterController)
 
 import TooltipEmailDisplayController from "./tooltip_email_display_controller"
 application.register("tooltip-email-display", TooltipEmailDisplayController)
+
+import JudgingRoundShowController from "./judging_round_show_controller"
+application.register("judging-round-show", JudgingRoundShowController)

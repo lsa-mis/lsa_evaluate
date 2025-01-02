@@ -5,15 +5,17 @@
       <tr>
         <th><small><%= sortable 'id', 'Entry_ID', @container, @contest_description, @contest_instance %></small></th>
         <th class="text-center">File</th>
-        <th><%= sortable 'profile_display_name', 'Applicant Name', @container, @contest_description, @contest_instance %></th>
-        <th><%= sortable 'profile_user_uniqname', 'Username', @container, @contest_description, @contest_instance %></th>
         <th><%= sortable 'title', 'Title', @container, @contest_description, @contest_instance %></th>
+        <th><%= sortable 'category_kind', 'Category', @container, @contest_description, @contest_instance %></th>
         <% if @contest_instance&.require_pen_name %>
           <th><%= sortable 'pen_name', 'Pen Name', @container, @contest_description, @contest_instance %></th>
         <% end %>
         <% if @contest_instance&.require_campus_employment_info %>
           <th><%= sortable 'profile_campus_employee', 'Campus Employee', @container, @contest_description, @contest_instance %></th>
         <% end %>
+        <th><%= sortable 'profile_display_name', 'Applicant Name', @container, @contest_description, @contest_instance %></th>
+        <th><%= sortable 'profile_user_uniqname', 'Username', @container, @contest_description, @contest_instance %></th>
+        <th><%= sortable 'profile_class_level_name', 'Class Level', @container, @contest_description, @contest_instance %></th>
         <th><%= sortable 'created_at', 'Created At', @container, @contest_description, @contest_instance %></th>
         <th class=text-center"><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
         <th class="text-center">Actions</th>

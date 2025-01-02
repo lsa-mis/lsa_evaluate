@@ -1,5 +1,5 @@
 <% if policy(@contest_instance).manage_judges? %>
-  <%= link_to 'Manage Judges',
+  <%= link_to 'Manage Judging',
       container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
       ),
