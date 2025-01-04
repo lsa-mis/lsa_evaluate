@@ -1,0 +1,62 @@
+<div class="container">
+  <div class="d-flex justify-content-end mb-3">
+    <%= link_to "Back", :back, class: "btn btn-secondary" %>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <%= render 'profiles/profile', profile: @profile %>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h2>All Submissions</h2>
+        </div>
+        <div class="card-body">
+          <% if @entries.any? %>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Contest</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Submitted</th>
+                  <th class="text-center">File</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @entries.each do |entry| %>
+                  <tr>
+                    <td><%= "#{entry.contest_instance.contest_description.name} - #{entry.contest_instance.date_open.year}" %></td>
+                    <td><%= entry.title %></td>
+                    <td><%= entry.category.kind %></td>
+                    <td><%= format_datetime(entry.created_at) %></td>
+                    <td class="text-center">
+                      <% if entry.entry_file.attached? %>
+                        <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"), target: "_blank", rel: "noopener", class: "me-2", title: "View in new tab" do %>
+                          <i class="bi bi-eye" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                          <span class="visually-hidden">View file</span>
+                        <% end %>
+                        <%= link_to rails_blob_path(entry.entry_file, disposition: "attachment"), download: "", class: "me-2", title: "Download file" do %>
+                          <i class="bi bi-download" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                          <span class="visually-hidden">Download file</span>
+                        <% end %>
+                      <% else %>
+                        No file attached
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <p class="text-center">No submissions found.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

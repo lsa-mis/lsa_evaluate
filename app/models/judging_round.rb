@@ -101,6 +101,10 @@ class JudgingRound < ApplicationRecord
     true
   end
 
+  def average_rank_for_entry(entry)
+    entry_rankings.where(entry: entry).where.not(rank: nil).average(:rank)&.round(2)
+  end
+
   private
 
   def dates_are_valid

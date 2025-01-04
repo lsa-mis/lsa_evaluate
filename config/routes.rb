@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     member do
       patch 'soft_delete'
       patch :toggle_disqualified
+      get :applicant_profile
     end
   end
 
@@ -33,12 +34,6 @@ Rails.application.routes.draw do
   resources :containers do
     resources :contest_descriptions do
       resources :contest_instances do
-        resources :entry_rankings, only: [ :create, :update ]
-        resources :judging_assignments, only: [ :index, :create, :destroy ] do
-          collection do
-            post 'create_judge'
-          end
-        end
         resources :judging_rounds do
           member do
             patch :activate
@@ -47,7 +42,23 @@ Rails.application.routes.draw do
             patch :uncomplete
           end
           resources :round_judge_assignments
-          resources :entry_rankings, only: [ :create, :update ]
+          resources :entry_rankings do
+            member do
+              patch :select_for_next_round
+            end
+            collection do
+              get 'new/evaluate', action: :evaluate, as: :evaluate
+            end
+            member do
+              get :evaluate
+            end
+          end
+        end
+        resources :entry_rankings, only: [ :create, :update ]
+        resources :judging_assignments, only: [ :index, :create, :destroy ] do
+          collection do
+            post 'create_judge'
+          end
         end
       end
       member do
