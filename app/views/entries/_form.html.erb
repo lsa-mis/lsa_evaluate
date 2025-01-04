@@ -1,10 +1,10 @@
 <div class="container pb-2">
-  <%= simple_form_for(@entry, html: { 
+  <%= simple_form_for(@entry, html: {
         'data-turbo' => false,
-        data: { 
-          controller: "form-submission", 
-          action: "submit->form-submission#showLoading" 
-        } 
+        data: {
+          controller: "form-submission",
+          action: "submit->form-submission#showLoading"
+        }
       }) do |f| %>
     <%= f.error_notification %>
     <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
@@ -17,8 +17,8 @@
       <%= f.hidden_field :profile_id, value: @entry.profile_id %>
 
       <%= f.association :category, collection: @entry.contest_instance.categories, label_method: :kind %>
-      <%= f.input :entry_file, 
-                  as: :file, 
+      <%= f.input :entry_file,
+                  as: :file,
                   required: true,
                   hint: "Only PDF files under 30 MB are allowed." %>
       <% if @entry.contest_instance.require_pen_name %>
@@ -29,8 +29,10 @@
                     hint: safe_join([
                       "Enter the pen name you wish to use for this entry.",
                       tag(:br),
-                      "The same pen name should be used for each submission entered across this year's contests. 
-                      Your real name should not appear anywhere in the manuscript or on the title page."
+                      "The same pen name should be used for each submission entered across this year's contests
+                      and must not bear any resemblance to your real name.",
+                      tag(:br),
+                      "Your real name should not appear anywhere in the manuscript or on the title page."
                     ]) %>
         <% if current_user.profile.pen_name.blank? %>
           <%= f.input :save_pen_name_to_profile,
@@ -43,9 +45,9 @@
         <%= f.input :campus_employee,
                     as: :boolean,
                     label: "I have been a campus employee within the past 12 months (including GSI, workstudy, etc.)",
-                    hint: "Winners and finalists who are or have been employed by the university within the past 
-                          calendar year can expect to receive their award in the form of additional pay through 
-                          the university payroll system. Awards processed through payroll will include a payroll 
+                    hint: "Winners and finalists who are or have been employed by the university within the past
+                          calendar year can expect to receive their award in the form of additional pay through
+                          the university payroll system. Awards processed through payroll will include a payroll
                           tax deduction." %>
       <% end %>
       <% if @entry.contest_instance.require_finaid_info %>
@@ -82,7 +84,7 @@
     </div>
 
     <div class="form-actions">
-      <%= f.button :submit, "Submit Entry", class: "btn btn-primary", data: { "form-submission-target" => "submitButton" } %> 
+      <%= f.button :submit, "Submit Entry", class: "btn btn-primary", data: { "form-submission-target" => "submitButton" } %>
       <%= link_to "Cancel", applicant_dashboard_path, class: "text-danger link_to" %>
     </div>
   <% end %>
