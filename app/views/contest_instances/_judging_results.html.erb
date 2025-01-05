@@ -34,7 +34,7 @@
                             data: {
                               'bs-toggle': 'tooltip',
                               'bs-html': 'true',
-                              'bs-title': "#{h(ranking.user.display_name)}<br>#{h(display_email(ranking.user.email))}"
+                              'bs-title': "#{h(ranking.user.display_name_or_first_name_last_name)}<br>#{h(display_email(ranking.user.email))}"
                             }
                           ) %> : <%= ranking.rank || 'Not ranked' %>
                         </div>

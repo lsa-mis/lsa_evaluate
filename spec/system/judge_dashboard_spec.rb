@@ -226,5 +226,47 @@ RSpec.describe 'Judge Dashboard', type: :system do
         end
       end
     end
+
+    context 'when viewing eligibility rules' do
+      it 'displays eligibility rules button in the accordion' do
+        find('.accordion-button').click
+        sleep 0.5
+
+        within('.accordion-collapse.show') do
+          expect(page).to have_button('View Eligibility Rules')
+        end
+      end
+
+      it 'opens eligibility modal when clicking the button' do
+        find('.accordion-button').click
+        sleep 0.5
+
+        within('.accordion-collapse.show') do
+          click_button 'View Eligibility Rules'
+
+          # Check modal appears and has content
+          within('.modal.show') do
+            expect(page).to have_content('Eligibility Rules')
+            expect(page).to have_css('.modal-body')
+            expect(page).to have_button('Close')
+          end
+        end
+      end
+
+      it 'loads eligibility rules content via AJAX' do
+        find('.accordion-button').click
+        sleep 0.5
+
+        within('.accordion-collapse.show') do
+          click_button 'View Eligibility Rules'
+
+          # Wait for modal to be visible
+          expect(page).to have_css('.modal.show')
+
+          # Wait for content to load - just check for the text
+          expect(page).to have_content('Eligibility rules for Test Contest')
+        end
+      end
+    end
   end
 end

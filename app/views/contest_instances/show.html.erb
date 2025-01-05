@@ -8,10 +8,6 @@
 <div data-controller="tooltip-email-display">
   <%= render @contest_instance %>
 
-  <div class="mb-3">
-    <%= render 'management_links' %>
-  </div>
-
   <div>
     <%= link_to "Edit", edit_container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), class: "btn btn-sm btn-primary" %>
     <%= link_to "Archive", container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' } %>

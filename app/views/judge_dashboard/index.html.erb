@@ -25,8 +25,17 @@
           </div>
         </button>
       </div>
-      <div id="contestCollapse<%= index %>" class="accordion-collapse collapse" aria-labelledby="contestHeader<%= index %>" data-bs-parent="#contestAccordion<%= index %>">
+      <div id="contestCollapse<%= index %>" class="accordion-collapse collapse" aria-labelledby="contestHeader<%= index %>" data-bs-parent="#contestAccordion<%= index %>" data-controller="eligibility-modal">
         <div class="accordion-body">
+          <button class="btn btn-sm btn-outline-secondary mb-2"
+                  data-action="click->eligibility-modal#open"
+                  data-url="<%= eligibility_rules_container_contest_description_path(
+                    assignment.contest_instance.contest_description.container,
+                    assignment.contest_instance.contest_description,
+                  ) %>">
+            View Eligibility Rules
+          </button>
+
           <% if assignment.contest_instance.current_judging_round&.special_instructions.present? %>
             <div class="alert alert-info mt-2">
               <strong>Instructions:</strong>
@@ -95,6 +104,8 @@
             </div>
           <% end %>
         </div>
+        <!-- Include the reusable modal -->
+        <%= render partial: 'applicant_dashboard/eligibility_modal' %>
       </div>
     </div>
   </div>
