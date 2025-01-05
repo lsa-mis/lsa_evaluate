@@ -103,6 +103,10 @@ class User < ApplicationRecord
     profile.present?
   end
 
+  def display_name_or_first_name_last_name
+    (display_name.presence || "#{first_name} #{last_name}")
+  end
+
   def display_initials_or_uid
     if display_name.present?
       display_name.split.map { |name| name[0].upcase }.join
@@ -119,7 +123,7 @@ class User < ApplicationRecord
     if display_name.present?
       "#{display_name} (#{uid})"
     else
-      uid
+      "#{display_name_or_first_name_last_name} (#{uid})"
     end
   end
 end
