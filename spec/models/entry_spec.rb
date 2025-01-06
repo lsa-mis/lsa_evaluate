@@ -79,6 +79,12 @@ RSpec.describe Entry, type: :model do
       entry = build(:entry, profile: nil, category: category, contest_instance: contest_instance)
       expect(entry).not_to be_valid
     end
+
+    it 'is not valid with a title longer than 250 characters' do
+      entry = build(:entry, title: 'a' * 251, category: category, contest_instance: contest_instance, profile: profile)
+      expect(entry).not_to be_valid
+      expect(entry.errors[:title]).to include("is too long (maximum is 250 characters)")
+    end
   end
 
   describe 'associations' do
