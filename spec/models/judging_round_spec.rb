@@ -137,10 +137,10 @@ RSpec.describe JudgingRound, type: :model do
     end
   end
 
-  describe 'special instructions' do
+  describe 'instructions' do
     let(:contest_instance) { create(:contest_instance) }
 
-    it 'can be saved with special instructions' do
+    it 'can be saved with instructions' do
       judging_round = build(:judging_round,
         contest_instance: contest_instance,
         special_instructions: "Please review entries carefully\nPay attention to formatting"
@@ -149,7 +149,7 @@ RSpec.describe JudgingRound, type: :model do
       expect(judging_round.save).to be true
     end
 
-    it 'can be saved without special instructions' do
+    it 'can be saved without instructions' do
       judging_round = build(:judging_round,
         contest_instance: contest_instance,
         special_instructions: nil
@@ -158,7 +158,7 @@ RSpec.describe JudgingRound, type: :model do
       expect(judging_round.save).to be true
     end
 
-    it 'preserves line breaks in special instructions' do
+    it 'preserves line breaks in instructions' do
       instructions = "Line 1\nLine 2\nLine 3"
       judging_round = create(:judging_round,
         contest_instance: contest_instance,

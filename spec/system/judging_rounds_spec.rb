@@ -18,8 +18,8 @@ RSpec.describe 'Judging Rounds', type: :system do
     sign_in admin
   end
 
-  describe 'special instructions' do
-    it 'allows creating a round with special instructions' do
+  describe 'instructions' do
+    it 'allows creating a round with instructions' do
       visit new_container_contest_description_contest_instance_judging_round_path(
         container, contest_description, contest_instance
       )
@@ -31,7 +31,7 @@ RSpec.describe 'Judging Rounds', type: :system do
 
       fill_in 'Start date', with: start_date
       fill_in 'End date', with: end_date
-      fill_in 'Special Instructions for Judges', with: 'These are special test instructions'
+      fill_in 'Instructions for Judges', with: 'These are test instructions'
 
       expect {
         begin
@@ -58,10 +58,10 @@ RSpec.describe 'Judging Rounds', type: :system do
         )
       )
       click_link_or_button 'Manage Round'
-      expect(page).to have_content('These are special test instructions')
+      expect(page).to have_content('These are test instructions')
     end
 
-    it 'displays special instructions to judges' do
+    it 'displays instructions to judges' do
       judging_round = create(:judging_round,
         contest_instance: contest_instance,
         special_instructions: 'Important judging guidelines',
@@ -79,14 +79,14 @@ RSpec.describe 'Judging Rounds', type: :system do
       expect(page).to have_content('Important judging guidelines')
     end
 
-    it 'allows editing special instructions' do
+    it 'allows editing instructions' do
       judging_round = create(:judging_round, contest_instance: contest_instance)
 
       visit edit_container_contest_description_contest_instance_judging_round_path(
         container, contest_description, contest_instance, judging_round
       )
 
-      fill_in 'Special Instructions for Judges', with: 'Updated instructions'
+      fill_in 'Instructions for Judges', with: 'Updated instructions'
 
       # Accept the confirmation dialog
       accept_confirm do
@@ -97,7 +97,7 @@ RSpec.describe 'Judging Rounds', type: :system do
       expect(page).to have_content('Updated instructions')
     end
 
-    it 'preserves formatting in special instructions' do
+    it 'preserves formatting in instructions' do
       instructions = "Line 1\nLine 2\nLine 3"
       judging_round = create(:judging_round,
         contest_instance: contest_instance,

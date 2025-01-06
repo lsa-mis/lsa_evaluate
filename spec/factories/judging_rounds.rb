@@ -66,7 +66,7 @@ FactoryBot.define do
     end
 
     trait :with_special_instructions do
-      special_instructions { "Special instructions for round #{round_number}" }
+      special_instructions { "Instructions for round #{round_number}" }
     end
   end
 end
