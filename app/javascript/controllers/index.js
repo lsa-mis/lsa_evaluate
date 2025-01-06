@@ -7,6 +7,9 @@ import { application } from "./application"
 import AddressCopyController from "./address_copy_controller"
 application.register("address-copy", AddressCopyController)
 
+import CharacterCounterController from "./character_counter_controller"
+application.register("character-counter", CharacterCounterController)
+
 import CheckboxselectController from "./checkboxselect_controller"
 application.register("checkboxselect", CheckboxselectController)
 
@@ -37,20 +40,20 @@ application.register("form-validation", FormValidationController)
 import InteractionController from "./interaction_controller"
 application.register("interaction", InteractionController)
 
-import ScrollController from "./scroll_controller"
-application.register("scroll", ScrollController)
-
-import UidLookupController from "./uid_lookup_controller"
-application.register("uid-lookup", UidLookupController)
-
 import JudgingRoundFormController from "./judging_round_form_controller"
 application.register("judging-round-form", JudgingRoundFormController)
 
-import WordCounterController from "./word_counter_controller"
-application.register("word-counter", WordCounterController)
+import JudgingRoundShowController from "./judging_round_show_controller"
+application.register("judging-round-show", JudgingRoundShowController)
+
+import ScrollController from "./scroll_controller"
+application.register("scroll", ScrollController)
 
 import TooltipEmailDisplayController from "./tooltip_email_display_controller"
 application.register("tooltip-email-display", TooltipEmailDisplayController)
 
-import JudgingRoundShowController from "./judging_round_show_controller"
-application.register("judging-round-show", JudgingRoundShowController)
+import UidLookupController from "./uid_lookup_controller"
+application.register("uid-lookup", UidLookupController)
+
+import WordCounterController from "./word_counter_controller"
+application.register("word-counter", WordCounterController)
