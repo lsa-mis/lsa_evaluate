@@ -30,7 +30,7 @@
           <p><strong>End Date:</strong> <%= format_datetime(@judging_round.end_date) %></p>
           <% if @judging_round.special_instructions.present? %>
             <div class="mt-3">
-              <h4>Special Instructions</h4>
+              <h4>Instructions</h4>
               <div class="alert alert-info">
                 <%= simple_format(@judging_round.special_instructions) %>
               </div>
