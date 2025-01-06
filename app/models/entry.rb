@@ -41,6 +41,7 @@ class Entry < ApplicationRecord
   has_many :entry_rankings, dependent: :restrict_with_error
 
   validates :title, presence: true
+  validates :title, length: { maximum: 250 }
   validate :entry_file_validation, on: :create
   validate :pen_name_required_if_contest_requires_it, on: :create
   validate :accepted_financial_aid_notice_if_contest_requires_it, on: :create
