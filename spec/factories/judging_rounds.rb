@@ -10,6 +10,7 @@
 #  min_internal_comment_words :integer          default(0), not null
 #  require_external_comments  :boolean          default(FALSE), not null
 #  require_internal_comments  :boolean          default(FALSE), not null
+#  required_entries_count     :integer          default(0), not null
 #  round_number               :integer          not null
 #  special_instructions       :text(65535)
 #  start_date                 :datetime
@@ -39,6 +40,7 @@ FactoryBot.define do
     min_internal_comment_words { 0 }
     min_external_comment_words { 0 }
     special_instructions { nil }
+    required_entries_count { 0 }
 
     trait :completed do
       completed { true }
