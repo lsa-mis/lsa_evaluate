@@ -16,6 +16,12 @@
   </div>
 
   <div class="mb-3">
+    <%= f.label :required_entries_count, 'Number of Entries to be Selected', class: 'form-label' %>
+    <%= f.number_field :required_entries_count, class: 'form-control', min: 0 %>
+    <div class="form-text">Enter the number of entries that judges must select and rank for this round.</div>
+  </div>
+
+  <div class="mb-3">
     <%= f.label :start_date, class: 'form-label' %>
     <%= f.datetime_field :start_date, class: 'form-control' %>
   </div>
@@ -26,28 +32,34 @@
   </div>
 
   <div class="mb-3">
-    <%= f.label :require_internal_comments, class: 'form-label' %>
-    <%= f.check_box :require_internal_comments, class: 'form-check-input' %>
+    <%= f.label :special_instructions, class: 'form-label' %>
+    <%= f.text_area :special_instructions, class: 'form-control' %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :min_internal_comment_words, class: 'form-label' %>
+    <div class="form-check">
+      <%= f.check_box :require_internal_comments, class: 'form-check-input',
+                        data: { action: 'change->judging-round-form#toggleInternalComments' } %>
+      <%= f.label :require_internal_comments, class: 'form-check-label' %>
+    </div>
+  </div>
+
+  <div class="mb-3" data-judging-round-form-target="internalComments" style="display: none;">
+    <%= f.label :min_internal_comment_words, 'Minimum Internal Comment Words', class: 'form-label' %>
     <%= f.number_field :min_internal_comment_words, class: 'form-control', min: 0 %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :require_external_comments, class: 'form-label' %>
-    <%= f.check_box :require_external_comments, class: 'form-check-input' %>
+    <div class="form-check">
+      <%= f.check_box :require_external_comments, class: 'form-check-input',
+                        data: { action: 'change->judging-round-form#toggleExternalComments' } %>
+      <%= f.label :require_external_comments, class: 'form-check-label' %>
+    </div>
   </div>
 
-  <div class="mb-3">
-    <%= f.label :min_external_comment_words, class: 'form-label' %>
+  <div class="mb-3" data-judging-round-form-target="externalComments" style="display: none;">
+    <%= f.label :min_external_comment_words, 'Minimum External Comment Words', class: 'form-label' %>
     <%= f.number_field :min_external_comment_words, class: 'form-control', min: 0 %>
-  </div>
-
-  <div class="mb-3">
-    <%= f.label :special_instructions, class: 'form-label' %>
-    <%= f.text_area :special_instructions, class: 'form-control' %>
   </div>
 
   <div class="actions">
