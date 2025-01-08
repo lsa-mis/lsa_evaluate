@@ -10,6 +10,7 @@
 #  min_internal_comment_words :integer          default(0), not null
 #  require_external_comments  :boolean          default(FALSE), not null
 #  require_internal_comments  :boolean          default(FALSE), not null
+#  required_entries_count     :integer          default(0), not null
 #  round_number               :integer          not null
 #  special_instructions       :text(65535)
 #  start_date                 :datetime
@@ -37,9 +38,12 @@ class JudgingRound < ApplicationRecord
             numericality: { greater_than: 0 }
   validates :round_number, uniqueness: { scope: :contest_instance_id }
   validates :start_date, :end_date, presence: true
+  validates :required_entries_count, presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :dates_are_valid
   validate :start_date_after_previous_round
   validate :only_one_active_round_per_contest
+  validate :required_entries_count_not_greater_than_total_entries
 
   scope :active, -> { where(active: true) }
 
@@ -141,5 +145,31 @@ class JudgingRound < ApplicationRecord
 
   def set_active_by_default
     self.active = contest_instance.judging_rounds.count.zero?
+  end
+
+  def required_entries_count_not_greater_than_total_entries
+    return unless required_entries_count && contest_instance
+
+    total_entries = if round_number == 1
+                     contest_instance.entries.where(deleted: false).count
+    else
+                     previous_round = contest_instance.judging_rounds
+                                    .find_by(round_number: round_number - 1)
+                     return unless previous_round # Skip validation if previous round not found
+
+                     contest_instance.entries
+                                   .joins(:entry_rankings)
+                                   .where(entry_rankings: {
+                                     judging_round: previous_round,
+                                     selected_for_next_round: true
+                                   })
+                                   .where(deleted: false)
+                                   .distinct
+                                   .count
+    end
+
+    if required_entries_count > total_entries
+      errors.add(:required_entries_count, "cannot be greater than the total number of available entries (#{total_entries})")
+    end
   end
 end
