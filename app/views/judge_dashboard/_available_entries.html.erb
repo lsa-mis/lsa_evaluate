@@ -1,0 +1,27 @@
+<div class="entries-list"
+     data-controller="entry-drag"
+     data-entry-drag-url-value="<%= update_rankings_container_contest_description_contest_instance_judging_round_path(
+       assignment.contest_instance.contest_description.container,
+       assignment.contest_instance.contest_description,
+       assignment.contest_instance,
+       assignment.contest_instance.current_judging_round
+     ) %>">
+  <%= render partial: 'judge_dashboard/entry_rankings_query',
+             locals: { assignment: assignment, current_user: current_user } %>
+
+  <% assignment.contest_instance.current_round_entries
+      .where.not(id: @ranked_entry_ids)
+      .each do |entry| %>
+    <%= turbo_frame_tag dom_id(entry) do %>
+      <div class="card mb-2" data-entry-id="<%= entry.id %>">
+        <div class="card-body">
+          <h5 class="card-title"><%= entry.title %></h5>
+          <div class="btn-group">
+            <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"),
+                target: '_blank', class: 'btn btn-sm btn-secondary' %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
