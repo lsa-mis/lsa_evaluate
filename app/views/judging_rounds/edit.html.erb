@@ -43,6 +43,12 @@
           <%= f.number_field :round_number, class: 'form-control' %>
         </div>
 
+        <div class="mb-3">
+          <%= f.label :required_entries_count, 'Number of Entries to be Selected', class: 'form-label' %>
+          <%= f.number_field :required_entries_count, class: 'form-control', min: 0 %>
+          <div class="form-text">Enter the number of entries that judges must select and rank for this round.</div>
+        </div>
+
         <div class="form-group mt-3">
           <%= f.label :start_date %>
           <%= f.datetime_local_field :start_date, class: 'form-control' %>
