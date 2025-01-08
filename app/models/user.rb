@@ -126,4 +126,8 @@ class User < ApplicationRecord
       "#{display_name_or_first_name_last_name} (#{uid})"
     end
   end
+
+  def judge_for?(contest_instance)
+    contest_instance.judges.include?(self)
+  end
 end
