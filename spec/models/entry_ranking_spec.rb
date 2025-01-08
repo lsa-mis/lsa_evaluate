@@ -4,6 +4,7 @@
 #
 #  id                      :bigint           not null, primary key
 #  external_comments       :text(65535)
+#  finalized               :boolean          default(FALSE), not null
 #  internal_comments       :text(65535)
 #  notes                   :text(65535)
 #  rank                    :integer
