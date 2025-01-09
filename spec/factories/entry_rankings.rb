@@ -67,5 +67,9 @@ FactoryBot.define do
       internal_comments { Faker::Lorem.paragraph(sentence_count: 5) }
       external_comments { Faker::Lorem.paragraph(sentence_count: 5) }
     end
+
+    trait :finalized do
+      finalized { true }
+    end
   end
 end
