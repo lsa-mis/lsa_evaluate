@@ -86,7 +86,7 @@ RSpec.describe 'Judging Rounds', type: :system do
         container, contest_description, contest_instance, judging_round
       )
 
-      fill_in 'Instructions for Judges', with: 'Updated instructions'
+      fill_in 'Instructions for Judges', with: 'Judging round was successfully updated'
 
       # Accept the confirmation dialog
       accept_confirm do
@@ -94,7 +94,7 @@ RSpec.describe 'Judging Rounds', type: :system do
       end
 
       expect(page).to have_content('Judging round was successfully updated')
-      expect(page).to have_content('Updated instructions')
+      expect(page).to have_content('Judging round was successfully updated')
     end
 
     it 'preserves formatting in instructions' do
@@ -110,6 +110,66 @@ RSpec.describe 'Judging Rounds', type: :system do
 
       instructions.split("\n").each do |line|
         expect(page).to have_content(line)
+      end
+    end
+
+    it 'shows warning when editing a started round' do
+      judging_round = create(:judging_round,
+        contest_instance: contest_instance,
+        start_date: 1.day.ago
+      )
+
+      visit edit_container_contest_description_contest_instance_judging_round_path(
+        container, contest_description, contest_instance, judging_round
+      )
+
+      expect(page).to have_content('Warning: This round has already started')
+    end
+
+    it 'does not show warning when editing a future round' do
+      judging_round = create(:judging_round,
+        contest_instance: contest_instance,
+        start_date: 1.day.from_now
+      )
+
+      visit edit_container_contest_description_contest_instance_judging_round_path(
+        container, contest_description, contest_instance, judging_round
+      )
+
+      expect(page).to have_no_content('Warning: This round has already started')
+    end
+
+    it 'shows error when activating a round while another is active' do
+      active_round = create(:judging_round,
+        contest_instance: contest_instance,
+        active: true,
+        start_date: 1.day.from_now,
+        end_date: 2.days.from_now
+      )
+
+      inactive_round = create(:judging_round,
+        contest_instance: contest_instance,
+        active: false,
+        start_date: active_round.end_date + 1.day,
+        end_date: active_round.end_date + 2.days
+      )
+
+      visit container_contest_description_contest_instance_judging_assignments_path(
+        container, contest_description, contest_instance
+      )
+
+      # Find and click the Activate button within the last row of the last table
+      within(page.all('.table').last) do
+        within(page.all('tbody tr').last) do
+          within('td', text: /Pending/) do
+            click_button 'Activate'
+          end
+        end
+      end
+
+      # Look for the flash message in the flash container
+      within('#flash') do
+        expect(page).to have_content("[\"All previous rounds must be completed before completing this round\"]")
       end
     end
   end
