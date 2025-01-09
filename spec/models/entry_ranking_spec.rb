@@ -86,96 +86,84 @@ RSpec.describe EntryRanking, type: :model do
     end
 
     describe 'comment validations' do
-      context 'when internal comments are required' do
-        before do
-          judging_round.update(
-            require_internal_comments: true,
-            require_external_comments: false
-          )
+      shared_examples 'validates comment requirements' do |comment_type|
+        let(:comment_field) { "#{comment_type}_comments" }
+        let(:min_words_field) { "min_#{comment_type}_comment_words" }
+
+        it 'is invalid without comments' do
+          entry_ranking.send("#{comment_field}=", nil)
+          expect(entry_ranking).not_to be_valid
+          expect(entry_ranking.errors[comment_field]).to include('are required')
         end
 
-        it 'is invalid without internal comments' do
-          entry_ranking.internal_comments = nil
+        it 'is invalid with blank comments' do
+          entry_ranking.send("#{comment_field}=", '')
           expect(entry_ranking).not_to be_valid
-          expect(entry_ranking.errors[:internal_comments]).to include('are required')
-        end
-
-        it 'is invalid with blank internal comments' do
-          entry_ranking.internal_comments = ''
-          expect(entry_ranking).not_to be_valid
-          expect(entry_ranking.errors[:internal_comments]).to include('are required')
+          expect(entry_ranking.errors[comment_field]).to include('are required')
         end
 
         context 'with minimum word requirement' do
           before do
-            judging_round.update(
-              min_internal_comment_words: 5,
-              min_external_comment_words: 0
+            judging_round.update!(
+              min_words_field => required_words,
+              "require_#{comment_field}" => true
             )
           end
 
+          let(:required_words) { comment_type == 'internal' ? 5 : 10 }
+
           it 'is invalid with too few words' do
-            entry_ranking.internal_comments = 'Too few words'
+            entry_ranking.send("#{comment_field}=", 'Too few words')
             expect(entry_ranking).not_to be_valid
-            expect(entry_ranking.errors[:internal_comments]).to include('must contain at least 5 words')
+            expect(entry_ranking.errors[comment_field]).to include("must be at least #{required_words} words")
           end
 
           it 'is valid with enough words' do
-            entry_ranking.internal_comments = 'This comment has five or more words'
+            long_comment = if comment_type == 'internal'
+                            'This comment has five or more words here'
+            else
+                            'This external comment definitely has more than ten words to meet the requirement now'
+            end
+
+            entry_ranking.send("#{comment_field}=", long_comment)
             expect(entry_ranking).to be_valid
           end
         end
+      end
+
+      context 'when internal comments are required' do
+        before do
+          judging_round.update!(
+            require_internal_comments: true,
+            require_external_comments: false
+          )
+          entry_ranking.finalized = true
+        end
+
+        include_examples 'validates comment requirements', 'internal'
       end
 
       context 'when external comments are required' do
         before do
-          judging_round.update(
+          judging_round.update!(
             require_internal_comments: false,
             require_external_comments: true
           )
+          entry_ranking.finalized = true
         end
 
-        it 'is invalid without external comments' do
-          entry_ranking.external_comments = nil
-          expect(entry_ranking).not_to be_valid
-          expect(entry_ranking.errors[:external_comments]).to include('are required')
-        end
-
-        it 'is invalid with blank external comments' do
-          entry_ranking.external_comments = ''
-          expect(entry_ranking).not_to be_valid
-          expect(entry_ranking.errors[:external_comments]).to include('are required')
-        end
-
-        context 'with minimum word requirement' do
-          before do
-            judging_round.update(
-              min_internal_comment_words: 0,
-              min_external_comment_words: 10
-            )
-          end
-
-          it 'is invalid with too few words' do
-            entry_ranking.external_comments = 'This comment is too short'
-            expect(entry_ranking).not_to be_valid
-            expect(entry_ranking.errors[:external_comments]).to include('must contain at least 10 words')
-          end
-
-          it 'is valid with enough words' do
-            entry_ranking.external_comments = 'This comment has ten or more words which meets the requirement'
-            expect(entry_ranking).to be_valid
-          end
-        end
+        include_examples 'validates comment requirements', 'external'
       end
 
       context 'when neither type of comments is required' do
         before do
-          judging_round.update(
+          judging_round.update!(
             require_internal_comments: false,
             require_external_comments: false,
             min_internal_comment_words: 0,
             min_external_comment_words: 0
           )
+          entry_ranking.finalized = true
         end
 
         it 'is valid without any comments' do
