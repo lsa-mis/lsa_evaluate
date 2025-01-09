@@ -49,4 +49,16 @@ class ContestInstancePolicy < ApplicationPolicy
   def complete?
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end
+
+  def uncomplete?
+    user&.has_container_role?(record.contest_description.container) || axis_mundi?
+  end
+
+  def activate?
+    user&.has_container_role?(record.contest_description.container) || axis_mundi?
+  end
+
+    def deactivate?
+    user&.has_container_role?(record.contest_description.container) || axis_mundi?
+  end
 end
