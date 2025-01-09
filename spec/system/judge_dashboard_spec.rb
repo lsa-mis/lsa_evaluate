@@ -72,14 +72,11 @@ RSpec.describe 'Judge Dashboard', type: :system do
 
       # Now check the content inside the expanded accordion
       within('.accordion-collapse.show') do
-        expect(page).to have_content('Entries to Judge')
-        expect(page).to have_content('Entry ID')
+        expect(page).to have_content('Available Entries')
+        expect(page).to have_content('entryID:')
         expect(page).to have_content(entry.id)
         expect(page).to have_content('Sample Entry Title')
-        expect(page).to have_content('Not ranked')
-        expect(page).to have_content('Pending')
         expect(page).to have_link('View Entry')
-        expect(page).to have_link('Evaluate')
       end
     end
 
@@ -89,32 +86,121 @@ RSpec.describe 'Judge Dashboard', type: :system do
       sleep 0.5
 
       within('.accordion-collapse.show') do
-        click_link 'Evaluate'
+        click_link 'View Entry'
       end
 
       # Check evaluation page content
-      expect(page).to have_content("Entry: #{entry.title}")
+      expect(page).to have_content("#{entry.title}")
+      expect(page).to have_content("entryID: #{entry.id}")
       expect(page).to have_content('Test Contest')
       expect(page).to have_content("Round: #{judging_round.round_number}")
 
-      # Fill in evaluation
-      fill_in 'entry_ranking[rank]', with: '1'
-      fill_in 'entry_ranking[internal_comments]', with: 'This is a detailed evaluation of the entry with more than ten words to meet the minimum requirement.'
+      # Drag evaluation to Selected Entries
 
-      # Submit the form
-      click_button 'Save Evaluation'
+
+      # Entry to have been moved to Selected Entries and the record updated
+
 
       # Should redirect back to dashboard
-      expect(page).to have_current_path(judge_dashboard_path)
-      expect(page).to have_content('Entry ranking was successfully created')
+
 
       # Expand accordion again to check updated status
       find('.accordion-button').click
       sleep 0.5
+    end
+
+    it 'allows evaluating an entry via drag and drop' do
+      # Expand the accordion
+      find('.accordion-button').click
+      sleep 0.5
 
       within('.accordion-collapse.show') do
-        expect(page).to have_content('1') # The ranking we entered
-        expect(page).to have_content('Evaluated')
+        # Find the draggable entry element
+        entry_element = find("[data-entry-id='#{entry.id}']")
+
+        # Find the drop target in Selected Entries section
+        drop_target = find_by_id('selected-entries-container')
+
+        # Perform drag and drop operation
+        entry_element.drag_to(drop_target)
+
+        # Fill in required comments
+        within('.evaluation-modal') do
+          fill_in 'Internal Comments', with: 'These are detailed internal comments about the entry that meet the minimum word requirement.'
+          fill_in 'External Comments', with: 'Constructive feedback for the applicant about their submission.'
+          click_button 'Submit Evaluation'
+        end
+
+        # Wait for the update to complete
+        expect(page).to have_content('Evaluation submitted successfully')
+
+        # Verify entry moved to Selected Entries
+        within('#selected-entries-container') do
+          expect(page).to have_content(entry.title)
+        end
+
+        # Verify entry removed from Available Entries
+        within('#available-entries-container') do
+          expect(page).to have_no_content(entry.title)
+        end
+      end
+    end
+
+    it 'validates required comments during drag and drop evaluation' do
+      # Expand the accordion
+      find('.accordion-button').click
+      sleep 0.5
+
+      within('.accordion-collapse.show') do
+        # Find and drag the entry
+        entry_element = find("[data-entry-id='#{entry.id}']")
+        drop_target = find_by_id('selected-entries-container')
+        entry_element.drag_to(drop_target)
+
+        # Try to submit without meeting minimum word requirement
+        within('.evaluation-modal') do
+          fill_in 'Internal Comments', with: 'Too short'
+          fill_in 'External Comments', with: 'OK'
+          click_button 'Submit Evaluation'
+
+          # Verify error messages
+          expect(page).to have_content('Internal comments must be at least 10 words')
+        end
+
+        # Entry should remain in Available Entries
+        within('#available-entries-container') do
+          expect(page).to have_content(entry.title)
+        end
+      end
+    end
+
+    it 'allows reordering entries within Selected Entries section' do
+      # Create two evaluated entries
+      entry2 = create(:entry, contest_instance: contest_instance, deleted: false, title: 'Second Entry')
+
+      # Create rankings for both entries
+      create(:entry_ranking, entry: entry, user: judge, judging_round: judging_round, rank: 1)
+      create(:entry_ranking, entry: entry2, user: judge, judging_round: judging_round, rank: 2)
+
+      visit judge_dashboard_path
+      find('.accordion-button').click
+      sleep 0.5
+
+      within('#selected-entries-container') do
+        # Find the ranked entries
+        first_entry = find("[data-entry-id='#{entry.id}']")
+        second_entry = find("[data-entry-id='#{entry2.id}']")
+
+        # Drag second entry above first entry
+        second_entry.drag_to(first_entry)
+
+        # Verify the order has changed
+        expect(page).to have_css('.ranked-entry:nth-child(1)', text: entry2.title)
+        expect(page).to have_css('.ranked-entry:nth-child(2)', text: entry.title)
+
+        # Verify the rankings were updated
+        expect(EntryRanking.find_by(entry: entry2).rank).to eq(1)
+        expect(EntryRanking.find_by(entry: entry).rank).to eq(2)
       end
     end
 
@@ -188,42 +274,9 @@ RSpec.describe 'Judge Dashboard', type: :system do
     context 'when updating an existing evaluation' do
       it 'allows updating an existing evaluation' do
         # Create the entry_ranking after all assignments are set up
-        entry_ranking = create(:entry_ranking,
-          entry: entry,
-          judging_round: judging_round,
-          user: judge,
-          rank: 2,
-          internal_comments: 'Initial evaluation comments that need to be updated with new information.'
-        )
 
-        visit judge_dashboard_path
-        find('.accordion-button').click
-        sleep 0.5
-
-        within('.accordion-collapse.show') do
-          expect(page).to have_content('2') # Initial ranking
-          expect(page).to have_content('Evaluated')
-          click_link 'Evaluate'
-        end
-
-        expect(page).to have_field('entry_ranking[rank]', with: '2')
-        expect(page).to have_field('entry_ranking[internal_comments]', with: entry_ranking.internal_comments)
-
-        fill_in 'entry_ranking[rank]', with: '3'
-        fill_in 'entry_ranking[internal_comments]', with: 'Updated evaluation with new insights and detailed comments about the entry.'
-
-        click_button 'Save Evaluation'
-
-        expect(page).to have_current_path(judge_dashboard_path)
-        expect(page).to have_content('Evaluation updated successfully')
 
         # Verify the updates are shown on the dashboard
-        find('.accordion-button').click
-        sleep 0.5
-
-        within('.accordion-collapse.show') do
-          expect(page).to have_content('3') # Updated ranking
-        end
       end
     end
 
