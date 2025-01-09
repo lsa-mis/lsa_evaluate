@@ -263,6 +263,8 @@ class JudgingRoundsController < ApplicationController
   def check_edit_warning
     if @judging_round.entry_rankings.exists?
       flash.now[:warning] = 'Warning: This round already has rankings. Editing it may affect existing rankings.'
+    elsif @judging_round.start_date <= Time.current
+      flash.now[:warning] = 'Warning: This round has already started'
     end
   end
 
