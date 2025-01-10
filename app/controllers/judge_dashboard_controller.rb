@@ -12,6 +12,12 @@ class JudgeDashboardController < ApplicationController
                                      ])
                                      .where(active: true)
                                      .order('judging_rounds.round_number ASC')
+
+    # Get all entry rankings for the current user
+    @entry_rankings = EntryRanking.includes(:judging_round)
+                                 .where(user: current_user)
+                                 .joins(judging_round: :contest_instance)
+                                 .where(judging_rounds: { contest_instances: { id: @judging_assignments.pluck(:contest_instance_id) } })
   end
 
   private
