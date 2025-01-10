@@ -1,249 +1,174 @@
-<h1>Judge Dashboard</h1>
-<div class="row mx-4 mb-4">
-  <% if (content = render_editable_content('judge_dashboard', 'instructions')) %>
+<% content_for :head do %>
+  <%= stylesheet_link_tag "judge_dashboard", "data-turbo-track": "reload" %>
+<% end %>
+
+<div class="judge-dashboard">
+  <h1>Judge Dashboard</h1>
+
+  <div class="row mx-4 mb-4">
+    <% if (content = render_editable_content('judge_dashboard', 'instructions')) %>
       <%= content %>
-  <% end %>
-</div>
-<h3><%= "Hello #{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)})! these are your judging assignments:"%></h3>
+    <% end %>
+  </div>
 
-<% @judging_assignments.each_with_index do |assignment, index| %>
-  <div class="accordion mb-4" id="contestAccordion<%= index %>">
-    <div class="accordion-item">
-      <div class="accordion-header" id="contestHeader<%= index %>">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contestCollapse<%= index %>" aria-expanded="false" aria-controls="contestCollapse<%= index %>">
-          <div class="w-100">
-            <h4 class="mb-0"><%= assignment.contest_instance.contest_description.name %></h4>
-            <% if assignment.contest_instance.current_judging_round %>
-              <p class="text-muted mb-0">
-                Round: <%= assignment.contest_instance.current_judging_round.round_number %>
-                (<%= format_datetime(assignment.contest_instance.current_judging_round.start_date) %> -
-                <%= format_datetime(assignment.contest_instance.current_judging_round.end_date) %>)
-              </p>
-            <% else %>
-              <p class="text-muted mb-0">No active round</p>
-            <% end %>
-          </div>
-        </button>
-      </div>
-      <div id="contestCollapse<%= index %>" class="accordion-collapse collapse"
-           aria-labelledby="contestHeader<%= index %>"
-           data-bs-parent="#contestAccordion<%= index %>"
-           data-controller="eligibility-modal">
-        <div class="accordion-body">
-          <button class="btn btn-sm btn-outline-secondary mb-2"
-                  data-action="click->eligibility-modal#open"
-                  data-url="<%= eligibility_rules_container_contest_description_path(
-                    assignment.contest_instance.contest_description.container,
-                    assignment.contest_instance.contest_description,
-                  ) %>">
-            View Eligibility Rules
-          </button>
+  <h3>Hello <%= "#{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)})!" %></h3>
+  <p>These are your judging assignments:</p>
 
-          <% if assignment.contest_instance.current_judging_round&.special_instructions.present? %>
-            <div class="alert alert-info mt-2">
-              <strong>Instructions:</strong>
-              <%= simple_format(assignment.contest_instance.current_judging_round.special_instructions) %>
+  <% @judging_assignments.each_with_index do |assignment, index| %>
+    <div class="accordion mb-4" id="contestAccordion<%= index %>">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="contestHeader<%= index %>">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#contestCollapse<%= index %>" aria-expanded="false"
+                  aria-controls="contestCollapse<%= index %>">
+            <div class="w-100">
+              <h4 class="mb-0"><%= assignment.contest_instance.contest_description.name %></h4>
+              <% if assignment.contest_instance.current_judging_round %>
+                <p class="text-muted mb-0">
+                  Round: <%= assignment.contest_instance.current_judging_round.round_number %>
+                  (<%= format_datetime(assignment.contest_instance.current_judging_round.start_date) %> -
+                  <%= format_datetime(assignment.contest_instance.current_judging_round.end_date) %>)
+                </p>
+              <% else %>
+                <p class="text-muted mb-0">No active round</p>
+              <% end %>
             </div>
-          <% end %>
+          </button>
+        </h2>
 
-          <% if assignment.contest_instance.judging_open? %>
-            <div class="row">
-              <div class="col-md-6">
-                <h3>Available Entries</h3>
-                <%= turbo_frame_tag "available_entries_#{assignment.contest_instance.id}" do %>
-                  <div class="entries-list"
-                       data-controller="entry-drag"
-                       data-entry-drag-url-value="<%= update_rankings_container_contest_description_contest_instance_judging_round_path(
-                         assignment.contest_instance.contest_description.container,
-                         assignment.contest_instance.contest_description,
-                         assignment.contest_instance,
-                         assignment.contest_instance.current_judging_round
-                       ) %>">
-                    <% ranked_entry_ids = EntryRanking.where(
-                      judging_round: assignment.contest_instance.current_judging_round,
-                      user: current_user
-                    ).pluck(:entry_id) %>
+        <div id="contestCollapse<%= index %>" class="accordion-collapse collapse"
+             aria-labelledby="contestHeader<%= index %>"
+             data-bs-parent="#contestAccordion<%= index %>">
+          <div class="accordion-body">
+            <% if assignment.contest_instance.judging_open? %>
+              <div class="row" data-controller="entry-drag"
+                   data-entry-drag-url-value="<%= update_rankings_container_contest_description_contest_instance_judging_round_path(
+                     assignment.contest_instance.contest_description.container,
+                     assignment.contest_instance.contest_description,
+                     assignment.contest_instance,
+                     assignment.contest_instance.current_judging_round
+                   ) %>"
+                   data-entry-drag-required-count-value="<%= assignment.contest_instance.current_judging_round.required_entries_count %>">
 
-                    <% assignment.contest_instance.current_round_entries
-                        .where.not(id: ranked_entry_ids)
-                        .each do |entry| %>
-                      <%= turbo_frame_tag dom_id(entry) do %>
-                        <div class="card mb-2" data-entry-id="<%= entry.id %>">
-                          <div class="card-body">
-                            <h5 class="card-title d-flex align-items-baseline">
-                              <%= entry.title %>
-                              <span class="text-muted ms-2" style="font-size: 0.6em;">(entryID: <%= entry.id %>)</span>
-                            </h5>
-                            <div class="btn-group">
-                              <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"),
-                                  target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                <div class="col-md-6">
+                  <div class="card">
+                    <div class="card-header bg-light">
+                      <h3 class="h5 mb-0">Available Entries</h3>
+                    </div>
+                    <div class="card-body">
+                      <div class="entries-list" data-entry-drag-target="availableEntries">
+                        <% ranked_entry_ids = EntryRanking.where(
+                          judging_round: assignment.contest_instance.current_judging_round,
+                          user: current_user
+                        ).pluck(:entry_id) %>
+
+                        <% assignment.contest_instance.current_round_entries
+                            .where.not(id: ranked_entry_ids)
+                            .each do |entry| %>
+                          <div class="card mb-2" data-entry-id="<%= entry.id %>">
+                            <div class="card-body d-flex align-items-center">
+                              <div class="drag-handle me-2">⋮⋮</div>
+                              <div class="flex-grow-1">
+                                <h5 class="card-title d-flex align-items-baseline">
+                                  <%= entry.title %>
+                                  <span class="text-muted ms-2" style="font-size: 0.6em;">(entryID: <%= entry.id %>)</span>
+                                </h5>
+                                <div class="btn-group">
+                                  <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"),
+                                      target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      <% end %>
-                    <% end %>
+                        <% end %>
+                      </div>
+                    </div>
                   </div>
-                <% end %>
-              </div>
-
-              <div class="col-md-6">
-                <h3>Selected Entries (Drag to Rank)</h3>
-                <div class="alert alert-info">
-                  Please select and rank <%= assignment.contest_instance.current_judging_round.required_entries_count %> entries
                 </div>
 
-                <%= render partial: 'judge_dashboard/entry_rankings_query',
-                          locals: { assignment: assignment, current_user: current_user } %>
+                <div class="col-md-6">
+                  <div class="card">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                      <h3 class="h5 mb-0">Selected Entries (Drag to Rank)</h3>
+                      <span class="badge bg-primary rated-entries-counter">
+                        <%= EntryRanking.where(
+                          judging_round: assignment.contest_instance.current_judging_round,
+                          user: current_user
+                        ).count %>/<%= assignment.contest_instance.current_judging_round.required_entries_count %>
+                      </span>
+                    </div>
+                    <div class="card-body">
+                      <div class="alert alert-info">
+                        Please select and rank <%= assignment.contest_instance.current_judging_round.required_entries_count %> entries
+                      </div>
+                      <div class="rated-entries" data-entry-drag-target="ratedEntries">
+                        <% EntryRanking.includes(:entry)
+                            .where(judging_round: assignment.contest_instance.current_judging_round, user: current_user)
+                            .order(:rank)
+                            .each do |ranking| %>
+                          <div class="card mb-2" data-entry-id="<%= ranking.entry_id %>">
+                            <div class="card-body d-flex align-items-center">
+                              <div class="drag-handle me-2">⋮⋮</div>
+                              <div class="flex-grow-1">
+                                <h5 class="card-title d-flex align-items-baseline">
+                                  <%= ranking.entry.title %>
+                                  <span class="text-muted ms-2" style="font-size: 0.6em;">(entryID: <%= ranking.entry.id %>)</span>
+                                </h5>
+                                <div class="btn-group">
+                                  <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
+                                      target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
 
-                <%= turbo_frame_tag "selected_entries_#{assignment.contest_instance.id}" do %>
-                  <%= render partial: 'judge_dashboard/selected_entries',
-                            locals: { assignment: assignment, current_user: current_user } %>
-                <% end %>
-
-                <% unless @entry_rankings.any?(&:finalized?) %>
-                  <div id="finalize_rankings_form">
-                    <%= form_tag finalize_rankings_container_contest_description_contest_instance_judging_round_path(
-                      assignment.contest_instance.contest_description.container,
-                      assignment.contest_instance.contest_description,
-                      assignment.contest_instance,
-                      assignment.contest_instance.current_judging_round
-                    ), class: 'mt-3',
-                       data: {
-                         controller: 'finalize-rankings',
-                         action: 'submit->finalize-rankings#validateBeforeSubmit',
-                         finalize_rankings_required_internal_words_value: assignment.contest_instance.current_judging_round.min_internal_comment_words,
-                         finalize_rankings_required_external_words_value: assignment.contest_instance.current_judging_round.min_external_comment_words,
-                         finalize_rankings_require_internal_value: assignment.contest_instance.current_judging_round.require_internal_comments,
-                         finalize_rankings_require_external_value: assignment.contest_instance.current_judging_round.require_external_comments,
-                         finalize_rankings_required_count_value: assignment.contest_instance.current_judging_round.required_entries_count
-                       } do %>
-                      <button type="submit" class="btn btn-primary">Finalize Rankings</button>
-                    <% end %>
+                      <% if @entry_rankings.present? %>
+                        <% unless @entry_rankings.any?(&:finalized?) %>
+                          <%= form_tag finalize_rankings_container_contest_description_contest_instance_judging_round_path(
+                            assignment.contest_instance.contest_description.container,
+                            assignment.contest_instance.contest_description,
+                            assignment.contest_instance,
+                            assignment.contest_instance.current_judging_round
+                          ), class: 'mt-3' do %>
+                            <button type="submit" class="btn btn-primary finalize-rankings-btn"
+                                    disabled>
+                              Finalize Rankings
+                            </button>
+                          <% end %>
+                        <% end %>
+                      <% else %>
+                        <%= form_tag finalize_rankings_container_contest_description_contest_instance_judging_round_path(
+                          assignment.contest_instance.contest_description.container,
+                          assignment.contest_instance.contest_description,
+                          assignment.contest_instance,
+                          assignment.contest_instance.current_judging_round
+                        ), class: 'mt-3' do %>
+                          <button type="submit" class="btn btn-primary finalize-rankings-btn"
+                                  disabled>
+                            Finalize Rankings
+                          </button>
+                        <% end %>
+                      <% end %>
+                    </div>
                   </div>
-                <% end %>
+                </div>
               </div>
-            </div>
-          <% else %>
-            <div class="alert alert-info">
-              Judging is not currently open for this contest.
-            </div>
-          <% end %>
+            <% else %>
+              <div class="alert alert-info">
+                Judging is not currently open for this contest.
+              </div>
+            <% end %>
+          </div>
         </div>
-        <%= render partial: 'applicant_dashboard/eligibility_modal' %>
       </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
 
-<% if @judging_assignments.empty? %>
-  <div class="alert alert-info">
-    You have not been assigned to judge any contests.
-  </div>
-<% end %>
-
-<% content_for :head do %>
-  <style>
-    .entries-list {
-      min-height: 200px;
-      border: 2px dashed #ccc;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      background-color: #f8f9fa;
-      transition: background-color 0.3s ease;
-    }
-
-    .entries-list:empty {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-style: italic;
-      color: #6c757d;
-    }
-
-    .entries-list:empty::after {
-      content: 'Drag entries here';
-    }
-
-    .rating-space {
-      min-height: 200px;
-      border: 2px dashed #28a745;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      background-color: #f8f9fa;
-      transition: background-color 0.3s ease;
-    }
-
-    .rating-space:empty {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-style: italic;
-      color: #28a745;
-    }
-
-    .rating-space:empty::after {
-      content: 'Drop entries here to rank them';
-    }
-
-    .card {
-      cursor: move;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .entry-ghost {
-      opacity: 0.5;
-      background: #c8ebfb;
-    }
-
-    .entry-drag {
-      opacity: 0.8;
-    }
-
-    .entry-chosen {
-      background: #e9ecef;
-    }
-
-    .entries-list.sortable-drag-enabled,
-    .rating-space.sortable-drag-enabled {
-      background-color: #e9ecef;
-      border-style: solid;
-    }
-
-    /* Word counter styles */
-    .form-text {
-      transition: color 0.3s ease;
-      margin-top: 0.25rem;
-    }
-
-    textarea.is-valid {
-      border-color: #28a745;
-      padding-right: calc(1.5em + 0.75rem);
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right calc(0.375em + 0.1875rem) center;
-      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-    }
-
-    textarea.is-invalid {
-      border-color: #dc3545;
-      padding-right: calc(1.5em + 0.75rem);
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23dc3545' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right calc(0.375em + 0.1875rem) center;
-      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-    }
-
-    .text-success {
-      color: #28a745 !important;
-    }
-
-    .text-danger {
-      color: #dc3545 !important;
-    }
-  </style>
-<% end %>
+  <% if @judging_assignments.empty? %>
+    <div class="alert alert-info">
+      You have not been assigned to judge any contests.
+    </div>
+  <% end %>
+</div>
