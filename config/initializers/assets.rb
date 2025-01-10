@@ -12,8 +12,8 @@ Rails.application.config.assets.paths << Rails.root.join('node_modules')
 Rails.application.config.assets.paths << Rails.root.join('node_modules/bootstrap-icons/font')
 
 # Adjust precompilation settings
-Rails.application.config.assets.precompile -= %w( actiontext.css actiontext.scss )
-Rails.application.config.assets.precompile += %w( application.bootstrap.css )
+Rails.application.config.assets.precompile -= %w[ actiontext.css actiontext.scss ]
+Rails.application.config.assets.precompile += %w[ application.bootstrap.css ]
 
 # Precompile additional assets.
 # application.js, application.bootstrap.css, and all non-JS/CSS in the app/assets
