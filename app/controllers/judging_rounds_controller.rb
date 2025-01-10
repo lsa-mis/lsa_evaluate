@@ -109,14 +109,15 @@ class JudgingRoundsController < ApplicationController
           user: current_user
         )
 
-        # Get the entry IDs from the new rankings
-        new_entry_ids = rankings.map { |r| r[:entry_id].to_i }
+        # Get the entry IDs from the new rankings that have a rank (not null)
+        ranked_entries = rankings.reject { |r| r[:rank].nil? }
+        ranked_entry_ids = ranked_entries.map { |r| r[:entry_id].to_i }
 
-        # Delete rankings for entries that were moved back to available list
-        current_rankings.where.not(entry_id: new_entry_ids).destroy_all
+        # Delete all rankings that are either not in the new list or have null rank
+        current_rankings.where.not(entry_id: ranked_entry_ids).destroy_all
 
-        # Update or create rankings for the remaining entries
-        rankings.each do |ranking_data|
+        # Update or create rankings only for entries with a rank
+        ranked_entries.each do |ranking_data|
           entry = Entry.find(ranking_data[:entry_id])
           entry_ranking = EntryRanking.find_or_initialize_by(
             entry: entry,
