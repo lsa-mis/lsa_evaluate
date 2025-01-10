@@ -19,7 +19,12 @@
                 </tr>
               </thead>
               <tbody>
-                <% round.entries.distinct.each do |entry| %>
+                <% entries_with_avg_rank = round.entries.distinct.map do |entry|
+                     avg_rank = entry.entry_rankings.where(judging_round: round).average(:rank)
+                     [entry, avg_rank || Float::INFINITY]
+                   end.sort_by { |_, avg_rank| avg_rank } %>
+
+                <% entries_with_avg_rank.each do |entry, _| %>
                   <tr>
                     <td><%= entry.id %></td>
                     <td><%= entry.title %></td>
