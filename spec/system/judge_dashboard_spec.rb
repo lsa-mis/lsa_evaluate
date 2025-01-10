@@ -3,6 +3,14 @@ require 'rails_helper'
 RSpec.describe 'Judge Dashboard', type: :system do
   include JudgingAssignmentsHelper  # Include the correct helper module
 
+  def first_entry_title
+    all('[data-entry-id]').first.text.split('(').first.strip
+  end
+
+  def last_entry_title
+    all('[data-entry-id]').last.text.split('(').first.strip
+  end
+
   let(:judge) { create(:user, first_name: 'John', last_name: 'Doe', email: 'judge+gmail.com@umich.edu') }
   let(:judge_role) { create(:role, :judge) }
   let(:container) { create(:container) }
@@ -22,10 +30,16 @@ RSpec.describe 'Judge Dashboard', type: :system do
       active: true,
       round_number: 1,
       require_internal_comments: true,
-      min_internal_comment_words: 10
+      min_internal_comment_words: 10,
+      required_entries_count: 7
     )
   }
   let!(:entry) { create(:entry, contest_instance: contest_instance, deleted: false, title: 'Sample Entry Title') }
+  let!(:additional_entries) {
+    (2..8).map do |n|
+      create(:entry, contest_instance: contest_instance, deleted: false, title: "Sample Entry Title #{n}")
+    end
+  }
   let!(:entry_ranking) { nil }
 
   context 'when user is not authenticated' do
@@ -86,7 +100,10 @@ RSpec.describe 'Judge Dashboard', type: :system do
       sleep 0.5
 
       within('.accordion-collapse.show') do
-        click_link 'View Entry'
+        # Find the specific entry's card and click its View Entry link
+        within("[data-entry-id='#{entry.id}']") do
+          click_link 'View Entry'
+        end
       end
 
       # Check evaluation page content
@@ -119,28 +136,27 @@ RSpec.describe 'Judge Dashboard', type: :system do
         entry_element = find("[data-entry-id='#{entry.id}']")
 
         # Find the drop target in Selected Entries section
-        drop_target = find_by_id('selected-entries-container')
+        drop_target = find('.rating-space[data-controller="entry-drag"]')
 
         # Perform drag and drop operation
         entry_element.drag_to(drop_target)
 
-        # Fill in required comments
-        within('.evaluation-modal') do
+        # Fill in comments in the entry card form
+        within("[data-entry-id='#{entry.id}']") do
           fill_in 'Internal Comments', with: 'These are detailed internal comments about the entry that meet the minimum word requirement.'
           fill_in 'External Comments', with: 'Constructive feedback for the applicant about their submission.'
-          click_button 'Submit Evaluation'
         end
 
         # Wait for the update to complete
         expect(page).to have_content('Evaluation submitted successfully')
 
         # Verify entry moved to Selected Entries
-        within('#selected-entries-container') do
+        within('.rating-space') do
           expect(page).to have_content(entry.title)
         end
 
         # Verify entry removed from Available Entries
-        within('#available-entries-container') do
+        within('.entries-list') do
           expect(page).to have_no_content(entry.title)
         end
       end
@@ -154,52 +170,53 @@ RSpec.describe 'Judge Dashboard', type: :system do
       within('.accordion-collapse.show') do
         # Find and drag the entry
         entry_element = find("[data-entry-id='#{entry.id}']")
-        drop_target = find_by_id('selected-entries-container')
+        drop_target = find('.rating-space[data-controller="entry-drag"]')
         entry_element.drag_to(drop_target)
 
-        # Try to submit without meeting minimum word requirement
-        within('.evaluation-modal') do
+        # Try to submit with insufficient comments
+        within("[data-entry-id='#{entry.id}']") do
           fill_in 'Internal Comments', with: 'Too short'
           fill_in 'External Comments', with: 'OK'
-          click_button 'Submit Evaluation'
-
-          # Verify error messages
-          expect(page).to have_content('Internal comments must be at least 10 words')
         end
 
+        # Verify error messages appear in the form
+        expect(page).to have_content('Internal comments must be at least 10 words')
+
         # Entry should remain in Available Entries
-        within('#available-entries-container') do
+        within('.entries-list') do
           expect(page).to have_content(entry.title)
         end
       end
     end
 
     it 'allows reordering entries within Selected Entries section' do
-      # Create two evaluated entries
-      entry2 = create(:entry, contest_instance: contest_instance, deleted: false, title: 'Second Entry')
-
-      # Create rankings for both entries
-      create(:entry_ranking, entry: entry, user: judge, judging_round: judging_round, rank: 1)
-      create(:entry_ranking, entry: entry2, user: judge, judging_round: judging_round, rank: 2)
+      # Create rankings for multiple entries
+      rankings = [ entry, *additional_entries.take(6) ].each_with_index do |e, index|
+        create(:entry_ranking, entry: e, user: judge, judging_round: judging_round, rank: index + 1)
+      end
 
       visit judge_dashboard_path
       find('.accordion-button').click
       sleep 0.5
 
-      within('#selected-entries-container') do
-        # Find the ranked entries
-        first_entry = find("[data-entry-id='#{entry.id}']")
-        second_entry = find("[data-entry-id='#{entry2.id}']")
+      within('.rating-space') do
+        # Verify initial state shows correct number of entries
+        expect(page).to have_css('[data-entry-id]', count: 7)
 
-        # Drag second entry above first entry
-        second_entry.drag_to(first_entry)
+        # Find the first and last entries
+        first_entry = find("[data-entry-id='#{entry.id}']")
+        last_entry = find("[data-entry-id='#{additional_entries[5].id}']")
+
+        # Drag last entry to top
+        last_entry.drag_to(first_entry)
 
         # Verify the order has changed
-        expect(page).to have_css('.ranked-entry:nth-child(1)', text: entry2.title)
-        expect(page).to have_css('.ranked-entry:nth-child(2)', text: entry.title)
+        expect(page).to have_css('[data-entry-id]', count: 7)
+        expect(first_entry_title).to eq(additional_entries[5].title)
+        expect(last_entry_title).to eq(additional_entries[4].title)
 
-        # Verify the rankings were updated
-        expect(EntryRanking.find_by(entry: entry2).rank).to eq(1)
+        # Verify the rankings were updated in the database
+        expect(EntryRanking.find_by(entry: additional_entries[5]).rank).to eq(1)
         expect(EntryRanking.find_by(entry: entry).rank).to eq(2)
       end
     end
