@@ -1,112 +1,113 @@
 import { Controller } from "@hotwired/stimulus"
-import Sortable from "sortablejs"
 
 export default class extends Controller {
+  static targets = ["availableEntries", "ratedEntries"]
   static values = {
     url: String,
-    requiredCount: { type: Number, default: 0 }
+    requiredCount: Number
   }
 
   connect() {
-    // Check if any entries are finalized
-    const ratingSpace = document.querySelector('.rating-space')
-    const hasFinalized = ratingSpace.querySelector('.alert-info')?.textContent.includes('finalized')
+    // Get the contest instance ID from the closest accordion section
+    const accordionSection = this.element.closest('.accordion-collapse')
+    this.contestGroupName = `entries-${accordionSection.id}`
 
-    // If entries are finalized, disable drag and drop
-    if (hasFinalized) {
-      return
-    }
-
-    this.sortable = Sortable.create(this.element, {
-      group: "entries",
-      animation: 150,
-      ghostClass: "entry-ghost",
-      dragClass: "entry-drag",
-      chosenClass: "entry-chosen",
-      onAdd: this.handleAdd.bind(this),
-      onEnd: this.handleDragEnd.bind(this)
-    })
-
-    // Add event listeners for comment changes
-    this.element.addEventListener('change', this.handleCommentChange.bind(this))
+    this.initializeSortable()
   }
 
-  handleAdd(event) {
-    if (event.to.classList.contains('rating-space')) {
-      const currentCount = event.to.querySelectorAll('[data-entry-id]').length
-      if (currentCount > this.requiredCountValue) {
-        event.cancel = true
-        const errorMessage = document.createElement('div')
-        errorMessage.className = 'alert alert-danger position-fixed top-0 start-50 translate-middle-x mt-3'
-        errorMessage.style.zIndex = '1050'
-        errorMessage.textContent = `You can only select up to ${this.requiredCountValue} entries.`
-        document.body.appendChild(errorMessage)
-        setTimeout(() => errorMessage.remove(), 3000)
-        return
-      }
-    }
-  }
-
-  handleCommentChange(event) {
-    if (event.target.matches('textarea') && !event.target.readOnly) {
-      this.updateRankings()
-    }
-  }
-
-  handleDragEnd(event) {
-    // Find the rating-space element
-    const ratingSpace = document.querySelector('.rating-space')
-    if (!ratingSpace) return
-
-    this.updateRankings(ratingSpace)
-  }
-
-  updateRankings(ratingSpace = null) {
-    // If ratingSpace wasn't passed, try to find it
-    if (!ratingSpace) {
-      ratingSpace = document.querySelector('.rating-space')
-      if (!ratingSpace) return
-    }
-
-    const entries = Array.from(ratingSpace.querySelectorAll('[data-entry-id]'))
-    const rankings = entries.map((entry, index) => {
-      const internalComments = entry.querySelector('textarea[name="internal_comments"]')?.value || ''
-      const externalComments = entry.querySelector('textarea[name="external_comments"]')?.value || ''
-
-      return {
-        entry_id: entry.dataset.entryId,
-        rank: index + 1,
-        internal_comments: internalComments,
-        external_comments: externalComments
-      }
-    })
-
-    fetch(this.urlValue, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'text/vnd.turbo-stream.html',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+  initializeSortable() {
+    const commonOptions = {
+      group: {
+        name: this.contestGroupName,
+        pull: true,
+        put: true
       },
-      body: JSON.stringify({ rankings })
+      animation: 150,
+      ghostClass: 'entry-ghost',
+      dragClass: 'entry-drag',
+      chosenClass: 'entry-chosen',
+      handle: '.drag-handle',
+      onEnd: this.handleSortEnd.bind(this),
+      onMove: this.handleMove.bind(this)
+    }
+
+    // Initialize sortable for available entries
+    this.availableSortable = new Sortable(this.availableEntriesTarget, commonOptions)
+
+    // Initialize sortable for rated entries
+    this.ratedSortable = new Sortable(this.ratedEntriesTarget, commonOptions)
+  }
+
+  handleMove(event) {
+    // Get the contest instance IDs from the source and target containers
+    const sourceAccordion = event.from.closest('.accordion-collapse')
+    const targetAccordion = event.to.closest('.accordion-collapse')
+
+    // Prevent dragging if the source and target are from different contest instances
+    if (sourceAccordion.id !== targetAccordion.id) {
+      return false
+    }
+
+    return true
+  }
+
+  async handleSortEnd(event) {
+    // Get all entries in both areas
+    const allEntries = new Map()
+
+    // First, mark all entries as unranked
+    const availableEntries = Array.from(this.availableEntriesTarget.children)
+    availableEntries.forEach(element => {
+      allEntries.set(element.dataset.entryId, {
+        entry_id: element.dataset.entryId,
+        rank: null
+      })
     })
-    .then(response => {
+
+    // Then, add ranked entries with their positions
+    const ratedEntries = Array.from(this.ratedEntriesTarget.children)
+    ratedEntries.forEach((element, index) => {
+      allEntries.set(element.dataset.entryId, {
+        entry_id: element.dataset.entryId,
+        rank: index + 1
+      })
+    })
+
+    // Convert the map to an array of rankings
+    const rankings = Array.from(allEntries.values())
+
+    try {
+      const response = await fetch(this.urlValue, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ rankings })
+      })
+
       if (!response.ok) {
-        throw new Error('Failed to update rankings')
+        throw new Error('Network response was not ok')
       }
-      return response.text()
-    })
-    .then(html => {
-      Turbo.renderStreamMessage(html)
-    })
-    .catch(error => {
-      console.error('Error:', error)
-      const errorMessage = document.createElement('div')
-      errorMessage.className = 'alert alert-danger position-fixed top-0 start-50 translate-middle-x mt-3'
-      errorMessage.style.zIndex = '1050'
-      errorMessage.textContent = error.message
-      document.body.appendChild(errorMessage)
-      setTimeout(() => errorMessage.remove(), 3000)
-    })
+
+      // Update UI elements after successful save
+      this.updateUI(ratedEntries.length)
+    } catch (error) {
+      console.error('Error updating rankings:', error)
+    }
+  }
+
+  updateUI(ratedCount) {
+    // Update counter if it exists
+    const counter = document.querySelector('.rated-entries-counter')
+    if (counter) {
+      counter.textContent = `${ratedCount}/${this.requiredCountValue}`
+    }
+
+    // Update submit button state if it exists
+    const submitButton = document.querySelector('.finalize-rankings-btn')
+    if (submitButton) {
+      submitButton.disabled = ratedCount !== this.requiredCountValue
+    }
   }
 }
