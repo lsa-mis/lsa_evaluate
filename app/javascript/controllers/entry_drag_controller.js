@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["availableEntries", "ratedEntries"]
+  static targets = ["availableEntries", "ratedEntries", "counter", "finalizeButton"]
   static values = {
     url: String,
     requiredCount: Number
@@ -73,6 +73,9 @@ export default class extends Controller {
       })
     })
 
+    // Update UI immediately
+    this.updateUI(ratedEntries.length)
+
     // Convert the map to an array of rankings
     const rankings = Array.from(allEntries.values())
 
@@ -88,26 +91,25 @@ export default class extends Controller {
 
       if (!response.ok) {
         throw new Error('Network response was not ok')
+        // If there's an error, revert the UI update
+        this.updateUI(this.ratedEntriesTarget.children.length)
       }
-
-      // Update UI elements after successful save
-      this.updateUI(ratedEntries.length)
     } catch (error) {
       console.error('Error updating rankings:', error)
+      // If there's an error, revert the UI update
+      this.updateUI(this.ratedEntriesTarget.children.length)
     }
   }
 
   updateUI(ratedCount) {
     // Update counter if it exists
-    const counter = document.querySelector('.rated-entries-counter')
-    if (counter) {
-      counter.textContent = `${ratedCount}/${this.requiredCountValue}`
+    if (this.hasCounterTarget) {
+      this.counterTarget.textContent = `${ratedCount}/${this.requiredCountValue}`
     }
 
     // Update submit button state if it exists
-    const submitButton = document.querySelector('.finalize-rankings-btn')
-    if (submitButton) {
-      submitButton.disabled = ratedCount !== this.requiredCountValue
+    if (this.hasFinalizeButtonTarget) {
+      this.finalizeButtonTarget.disabled = ratedCount !== this.requiredCountValue
     }
   }
 }
