@@ -111,16 +111,33 @@
                             .order(:rank)
                             .each do |ranking| %>
                           <div class="card mb-2" data-entry-id="<%= ranking.entry_id %>">
-                            <div class="card-body d-flex align-items-center">
-                              <div class="drag-handle me-2">⋮⋮</div>
-                              <div class="flex-grow-1">
-                                <h5 class="card-title d-flex align-items-baseline">
-                                  <%= ranking.entry.title %>
-                                  <span class="text-muted ms-2" style="font-size: 0.6em;">(entryID: <%= ranking.entry.id %>)</span>
-                                </h5>
-                                <div class="btn-group">
-                                  <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
-                                      target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                            <div class="card-body">
+                              <div class="d-flex align-items-center mb-3">
+                                <div class="drag-handle me-2">⋮⋮</div>
+                                <div class="flex-grow-1">
+                                  <h5 class="card-title d-flex align-items-baseline">
+                                    <%= ranking.entry.title %>
+                                    <span class="text-muted ms-2" style="font-size: 0.6em;">(entryID: <%= ranking.entry.id %>)</span>
+                                  </h5>
+                                  <div class="btn-group">
+                                    <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
+                                        target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="comments-section">
+                                <div class="mb-3">
+                                  <label class="form-label">Internal Comments <small class="text-muted">(only visible to judges)</small></label>
+                                  <textarea class="form-control" name="internal_comments" rows="3"
+                                          placeholder="Enter internal comments..."
+                                          <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
+                                </div>
+                                <div class="mb-3">
+                                  <label class="form-label">External Comments <small class="text-muted">(visible to applicants)</small></label>
+                                  <textarea class="form-control" name="external_comments" rows="3"
+                                          placeholder="Enter external comments..."
+                                          <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
                                 </div>
                               </div>
                             </div>
