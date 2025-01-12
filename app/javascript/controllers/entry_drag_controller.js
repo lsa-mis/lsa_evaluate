@@ -4,7 +4,8 @@ export default class extends Controller {
   static targets = ["availableEntries", "ratedEntries", "counter", "finalizeButton"]
   static values = {
     url: String,
-    requiredCount: Number
+    requiredCount: Number,
+    finalized: { type: Boolean, default: false }
   }
 
   connect() {
@@ -19,8 +20,8 @@ export default class extends Controller {
     const commonOptions = {
       group: {
         name: this.contestGroupName,
-        pull: true,
-        put: true
+        pull: !this.finalizedValue,
+        put: !this.finalizedValue
       },
       animation: 150,
       ghostClass: 'entry-ghost',
@@ -28,7 +29,8 @@ export default class extends Controller {
       chosenClass: 'entry-chosen',
       handle: '.drag-handle',
       onEnd: this.handleSortEnd.bind(this),
-      onMove: this.handleMove.bind(this)
+      onMove: this.handleMove.bind(this),
+      disabled: this.finalizedValue
     }
 
     // Initialize sortable for available entries
@@ -36,9 +38,19 @@ export default class extends Controller {
 
     // Initialize sortable for rated entries
     this.ratedSortable = new Sortable(this.ratedEntriesTarget, commonOptions)
+
+    // If finalized, update UI to reflect finalized state
+    if (this.finalizedValue) {
+      this.disableDragging()
+    }
   }
 
   handleMove(event) {
+    // Prevent dragging if finalized
+    if (this.finalizedValue) {
+      return false
+    }
+
     // Get the contest instance IDs from the source and target containers
     const sourceAccordion = event.from.closest('.accordion-collapse')
     const targetAccordion = event.to.closest('.accordion-collapse')
@@ -109,7 +121,30 @@ export default class extends Controller {
 
     // Update submit button state if it exists
     if (this.hasFinalizeButtonTarget) {
-      this.finalizeButtonTarget.disabled = ratedCount !== this.requiredCountValue
+      this.finalizeButtonTarget.disabled = ratedCount !== this.requiredCountValue || this.finalizedValue
+    }
+  }
+
+  disableDragging() {
+    // Disable drag handles visually
+    this.element.querySelectorAll('.drag-handle').forEach(handle => {
+      handle.style.cursor = 'not-allowed'
+      handle.style.opacity = '0.5'
+    })
+
+    // Disable sortable functionality
+    this.availableSortable.option('disabled', true)
+    this.ratedSortable.option('disabled', true)
+
+    // Update button state
+    if (this.hasFinalizeButtonTarget) {
+      this.finalizeButtonTarget.disabled = true
+    }
+  }
+
+  finalizedValueChanged() {
+    if (this.finalizedValue) {
+      this.disableDragging()
     }
   }
 }

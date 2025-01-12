@@ -30,7 +30,10 @@ export default class extends Controller {
       const externalComments = entry.querySelector('textarea[name="external_comments"]')
       const entryTitle = entry.querySelector('.card-title').textContent
 
-      if (this.requireInternalValue) {
+      if (this.requireInternalValue && (!internalComments || !internalComments.value.trim())) {
+        errorMessages.push(`Entry "${entryTitle}" requires internal comments.`)
+        hasError = true
+      } else if (this.requireInternalValue) {
         const internalWords = this.countWords(internalComments.value)
         if (internalWords < this.requiredInternalWordsValue) {
           errorMessages.push(`Entry "${entryTitle}" needs at least ${this.requiredInternalWordsValue} words in internal comments (currently has ${internalWords}).`)
@@ -38,7 +41,10 @@ export default class extends Controller {
         }
       }
 
-      if (this.requireExternalValue) {
+      if (this.requireExternalValue && (!externalComments || !externalComments.value.trim())) {
+        errorMessages.push(`Entry "${entryTitle}" requires external comments.`)
+        hasError = true
+      } else if (this.requireExternalValue) {
         const externalWords = this.countWords(externalComments.value)
         if (externalWords < this.requiredExternalWordsValue) {
           errorMessages.push(`Entry "${entryTitle}" needs at least ${this.requiredExternalWordsValue} words in external comments (currently has ${externalWords}).`)
@@ -53,7 +59,14 @@ export default class extends Controller {
     }
 
     // If all validations pass, show confirmation dialog
-    if (confirm("Are you sure you are finished with all your rankings for this contest instance?")) {
+    const confirmMessage = "Are you sure you want to finalize your rankings?\n\n" +
+                         "By clicking OK, you confirm that:\n" +
+                         "1. Your rankings are final\n" +
+                         "2. You will no longer be able to modify entries or comments\n" +
+                         "3. Your rankings will be submitted for final review\n\n" +
+                         "This action cannot be undone."
+
+    if (confirm(confirmMessage)) {
       event.target.submit()
     }
   }
