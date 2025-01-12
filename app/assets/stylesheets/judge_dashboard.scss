@@ -71,3 +71,56 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
 }
+
+.judge-dashboard {
+  .comments-section {
+    border-top: 1px solid #dee2e6;
+    margin-top: 1rem;
+    padding-top: 1rem;
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-label {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      small {
+        font-weight: normal;
+      }
+
+      .saving-indicator {
+        font-size: 0.875em;
+        opacity: 0.9;
+        animation: fadeIn 0.2s ease-in;
+      }
+    }
+
+    textarea:disabled {
+      background-color: #f8f9fa;
+      cursor: not-allowed;
+    }
+  }
+
+  .drag-handle {
+    cursor: move;
+    user-select: none;
+    font-size: 1.2rem;
+    color: #6c757d;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
