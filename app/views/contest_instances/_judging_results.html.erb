@@ -15,6 +15,7 @@
                   <th>Title</th>
                   <th>Average Rank</th>
                   <th>Individual Rankings</th>
+                  <th>Comments</th>
                   <th>Selected for Next Round</th>
                 </tr>
               </thead>
@@ -43,6 +44,28 @@
                             }
                           ) %> : <%= ranking.rank || 'Not ranked' %>
                         </div>
+                      <% end %>
+                    </td>
+                    <td>
+                      <% entry.entry_rankings.where(judging_round: round).each do |ranking| %>
+                        <% if ranking.external_comments.present? || ranking.internal_comments.present? %>
+                          <div class="mb-2">
+                            <strong><%= content_tag(:span,
+                              display_email(ranking.user.email),
+                              data: {
+                                'bs-toggle': 'tooltip',
+                                'bs-html': 'true',
+                                'bs-title': "#{h(ranking.user.display_name_or_first_name_last_name)}<br>#{h(display_email(ranking.user.email))}"
+                              }
+                            ) %></strong>
+                            <% if ranking.external_comments.present? %>
+                              <div class="text-muted small">External: <%= ranking.external_comments %></div>
+                            <% end %>
+                            <% if ranking.internal_comments.present? %>
+                              <div class="text-muted small">Internal: <%= ranking.internal_comments %></div>
+                            <% end %>
+                          </div>
+                        <% end %>
                       <% end %>
                     </td>
                     <td class="text-center">
