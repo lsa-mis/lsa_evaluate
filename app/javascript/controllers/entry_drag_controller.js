@@ -69,28 +69,44 @@ export default class extends Controller {
     const rankings = []
 
     // First, mark all entries as unranked
-    const availableEntries = Array.from(this.availableEntriesTarget.querySelectorAll('[data-entry-id]'))
+    const availableEntries = Array.from(this.availableEntriesTarget.querySelectorAll('.card[data-entry-id]'))
     availableEntries.forEach(element => {
       const entryId = element.dataset.entryId
       if (entryId) {
         rankings.push({
           entry_id: entryId,
-          rank: null
+          rank: null,
+          internal_comments: null,
+          external_comments: null
         })
       }
     })
 
-    // Then, add ranked entries with their positions
-    const ratedEntries = Array.from(this.ratedEntriesTarget.querySelectorAll('[data-entry-id]'))
+    // Then, add ranked entries with their positions and comments
+    const ratedEntries = Array.from(this.ratedEntriesTarget.querySelectorAll('.card[data-entry-id]'))
     ratedEntries.forEach((element, index) => {
       const entryId = element.dataset.entryId
       if (entryId) {
+        const internalComments = element.querySelector('textarea[name="internal_comments"]')?.value || ''
+        const externalComments = element.querySelector('textarea[name="external_comments"]')?.value || ''
+
+        // Remove any existing entry for this ID (from available entries)
+        const existingIndex = rankings.findIndex(r => r.entry_id === entryId)
+        if (existingIndex !== -1) {
+          rankings.splice(existingIndex, 1)
+        }
+
+        // Add the complete entry data
         rankings.push({
           entry_id: entryId,
-          rank: index + 1
+          rank: index + 1,
+          internal_comments: internalComments.trim(),
+          external_comments: externalComments.trim()
         })
       }
     })
+
+    console.log('Sending rankings:', rankings) // Debug log
 
     // Update UI immediately
     this.updateUI(ratedEntries.length)
@@ -100,13 +116,19 @@ export default class extends Controller {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content,
+          'Accept': 'application/json'
         },
         body: JSON.stringify({ rankings })
       })
 
       if (!response.ok) {
         throw new Error('Network response was not ok')
+      }
+
+      const data = await response.json()
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to update rankings')
       }
     } catch (error) {
       console.error('Error updating rankings:', error)
@@ -171,26 +193,18 @@ export default class extends Controller {
     savingIndicator.textContent = 'Saving...'
     textarea.parentElement.querySelector('.form-label').appendChild(savingIndicator)
 
-    // Get all current rankings to preserve them
-    const allEntries = new Map()
-    const ratedEntries = Array.from(this.ratedEntriesTarget.children)
-    ratedEntries.forEach((element, index) => {
-      allEntries.set(element.dataset.entryId, {
-        entry_id: element.dataset.entryId,
-        rank: index + 1
-      })
-    })
+    // Get just this entry's data
+    const internalComments = entryCard.querySelector('textarea[name="internal_comments"]')?.value || ''
+    const externalComments = entryCard.querySelector('textarea[name="external_comments"]')?.value || ''
+    const rank = Array.from(this.ratedEntriesTarget.querySelectorAll('.card[data-entry-id]')).findIndex(el => el.dataset.entryId === entryId) + 1
 
-    // Update the specific entry with the new comment
-    const entryData = allEntries.get(entryId) || { entry_id: entryId }
-    entryData[isInternal ? 'internal_comments' : 'external_comments'] = textarea.value
-
-    // Convert all entries to array, ensuring we send all rankings
-    const rankings = Array.from(allEntries.values())
-    // If the entry wasn't in the rankings (shouldn't happen), add it
-    if (!allEntries.has(entryId)) {
-      rankings.push(entryData)
-    }
+    // Only send the updated entry
+    const rankings = [{
+      entry_id: entryId,
+      rank: rank,
+      internal_comments: internalComments.trim(),
+      external_comments: externalComments.trim()
+    }]
 
     try {
       const response = await fetch(this.urlValue, {
