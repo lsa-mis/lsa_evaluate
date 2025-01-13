@@ -66,31 +66,34 @@ export default class extends Controller {
 
   async handleSortEnd(event) {
     // Get all entries in both areas
-    const allEntries = new Map()
+    const rankings = []
 
     // First, mark all entries as unranked
-    const availableEntries = Array.from(this.availableEntriesTarget.children)
+    const availableEntries = Array.from(this.availableEntriesTarget.querySelectorAll('[data-entry-id]'))
     availableEntries.forEach(element => {
-      allEntries.set(element.dataset.entryId, {
-        entry_id: element.dataset.entryId,
-        rank: null
-      })
+      const entryId = element.dataset.entryId
+      if (entryId) {
+        rankings.push({
+          entry_id: entryId,
+          rank: null
+        })
+      }
     })
 
     // Then, add ranked entries with their positions
-    const ratedEntries = Array.from(this.ratedEntriesTarget.children)
+    const ratedEntries = Array.from(this.ratedEntriesTarget.querySelectorAll('[data-entry-id]'))
     ratedEntries.forEach((element, index) => {
-      allEntries.set(element.dataset.entryId, {
-        entry_id: element.dataset.entryId,
-        rank: index + 1
-      })
+      const entryId = element.dataset.entryId
+      if (entryId) {
+        rankings.push({
+          entry_id: entryId,
+          rank: index + 1
+        })
+      }
     })
 
     // Update UI immediately
     this.updateUI(ratedEntries.length)
-
-    // Convert the map to an array of rankings
-    const rankings = Array.from(allEntries.values())
 
     try {
       const response = await fetch(this.urlValue, {
@@ -104,8 +107,6 @@ export default class extends Controller {
 
       if (!response.ok) {
         throw new Error('Network response was not ok')
-        // If there's an error, revert the UI update
-        this.updateUI(this.ratedEntriesTarget.children.length)
       }
     } catch (error) {
       console.error('Error updating rankings:', error)
