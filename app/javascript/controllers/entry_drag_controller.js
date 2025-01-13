@@ -90,6 +90,12 @@ export default class extends Controller {
         const internalComments = element.querySelector('textarea[name="internal_comments"]')?.value || ''
         const externalComments = element.querySelector('textarea[name="external_comments"]')?.value || ''
 
+        // Update the rank badge immediately
+        const rankBadge = element.querySelector('.badge.bg-info')
+        if (rankBadge) {
+          rankBadge.textContent = `Rank: ${index + 1}`
+        }
+
         // Remove any existing entry for this ID (from available entries)
         const existingIndex = rankings.findIndex(r => r.entry_id === entryId)
         if (existingIndex !== -1) {
