@@ -15,6 +15,17 @@ export default class extends Controller {
 
     this.initializeSortable()
     this.initializeCommentListeners()
+
+    // Restore accordion state if it exists
+    const accordionId = accordionSection.id
+    const isExpanded = sessionStorage.getItem(`accordion-${accordionId}`)
+    if (isExpanded === 'true') {
+      accordionSection.classList.add('show')
+      const accordionButton = document.querySelector(`[data-bs-target="#${accordionId}"]`)
+      if (accordionButton) {
+        accordionButton.classList.remove('collapsed')
+      }
+    }
   }
 
   initializeSortable() {
@@ -65,6 +76,11 @@ export default class extends Controller {
   }
 
   async handleSortEnd(event) {
+    // Save accordion state before refresh
+    const accordionSection = this.element.closest('.accordion-collapse')
+    const accordionId = accordionSection.id
+    sessionStorage.setItem(`accordion-${accordionId}`, accordionSection.classList.contains('show'))
+
     // Get all entries in both areas
     const rankings = []
 
