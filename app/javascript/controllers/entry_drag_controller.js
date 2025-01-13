@@ -11,7 +11,10 @@ export default class extends Controller {
   connect() {
     // Get the contest instance ID from the closest accordion section
     const accordionSection = this.element.closest('.accordion-collapse')
+    if (!accordionSection) return
+
     this.contestGroupName = `entries-${accordionSection.id}`
+    this.accordionSection = accordionSection
 
     this.initializeSortable()
     this.initializeCommentListeners()
@@ -29,6 +32,8 @@ export default class extends Controller {
   }
 
   initializeSortable() {
+    if (!this.hasAvailableEntriesTarget || !this.hasRatedEntriesTarget) return
+
     const commonOptions = {
       group: {
         name: this.contestGroupName,
@@ -42,11 +47,19 @@ export default class extends Controller {
       handle: '.drag-handle',
       onEnd: this.handleSortEnd.bind(this),
       onMove: this.handleMove.bind(this),
-      disabled: this.finalizedValue
+      disabled: this.finalizedValue,
+      // Ensure dragging only works within the same accordion section
+      filter: (event, target) => {
+        const targetAccordion = target.closest('.accordion-collapse')
+        return targetAccordion && targetAccordion.id !== this.accordionSection.id
+      }
     }
 
     // Initialize sortable for available entries
-    this.availableSortable = new Sortable(this.availableEntriesTarget, commonOptions)
+    this.availableSortable = new Sortable(this.availableEntriesTarget, {
+      ...commonOptions,
+      sort: false // Prevent sorting within available entries
+    })
 
     // Initialize sortable for rated entries
     this.ratedSortable = new Sortable(this.ratedEntriesTarget, commonOptions)
