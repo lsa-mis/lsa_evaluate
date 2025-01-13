@@ -1,80 +1,74 @@
-<div class="rating-space"
-     data-controller="entry-drag"
-     data-entry-drag-url-value="<%= update_rankings_container_contest_description_contest_instance_judging_round_path(
-       assignment.contest_instance.contest_description.container,
-       assignment.contest_instance.contest_description,
-       assignment.contest_instance,
-       assignment.contest_instance.current_judging_round
-     ) %>"
-     data-entry-drag-required-count-value="<%= assignment.contest_instance.current_judging_round.required_entries_count %>">
-
-  <%= render partial: 'judge_dashboard/entry_rankings_query',
-             locals: { assignment: assignment, current_user: current_user } %>
-
-  <% if @entry_rankings.any?(&:finalized?) %>
+<div class="card">
+  <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <h3 class="h5 mb-0">Selected Entries (Drag to Rank)</h3>
+    <span class="badge bg-primary rated-entries-counter" data-entry-drag-target="counter">
+      <%= EntryRanking.where(
+        judging_round: assignment.contest_instance.current_judging_round,
+        user: current_user
+      ).count %>/<%= assignment.contest_instance.current_judging_round.required_entries_count %>
+    </span>
+  </div>
+  <div class="card-body">
     <div class="alert alert-info">
-      These rankings have been finalized and cannot be modified.
+      Please select and rank <%= assignment.contest_instance.current_judging_round.required_entries_count %> entries
     </div>
-  <% end %>
+    <div class="rated-entries" data-entry-drag-target="ratedEntries">
+      <% EntryRanking.includes(:entry)
+          .where(judging_round: assignment.contest_instance.current_judging_round, user: current_user)
+          .order(:rank)
+          .each do |ranking| %>
+        <%= turbo_frame_tag dom_id(ranking.entry) do %>
+          <div class="card mb-2" data-entry-id="<%= ranking.entry_id %>">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                <div class="drag-handle me-2">⋮⋮</div>
+                <div class="flex-grow-1">
+                  <h5 class="card-title d-flex align-items-baseline">
+                    <%= ranking.entry.title %>
+                    <span class="text-muted ms-2" style="font-size: 0.6em;">(entryID: <%= ranking.entry.id %>)</span>
+                  </h5>
+                  <div class="btn-group">
+                    <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
+                        target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                  </div>
+                </div>
+              </div>
 
-  <% @entry_rankings.each do |ranking| %>
-    <%= turbo_frame_tag dom_id(ranking.entry) do %>
-      <div class="card mb-2" data-entry-id="<%= ranking.entry.id %>" data-controller="word-counter">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <h5 class="card-title mb-0"><%= ranking.entry.title %></h5>
-            <span class="badge bg-primary">Rank: <%= ranking.rank %></span>
-          </div>
-          <div class="btn-group">
-            <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
-                target: '_blank', class: 'btn btn-sm btn-secondary' %>
-          </div>
-          <div class="mt-2">
-            <div class="form-group">
-              <label>
-                Internal Comments
-                <% if assignment.contest_instance.current_judging_round.require_internal_comments %>
-                  <span class="text-danger">*</span>
-                <% end %>
-              </label>
-              <textarea name="internal_comments"
-                      class="form-control"
-                      rows="2"
-                      data-word-counter-target="input"
-                      data-action="input->word-counter#count"
-                      data-min-words="<%= assignment.contest_instance.current_judging_round.min_internal_comment_words %>"
-                      data-required="<%= assignment.contest_instance.current_judging_round.require_internal_comments %>"
-                      <%= 'readonly' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
-              <% if assignment.contest_instance.current_judging_round.require_internal_comments %>
-                <small class="form-text" data-word-counter-target="counter">
-                  Words: <%= ranking.internal_comments.to_s.split.length %> / <%= assignment.contest_instance.current_judging_round.min_internal_comment_words %> minimum
-                </small>
-              <% end %>
-            </div>
-            <div class="form-group mt-2">
-              <label>
-                External Comments
-                <% if assignment.contest_instance.current_judging_round.require_external_comments %>
-                  <span class="text-danger">*</span>
-                <% end %>
-              </label>
-              <textarea name="external_comments"
-                      class="form-control"
-                      rows="2"
-                      data-word-counter-target="input"
-                      data-action="input->word-counter#count"
-                      data-min-words="<%= assignment.contest_instance.current_judging_round.min_external_comment_words %>"
-                      data-required="<%= assignment.contest_instance.current_judging_round.require_external_comments %>"
-                      <%= 'readonly' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
-              <% if assignment.contest_instance.current_judging_round.require_external_comments %>
-                <small class="form-text" data-word-counter-target="counter">
-                  Words: <%= ranking.external_comments.to_s.split.length %> / <%= assignment.contest_instance.current_judging_round.min_external_comment_words %> minimum
-                </small>
-              <% end %>
+              <div class="comments-section">
+                <div class="mb-3">
+                  <label class="form-label">Internal Comments <small class="text-muted">(only visible to judges)</small></label>
+                  <textarea class="form-control" name="internal_comments" rows="3"
+                          placeholder="Enter internal comments..."
+                          <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">External Comments <small class="text-muted">(visible to applicants)</small></label>
+                  <textarea class="form-control" name="external_comments" rows="3"
+                          placeholder="Enter external comments..."
+                          <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if @entry_rankings.present? %>
+      <% unless @entry_rankings.any?(&:finalized?) %>
+        <%= form_tag finalize_rankings_container_contest_description_contest_instance_judging_round_path(
+          assignment.contest_instance.contest_description.container,
+          assignment.contest_instance.contest_description,
+          assignment.contest_instance,
+          assignment.contest_instance.current_judging_round
+        ), class: 'mt-3' do %>
+          <button type="submit" class="btn btn-primary finalize-rankings-btn"
+                  data-entry-drag-target="finalizeButton"
+                  disabled>
+            Finalize Rankings
+          </button>
+        <% end %>
+      <% end %>
     <% end %>
-  <% end %>
+  </div>
 </div>

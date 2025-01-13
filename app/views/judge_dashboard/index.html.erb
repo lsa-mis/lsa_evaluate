@@ -55,127 +55,13 @@
                    ).any?(&:finalized?) %>">
 
                 <div class="col-md-6">
-                  <div class="card">
-                    <div class="card-header bg-light">
-                      <h3 class="h5 mb-0">Available Entries</h3>
-                    </div>
-                    <div class="card-body">
-                      <div class="entries-list" data-entry-drag-target="availableEntries">
-                        <% ranked_entry_ids = EntryRanking.where(
-                          judging_round: assignment.contest_instance.current_judging_round,
-                          user: current_user
-                        ).pluck(:entry_id) %>
-
-                        <% assignment.contest_instance.current_round_entries
-                            .where.not(id: ranked_entry_ids)
-                            .each do |entry| %>
-                          <div class="card mb-2" data-entry-id="<%= entry.id %>">
-                            <div class="card-body d-flex align-items-center">
-                              <div class="drag-handle me-2">⋮⋮</div>
-                              <div class="flex-grow-1">
-                                <h5 class="card-title d-flex align-items-baseline">
-                                  <%= entry.title %>
-                                  <span class="text-muted ms-2" style="font-size: 0.6em;">(entryID: <%= entry.id %>)</span>
-                                </h5>
-                                <div class="btn-group">
-                                  <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"),
-                                      target: '_blank', class: 'btn btn-sm btn-secondary' %>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        <% end %>
-                      </div>
-                    </div>
-                  </div>
+                  <%= render partial: 'judge_dashboard/available_entries',
+                            locals: { assignment: assignment, current_user: current_user } %>
                 </div>
 
                 <div class="col-md-6">
-                  <div class="card">
-                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                      <h3 class="h5 mb-0">Selected Entries (Drag to Rank)</h3>
-                      <span class="badge bg-primary rated-entries-counter" data-entry-drag-target="counter">
-                        <%= EntryRanking.where(
-                          judging_round: assignment.contest_instance.current_judging_round,
-                          user: current_user
-                        ).count %>/<%= assignment.contest_instance.current_judging_round.required_entries_count %>
-                      </span>
-                    </div>
-                    <div class="card-body">
-                      <div class="alert alert-info">
-                        Please select and rank <%= assignment.contest_instance.current_judging_round.required_entries_count %> entries
-                      </div>
-                      <div class="rated-entries" data-entry-drag-target="ratedEntries">
-                        <% EntryRanking.includes(:entry)
-                            .where(judging_round: assignment.contest_instance.current_judging_round, user: current_user)
-                            .order(:rank)
-                            .each do |ranking| %>
-                          <div class="card mb-2" data-entry-id="<%= ranking.entry_id %>">
-                            <div class="card-body">
-                              <div class="d-flex align-items-center mb-3">
-                                <div class="drag-handle me-2">⋮⋮</div>
-                                <div class="flex-grow-1">
-                                  <h5 class="card-title d-flex align-items-baseline">
-                                    <%= ranking.entry.title %>
-                                    <span class="text-muted ms-2" style="font-size: 0.6em;">(entryID: <%= ranking.entry.id %>)</span>
-                                  </h5>
-                                  <div class="btn-group">
-                                    <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
-                                        target: '_blank', class: 'btn btn-sm btn-secondary' %>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div class="comments-section">
-                                <div class="mb-3">
-                                  <label class="form-label">Internal Comments <small class="text-muted">(only visible to judges)</small></label>
-                                  <textarea class="form-control" name="internal_comments" rows="3"
-                                          placeholder="Enter internal comments..."
-                                          <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
-                                </div>
-                                <div class="mb-3">
-                                  <label class="form-label">External Comments <small class="text-muted">(visible to applicants)</small></label>
-                                  <textarea class="form-control" name="external_comments" rows="3"
-                                          placeholder="Enter external comments..."
-                                          <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        <% end %>
-                      </div>
-
-                      <% if @entry_rankings.present? %>
-                        <% unless @entry_rankings.any?(&:finalized?) %>
-                          <%= form_tag finalize_rankings_container_contest_description_contest_instance_judging_round_path(
-                            assignment.contest_instance.contest_description.container,
-                            assignment.contest_instance.contest_description,
-                            assignment.contest_instance,
-                            assignment.contest_instance.current_judging_round
-                          ), class: 'mt-3' do %>
-                            <button type="submit" class="btn btn-primary finalize-rankings-btn"
-                                    data-entry-drag-target="finalizeButton"
-                                    disabled>
-                              Finalize Rankings
-                            </button>
-                          <% end %>
-                        <% end %>
-                      <% else %>
-                        <%= form_tag finalize_rankings_container_contest_description_contest_instance_judging_round_path(
-                          assignment.contest_instance.contest_description.container,
-                          assignment.contest_instance.contest_description,
-                          assignment.contest_instance,
-                          assignment.contest_instance.current_judging_round
-                        ), class: 'mt-3' do %>
-                          <button type="submit" class="btn btn-primary finalize-rankings-btn"
-                                  data-entry-drag-target="finalizeButton"
-                                  disabled>
-                            Finalize Rankings
-                          </button>
-                        <% end %>
-                      <% end %>
-                    </div>
-                  </div>
+                  <%= render partial: 'judge_dashboard/selected_entries',
+                            locals: { assignment: assignment, current_user: current_user } %>
                 </div>
               </div>
             <% else %>
