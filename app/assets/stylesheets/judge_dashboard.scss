@@ -20,6 +20,12 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     background-color: white;
 
+    .card-body {
+      flex: 0 1 auto !important;
+      min-height: auto !important;
+      padding: 0.5rem !important;
+    }
+
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
