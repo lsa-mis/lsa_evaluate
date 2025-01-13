@@ -112,8 +112,6 @@ export default class extends Controller {
       }
     })
 
-    console.log('Sending rankings:', rankings) // Debug log
-
     // Update UI immediately
     this.updateUI(ratedEntries.length)
 
@@ -136,6 +134,9 @@ export default class extends Controller {
       if (!data.success) {
         throw new Error(data.error || 'Failed to update rankings')
       }
+
+      // Refresh both sections using Turbo
+      Turbo.visit(window.location.href, { action: "replace" })
     } catch (error) {
       console.error('Error updating rankings:', error)
       // If there's an error, revert the UI update
@@ -148,6 +149,15 @@ export default class extends Controller {
     if (this.hasCounterTarget) {
       this.counterTarget.textContent = `${ratedCount}/${this.requiredCountValue}`
     }
+
+    // Update rank badges
+    const ratedEntries = Array.from(this.ratedEntriesTarget.querySelectorAll('.card[data-entry-id]'))
+    ratedEntries.forEach((element, index) => {
+      const rankBadge = element.querySelector('.badge.bg-info')
+      if (rankBadge) {
+        rankBadge.textContent = `Rank: ${index + 1}`
+      }
+    })
 
     // Update submit button state if it exists
     if (this.hasFinalizeButtonTarget) {
