@@ -20,17 +20,17 @@
         <%= turbo_frame_tag dom_id(ranking.entry) do %>
           <div class="card mb-2" data-entry-id="<%= ranking.entry_id %>">
             <div class="card-body">
-              <div class="d-flex align-items-center mb-3">
+              <div class="d-flex align-items-center py-1">
                 <div class="drag-handle me-2">⋮⋮</div>
                 <div class="flex-grow-1">
                   <div class="card-title d-flex align-items-baseline justify-content-between">
-                    <div class="btn-group">
+                    <div class="btn-group mb-0">
                       <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
                           target: '_blank', class: 'btn btn-sm btn-secondary' %>
                     </div>
                     <span class="badge bg-info ms-2">Rank: <%= ranking.rank || 'Unranked' %></span>
                   </div>
-                  <h5><%= ranking.entry.title %></h5>
+                  <h6 class="m-0"><%= ranking.entry.title %></h6>
                 </div>
               </div>
 
@@ -49,7 +49,7 @@
                 </div>
               </div>
             </div>
-            <div class="text-muted ms-2" style="font-size: 0.6em;">[entryID: <%= ranking.entry.id %>]</div>
+            <div class="text-muted ms-2" style="font-size: 0.6em;">[entryID: <%= ranking.entry.id %>] <%= ranking.entry.category.kind %></div>
           </div>
         <% end %>
       <% end %>
