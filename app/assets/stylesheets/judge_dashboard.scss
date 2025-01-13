@@ -124,3 +124,50 @@
     transform: translateY(0);
   }
 }
+
+.scrollable-container {
+  max-height: 200px;
+  min-height: 200px;
+  overflow-y: scroll;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 8px;
+  background: white;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
+    border: 3px solid #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
+.rankings-container {
+  min-width: 200px;
+  padding: 4px;
+}
+
+.comments-container {
+  min-width: 300px;
+}
+
+// Remove any inline styles from the template
+.rankings-email {
+  min-width: 180px;
+  display: inline-block;
+}
+
+.ranking-badge {
+  margin-left: -16px;
+}
