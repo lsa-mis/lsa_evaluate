@@ -109,28 +109,53 @@ class JudgingRoundsController < ApplicationController
           user: current_user
         )
 
-        # Get the entry IDs from the new rankings that have a rank (not null)
-        ranked_entries = rankings.reject { |r| r[:rank].nil? }
-        ranked_entry_ids = ranked_entries.map { |r| r[:entry_id].to_i }
+        # If this is a full update (multiple rankings sent), handle deletion of unranked entries
+        if rankings.length > 1
+          # Get the entry IDs from the new rankings that have a rank (not null)
+          ranked_entries = rankings.select { |r| r['rank'].present? || r[:rank].present? }
+          ranked_entry_ids = ranked_entries.map { |r| r['entry_id'].presence || r[:entry_id].presence }.compact
 
-        # Delete all rankings that are either not in the new list or have null rank
-        current_rankings.where.not(entry_id: ranked_entry_ids).destroy_all
+          # Delete all rankings that are not in the new list
+          current_rankings.where.not(entry_id: ranked_entry_ids).destroy_all
 
-        # Update or create rankings only for entries with a rank
-        ranked_entries.each do |ranking_data|
-          entry = Entry.find(ranking_data[:entry_id])
-          entry_ranking = EntryRanking.find_or_initialize_by(
-            entry: entry,
-            judging_round: @judging_round,
-            user: current_user
-          )
+          # Update or create rankings only for entries with a rank
+          ranked_entries.each do |ranking_data|
+            entry_id = ranking_data['entry_id'].presence || ranking_data[:entry_id].presence
+            next unless entry_id
 
-          entry_ranking.rank = ranking_data[:rank]
-          entry_ranking.internal_comments = ranking_data[:internal_comments] if ranking_data[:internal_comments]
-          entry_ranking.external_comments = ranking_data[:external_comments] if ranking_data[:external_comments]
+            entry = Entry.find(entry_id)
+            entry_ranking = EntryRanking.find_or_initialize_by(
+              entry: entry,
+              judging_round: @judging_round,
+              user: current_user
+            )
 
-          # Skip validations for partial saves
-          entry_ranking.save(validate: false)
+            entry_ranking.rank = ranking_data['rank'].presence || ranking_data[:rank].presence
+            entry_ranking.internal_comments = ranking_data['internal_comments'].presence || ranking_data[:internal_comments].presence || entry_ranking.internal_comments
+            entry_ranking.external_comments = ranking_data['external_comments'].presence || ranking_data[:external_comments].presence || entry_ranking.external_comments
+
+            # Skip validations for partial saves
+            entry_ranking.save(validate: false)
+          end
+        else
+          # This is a single entry update (comment update)
+          ranking_data = rankings.first
+          entry_id = ranking_data['entry_id'].presence || ranking_data[:entry_id].presence
+
+          if entry_id && ranking_data['rank'].present?
+            entry = Entry.find(entry_id)
+            entry_ranking = EntryRanking.find_by(
+              entry: entry,
+              judging_round: @judging_round,
+              user: current_user
+            )
+
+            if entry_ranking
+              entry_ranking.internal_comments = ranking_data['internal_comments'].presence || ranking_data[:internal_comments].presence || entry_ranking.internal_comments
+              entry_ranking.external_comments = ranking_data['external_comments'].presence || ranking_data[:external_comments].presence || entry_ranking.external_comments
+              entry_ranking.save(validate: false)
+            end
+          end
         end
 
         respond_to do |format|
