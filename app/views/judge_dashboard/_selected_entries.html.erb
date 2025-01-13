@@ -23,14 +23,14 @@
               <div class="d-flex align-items-center mb-3">
                 <div class="drag-handle me-2">⋮⋮</div>
                 <div class="flex-grow-1">
-                  <h5 class="card-title d-flex align-items-baseline">
-                    <%= ranking.entry.title %>
-                    <span class="text-muted ms-2" style="font-size: 0.6em;">(entryID: <%= ranking.entry.id %>)</span>
-                  </h5>
-                  <div class="btn-group">
-                    <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
-                        target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                  <div class="card-title d-flex align-items-baseline justify-content-between">
+                    <div class="btn-group">
+                      <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
+                          target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                    </div>
+                    <span class="badge bg-info ms-2">Rank: <%= ranking.rank || 'Unranked' %></span>
                   </div>
+                  <h5><%= ranking.entry.title %></h5>
                 </div>
               </div>
 
@@ -49,6 +49,7 @@
                 </div>
               </div>
             </div>
+            <div class="text-muted ms-2" style="font-size: 0.6em;">[entryID: <%= ranking.entry.id %>]</div>
           </div>
         <% end %>
       <% end %>
