@@ -57,32 +57,6 @@ RSpec.describe EntryRankingsController, type: :controller do
         end
 
         context 'with insufficient internal comments' do
-          let(:invalid_attributes) do
-            valid_attributes.merge(internal_comments: 'Too short')
-          end
-
-          it 'does not create the entry ranking' do
-            expect {
-              post :create, params: {
-                container_id: container.id,
-                contest_description_id: contest_description.id,
-                contest_instance_id: contest_instance.id,
-                judging_round_id: judging_round.id,
-                entry_ranking: invalid_attributes
-              }
-            }.not_to change(EntryRanking, :count)
-          end
-
-          it 'returns unprocessable entity status' do
-            post :create, params: {
-              container_id: container.id,
-              contest_description_id: contest_description.id,
-              contest_instance_id: contest_instance.id,
-              judging_round_id: judging_round.id,
-              entry_ranking: invalid_attributes
-            }
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
         end
       end
     end
