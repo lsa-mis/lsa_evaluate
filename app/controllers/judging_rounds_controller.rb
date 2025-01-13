@@ -144,17 +144,16 @@ class JudgingRoundsController < ApplicationController
 
           if entry_id && ranking_data['rank'].present?
             entry = Entry.find(entry_id)
-            entry_ranking = EntryRanking.find_by(
+            entry_ranking = EntryRanking.find_or_initialize_by(
               entry: entry,
               judging_round: @judging_round,
               user: current_user
             )
 
-            if entry_ranking
-              entry_ranking.internal_comments = ranking_data['internal_comments'].presence || ranking_data[:internal_comments].presence || entry_ranking.internal_comments
-              entry_ranking.external_comments = ranking_data['external_comments'].presence || ranking_data[:external_comments].presence || entry_ranking.external_comments
-              entry_ranking.save(validate: false)
-            end
+            entry_ranking.rank = ranking_data['rank'].presence || ranking_data[:rank].presence
+            entry_ranking.internal_comments = ranking_data['internal_comments'].presence || ranking_data[:internal_comments].presence || entry_ranking.internal_comments
+            entry_ranking.external_comments = ranking_data['external_comments'].presence || ranking_data[:external_comments].presence || entry_ranking.external_comments
+            entry_ranking.save(validate: false)
           end
         end
 
