@@ -87,7 +87,7 @@ RSpec.describe 'Judge Dashboard', type: :system do
       # Now check the content inside the expanded accordion
       within('.accordion-collapse.show') do
         expect(page).to have_content('Unranked Entries')
-        expect(page).to have_content('entryID:')
+        expect(page).to have_content('ID:')
         expect(page).to have_content(entry.id)
         expect(page).to have_content('Sample Entry Title')
         expect(page).to have_link('View Entry')
@@ -108,7 +108,7 @@ RSpec.describe 'Judge Dashboard', type: :system do
 
       # Check evaluation page content
       expect(page).to have_content("#{entry.title}")
-      expect(page).to have_content("entryID: #{entry.id}")
+      expect(page).to have_content("ID: #{entry.id}")
       expect(page).to have_content('Test Contest')
       expect(page).to have_content("Round: #{judging_round.round_number}")
 
