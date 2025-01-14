@@ -3,6 +3,9 @@
 # Table name: entry_rankings
 #
 #  id                      :bigint           not null, primary key
+#  external_comments       :text(65535)
+#  finalized               :boolean          default(FALSE), not null
+#  internal_comments       :text(65535)
 #  notes                   :text(65535)
 #  rank                    :integer
 #  selected_for_next_round :boolean          default(FALSE), not null
@@ -11,8 +14,6 @@
 #  entry_id                :bigint           not null
 #  judging_round_id        :bigint           not null
 #  user_id                 :bigint           not null
-#  internal_comments       :text(65535)
-#  external_comments       :text(65535)
 #
 # Indexes
 #
@@ -32,38 +33,46 @@ class EntryRanking < ApplicationRecord
   belongs_to :judging_round
   belongs_to :user
 
-  validates :rank, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
+  validates :rank, numericality: {
+                                      only_integer: true,
+                                      greater_than: 0,
+                                      allow_nil: true
+                                    }
   validates :entry_id, uniqueness: {
     scope: [ :judging_round_id, :user_id ],
     message: 'has already been ranked by this judge in this round'
   }
   validate :user_must_be_assigned_judge
-  validate :validate_comment_requirements
+  validate :comments_validation, if: :finalized?
 
   private
 
   def user_must_be_assigned_judge
-    unless JudgingAssignment.exists?(user: user, contest_instance: judging_round.contest_instance)
-      errors.add(:user, 'must be assigned as judge for this contest')
+    unless user&.judge_for?(judging_round.contest_instance)
+      errors.add(:user, 'must be an assigned judge for this contest')
     end
   end
 
-  def validate_comment_requirements
+  def comments_validation
     if judging_round.require_internal_comments && internal_comments.blank?
       errors.add(:internal_comments, 'are required')
-    elsif judging_round.require_internal_comments && judging_round.min_internal_comment_words > 0
-      word_count = internal_comments.to_s.split.size
-      if word_count < judging_round.min_internal_comment_words
-        errors.add(:internal_comments, "must contain at least #{judging_round.min_internal_comment_words} words")
-      end
     end
 
     if judging_round.require_external_comments && external_comments.blank?
       errors.add(:external_comments, 'are required')
-    elsif judging_round.require_external_comments && judging_round.min_external_comment_words > 0
-      word_count = external_comments.to_s.split.size
+    end
+
+    if judging_round.min_internal_comment_words.positive? && internal_comments.present?
+      word_count = internal_comments.split.length
+      if word_count < judging_round.min_internal_comment_words
+        errors.add(:internal_comments, "must be at least #{judging_round.min_internal_comment_words} words")
+      end
+    end
+
+    if judging_round.min_external_comment_words.positive? && external_comments.present?
+      word_count = external_comments.split.length
       if word_count < judging_round.min_external_comment_words
-        errors.add(:external_comments, "must contain at least #{judging_round.min_external_comment_words} words")
+        errors.add(:external_comments, "must be at least #{judging_round.min_external_comment_words} words")
       end
     end
   end

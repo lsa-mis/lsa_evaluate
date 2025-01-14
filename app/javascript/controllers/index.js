@@ -13,6 +13,9 @@ application.register("character-counter", CharacterCounterController)
 import CheckboxselectController from "./checkboxselect_controller"
 application.register("checkboxselect", CheckboxselectController)
 
+import CommentsCounterController from "./comments_counter_controller"
+application.register("comments-counter", CommentsCounterController)
+
 import ConfirmController from "./confirm_controller"
 application.register("confirm", ConfirmController)
 
@@ -22,6 +25,9 @@ application.register("dropdown", DropdownController)
 import EligibilityModalController from "./eligibility_modal_controller"
 application.register("eligibility-modal", EligibilityModalController)
 
+import EntryDragController from "./entry_drag_controller"
+application.register("entry-drag", EntryDragController)
+
 import FadeOutController from "./fade_out_controller"
 application.register("fade-out", FadeOutController)
 
@@ -30,6 +36,9 @@ application.register("filter", FilterController)
 
 import FlashController from "./flash_controller"
 application.register("flash", FlashController)
+
+import FinalizeRankingsController from "./finalize_rankings_controller"
+application.register("finalize-rankings", FinalizeRankingsController)
 
 import FormSubmissionController from "./form_submission_controller"
 application.register("form-submission", FormSubmissionController)

@@ -4,6 +4,7 @@
 #
 #  id                      :bigint           not null, primary key
 #  external_comments       :text(65535)
+#  finalized               :boolean          default(FALSE), not null
 #  internal_comments       :text(65535)
 #  notes                   :text(65535)
 #  rank                    :integer
@@ -65,6 +66,10 @@ FactoryBot.define do
     trait :with_detailed_comments do
       internal_comments { Faker::Lorem.paragraph(sentence_count: 5) }
       external_comments { Faker::Lorem.paragraph(sentence_count: 5) }
+    end
+
+    trait :finalized do
+      finalized { true }
     end
   end
 end

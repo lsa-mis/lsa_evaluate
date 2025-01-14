@@ -95,6 +95,9 @@
                       word_counter_target: "input",
                       action: "input->word-counter#updateCounter"
                     } %>
+                <small class="form-text text-muted d-block">
+                  Internal comments are visible only to committee members and administrators
+                </small>
                 <small class="text-muted">
                   Words: <span data-word-counter-target="counter">0</span>
                 </small>
@@ -103,6 +106,9 @@
               <div class="form-group mb-4">
                 <%= f.label :internal_comments, "Internal Comments (Optional)", class: 'form-label' %>
                 <%= f.text_area :internal_comments, class: 'form-control', rows: 4 %>
+                <small class="form-text text-muted d-block">
+                  Internal comments are visible only to committee members and administrators
+                </small>
               </div>
             <% end %>
 
@@ -126,6 +132,9 @@
                       word_counter_target: "input",
                       action: "input->word-counter#updateCounter"
                     } %>
+                <small class="form-text text-muted d-block">
+                  External comments from the final round of judging will be shared with applicants
+                </small>
                 <small class="text-muted">
                   Words: <span data-word-counter-target="counter">0</span>
                 </small>
@@ -134,6 +143,9 @@
               <div class="form-group mb-4">
                 <%= f.label :external_comments, "External Comments (Optional)", class: 'form-label' %>
                 <%= f.text_area :external_comments, class: 'form-control', rows: 4 %>
+                <small class="form-text text-muted d-block">
+                  External comments from the final round of judging will be shared with applicants
+                </small>
               </div>
             <% end %>
 

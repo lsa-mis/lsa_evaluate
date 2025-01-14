@@ -1,133 +1,100 @@
-<h1>Judge Dashboard</h1>
-<div class="row mx-4 mb-4">
-  <% if (content = render_editable_content('judge_dashboard', 'instructions')) %>
-      <%= content %>
-  <% end %>
-</div>
-<h3><%= "Hello #{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)})! these are your judging assignments:"%></h3>
-
-<% @judging_assignments.each_with_index do |assignment, index| %>
-  <div class="accordion mb-4" id="contestAccordion<%= index %>">
-    <div class="accordion-item">
-      <div class="accordion-header" id="contestHeader<%= index %>">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contestCollapse<%= index %>" aria-expanded="false" aria-controls="contestCollapse<%= index %>">
-          <div class="w-100">
-            <h4 class="mb-0"><%= assignment.contest_instance.contest_description.name %></h4>
-            <% if assignment.contest_instance.current_judging_round %>
-              <p class="text-muted mb-0">
-                Round: <%= assignment.contest_instance.current_judging_round.round_number %>
-                (<%= format_datetime(assignment.contest_instance.current_judging_round.start_date) %> -
-                <%= format_datetime(assignment.contest_instance.current_judging_round.end_date) %>)
-              </p>
-            <% else %>
-              <p class="text-muted mb-0">No active round</p>
-            <% end %>
-          </div>
-        </button>
-      </div>
-      <div id="contestCollapse<%= index %>" class="accordion-collapse collapse" aria-labelledby="contestHeader<%= index %>" data-bs-parent="#contestAccordion<%= index %>" data-controller="eligibility-modal">
-        <div class="accordion-body">
-          <button class="btn btn-sm btn-outline-secondary mb-2"
-                  data-action="click->eligibility-modal#open"
-                  data-url="<%= eligibility_rules_container_contest_description_path(
-                    assignment.contest_instance.contest_description.container,
-                    assignment.contest_instance.contest_description,
-                  ) %>">
-            View Eligibility Rules
-          </button>
-
-          <% if assignment.contest_instance.current_judging_round&.special_instructions.present? %>
-            <div class="alert alert-info mt-2">
-              <strong>Instructions:</strong>
-              <%= simple_format(assignment.contest_instance.current_judging_round.special_instructions) %>
-            </div>
-          <% end %>
-          <% if assignment.contest_instance.judging_open? %>
-            <h3>Entries to Judge</h3>
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th class="text-xs">Entry ID</th>
-                    <th>Title</th>
-                    <th>Current Ranking</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% if assignment.contest_instance.current_round_entries.any? %>
-                    <% assignment.contest_instance.current_round_entries.each do |entry| %>
-                      <% entry_ranking = EntryRanking.find_by(
-                        entry: entry,
-                        judging_round: assignment.contest_instance.current_judging_round,
-                        user: current_user
-                      ) %>
-                      <tr>
-                        <td class="text-xs"><%= entry.id %></td>
-                        <td><%= entry.title %></td>
-                        <td><%= entry_ranking&.rank || 'Not ranked' %></td>
-                        <td>
-                          <% if entry_ranking&.persisted? %>
-                            <span class="badge bg-success">Evaluated</span>
-                          <% else %>
-                            <span class="badge bg-warning text-dark">Pending</span>
-                          <% end %>
-                        </td>
-                        <td>
-                          <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"),
-                              target: '_blank', class: 'btn btn-sm btn-secondary me-2' %>
-                          <%= link_to 'Evaluate',
-                              evaluate_container_contest_description_contest_instance_judging_round_entry_ranking_path(
-                                assignment.contest_instance.contest_description.container,
-                                assignment.contest_instance.contest_description,
-                                assignment.contest_instance,
-                                assignment.contest_instance.current_judging_round,
-                                entry_ranking || 'new',
-                                entry_id: entry.id
-                              ),
-                              class: 'btn btn-sm btn-primary' %>
-                        </td>
-                      </tr>
-                    <% end %>
-                  <% else %>
-                    <tr>
-                      <td colspan="5" class="text-center">No entries available for judging in this round.</td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
-            </div>
-          <% else %>
-            <div class="alert alert-info">
-              Judging is not currently open for this contest.
-            </div>
-          <% end %>
-        </div>
-        <!-- Include the reusable modal -->
-        <%= render partial: 'applicant_dashboard/eligibility_modal' %>
-      </div>
-    </div>
-  </div>
-<% end %>
-
-<% if @judging_assignments.empty? %>
-  <div class="alert alert-info">
-    You have not been assigned to judge any contests.
-  </div>
-<% end %>
-
 <% content_for :head do %>
-  <style>
-    .entry-ranking-form {
-      margin-bottom: 0;
-    }
-    .comments-section {
-      margin-bottom: 0;
-    }
-    .form-label.small {
-      font-size: 0.875rem;
-      margin-bottom: 0.25rem;
-    }
-  </style>
+  <%= stylesheet_link_tag "judge_dashboard", "data-turbo-track": "reload" %>
 <% end %>
+
+<div data-controller="eligibility-modal">
+  <div class="judge-dashboard">
+    <h1>Judge Dashboard</h1>
+
+    <div class="row mx-4 mb-4">
+      <% if (content = render_editable_content('judge_dashboard', 'instructions')) %>
+        <%= content %>
+      <% end %>
+    </div>
+
+    <h3>Hello <%= "#{current_user.first_name} #{current_user.last_name} (#{display_email(current_user.email)})!" %></h3>
+    <p>These are your judging assignments:</p>
+
+    <% @judging_assignments.each_with_index do |assignment, index| %>
+      <div class="accordion mb-4" id="contestAccordion<%= index %>">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="contestHeader<%= index %>">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#contestCollapse<%= index %>" aria-expanded="false"
+                    aria-controls="contestCollapse<%= index %>">
+              <div class="w-100">
+                <h4 class="mb-0"><%= assignment.contest_instance.contest_description.name %></h4>
+                <% if assignment.contest_instance.current_judging_round %>
+                  <p class="text-muted mb-0">
+                    Round: <%= assignment.contest_instance.current_judging_round.round_number %>
+                    (<%= format_datetime(assignment.contest_instance.current_judging_round.start_date) %> -
+                    <%= format_datetime(assignment.contest_instance.current_judging_round.end_date) %>)
+                  </p>
+                <% else %>
+                  <p class="text-muted mb-0">No active round</p>
+                <% end %>
+              </div>
+            </button>
+          </h2>
+
+          <div id="contestCollapse<%= index %>" class="accordion-collapse collapse"
+               aria-labelledby="contestHeader<%= index %>"
+               data-bs-parent="#contestAccordion<%= index %>">
+            <div class="accordion-body">
+              <button class="btn btn-outline-primary btn-sm"
+                      data-action="click->eligibility-modal#open"
+                      data-url="<%= eligibility_rules_container_contest_description_path(
+                        assignment.contest_instance.contest_description.container,
+                        assignment.contest_instance.contest_description
+                      ) %>">
+                <i class="bi bi-info-circle me-1"></i>View Eligibility Rules
+              </button>
+
+              <p class="text-muted mt-3 mb-0">
+                <strong>Instructions:</strong><br/>
+                <%= assignment.contest_instance.current_judging_round.special_instructions %>
+              </p>
+              <% if assignment.contest_instance.judging_open? %>
+                <div class="row" data-controller="entry-drag"
+                     data-entry-drag-url-value="<%= update_rankings_container_contest_description_contest_instance_judging_round_path(
+                       assignment.contest_instance.contest_description.container,
+                       assignment.contest_instance.contest_description,
+                       assignment.contest_instance,
+                       assignment.contest_instance.current_judging_round
+                     ) %>"
+                     data-entry-drag-required-count-value="<%= assignment.contest_instance.current_judging_round.required_entries_count %>"
+                     data-entry-drag-finalized-value="<%= EntryRanking.where(
+                       judging_round: assignment.contest_instance.current_judging_round,
+                       user: current_user
+                     ).any?(&:finalized?) %>">
+
+                  <div class="col-md-6">
+                    <%= render partial: 'judge_dashboard/available_entries',
+                              locals: { assignment: assignment, current_user: current_user } %>
+                  </div>
+
+                  <div class="col-md-6">
+                    <%= render partial: 'judge_dashboard/selected_entries',
+                              locals: { assignment: assignment, current_user: current_user } %>
+                  </div>
+                </div>
+              <% else %>
+                <div class="alert alert-info">
+                  Judging is not currently open for this contest.
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @judging_assignments.empty? %>
+      <div class="alert alert-info">
+        You have not been assigned to judge any contests.
+      </div>
+    <% end %>
+  </div>
+
+  <%= render 'applicant_dashboard/eligibility_modal' %>
+</div>

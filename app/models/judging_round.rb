@@ -10,6 +10,7 @@
 #  min_internal_comment_words :integer          default(0), not null
 #  require_external_comments  :boolean          default(FALSE), not null
 #  require_internal_comments  :boolean          default(FALSE), not null
+#  required_entries_count     :integer          default(0), not null
 #  round_number               :integer          not null
 #  special_instructions       :text(65535)
 #  start_date                 :datetime
@@ -37,6 +38,8 @@ class JudgingRound < ApplicationRecord
             numericality: { greater_than: 0 }
   validates :round_number, uniqueness: { scope: :contest_instance_id }
   validates :start_date, :end_date, presence: true
+  validates :required_entries_count, presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :dates_are_valid
   validate :start_date_after_previous_round
   validate :only_one_active_round_per_contest

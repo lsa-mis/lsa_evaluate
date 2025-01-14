@@ -1,0 +1,106 @@
+<div class="card">
+  <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <h3 class="h5 mb-0">Ranked Entries (Drag to Reorder)</h3>
+    <span class="badge bg-primary rated-entries-counter" data-entry-drag-target="counter">
+      <%= EntryRanking.where(
+        judging_round: assignment.contest_instance.current_judging_round,
+        user: current_user
+      ).count %>/<%= assignment.contest_instance.current_judging_round.required_entries_count %>
+    </span>
+  </div>
+  <div class="card-body">
+    <div class="alert alert-info">
+      Please select and rank <%= assignment.contest_instance.current_judging_round.required_entries_count %> entries
+    </div>
+    <div class="rated-entries" data-entry-drag-target="ratedEntries">
+      <% EntryRanking.includes(:entry)
+          .where(judging_round: assignment.contest_instance.current_judging_round, user: current_user)
+          .order(:rank)
+          .each do |ranking| %>
+        <%= turbo_frame_tag dom_id(ranking.entry) do %>
+          <div class="card mb-2" data-entry-id="<%= ranking.entry_id %>">
+            <div class="card-body">
+              <div class="d-flex align-items-center py-1">
+                <div class="drag-handle me-2">
+                  <i class="bi bi-arrows-move" aria-hidden="true"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="card-title d-flex align-items-baseline justify-content-between">
+                    <div class="btn-group mb-0">
+                      <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
+                          target: '_blank', class: 'btn btn-sm btn-secondary' %>
+                    </div>
+                    <span class="badge bg-info ms-2">Rank: <%= ranking.rank || 'Unranked' %></span>
+                  </div>
+                  <h6 class="m-0"><%= ranking.entry.title %></h6>
+                </div>
+              </div>
+
+              <div class="comments-section">
+                <% if assignment.contest_instance.current_judging_round.require_internal_comments %>
+                  <div class="mb-3" data-controller="comments-counter" data-comments-counter-minimum-value="<%= assignment.contest_instance.current_judging_round.min_internal_comment_words %>">
+                    <%= label_with_required_class('Internal Comments', true) %>
+                    <textarea class="form-control" name="internal_comments" rows="3"
+                            placeholder="Enter internal comments..."
+                            data-comments-counter-target="textarea"
+                            data-action="input->comments-counter#updateCounter"
+                            <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
+                    <small class="text-muted">
+                      Words: <span data-comments-counter-target="counter">0</span> out of <%= assignment.contest_instance.current_judging_round.min_internal_comment_words %>
+                    </small>
+                  </div>
+                <% else %>
+                  <div class="mb-3">
+                    <%= label_with_required_class('Internal Comments', false) %>
+                    <textarea class="form-control" name="internal_comments" rows="3"
+                            placeholder="Enter internal comments..."
+                            <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
+                  </div>
+                <% end %>
+
+                <% if assignment.contest_instance.current_judging_round.require_external_comments %>
+                  <div class="mb-3" data-controller="comments-counter" data-comments-counter-minimum-value="<%= assignment.contest_instance.current_judging_round.min_external_comment_words %>">
+                    <%= label_with_required_class('External Comments', true) %>
+                    <textarea class="form-control" name="external_comments" rows="3"
+                            placeholder="Enter external comments..."
+                            data-comments-counter-target="textarea"
+                            data-action="input->comments-counter#updateCounter"
+                            <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
+                    <small class="text-muted">
+                      Words: <span data-comments-counter-target="counter">0</span> out of <%= assignment.contest_instance.current_judging_round.min_external_comment_words %>
+                    </small>
+                  </div>
+                <% else %>
+                  <div class="mb-3">
+                    <%= label_with_required_class('External Comments', false) %>
+                    <textarea class="form-control" name="external_comments" rows="3"
+                            placeholder="Enter external comments..."
+                            <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            <div class="text-muted ms-2" style="font-size: 0.6em;">[ID: <%= ranking.entry.id %> | Category: <%= ranking.entry.category.kind %>]</div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if @entry_rankings.present? %>
+      <% unless @entry_rankings.any?(&:finalized?) %>
+        <%= form_tag finalize_rankings_container_contest_description_contest_instance_judging_round_path(
+          assignment.contest_instance.contest_description.container,
+          assignment.contest_instance.contest_description,
+          assignment.contest_instance,
+          assignment.contest_instance.current_judging_round
+        ), class: 'mt-3' do %>
+          <button type="submit" class="btn btn-primary finalize-rankings-btn"
+                  data-entry-drag-target="finalizeButton"
+                  disabled>
+            Finalize Rankings
+          </button>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

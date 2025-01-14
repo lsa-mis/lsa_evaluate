@@ -1,0 +1,8 @@
+<%
+  @entry_rankings = EntryRanking.where(
+    judging_round: assignment.contest_instance.current_judging_round,
+    user: current_user
+  ).order(:rank)
+
+  @ranked_entry_ids = @entry_rankings.pluck(:entry_id)
+%>

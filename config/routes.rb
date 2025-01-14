@@ -41,6 +41,8 @@ Rails.application.routes.draw do
             patch :complete
             patch :uncomplete
           end
+          post 'update_rankings', on: :member
+          post 'finalize_rankings', on: :member
           resources :round_judge_assignments
           resources :entry_rankings do
             member do

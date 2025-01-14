@@ -26,34 +26,6 @@ RSpec.describe JudgingRoundsController, type: :controller do
         }
         expect(assigns(:judging_round)).to eq(judging_round)
       end
-
-      context 'when round has started' do
-        let(:judging_round) { create(:judging_round, contest_instance: contest_instance, start_date: 1.day.ago) }
-
-        it 'shows warning' do
-          get :edit, params: {
-            container_id: container.id,
-            contest_description_id: contest_description.id,
-            contest_instance_id: contest_instance.id,
-            id: judging_round.id
-          }
-          expect(assigns(:show_warning)).to be true
-        end
-      end
-
-      context 'when round has not started' do
-        let(:judging_round) { create(:judging_round, contest_instance: contest_instance, start_date: 1.day.from_now) }
-
-        it 'does not show warning' do
-          get :edit, params: {
-            container_id: container.id,
-            contest_description_id: contest_description.id,
-            contest_instance_id: contest_instance.id,
-            id: judging_round.id
-          }
-          expect(assigns(:show_warning)).to be false
-        end
-      end
     end
 
     context 'when user is not container administrator' do
@@ -74,8 +46,9 @@ RSpec.describe JudgingRoundsController, type: :controller do
   describe 'PATCH #update' do
     let(:valid_attributes) do
       {
-        start_date: 1.day.from_now,
-        end_date: 2.days.from_now,
+        round_number: 1,
+        start_date: contest_instance.date_closed + 1.day,
+        end_date: contest_instance.date_closed + 2.days,
         require_internal_comments: true,
         min_internal_comment_words: 5,
         require_external_comments: true,
@@ -102,7 +75,7 @@ RSpec.describe JudgingRoundsController, type: :controller do
           expect(judging_round.min_external_comment_words).to eq(10)
         end
 
-        it 'redirects to round judge assignments' do
+        it 'redirects to judging assignments' do
           patch :update, params: {
             container_id: container.id,
             contest_description_id: contest_description.id,
@@ -110,8 +83,8 @@ RSpec.describe JudgingRoundsController, type: :controller do
             id: judging_round.id,
             judging_round: valid_attributes
           }
-          expect(response).to redirect_to(container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
-            container, contest_description, contest_instance, judging_round
+          expect(response).to redirect_to(container_contest_description_contest_instance_judging_assignments_path(
+            container, contest_description, contest_instance
           ))
         end
       end
@@ -141,22 +114,6 @@ RSpec.describe JudgingRoundsController, type: :controller do
             judging_round: invalid_attributes
           }
           expect(response).to render_template(:edit)
-        end
-      end
-
-      context 'when activating a round' do
-        let!(:active_round) { create(:judging_round, contest_instance: contest_instance, active: true, start_date: 1.day.from_now, end_date: 2.days.from_now) }
-        let(:judging_round) { create(:judging_round, contest_instance: contest_instance, start_date: active_round.end_date + 1.day, end_date: active_round.end_date + 2.days) }
-
-        it 'sets a flash message if there is already an active round' do
-          patch :update, params: {
-            container_id: container.id,
-            contest_description_id: contest_description.id,
-            contest_instance_id: contest_instance.id,
-            id: judging_round.id,
-            judging_round: { active: '1' }
-          }
-          expect(flash[:alert]).to include('There can only be one active judging round per contest instance')
         end
       end
     end

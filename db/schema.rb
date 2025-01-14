@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_16_164123) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_08_193135) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -236,6 +236,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_16_164123) do
     t.datetime "updated_at", null: false
     t.text "internal_comments"
     t.text "external_comments"
+    t.boolean "finalized", default: false, null: false
     t.index ["entry_id", "judging_round_id", "user_id"], name: "index_entry_rankings_uniqueness", unique: true
     t.index ["entry_id"], name: "index_entry_rankings_on_entry_id"
     t.index ["judging_round_id"], name: "index_entry_rankings_on_judging_round_id"
@@ -267,6 +268,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_16_164123) do
     t.integer "min_internal_comment_words", default: 0, null: false
     t.integer "min_external_comment_words", default: 0, null: false
     t.text "special_instructions"
+    t.integer "required_entries_count", default: 0, null: false
     t.index ["contest_instance_id", "round_number"], name: "index_judging_rounds_on_contest_instance_id_and_round_number", unique: true
     t.index ["contest_instance_id"], name: "index_judging_rounds_on_contest_instance_id"
   end

@@ -1,0 +1,182 @@
+// Entry list containers
+.entries-list,
+.rated-entries {
+  min-height: 200px;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6;
+  border-radius: 0.375rem;
+
+  &:empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-style: italic;
+    color: #6c757d;
+  }
+
+  // Card styles within containers
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: white;
+
+    .card-body {
+      flex: 0 1 auto !important;
+      min-height: auto !important;
+      padding: 0.5rem !important;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    // Drag handle
+    .drag-handle {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: grab;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.05);
+      font-size: 1.2em;
+      line-height: 1;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      width: 24px;
+      text-align: center;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      &:active {
+        cursor: grabbing;
+        background: rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+// Drag and drop states
+.sortable-chosen .drag-handle {
+  cursor: grabbing;
+}
+
+.entry {
+  &-ghost {
+    opacity: 0.5;
+    background: #e9ecef;
+  }
+
+  &-drag {
+    opacity: 0.8;
+  }
+
+  &-chosen {
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.judge-dashboard {
+  .comments-section {
+    border-top: 1px solid #dee2e6;
+    margin-top: 1rem;
+    padding-top: 1rem;
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-label {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      small {
+        font-weight: normal;
+      }
+
+      .saving-indicator {
+        font-size: 0.875em;
+        opacity: 0.9;
+        animation: fadeIn 0.2s ease-in;
+      }
+    }
+
+    textarea:disabled {
+      background-color: #f8f9fa;
+      cursor: not-allowed;
+    }
+  }
+
+  .drag-handle {
+    cursor: move;
+    user-select: none;
+    font-size: 1.2rem;
+    color: #6c757d;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+.scrollable-container {
+  max-height: 200px;
+  min-height: 200px;
+  overflow-y: scroll;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 8px;
+  background: white;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
+    border: 3px solid #f1f1f1;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
+.rankings-container {
+  min-width: 200px;
+  padding: 4px;
+}
+
+.comments-container {
+  min-width: 300px;
+}
+
+// Remove any inline styles from the template
+.rankings-email {
+  min-width: 180px;
+  display: inline-block;
+}
+
+.ranking-badge {
+  margin-left: -16px;
+}

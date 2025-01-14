@@ -20,7 +20,7 @@
             </tr>
           </thead>
           <tbody>
-            <% @judging_round.entries.distinct.each do |entry| %>
+            <% @entries.each do |entry| %>
               <tr>
                 <td><%= entry.id %></td>
                 <td><%= entry.title %></td>
@@ -28,7 +28,7 @@
                   <%= @judging_round.average_rank_for_entry(entry) || 'No rankings' %>
                 </td>
                 <td>
-                  <% entry.entry_rankings.where(judging_round: @judging_round).each do |ranking| %>
+                  <% entry.entry_rankings.select { |ranking| ranking.judging_round_id == @judging_round.id }.each do |ranking| %>
                     <div>
                       <%= content_tag(:span,
                         display_email(ranking.user.email),
@@ -38,14 +38,16 @@
                           'bs-title': "#{h(ranking.user.display_name)}<br>#{h(display_email(ranking.user.email))}"
                         }
                       ) %> : <%= ranking.rank || 'Not ranked' %>
-                      <% if ranking.internal_comments.present? %>
+                      <% if ranking.internal_comments.present? || ranking.external_comments.present? %>
                         <button class="btn btn-sm btn-outline-info ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#comments-<%= ranking.id %>">
                           View Comments
                         </button>
                         <div class="collapse mt-2" id="comments-<%= ranking.id %>">
                           <div class="card card-body">
-                            <strong>Internal Comments:</strong>
-                            <p><%= ranking.internal_comments %></p>
+                            <% if ranking.internal_comments.present? %>
+                              <strong>Internal Comments:</strong>
+                              <p><%= ranking.internal_comments %></p>
+                            <% end %>
                             <% if ranking.external_comments.present? %>
                               <strong>External Comments:</strong>
                               <p><%= ranking.external_comments %></p>
