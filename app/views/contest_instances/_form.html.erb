@@ -10,12 +10,12 @@
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
   <div class="form-inputs">
-    <%= f.input :active, hint: "Specify whether this contest is currently accepting entries." %>
+    <%= f.input :active, hint: "Specify whether this contest is currently accepting entries during the contest open and close dates specified below." %>
     <%= f.input :archived %>
     <%= f.association :contest_description, label_method: :name %>
     <div class="row">
       <div class="col-md-6">
-        <%= f.label :date_open, "Contest Open Date and Time", class: "form-label" %>
+        <%= f.label :date_open, "Contest Open Date and Time for accepting submissions", class: "form-label" %>
         <%= f.input :date_open,
                     as: :datetime_local,
                     html5: true,
@@ -29,7 +29,7 @@
                     label: false %>
       </div>
       <div class="col-md-6">
-        <%= f.label :date_closed, "Contest Close Date and Time", class: "form-label" %>
+        <%= f.label :date_closed, "Contest Close Date and Time for accepting submissions", class: "form-label" %>
         <%= f.input :date_closed,
                     as: :datetime_local,
                     html5: true,
