@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
-
   def render_editable_content(page, section)
     content_record = EditableContent.find_by(page: page, section: section)
     return unless content_record
@@ -16,7 +15,7 @@ module ApplicationHelper
         content_tag(:i, '', class: 'bi bi-pencil')
       end
       # Combine the content and the edit link, marking it as HTML safe
-      safe_join([content_html, edit_link], ' ').html_safe
+      safe_join([ content_html, edit_link ], ' ').html_safe
     else
       # If the user doesn't have the role, just render the content
       content_html.html_safe
@@ -52,5 +51,15 @@ module ApplicationHelper
       sort_column: column,
       sort_direction: direction
     )
+  end
+
+  def label_with_required_class(label_text, is_required)
+    content_tag(:label, class: "form-label #{'text-danger' if is_required}") do
+      concat label_text
+      if is_required
+        concat content_tag(:span, '*', class: 'text-danger', style: 'margin-left: -6px;')
+        concat content_tag(:span, '(required)', class: 'text-xs', style: 'margin-left: -2px;')
+      end
+    end
   end
 end
