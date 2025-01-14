@@ -1,6 +1,11 @@
 namespace :sample_data do
   desc 'Create sample contest entries for testing'
   task create_entries: :environment do
+    if Rails.env.production?
+      puts 'This task cannot be run in the production environment.'
+      exit
+    end
+
     # Find or create required records
     contest_description = ContestDescription.first || ContestDescription.create!(
       name: 'Sample Contest 2024',
