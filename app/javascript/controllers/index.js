@@ -13,6 +13,9 @@ application.register("character-counter", CharacterCounterController)
 import CheckboxselectController from "./checkboxselect_controller"
 application.register("checkboxselect", CheckboxselectController)
 
+import CommentsCounterController from "./comments_counter_controller"
+application.register("comments-counter", CommentsCounterController)
+
 import ConfirmController from "./confirm_controller"
 application.register("confirm", ConfirmController)
 
