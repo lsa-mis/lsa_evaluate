@@ -38,13 +38,13 @@
 
               <div class="comments-section">
                 <div class="mb-3">
-                  <label class="form-label">Internal Comments <small class="text-muted">(only visible to judges)</small></label>
+                  <label class="form-label">Internal Comments</label>
                   <textarea class="form-control" name="internal_comments" rows="3"
                           placeholder="Enter internal comments..."
                           <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">External Comments <small class="text-muted">(visible to applicants)</small></label>
+                  <label class="form-label">External Comments</label>
                   <textarea class="form-control" name="external_comments" rows="3"
                           placeholder="Enter external comments..."
                           <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
