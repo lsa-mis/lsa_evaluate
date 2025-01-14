@@ -1,0 +1,23 @@
+Add editable information records
+- app/views/contest_instances/show.html.erb
+-- 'contest_instances', 'instructions'
+EditableContent.create(page: "contest_instances", section: "instructions",
+  content: ActionText::RichText.new(body: "Instructions on the contest_instance view. It contains summary information about the contest instance. The entries submitted section and teh judging result section."))
+
+- app/views/judging_assignments/index.html.erb
+-- 'judging_assignments', 'instructions'
+EditableContent.create(page: "judging_assignments", section: "instructions",
+  content: ActionText::RichText.new(body: "Instructions on the judging_assignments view. It contains the current judges and their status. The actions column contains the remove button."))
+
+- app/views/judging_assignments/new.html.erb
+-- Add the functionality search for existing judges in the system. Use the same search functionality as was used in the app/views/containers/show.html.erb container admin view, Add new permission form.
+
+- app/views/round_judge_assignments/index.html.erb
+-- 'round_judge_assignments', 'instructions'
+EditableContent.create(page: "round_judge_assignments", section: "instructions",
+  content: ActionText::RichText.new(body: "Instructions on the round_judge_assignments view. It contains the current judges and their status. The actions column contains the remove button."))
+
+- app/views/judging_assignments/index.html.erb
+-- 'judging_assignments', 'round_specific_instructions'
+EditableContent.create(page: "judging_assignments", section: "round_specific_instructions",
+  content: ActionText::RichText.new(body: "Instructions on the round specific section of the judging_assignments view. It contains the current judges and their status. The actions column contains the remove button."))
