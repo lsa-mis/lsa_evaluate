@@ -13,6 +13,7 @@
   <div class="mb-3">
     <%= f.label :round_number, class: 'form-label' %>
     <%= f.number_field :round_number, class: 'form-control', value: @round_number %>
+    <div class="form-text">The round number. This is used to sequentially order the judging rounds for a contest instance. It automatically increments for each new round and should changed only in "special" cases.</div>
   </div>
 
   <div class="mb-3">

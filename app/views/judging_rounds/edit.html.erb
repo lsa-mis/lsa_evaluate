@@ -41,9 +41,10 @@
         <div class="form-group">
           <%= f.label :round_number %>
           <%= f.number_field :round_number, class: 'form-control' %>
+          <div class="form-text">The round number is used to sequentially order the judging rounds for a contest instance. It automatically increments for each new round and should only be changed in "special" cases.</div>
         </div>
 
-        <div class="mb-3">
+        <div class="mt-3">
           <%= f.label :required_entries_count, 'Number of Entries to be Selected', class: 'form-label' %>
           <%= f.number_field :required_entries_count, class: 'form-control', min: 0 %>
           <div class="form-text">Enter the number of entries that judges must select and rank for this round.</div>
@@ -64,7 +65,7 @@
           <%= f.text_area :special_instructions, class: 'form-control', rows: 3,
               placeholder: "Enter any instructions or guidelines for judges in this round..." %>
           <small class="form-text text-muted">
-            These instructions will be visible to judges when they are evaluating entries in this round.
+            These instructions will be visible to judges on the Judging Dashboard when they are evaluating entries in this round.
           </small>
         </div>
 
@@ -77,7 +78,7 @@
                 Require Internal Comments
               <% end %>
               <small class="form-text text-muted d-block">
-                Internal comments are visible only to committee members and administrators
+                Internal comments are meant to be used by committee members and administrators of this contest.
               </small>
             </div>
 
@@ -95,7 +96,7 @@
                 Require External Comments
               <% end %>
               <small class="form-text text-muted d-block">
-                External comments will be shared with applicants
+                External comments are meant to be shared with applicants and other parties after the contest is complete.
               </small>
             </div>
 

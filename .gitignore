@@ -45,3 +45,5 @@ uploads/
 
 /coverage
 /spec/examples.txt
+
+/working_files/*

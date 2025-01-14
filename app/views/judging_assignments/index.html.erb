@@ -3,13 +3,16 @@
   <%= link_to "Return to Instances", container_contest_description_contest_instances_path(@container, @contest_description), class: "link_to" %>
   <%= link_to "Return to Instance", container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), class: "link_to" %>
 </div>
+<% if (content = render_editable_content('judging_assignments', 'instructions')) %>
+    <%= content %>
+<% end %>
 
 <div class="container mt-4">
   <h2>Manage Judging for <%= @contest_instance.contest_description.name %></h2>
 
   <div class="card">
     <div class="card-header">
-      <h3>Current Judges</h3>
+      <h3>Pool of judges assigned to this contest instance</h3>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -45,9 +48,10 @@
 
   <div class="card mb-4">
     <div class="card-header">
-      <h3>Assign New Judge</h3>
+      <h3>Assign a judge to the pool of judges for this contest instance</h3>
     </div>
     <div class="card-body">
+      <p>Start typing the name or email address of a judge to search for them system-wide. If you don't find the judge you're looking for, you can create a new judge using the "Create a new judge ..." form below.</p>
       <%= form_with(model: [@container, @contest_description, @contest_instance, JudgingAssignment.new], local: true) do |f| %>
         <div class="form-group">
           <%= f.label :user_id, "Select Judge" %>
@@ -65,11 +69,12 @@
     <div class="accordion-item">
       <div class="accordion-header" id="createJudgeHeader">
         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#createJudgeCollapse" aria-expanded="false" aria-controls="createJudgeCollapse">
-          <h4 class="mb-0">Create New Judge</h4>
+          <h4 class="mb-0">Create a new judge and assign them to the pool of judges for this contest instance</h4>
         </button>
       </div>
       <div id="createJudgeCollapse" class="accordion-collapse collapse" aria-labelledby="createJudgeHeader" data-bs-parent="#createJudgeAccordion">
         <div class="accordion-body">
+          <p>Use this form to create a new judge and assign them to the pool of judges for this contest instance. The new judge will receive an email with instructions on how to log in to the judging dashboard.</p>
           <%= form_with(url: create_judge_container_contest_description_contest_instance_judging_assignments_path(@container, @contest_description, @contest_instance), local: true, html: { novalidate: true }) do |f| %>
             <div class="form-group mb-3">
               <%= f.label :email, "Email Address" %>
@@ -94,7 +99,9 @@
   </div>
 
   <h2 class="mt-4">Round-Specific Judge Assignments</h2>
-  <p class="text-muted">Click "Manage Round" for a specific round to assign judges to that round.</p>
+  <% if (content = render_editable_content('judging_assignments', 'round_specific_instructions')) %>
+      <%= content %>
+  <% end %>
   <%= render 'round_management' %>
 
   <div class="mb-3">
