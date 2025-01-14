@@ -3,5 +3,7 @@
       container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
       ),
-      class: 'btn btn-sm btn-outline-secondary mb-2' %>
+      class: 'btn btn-sm btn-outline-secondary mb-2',
+      data: { 'bs-toggle': 'tooltip' },
+      title: 'Manage the judging rounds and assignments for this contest instance' %>
 <% end %>

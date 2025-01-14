@@ -3,7 +3,9 @@
   <%= link_to "Return to Instances", container_contest_description_contest_instances_path(@container, @contest_description), class: "link_to" %>
   <%= link_to "Return to Instance Judging Assignments", container_contest_description_contest_instance_judging_assignments_path(@container, @contest_description, @contest_instance), class: "link_to" %>
 </div>
-
+<% if (content = render_editable_content('round_judge_assignments', 'instructions')) %>
+    <%= content %>
+<% end %>
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -26,19 +28,12 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-6">
-          <p><strong>Start Date:</strong> <%= format_datetime(@judging_round.start_date) %></p>
-          <p><strong>End Date:</strong> <%= format_datetime(@judging_round.end_date) %></p>
-          <% if @judging_round.special_instructions.present? %>
-            <div class="mt-3">
-              <h4>Instructions</h4>
-              <div class="alert alert-info">
-                <%= simple_format(@judging_round.special_instructions) %>
-              </div>
-            </div>
-          <% end %>
+          <h5>Dates for judging round</h5>
+          <p><strong>Start Date for judging round:</strong> <%= format_datetime(@judging_round.start_date) %></p>
+          <p><strong>End Date for judging round:</strong> <%= format_datetime(@judging_round.end_date) %></p>
         </div>
         <div class="col-md-6">
-          <h4>Comment Requirements</h4>
+          <h5>Comment Requirements</h4>
           <p>
             <strong>Internal Comments:</strong>
             <%= @judging_round.require_internal_comments ? 'Required' : 'Optional' %>
@@ -55,17 +50,25 @@
           </p>
         </div>
       </div>
+      <div class="row">
+        <div class="col-md-12">
+          <h5>Instructions for judges of this round</h5>
+          <div class="alert alert-info">
+            <%= simple_format(@judging_round.special_instructions) %>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="card mb-4">
     <div class="card-header">
-      <h3>Assign Judge to Round</h3>
+      <h3>Assign judges to this round</h3>
     </div>
     <div class="card-body">
       <%= form_with(model: [@container, @contest_description, @contest_instance, @judging_round, RoundJudgeAssignment.new], local: true) do |f| %>
         <div class="form-group">
-          <%= f.label :user_id, "Select Judge" %>
+          <%= f.label :user_id, "Select a judge from the pool of judges assigned to this contest instance." %>
           <%= f.select :user_id,
               @available_judges.map { |u| ["#{u.first_name} #{u.last_name} (#{display_email(u.email)})", u.id] },
               { prompt: "Select a judge" },
@@ -78,7 +81,7 @@
 
   <div class="card">
     <div class="card-header">
-      <h3>Current Round Judges</h3>
+      <h3>Current judges assigned to this round</h3>
     </div>
     <div class="card-body">
       <div class="table-responsive">

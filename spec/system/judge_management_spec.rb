@@ -25,7 +25,7 @@ RSpec.describe 'Judge Management', type: :system do
     context 'with non-umich email' do
       it 'creates a new judge with transformed email' do
         within('#createJudgeAccordion') do
-          click_button 'Create New Judge' # expand the accordion
+          click_button 'Create a new judge and assign them to the pool of judges for this contest instance' # expand the accordion
           fill_in 'Email Address', with: 'newjudge@gmail.com'
           fill_in 'First Name', with: 'New'
           fill_in 'Last Name', with: 'Judge'
@@ -44,7 +44,7 @@ RSpec.describe 'Judge Management', type: :system do
     context 'with umich email' do
       it 'creates a new judge with original email' do
         within('#createJudgeAccordion') do
-          click_button 'Create New Judge' # expand the accordion
+          click_button 'Create a new judge and assign them to the pool of judges for this contest instance' # expand the accordion
           fill_in 'Email Address', with: 'newjudge@umich.edu'
           fill_in 'First Name', with: 'New'
           fill_in 'Last Name', with: 'Judge'
@@ -65,7 +65,7 @@ RSpec.describe 'Judge Management', type: :system do
 
         # Try with invalid email format
         within('#createJudgeAccordion') do
-          click_button 'Create New Judge' # expand the accordion
+          click_button 'Create a new judge and assign them to the pool of judges for this contest instance' # expand the accordion
           sleep(1) # Wait for animation
 
           fill_in 'Email Address', with: 'invalid-email'
@@ -79,7 +79,7 @@ RSpec.describe 'Judge Management', type: :system do
 
         # Try with missing required fields
         within('#createJudgeAccordion') do
-          click_button 'Create New Judge' # expand the accordion again
+          click_button 'Create a new judge and assign them to the pool of judges for this contest instance' # expand the accordion again
           sleep(1) # Wait for animation
 
           fill_in 'Email Address', with: ''
@@ -106,7 +106,7 @@ RSpec.describe 'Judge Management', type: :system do
     end
 
     it 'displays judge with formatted email' do
-      within('.card', text: /Current Judges/i) do
+      within('.card', text: /Pool of judges assigned to this contest instance/i) do
         within('table') do
           expect(page).to have_content('Existing Judge (judge@gmail.com)')
         end
@@ -116,7 +116,7 @@ RSpec.describe 'Judge Management', type: :system do
     it 'allows removing a judge' do
       assignment = JudgingAssignment.last
 
-      within('.card', text: /Current Judges/i) do
+      within('.card', text: /Pool of judges assigned to this contest instance/i) do
         within('table') do
           accept_confirm do
             click_button 'Remove'
@@ -127,7 +127,7 @@ RSpec.describe 'Judge Management', type: :system do
       expect(page).to have_css('.alert.alert-success', text: 'Judge assignment was successfully removed')
 
       # Verify the judge is no longer in the current judges table
-      within('.card', text: /Current Judges/i) do
+      within('.card', text: /Pool of judges assigned to this contest instance/i) do
         within('table tbody') do
           expect(page).to have_no_content('Existing Judge')
         end
