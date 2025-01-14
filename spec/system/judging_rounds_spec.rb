@@ -29,8 +29,8 @@ RSpec.describe 'Judging Rounds', type: :system do
       start_date = contest_instance.date_closed + 2.days
       end_date = contest_instance.date_closed + 3.days
 
-      fill_in 'Start date', with: start_date
-      fill_in 'End date', with: end_date
+      fill_in 'Date and time to open judging round to judges', with: start_date
+      fill_in 'Date and time to close judging round to judges', with: end_date
       fill_in 'Instructions for Judges', with: 'These are test instructions'
 
       expect {
