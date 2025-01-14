@@ -37,18 +37,47 @@
               </div>
 
               <div class="comments-section">
-                <div class="mb-3">
-                  <%= label_with_required_class('Internal Comments', assignment.contest_instance.current_judging_round.require_internal_comments) %>
-                  <textarea class="form-control" name="internal_comments" rows="3"
-                          placeholder="Enter internal comments..."
-                          <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
-                </div>
-                <div class="mb-3">
-                  <%= label_with_required_class('External Comments', assignment.contest_instance.current_judging_round.require_external_comments) %>
-                  <textarea class="form-control" name="external_comments" rows="3"
-                          placeholder="Enter external comments..."
-                          <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
-                </div>
+                <% if assignment.contest_instance.current_judging_round.require_internal_comments %>
+                  <div class="mb-3" data-controller="comments-counter" data-comments-counter-minimum-value="<%= assignment.contest_instance.current_judging_round.min_internal_comment_words %>">
+                    <%= label_with_required_class('Internal Comments', true) %>
+                    <textarea class="form-control" name="internal_comments" rows="3"
+                            placeholder="Enter internal comments..."
+                            data-comments-counter-target="textarea"
+                            data-action="input->comments-counter#updateCounter"
+                            <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
+                    <small class="text-muted">
+                      Words: <span data-comments-counter-target="counter">0</span> out of <%= assignment.contest_instance.current_judging_round.min_internal_comment_words %>
+                    </small>
+                  </div>
+                <% else %>
+                  <div class="mb-3">
+                    <%= label_with_required_class('Internal Comments', false) %>
+                    <textarea class="form-control" name="internal_comments" rows="3"
+                            placeholder="Enter internal comments..."
+                            <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
+                  </div>
+                <% end %>
+
+                <% if assignment.contest_instance.current_judging_round.require_external_comments %>
+                  <div class="mb-3" data-controller="comments-counter" data-comments-counter-minimum-value="<%= assignment.contest_instance.current_judging_round.min_external_comment_words %>">
+                    <%= label_with_required_class('External Comments', true) %>
+                    <textarea class="form-control" name="external_comments" rows="3"
+                            placeholder="Enter external comments..."
+                            data-comments-counter-target="textarea"
+                            data-action="input->comments-counter#updateCounter"
+                            <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
+                    <small class="text-muted">
+                      Words: <span data-comments-counter-target="counter">0</span> out of <%= assignment.contest_instance.current_judging_round.min_external_comment_words %>
+                    </small>
+                  </div>
+                <% else %>
+                  <div class="mb-3">
+                    <%= label_with_required_class('External Comments', false) %>
+                    <textarea class="form-control" name="external_comments" rows="3"
+                            placeholder="Enter external comments..."
+                            <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
+                  </div>
+                <% end %>
               </div>
             </div>
             <div class="text-muted ms-2" style="font-size: 0.6em;">[ID: <%= ranking.entry.id %> | Category: <%= ranking.entry.category.kind %>]</div>
