@@ -38,13 +38,13 @@
 
               <div class="comments-section">
                 <div class="mb-3">
-                  <label class="form-label">Internal Comments</label>
+                  <%= label_with_required_class('Internal Comments', assignment.contest_instance.current_judging_round.require_internal_comments) %>
                   <textarea class="form-control" name="internal_comments" rows="3"
                           placeholder="Enter internal comments..."
                           <%= 'disabled' if ranking.finalized? %>><%= ranking.internal_comments %></textarea>
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">External Comments</label>
+                  <%= label_with_required_class('External Comments', assignment.contest_instance.current_judging_round.require_external_comments) %>
                   <textarea class="form-control" name="external_comments" rows="3"
                           placeholder="Enter external comments..."
                           <%= 'disabled' if ranking.finalized? %>><%= ranking.external_comments %></textarea>
