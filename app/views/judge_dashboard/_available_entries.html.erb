@@ -15,14 +15,16 @@
         <%= turbo_frame_tag dom_id(entry) do %>
           <div class="card mb-2" data-entry-id="<%= entry.id %>">
             <div class="card-body d-flex align-items-center py-1">
-              <div class="drag-handle me-2">⋮⋮</div>
+              <div class="drag-handle me-2">
+                <i class="bi bi-arrows-move" aria-hidden="true"></i>
+              </div>
               <div class="flex-grow-1">
                 <div class="card-title d-flex align-items-baseline justify-content-between mb-0">
                   <div class="btn-group mb-0">
                     <%= link_to 'View Entry', rails_blob_path(entry.entry_file, disposition: "inline"),
                         target: '_blank', class: 'btn btn-sm btn-secondary py-0' %>
                   </div>
-                  <div class="text-muted ms-2" style="font-size: 0.6em;">[entryID: <%= entry.id %>] <%= entry.category.kind %></div>
+                  <div class="text-muted ms-2" style="font-size: 0.6em;">[ID: <%= entry.id %> | Category: <%= entry.category.kind %>]</div>
                 </div>
                 <h6 class="m-0"><%= entry.title %></h6>
               </div>
