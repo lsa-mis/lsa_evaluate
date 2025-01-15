@@ -44,7 +44,7 @@
                             placeholder="Enter internal comments..."
                             data-comments-counter-target="textarea"
                             data-action="input->comments-counter#updateCounter"
-                            <%= 'disabled' if ranking.finalized? %> aria-labelledby="internal_comments"><%= ranking.internal_comments %></textarea>
+                            <%= 'disabled' if ranking.finalized? %> aria-label="Internal Comments"><%= ranking.internal_comments %></textarea>
                     <small class="text-muted">
                       Words: <span data-comments-counter-target="counter">0</span> out of <%= assignment.contest_instance.current_judging_round.min_internal_comment_words %>
                     </small>
@@ -54,7 +54,7 @@
                     <%= label_with_required_class('Internal Comments', false) %>
                     <textarea class="form-control" name="internal_comments" rows="3"
                             placeholder="Enter internal comments..."
-                            <%= 'disabled' if ranking.finalized? %> aria-labelledby="internal_comments"><%= ranking.internal_comments %></textarea>
+                            <%= 'disabled' if ranking.finalized? %> aria-label="Internal Comments"><%= ranking.internal_comments %></textarea>
                   </div>
                 <% end %>
 
@@ -65,7 +65,7 @@
                             placeholder="Enter external comments..."
                             data-comments-counter-target="textarea"
                             data-action="input->comments-counter#updateCounter"
-                            <%= 'disabled' if ranking.finalized? %> aria-labelledby="external_comments"><%= ranking.external_comments %></textarea>
+                            <%= 'disabled' if ranking.finalized? %> aria-label="External Comments"><%= ranking.external_comments %></textarea>
                     <small class="text-muted">
                       Words: <span data-comments-counter-target="counter">0</span> out of <%= assignment.contest_instance.current_judging_round.min_external_comment_words %>
                     </small>
@@ -75,7 +75,7 @@
                     <%= label_with_required_class('External Comments', false) %>
                     <textarea class="form-control" name="external_comments" rows="3"
                             placeholder="Enter external comments..."
-                            <%= 'disabled' if ranking.finalized? %> aria-labelledby="external_comments"><%= ranking.external_comments %></textarea>
+                            <%= 'disabled' if ranking.finalized? %> aria-label="External Comments"><%= ranking.external_comments %></textarea>
                   </div>
                 <% end %>
               </div>
