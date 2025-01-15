@@ -1,11 +1,41 @@
-// Set up DOM environment
-require('@testing-library/jest-dom')
+// Mock fetch globally
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ success: true }),
+  })
+)
 
-// Mock Bootstrap
-global.bootstrap = {
-  Modal: jest.fn().mockImplementation(() => ({
-    show: jest.fn(),
-    hide: jest.fn(),
-    element: document.createElement('div')
-  }))
+// Mock Turbo
+global.Turbo = {
+  visit: jest.fn(),
 }
+
+// Set up DOM environment
+window.sessionStorage = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  clear: jest.fn(),
+}
+
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+// Add any missing DOM methods that might be required by your tests
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+})

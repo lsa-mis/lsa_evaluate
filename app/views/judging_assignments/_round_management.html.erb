@@ -82,7 +82,7 @@
                           data: {
                             'bs-toggle': 'tooltip',
                             'bs-html': 'true',
-                            'bs-title': "#{h(judge.display_name)}<br>#{h(display_email(judge.email))}"
+                            'bs-title': "#{h(judge.display_name_or_first_name_last_name)}<br>#{h(display_email(judge.email))}"
                           }
                         )
                       }.join(', ').html_safe %>

@@ -11,7 +11,10 @@ export default class extends Controller {
   connect() {
     // Get the contest instance ID from the closest accordion section
     const accordionSection = this.element.closest('.accordion-collapse')
-    if (!accordionSection) return
+    if (!accordionSection) {
+      console.error('No accordion section found for entry drag controller')
+      return
+    }
 
     this.contestGroupName = `entries-${accordionSection.id}`
     this.accordionSection = accordionSection
@@ -19,16 +22,45 @@ export default class extends Controller {
     this.initializeSortable()
     this.initializeCommentListeners()
 
-    // Restore accordion state if it exists
+    // Restore accordion state and scroll position if they exist
     const accordionId = accordionSection.id
     const isExpanded = sessionStorage.getItem(`accordion-${accordionId}`)
-    if (isExpanded === 'true') {
-      accordionSection.classList.add('show')
+
+    // Initialize the accordion with the stored state
+    if (isExpanded !== null) {  // Check if there's a stored state
       const accordionButton = document.querySelector(`[data-bs-target="#${accordionId}"]`)
-      if (accordionButton) {
-        accordionButton.classList.remove('collapsed')
+      if (isExpanded === 'true') {
+        accordionSection.classList.add('show')
+        if (accordionButton) {
+          accordionButton.classList.remove('collapsed')
+        }
+      } else {
+        accordionSection.classList.remove('show')
+        if (accordionButton) {
+          accordionButton.classList.add('collapsed')
+        }
+      }
+
+      // Restore scroll position if accordion is open
+      if (isExpanded === 'true') {
+        const scrollPosition = sessionStorage.getItem(`scroll-${accordionId}`)
+        if (scrollPosition) {
+          requestAnimationFrame(() => {
+            window.scrollTo(0, parseInt(scrollPosition))
+            sessionStorage.removeItem(`scroll-${accordionId}`)
+          })
+        }
       }
     }
+
+    // Add event listeners for accordion state changes
+    accordionSection.addEventListener('show.bs.collapse', () => {
+      sessionStorage.setItem(`accordion-${accordionId}`, 'true')
+    })
+
+    accordionSection.addEventListener('hide.bs.collapse', () => {
+      sessionStorage.setItem(`accordion-${accordionId}`, 'false')
+    })
   }
 
   initializeSortable() {
@@ -89,10 +121,11 @@ export default class extends Controller {
   }
 
   async handleSortEnd(event) {
-    // Save accordion state before refresh
+    // Save accordion state and scroll position before refresh
     const accordionSection = this.element.closest('.accordion-collapse')
     const accordionId = accordionSection.id
     sessionStorage.setItem(`accordion-${accordionId}`, accordionSection.classList.contains('show'))
+    sessionStorage.setItem(`scroll-${accordionId}`, window.scrollY.toString())
 
     // Get all entries in both areas
     const rankings = []
@@ -201,9 +234,13 @@ export default class extends Controller {
       handle.style.opacity = '0.5'
     })
 
-    // Disable sortable functionality
-    this.availableSortable.option('disabled', true)
-    this.ratedSortable.option('disabled', true)
+    // Ensure Sortable instances exist before trying to disable them
+    if (this.availableSortable) {
+      this.availableSortable.option('disabled', true)
+    }
+    if (this.ratedSortable) {
+      this.ratedSortable.option('disabled', true)
+    }
 
     // Update button state
     if (this.hasFinalizeButtonTarget) {
@@ -213,6 +250,10 @@ export default class extends Controller {
 
   finalizedValueChanged() {
     if (this.finalizedValue) {
+      // Ensure Sortable instances are initialized before disabling
+      if (!this.availableSortable || !this.ratedSortable) {
+        this.initializeSortable()
+      }
       this.disableDragging()
     }
   }
