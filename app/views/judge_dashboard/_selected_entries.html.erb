@@ -30,7 +30,7 @@
                       <%= link_to 'View Entry', rails_blob_path(ranking.entry.entry_file, disposition: "inline"),
                           target: '_blank', class: 'btn btn-sm btn-secondary' %>
                     </div>
-                    <span class="badge bg-info ms-2">Rank: <%= ranking.rank || 'Unranked' %></span>
+                    <span class="badge bg-primary ms-2">Rank: <%= ranking.rank || 'Unranked' %></span>
                   </div>
                   <h6 class="m-0"><%= ranking.entry.title %></h6>
                 </div>
