@@ -46,4 +46,6 @@ uploads/
 /coverage
 /spec/examples.txt
 
-/working_files/*
+# Ignore working_files directory and all its contents
+/working_files/
+/working_files/**/*
