@@ -11,7 +11,10 @@ export default class extends Controller {
   connect() {
     // Get the contest instance ID from the closest accordion section
     const accordionSection = this.element.closest('.accordion-collapse')
-    if (!accordionSection) return
+    if (!accordionSection) {
+      console.error('No accordion section found for entry drag controller')
+      return
+    }
 
     this.contestGroupName = `entries-${accordionSection.id}`
     this.accordionSection = accordionSection
@@ -201,9 +204,13 @@ export default class extends Controller {
       handle.style.opacity = '0.5'
     })
 
-    // Disable sortable functionality
-    this.availableSortable.option('disabled', true)
-    this.ratedSortable.option('disabled', true)
+    // Ensure Sortable instances exist before trying to disable them
+    if (this.availableSortable) {
+      this.availableSortable.option('disabled', true)
+    }
+    if (this.ratedSortable) {
+      this.ratedSortable.option('disabled', true)
+    }
 
     // Update button state
     if (this.hasFinalizeButtonTarget) {
@@ -213,6 +220,10 @@ export default class extends Controller {
 
   finalizedValueChanged() {
     if (this.finalizedValue) {
+      // Ensure Sortable instances are initialized before disabling
+      if (!this.availableSortable || !this.ratedSortable) {
+        this.initializeSortable()
+      }
       this.disableDragging()
     }
   }
