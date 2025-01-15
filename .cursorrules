@@ -51,6 +51,7 @@
   - Write comprehensive tests using RSpec.
   - Follow TDD/BDD practices.
   - Use factories (FactoryBot) for test data generation.
+  - Use Jest for testing JavaScript code.
 
   Security
   - Implement proper authentication and authorization (e.g., Devise, Pundit).
