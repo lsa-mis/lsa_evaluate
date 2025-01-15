@@ -25,24 +25,42 @@ export default class extends Controller {
     // Restore accordion state and scroll position if they exist
     const accordionId = accordionSection.id
     const isExpanded = sessionStorage.getItem(`accordion-${accordionId}`)
-    if (isExpanded === 'true') {
-      accordionSection.classList.add('show')
+
+    // Initialize the accordion with the stored state
+    if (isExpanded !== null) {  // Check if there's a stored state
       const accordionButton = document.querySelector(`[data-bs-target="#${accordionId}"]`)
-      if (accordionButton) {
-        accordionButton.classList.remove('collapsed')
+      if (isExpanded === 'true') {
+        accordionSection.classList.add('show')
+        if (accordionButton) {
+          accordionButton.classList.remove('collapsed')
+        }
+      } else {
+        accordionSection.classList.remove('show')
+        if (accordionButton) {
+          accordionButton.classList.add('collapsed')
+        }
       }
 
-      // Restore scroll position
-      const scrollPosition = sessionStorage.getItem(`scroll-${accordionId}`)
-      if (scrollPosition) {
-        // Use requestAnimationFrame to ensure the DOM is ready
-        requestAnimationFrame(() => {
-          window.scrollTo(0, parseInt(scrollPosition))
-          // Clear the stored position after using it
-          sessionStorage.removeItem(`scroll-${accordionId}`)
-        })
+      // Restore scroll position if accordion is open
+      if (isExpanded === 'true') {
+        const scrollPosition = sessionStorage.getItem(`scroll-${accordionId}`)
+        if (scrollPosition) {
+          requestAnimationFrame(() => {
+            window.scrollTo(0, parseInt(scrollPosition))
+            sessionStorage.removeItem(`scroll-${accordionId}`)
+          })
+        }
       }
     }
+
+    // Add event listeners for accordion state changes
+    accordionSection.addEventListener('show.bs.collapse', () => {
+      sessionStorage.setItem(`accordion-${accordionId}`, 'true')
+    })
+
+    accordionSection.addEventListener('hide.bs.collapse', () => {
+      sessionStorage.setItem(`accordion-${accordionId}`, 'false')
+    })
   }
 
   initializeSortable() {
