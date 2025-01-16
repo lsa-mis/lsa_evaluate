@@ -36,6 +36,14 @@
                 </div>
               </div>
 
+              <div class="text-end mb-2">
+                <button type="button" class="btn btn-sm btn-danger"
+                        data-action="entry-drag#removeFromRanked"
+                        <%= 'disabled' if ranking.finalized? %>>
+                  <i class="bi bi-dash-circle me-1"></i>Remove from Ranked Entries
+                </button>
+              </div>
+
               <div class="comments-section">
                 <% if assignment.contest_instance.current_judging_round.require_internal_comments %>
                   <div class="mb-3" data-controller="comments-counter" data-comments-counter-minimum-value="<%= assignment.contest_instance.current_judging_round.min_internal_comment_words %>">
