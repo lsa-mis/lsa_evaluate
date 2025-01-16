@@ -66,6 +66,9 @@ export default class extends Controller {
   initializeSortable() {
     if (!this.hasAvailableEntriesTarget || !this.hasRatedEntriesTarget) return
 
+    // Add a property to store the confirmation result
+    this.moveConfirmed = true
+
     const commonOptions = {
       group: {
         name: this.contestGroupName,
@@ -77,8 +80,9 @@ export default class extends Controller {
       dragClass: 'entry-drag',
       chosenClass: 'entry-chosen',
       handle: '.drag-handle',
-      onEnd: this.handleSortEnd.bind(this),
+      onStart: this.handleStart.bind(this),
       onMove: this.handleMove.bind(this),
+      onEnd: this.handleSortEnd.bind(this),
       disabled: this.finalizedValue,
       // Ensure dragging only works within the same accordion section
       filter: (event, target) => {
@@ -102,25 +106,32 @@ export default class extends Controller {
     }
   }
 
+  handleStart(event) {
+    // Reset confirmation for new drag operation
+    this.moveConfirmed = true
+  }
+
   handleMove(event) {
-    // Prevent dragging if finalized
-    if (this.finalizedValue) {
-      return false
+    // If moving from rated to available entries, show confirmation dialog
+    if (event.from === this.ratedEntriesTarget && event.to === this.availableEntriesTarget) {
+      if (!this.moveConfirmed) {
+        this.moveConfirmed = confirm("Are you sure you want to unrank this entry? Any comments you have written will be deleted.")
+      }
+      return this.moveConfirmed
     }
-
-    // Get the contest instance IDs from the source and target containers
-    const sourceAccordion = event.from.closest('.accordion-collapse')
-    const targetAccordion = event.to.closest('.accordion-collapse')
-
-    // Prevent dragging if the source and target are from different contest instances
-    if (sourceAccordion.id !== targetAccordion.id) {
-      return false
-    }
-
     return true
   }
 
   async handleSortEnd(event) {
+    // If this was a drag operation and it wasn't confirmed, return the item to its original position
+    if (!this.moveConfirmed && event.from === this.ratedEntriesTarget && event.to === this.availableEntriesTarget) {
+      event.from.appendChild(event.item)
+      return
+    }
+
+    // Reset confirmation state
+    this.moveConfirmed = false
+
     // Save accordion state and scroll position before refresh
     const accordionSection = this.element.closest('.accordion-collapse')
     const accordionId = accordionSection.id
@@ -151,12 +162,6 @@ export default class extends Controller {
       if (entryId) {
         const internalComments = element.querySelector('textarea[name="internal_comments"]')?.value || ''
         const externalComments = element.querySelector('textarea[name="external_comments"]')?.value || ''
-
-        // Update the rank badge immediately
-        const rankBadge = element.querySelector('.badge.bg-info')
-        if (rankBadge) {
-          rankBadge.textContent = `Rank: ${index + 1}`
-        }
 
         // Remove any existing entry for this ID (from available entries)
         const existingIndex = rankings.findIndex(r => r.entry_id === entryId)
@@ -339,6 +344,11 @@ export default class extends Controller {
 
     const entryCard = event.target.closest('[data-entry-id]')
     if (!entryCard) return
+
+    // Show confirmation dialog
+    if (!confirm("Are you sure you want to unrank this entry? Any comments you have written will be deleted.")) {
+      return
+    }
 
     // Move the card back to available entries
     this.availableEntriesTarget.appendChild(entryCard)
