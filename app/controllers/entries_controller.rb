@@ -111,8 +111,23 @@ class EntriesController < ApplicationController
 
   def applicant_profile
     authorize @entry, :view_applicant_profile?
-    @profile = @profile = @entry.profile
-    @entries = Entry.active.where(profile: @profile)
+    @profile = @entry.profile
+
+    # If user is the profile owner or axis mundi, show all entries
+    if @profile.user == current_user || current_user.axis_mundi?
+      @entries = Entry.active.where(profile: @profile)
+    else
+      # For container administrators, only show entries from their containers
+      admin_container_ids = current_user.assignments
+                                      .where(role: 'container_admin')
+                                      .joins(:container)
+                                      .pluck(:container_id)
+
+      @entries = Entry.active
+                     .where(profile: @profile)
+                     .joins(contest_instance: { contest_description: :container })
+                     .where(containers: { id: admin_container_ids })
+    end
   end
 
   private
