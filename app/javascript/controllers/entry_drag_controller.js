@@ -112,6 +112,13 @@ export default class extends Controller {
   }
 
   handleMove(event) {
+    // First check if we're trying to drag between different contest instances
+    const fromAccordion = event.from.closest('.accordion-collapse')
+    const toAccordion = event.to.closest('.accordion-collapse')
+    if (fromAccordion && toAccordion && fromAccordion.id !== toAccordion.id) {
+      return false
+    }
+
     // If moving from rated to available entries, show confirmation dialog
     if (event.from === this.ratedEntriesTarget && event.to === this.availableEntriesTarget) {
       if (!this.moveConfirmed) {
