@@ -130,15 +130,16 @@ class ContestInstance < ApplicationRecord
     return Entry.none unless current_judging_round
 
     if current_judging_round.round_number == 1
-      entries.where(deleted: false)
+      entries.active.where(disqualified: false)
     else
       previous_round = judging_rounds.find_by(round_number: current_judging_round.round_number - 1)
-      entries.joins(:entry_rankings)
+      entries.active
+            .where(disqualified: false)
+            .joins(:entry_rankings)
             .where(entry_rankings: {
               judging_round: previous_round,
               selected_for_next_round: true
             })
-            .where(deleted: false)
             .distinct
     end
   end
