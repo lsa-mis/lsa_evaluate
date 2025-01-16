@@ -52,7 +52,7 @@
 
               <p class="text-muted mt-3 mb-0">
                 <strong>Instructions:</strong><br/>
-                <%= assignment.contest_instance.current_judging_round.special_instructions %>
+                <%= simple_format(assignment.contest_instance.current_judging_round.special_instructions) %>
               </p>
               <% if assignment.contest_instance.judging_open? %>
                 <div class="row" data-controller="entry-drag"
