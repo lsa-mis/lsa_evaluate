@@ -322,4 +322,26 @@ export default class extends Controller {
       }, 3000)
     }
   }
+
+  async addToRanked(event) {
+    if (this.finalizedValue) return
+
+    const entryCard = event.target.closest('[data-entry-id]')
+    if (!entryCard) return
+
+    // Move the card to rated entries
+    this.ratedEntriesTarget.appendChild(entryCard)
+    await this.handleSortEnd({ from: this.availableEntriesTarget, to: this.ratedEntriesTarget, item: entryCard })
+  }
+
+  async removeFromRanked(event) {
+    if (this.finalizedValue) return
+
+    const entryCard = event.target.closest('[data-entry-id]')
+    if (!entryCard) return
+
+    // Move the card back to available entries
+    this.availableEntriesTarget.appendChild(entryCard)
+    await this.handleSortEnd({ from: this.ratedEntriesTarget, to: this.availableEntriesTarget, item: entryCard })
+  }
 }
