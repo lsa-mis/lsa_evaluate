@@ -29,6 +29,13 @@
                 <h6 class="m-0"><%= entry.title %></h6>
               </div>
             </div>
+            <div class="card-footer bg-light py-1 text-end">
+              <button type="button" class="btn btn-sm btn-primary"
+                      data-action="entry-drag#addToRanked"
+                      <%= 'disabled' if EntryRanking.exists?(judging_round: assignment.contest_instance.current_judging_round, user: current_user, finalized: true) %>>
+                <i class="bi bi-plus-circle me-1"></i>Add to Ranked Entries
+              </button>
+            </div>
           </div>
         <% end %>
       <% end %>
