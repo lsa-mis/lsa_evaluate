@@ -1,24 +1,24 @@
 require 'rails_helper'
 
 RSpec.describe "Drag and Drop", :js, type: :system do
-  let(:user) { create(:user, :with_judge_role) }
-  let(:contest_instance) { create(:contest_instance, date_open: 2.days.ago, date_closed: 1.day.ago) }
-  let(:judging_assignment) { create(:judging_assignment, user: user, contest_instance: contest_instance) }
-  let(:judging_round) { create(:judging_round, contest_instance: contest_instance, active: true) }
-  let(:round_judge_assignment) { create(:round_judge_assignment, judging_round: judging_round, user: user) }
+  let!(:user) { create(:user, :with_judge_role) }
+  let!(:contest_instance) { create(:contest_instance, date_open: 2.days.ago, date_closed: 1.day.ago) }
+  let!(:judging_assignment) { create(:judging_assignment, user: user, contest_instance: contest_instance) }
+  let!(:judging_round) { create(:judging_round, contest_instance: contest_instance, active: true) }
+  let!(:round_judge_assignment) { create(:round_judge_assignment, judging_round: judging_round, user: user) }
   let!(:entries) { create_list(:entry, 1, contest_instance: contest_instance) }
+  let!(:contest_instance_element) { PageObjects::ContestInstanceElement.new(page, contest_instance) }
 
   before do
     sign_in user
-    judging_round # ensure it's created
-    judging_assignment # ensure it's created
   end
 
   it "allows a judge to drag and drop entries" do
     visit judge_dashboard_path
 
     # Find and click the accordion button for this contest
-    find('.accordion-button', text: contest_instance.contest_description.name).click
+    # find('.accordion-button', text: contest_instance.contest_description.name).click
+    contest_instance_element.expand
 
     # Wait for accordion to expand
     expect(page).to have_css('.accordion-collapse.show')
