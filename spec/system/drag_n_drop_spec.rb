@@ -21,28 +21,21 @@ RSpec.describe "Drag and Drop", :js, type: :system do
     contest_instance_element.expand
 
     # Wait for accordion to expand
-    expect(page).to have_css('.accordion-collapse.show')
+    expect(contest_instance_element.expanded?).to be true
 
-    # Find the first entry card and its drag handle
     entry_card = find('.card', match: :first)
-    drag_handle = entry_card.find('.drag-handle')
-
-    # Find the rated entries section
-    rated_entries = find("[data-entry-drag-target='ratedEntries']")
-
-    # Perform the drag and drop
-    drag_handle.drag_to(rated_entries)
+    contest_instance_element.drag_entry_card_to_rated_entries_area(entry_card)
 
     # Wait for the AJAX request to complete
     sleep 1
 
     # Verify the entry was moved
-    within "[data-entry-drag-target='ratedEntries']" do
-      expect(page).to have_css('.card', count: 1)
+    within contest_instance_element.rated_entries_area do
+      expect(contest_instance_element.entry_card_count).to eq(1)
     end
 
-    within "[data-entry-drag-target='availableEntries']" do
-      expect(page).to have_css('.card', count: 0)
+    within contest_instance_element.available_entries_area do
+      expect(contest_instance_element.entry_card_count).to eq(0)
     end
   end
 end
