@@ -1,0 +1,62 @@
+<%# app/views/users_dashboard/index.html.erb %>
+<div class="container mt-4">
+  <h1>Users Dashboard</h1>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th><%= sort_link "principal_name", "Principal Name" %></th>
+              <th><%= sort_link "current_sign_in_at", "Current Sign In" %></th>
+              <th><%= sort_link "last_sign_in_at", "Last Sign In" %></th>
+              <th><%= sort_link "email", "Email" %></th>
+              <th>Roles</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @users.each do |user| %>
+              <tr>
+                <td><%= user.principal_name %></td>
+                <td><%= user.current_sign_in_at&.strftime("%Y-%m-%d %H:%M") %></td>
+                <td><%= user.last_sign_in_at&.strftime("%Y-%m-%d %H:%M") %></td>
+                <td><%= user.email %></td>
+                <td>
+                  <% user.roles.each do |role| %>
+                    <span class="badge bg-primary"><%= role.kind %></span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= link_to "View", users_dashboard_path(user), class: "btn btn-sm btn-info" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%== pagy_bootstrap_nav(@pagy) %>
+    </div>
+  </div>
+</div>
+
+<%# Helper for sorting columns %>
+<% content_for :head do %>
+  <%= javascript_tag do %>
+    document.addEventListener("turbo:load", function() {
+      const sortLinks = document.querySelectorAll("[data-sort]");
+      sortLinks.forEach(link => {
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          const url = new URL(window.location);
+          url.searchParams.set("sort", link.dataset.sort);
+          url.searchParams.set("direction",
+            url.searchParams.get("direction") === "asc" ? "desc" : "asc");
+          Turbo.visit(url);
+        });
+      });
+    });
+  <% end %>
+<% end %>
