@@ -100,6 +100,8 @@ Rails.application.routes.draw do
     mount LetterOpenerWeb::Engine, at: '/letter_opener'
   end
 
+  resources :users_dashboard, only: %i[ index show ]
+
   # Place this at the very end of the file to catch all undefined routes
   match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|
     req.path.exclude?('/rails/active_storage') &&
