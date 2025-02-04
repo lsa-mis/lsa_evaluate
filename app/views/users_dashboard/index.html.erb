@@ -13,6 +13,7 @@
               <th><%= sort_link "last_sign_in_at", "Last Sign In" %></th>
               <th><%= sort_link "email", "Email" %></th>
               <th>Roles</th>
+              <th>Assignments</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -26,6 +27,11 @@
                 <td>
                   <% user.roles.each do |role| %>
                     <span class="badge bg-primary"><%= role.kind %></span>
+                  <% end %>
+                </td>
+                <td>
+                  <% user.assignments.each do |assignment| %>
+                    <span class="badge bg-success"><%= assignment.role.kind %></span>
                   <% end %>
                 </td>
                 <td>
