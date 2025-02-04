@@ -30,8 +30,8 @@
                   <% end %>
                 </td>
                 <td>
-                  <% user.assignments.each do |assignment| %>
-                    <span class="badge bg-success"><%= assignment.role.kind %></span>
+  <% user.assignments.joins(:role).pluck('roles.kind').uniq.each do |kind| %>
+                    <span class="badge bg-success"><%= kind %></span>
                   <% end %>
                 </td>
                 <td>
