@@ -284,6 +284,7 @@ GEM
       ruby-saml (~> 1.17)
     orm_adapter (0.5.0)
     os (1.1.4)
+    pagy (6.5.0)
     parallel (1.26.3)
     parser (3.3.5.0)
       ast (~> 2.4.1)
@@ -551,6 +552,7 @@ DEPENDENCIES
   mysql2 (~> 0.5.3)
   omniauth-rails_csrf_protection (~> 1.0)
   omniauth-saml (~> 2.1)
+  pagy (~> 6.4)
   pry-byebug
   pry-rails
   puma
