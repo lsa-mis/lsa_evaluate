@@ -27,6 +27,10 @@ FactoryBot.define do
       kind { 'Collection Administrator' }
     end
 
+    trait :collection_manager do
+      kind { 'Collection Manager' }
+    end
+
     trait :axis_mundi do
       kind { 'Axis mundi' }
       description { 'Axis mundi Role Description' }

@@ -2,7 +2,7 @@ class UsersDashboardController < ApplicationController
   before_action :set_user, only: [ :show ]
 
   def index
-    authorize User
+    authorize :users_dashboard
     @pagy, @users = pagy(
       policy_scope(User)
         .order(sort_column => sort_direction)
@@ -12,7 +12,7 @@ class UsersDashboardController < ApplicationController
   end
 
   def show
-    authorize User
+    authorize :users_dashboard
   end
 
   private

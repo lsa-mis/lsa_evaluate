@@ -70,6 +70,12 @@ FactoryBot.define do
       end
     end
 
+    trait :with_collection_manager_role do
+      after(:create) do |user|
+        user.roles << create(:role, :collection_manager)
+      end
+    end
+
     trait :axis_mundi do
       after(:create) do |user|
         user.roles << create(:role, :axis_mundi)

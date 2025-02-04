@@ -5,6 +5,10 @@ require 'rails_helper'
 RSpec.describe 'Users Dashboard', type: :system do
   let!(:axis_mundi_user) { create(:user, :axis_mundi) }
   let!(:regular_user) { create(:user) }
+  let!(:judge_user) { create(:user, :with_judge_role) }
+  let!(:admin_user) { create(:user, :with_collection_admin_role) }
+  let!(:manager_user) { create(:user, :with_collection_manager_role) }
+  let!(:multi_role_user) { create(:user, :with_judge_role, :with_collection_admin_role, :with_collection_manager_role) }
 
   context 'when logged in as axis mundi user' do
     before do
@@ -67,6 +71,56 @@ RSpec.describe 'Users Dashboard', type: :system do
     it 'redirects to login page' do
       visit users_dashboard_index_path
       expect(page).to have_current_path(new_user_session_path, ignore_query: true)
+    end
+  end
+
+  context 'when user has Judge role' do
+    before do
+      sign_in judge_user
+    end
+
+    it 'prevents access to the dashboard' do
+      visit users_dashboard_index_path
+      expect(page).to have_current_path(root_path)
+      expect(page).to have_content(/not authorized/i)
+    end
+  end
+
+  context 'when user has Collection Administrator role' do
+    before do
+      sign_in admin_user
+    end
+
+    it 'prevents access to the dashboard' do
+      visit users_dashboard_index_path
+      expect(page).to have_current_path(root_path)
+      expect(page).to have_content(/not authorized/i)
+    end
+  end
+
+  context 'when user has Collection Manager role' do
+    before do
+      sign_in manager_user
+    end
+
+    it 'prevents access to the dashboard' do
+      visit users_dashboard_index_path
+      expect(page).to have_current_path(root_path)
+      expect(page).to have_content(/not authorized/i)
+    end
+  end
+
+  context 'when user has multiple roles but not Axis Mundi' do
+    let(:multi_role_user) { create(:user) }
+
+    before do
+      sign_in multi_role_user
+    end
+
+    it 'prevents access to the dashboard' do
+      visit users_dashboard_index_path
+      expect(page).to have_current_path(root_path)
+      expect(page).to have_content(/not authorized/i)
     end
   end
 end
