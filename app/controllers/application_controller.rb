@@ -2,6 +2,7 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include ApplicationHelper
+  include Pagy::Backend
   before_action :authenticate_user!
 
   # Custom flash logging (optional)
