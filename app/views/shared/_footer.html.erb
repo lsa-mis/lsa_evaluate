@@ -7,6 +7,10 @@
           <%= link_to editable_contents_path, class: "edit-icon", data: { bs_toggle: "tooltip", bs_placement: "top" }, title: "Edit the text blocks in the application" do %>
             <i class="bi bi-pencil" aria-label="Edit Content"></i>
           <% end %>
+          |
+           <%= link_to users_dashboard_index_path, class: "profile-icon", data: { bs_toggle: "tooltip", bs_placement: "top" }, title: "Users Dashboard" do %>
+            <i class="bi bi-people" aria-label="Users Dashboard"></i>
+          <% end %>
         <% end %>
       </p>
       <p class="text-center footer-bold d-md-none">
