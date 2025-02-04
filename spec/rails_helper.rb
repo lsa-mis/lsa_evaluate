@@ -19,6 +19,7 @@ require 'pundit/rspec'
 require 'selenium-webdriver'
 
 puts "!*!*!*! Running in environment: #{Rails.env} !*!*!*!"
+puts "!*!*!*! Running SHOW_BROWSER: #{ENV['SHOW_BROWSER'].present? ? '✅' : '❌'} !*!*!*!"
 
 Rails.root.glob('spec/support/**/*.rb').sort.each { |f| require f }
 # Checks for pending migrations and applies them before tests are run.
