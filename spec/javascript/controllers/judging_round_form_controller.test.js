@@ -1,5 +1,4 @@
 import { Application } from "@hotwired/stimulus"
-import { getByText, getByRole } from "@testing-library/dom"
 import JudgingRoundFormController from "../../../app/javascript/controllers/judging_round_form_controller"
 
 describe("JudgingRoundFormController", () => {

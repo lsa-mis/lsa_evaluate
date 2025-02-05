@@ -24,7 +24,7 @@ end
 
 # Register the headless driver separately
 Capybara.register_driver :selenium_chrome_headless do |app|
-  Capybara::Selenium::Driver.new(app, **webdriver_options.merge({options: browser_options}))
+  Capybara::Selenium::Driver.new(app, **webdriver_options.merge({ options: browser_options }))
 end
 
 # Set javascript driver to the headless version by default
