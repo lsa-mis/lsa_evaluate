@@ -1,0 +1,48 @@
+<%# app/views/containers/_contest_descriptions_table.html.erb %>
+<div class="table-responsive">
+  <table class="table table-striped w-100">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Summary</th>
+        <th>Short Name</th>
+        <th>Eligibility Rules</th>
+        <th>Notes</th>
+        <th>Active</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% descriptions.each do |description| %>
+        <tr data-status="<%= description.active %>" data-filter-target="filterRow">
+          <td><%= description.name %></td>
+          <td><%= contest_description_summary(description) %></td>
+          <td><%= description.short_name %></td>
+          <td class="card-text w-50">
+            <%= render_eligibility_rules(description) %>
+          </td>
+          <td>
+            <% if description.notes.present? %>
+              <%= link_to "view", container_contest_description_contest_instances_path(container, description) %>
+            <% end %>
+          </td>
+          <td><%= boolean_to_yes_no(description.active) %></td>
+          <td class="text-center">
+            <div class="d-flex flex-column">
+              <% contest_description_action_links(container, description).each do |action, config| %>
+                <%= link_to config[:path],
+                      class: 'd-block',
+                      data: config[:data]&.merge('bs-toggle': 'tooltip'),
+                      title: config[:title],
+                      aria: { label: config[:title] } do %>
+                  <i class="bi bi-<%= config[:icon] %>" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  <span class="visually-hidden"><%= config[:title] %></span>
+                <% end %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

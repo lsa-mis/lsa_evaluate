@@ -1,26 +1,74 @@
 <!-- app/views/containers/_container_detail.html.erb -->
 <div id="<%= dom_id(container) %>" class="container" data-controller="eligibility-modal">
-  <h1><%= container.name %></h1>
+  <div class="container-header mb-2">
+    <div class="mb-3">
+      <h1 class="mb-2"><%= container.name %></h1>
 
-  <p><strong>Description:</strong> <%= container.description %></p>
-  <p><strong>Department:</strong> <%= container.department.name %></p>
-  <p><strong>Visibility:</strong> <%= container.visibility.kind %></p>
-  <div class="d-flex">
-    <% if policy(@container).update? %>
-      <%= link_to "Edit", edit_container_path(@container), class: "btn btn-sm btn-primary" %> |
-      <%= link_to "Archive", @container, data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' }, class: "link_to" %>
-    <% end %>
+      <% if policy(@container).update? %>
+        <div class="container-actions">
+          <%= link_to edit_container_path(@container), class: "btn btn-sm btn-outline-primary me-2" do %>
+            <i class="bi bi-pencil-square me-1"></i> Edit
+          <% end %>
+          <%= link_to @container,
+                      class: "btn btn-sm btn-outline-danger",
+                      data: {
+                        controller: 'confirm',
+                        confirm_message_value: 'Are you sure you want to archive this?'
+                      } do %>
+            <i class="bi bi-archive me-1"></i> Archive
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="container-info card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-2">
+              <label class="text-muted small">Description</label>
+              <p class="mb-0"><%= container.description %></p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-2">
+              <label class="text-muted small">Department</label>
+              <p class="mb-0"><%= container.department.name %></p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-2">
+              <label class="text-muted small">Visibility</label>
+              <p class="mb-0"><%= container.visibility.kind %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <%= render 'entries_summary', container: @container %>
+
   <hr>
-  <div class="d-flex justify-content-between">
-    <%= link_to "Create New Contest", new_container_contest_description_path(container), class: "btn btn-sm btn-secondary" %>
-    <%= link_to "Bulk Create Contest Instances", 
-                new_container_bulk_contest_instance_path(container), 
+
+  <div class="contest-actions d-flex justify-content-between mb-4">
+    <%= link_to "Create New Contest",
+                new_container_contest_description_path(container),
+                class: "btn btn-sm btn-secondary" %>
+
+    <%= link_to "Bulk Create Contest Instances",
+                new_container_bulk_contest_instance_path(container),
                 class: "link_to" if container.contest_descriptions.any? %>
   </div>
+
   <div data-controller="filter">
     <div class="form-check mb-3">
-      <input class="form-check-input" type="checkbox" id="statusFilter" checked data-action="change->filter#toggleFilter" data-filter-target="statusFilter">
+      <input class="form-check-input"
+             type="checkbox"
+             id="statusFilter"
+             checked
+             data-action="change->filter#toggleFilter"
+             data-filter-target="statusFilter">
       <label class="form-check-label" for="statusFilter">
         Show only <span class="fw-bolder">Active</span> contest descriptions
       </label>
@@ -28,103 +76,14 @@
 
     <div class="container w-100 mx-auto">
       <% if container_contest_descriptions.present? %>
-        <div class="table-responsive">
-          <table class="table table-striped w-100">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Summary</th>
-                <th>Short Name</th>
-                <th>Eligibility Rules</th>
-                <th>Notes</th>
-                <th>Active</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% container_contest_descriptions.each do |description| %>
-                <tr data-status="<%= description.active %>" data-filter-target="filterRow">
-                  <td><%= description.name %></td>
-                  <td><%= contest_description_summary(description) %></td>
-                  <td><%= description.short_name %></td>
-                  <td class="card-text w-50">
-                    <% eligibility_plain = description.eligibility_rules.to_plain_text %>
-                    <% if eligibility_plain.length > 100 %>
-                      <%= truncate(eligibility_plain, length: 100) %>
-                      <a href="#" 
-                        data-action="click->eligibility-modal#open" 
-                        data-url="<%= eligibility_rules_container_contest_description_path(description.container, description) %>">
-                        ...more
-                      </a>
-                    <% else %>
-                      <%= description.eligibility_rules %>
-                    <% end %>
-                  </td>
-                  <td>
-                    <% if description.notes.present? %>
-                      <%= link_to "view", container_contest_description_contest_instances_path(container, description) %>
-                    <% end %>
-                  </td>
-                  <td><%= boolean_to_yes_no(description.active) %></td>
-                  <td class="text-center">
-                    <div class="d-flex flex-column">
-                        <%= link_to container_contest_description_contest_instances_path(container, description),
-                                  class: 'd-block',
-                                  data: { 'bs-toggle': 'tooltip' },
-                                  title: 'View instances',
-                                  aria: { label: 'View instances' } do %>
-                        <i class="bi bi-eye" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                        <span class="visually-hidden">View instances</span>
-                      <% end %>
-                      <%= link_to edit_container_contest_description_path(container, description),
-                                  class: 'd-block',
-                                  data: { 'bs-toggle': 'tooltip' },
-                                  title: 'Edit contest',
-                                  aria: { label: 'Edit contest' } do %>
-                        <i class="bi bi-pencil" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                        <span class="visually-hidden">Edit contest</span>
-                      <% end %>
-
-                      <%= link_to container_contest_description_path(container, description),
-                                  method: :delete,
-                                  class: 'd-block',
-                                  data: {
-                                    'bs-toggle': 'tooltip',
-                                    controller: 'confirm',
-                                    confirm_message_value: 'Are you sure you want to archive this?'
-                                  },
-                                  title: 'Archive contest',
-                                  aria: { label: 'Archive contest' } do %>
-                        <i class="bi bi-archive" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                        <span class="visually-hidden">Archive contest</span>
-                      <% end %>
-                    </div>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
+        <%= render 'contest_descriptions_table',
+                  container: container,
+                  descriptions: container_contest_descriptions %>
       <% else %>
         <div><p>No contest descriptions found.</p></div>
       <% end %>
     </div>
   </div>
-    <!-- Reusable Modal -->
-  <div class="modal fade" id="eligibilityModal" tabindex="-1" aria-labelledby="eligibilityModalLabel" aria-hidden="true" data-eligibility-modal-target="modal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="eligibilityModalLabel">Eligibility Rules</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" data-eligibility-modal-target="content">
-          <!-- Full eligibility rules will be loaded here -->
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
+
+  <%= render 'shared/eligibility_modal' %>
 </div>
