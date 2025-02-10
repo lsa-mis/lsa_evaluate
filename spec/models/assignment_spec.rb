@@ -126,4 +126,42 @@ RSpec.describe Assignment, type: :model do
       expect { admin_assignment.destroy }.to change(Assignment, :count).by(-1)
     end
   end
+
+  describe 'role combination validations' do
+    let(:container) { create(:container) }
+    let(:user) { create(:user) }
+
+    context 'with administrator and manager roles' do
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+      let(:manager_role) { create(:role, kind: 'Collection Manager') }
+
+      it 'prevents assigning both administrator and manager roles' do
+        create(:assignment, user: user, container: container, role: admin_role)
+        new_assignment = build(:assignment, user: user, container: container, role: manager_role)
+
+        expect(new_assignment).not_to be_valid
+        expect(new_assignment.errors[:base]).to include('User can only be either a Collection Administrator or Collection Manager')
+      end
+    end
+
+    context 'with judge role combinations' do
+      let(:judge_role) { create(:role, kind: 'Judge') }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      it 'allows judge role alongside administrator role' do
+        create(:assignment, user: user, container: container, role: admin_role)
+        judge_assignment = build(:assignment, user: user, container: container, role: judge_role)
+
+        expect(judge_assignment).to be_valid
+      end
+
+      it 'prevents multiple judge roles for the same container' do
+        create(:assignment, user: user, container: container, role: judge_role)
+        duplicate_judge = build(:assignment, user: user, container: container, role: judge_role)
+
+        expect(duplicate_judge).not_to be_valid
+        expect(duplicate_judge.errors[:base]).to include('User can only have one Judge role per container')
+      end
+    end
+  end
 end
