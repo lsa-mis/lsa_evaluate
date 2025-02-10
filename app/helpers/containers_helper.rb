@@ -40,4 +40,21 @@ module ContainersHelper
       description.eligibility_rules
     end
   end
+
+  def render_description(container)
+    description_plain = container.description.to_plain_text
+    if description_plain.length > 100
+      content_tag(:div) do
+        truncate(description_plain, length: 100, omission: '') +
+        link_to('...more', '#',
+          data: {
+            action: 'click->description-modal#open',
+            url: description_container_path(container)
+          }
+        )
+      end
+    else
+      container.description
+    end
+  end
 end

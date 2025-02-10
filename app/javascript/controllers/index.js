@@ -19,6 +19,9 @@ application.register("comments-counter", CommentsCounterController)
 import ConfirmController from "./confirm_controller"
 application.register("confirm", ConfirmController)
 
+import DescriptionModalController from "./description_modal_controller"
+application.register("description-modal", DescriptionModalController)
+
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
 
@@ -34,11 +37,11 @@ application.register("fade-out", FadeOutController)
 import FilterController from "./filter_controller"
 application.register("filter", FilterController)
 
-import FlashController from "./flash_controller"
-application.register("flash", FlashController)
-
 import FinalizeRankingsController from "./finalize_rankings_controller"
 application.register("finalize-rankings", FinalizeRankingsController)
+
+import FlashController from "./flash_controller"
+application.register("flash", FlashController)
 
 import FormSubmissionController from "./form_submission_controller"
 application.register("form-submission", FormSubmissionController)
