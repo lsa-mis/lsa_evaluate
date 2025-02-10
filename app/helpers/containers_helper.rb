@@ -31,8 +31,9 @@ module ContainersHelper
         truncate(eligibility_plain, length: 100, omission: '') +
         link_to('...more', '#',
           data: {
-            action: 'click->eligibility-modal#open',
-            url: eligibility_rules_container_contest_description_path(description.container, description)
+            action: 'click->modal#open',
+            url: eligibility_rules_container_contest_description_path(description.container, description),
+            modal_title: 'Eligibility Rules'
           }
         )
       end
@@ -48,8 +49,9 @@ module ContainersHelper
         truncate(description_plain, length: 100, omission: '') +
         link_to('...more', '#',
           data: {
-            action: 'click->description-modal#open',
-            url: description_container_path(container)
+            action: 'click->modal#open',
+            url: description_container_path(container),
+            modal_title: 'Description'
           }
         )
       end

@@ -19,14 +19,8 @@ application.register("comments-counter", CommentsCounterController)
 import ConfirmController from "./confirm_controller"
 application.register("confirm", ConfirmController)
 
-import DescriptionModalController from "./description_modal_controller"
-application.register("description-modal", DescriptionModalController)
-
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
-
-import EligibilityModalController from "./eligibility_modal_controller"
-application.register("eligibility-modal", EligibilityModalController)
 
 import EntryDragController from "./entry_drag_controller"
 application.register("entry-drag", EntryDragController)
@@ -57,6 +51,9 @@ application.register("judging-round-form", JudgingRoundFormController)
 
 import JudgingRoundShowController from "./judging_round_show_controller"
 application.register("judging-round-show", JudgingRoundShowController)
+
+import ModalController from "./modal_controller"
+application.register("modal", ModalController)
 
 import ScrollController from "./scroll_controller"
 application.register("scroll", ScrollController)

@@ -1,6 +1,6 @@
 <!-- app/views/containers/_container_detail.html.erb -->
-<div id="<%= dom_id(container) %>" class="container" data-controller="eligibility-modal description-modal">
-  <div data-description-modal-target="mainContent" data-eligibility-modal-target="mainContent">
+<div id="<%= dom_id(container) %>" class="container" data-controller="modal">
+  <div data-modal-target="mainContent">
     <div class="container-header mb-2">
       <div class="mb-3">
         <h1 class="mb-2"><%= container.name %></h1>
@@ -86,6 +86,5 @@
     </div>
   </div>
 
-  <%= render 'shared/eligibility_modal' %>
-  <%= render 'shared/description_modal' %>
+  <%= render 'shared/modal' %>
 </div>

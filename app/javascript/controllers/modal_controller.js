@@ -1,10 +1,8 @@
-// app/javascript/controllers/description_modal_controller.js
-
 import { Controller } from "@hotwired/stimulus"
 import { Modal } from "bootstrap"
 
 export default class extends Controller {
-  static targets = ["content", "modal", "closeButton", "mainContent"]
+  static targets = ["content", "modal", "closeButton", "mainContent", "title"]
   static values = {
     loaded: { type: Object, default: {} }
   }
@@ -14,18 +12,15 @@ export default class extends Controller {
   }
 
   connect() {
-    // Initialize Bootstrap Modal using the modal target
     this.modal = new Modal(this.modalTarget, {
       backdrop: true,
       keyboard: true,
-      focus: false // We'll handle focus manually
+      focus: false
     })
 
-    // Store the element that had focus before the modal was opened
     this.previouslyFocusedElement = null
     this.isLoaded = {}
 
-    // Add event listeners for modal events
     this.modalTarget.addEventListener('show.bs.modal', this.handleModalShow.bind(this))
     this.modalTarget.addEventListener('shown.bs.modal', this.handleModalShown.bind(this))
     this.modalTarget.addEventListener('hide.bs.modal', this.handleModalHide.bind(this))
@@ -34,11 +29,10 @@ export default class extends Controller {
   }
 
   disconnect() {
-    console.log("Description modal controller disconnected")
     if (this.modal) {
       this.modal.dispose()
     }
-    // Clean up event listeners
+
     this.modalTarget.removeEventListener('show.bs.modal', this.handleModalShow.bind(this))
     this.modalTarget.removeEventListener('shown.bs.modal', this.handleModalShown.bind(this))
     this.modalTarget.removeEventListener('hide.bs.modal', this.handleModalHide.bind(this))
@@ -54,10 +48,7 @@ export default class extends Controller {
   }
 
   handleModalShow() {
-    // Store the previously focused element
     this.previouslyFocusedElement = document.activeElement
-
-    // Remove inert from modal and add it to main content
     this.modalTarget.removeAttribute('inert')
     if (this.hasMainContentTarget) {
       this.mainContentTarget.setAttribute('inert', '')
@@ -65,24 +56,19 @@ export default class extends Controller {
   }
 
   handleModalShown() {
-    // Focus the close button
     if (this.hasCloseButtonTarget) {
       this.closeButtonTarget.focus()
     }
   }
 
   handleModalHide() {
-    // Add inert back to modal
     this.modalTarget.setAttribute('inert', '')
-
-    // Remove inert from main content
     if (this.hasMainContentTarget) {
       this.mainContentTarget.removeAttribute('inert')
     }
   }
 
   handleModalHidden() {
-    // Restore focus to the previously focused element
     if (this.previouslyFocusedElement) {
       this.previouslyFocusedElement.focus()
     }
@@ -91,15 +77,18 @@ export default class extends Controller {
   open(event) {
     event.preventDefault()
     const url = event.currentTarget.dataset.url
+    const title = event.currentTarget.dataset.modalTitle || 'Details'
 
-    // Check if content is already loaded
+    if (this.hasTitleTarget) {
+      this.titleTarget.textContent = title
+    }
+
     if (this.isLoaded[url]) {
       this.contentTarget.innerHTML = this.isLoaded[url]
       this.modal.show()
       return
     }
 
-    // Show a loading spinner
     this.contentTarget.innerHTML = `
       <div class="d-flex justify-content-center">
         <div class="spinner-border" role="status">
@@ -109,7 +98,6 @@ export default class extends Controller {
     `
     this.modal.show()
 
-    // Fetch the description
     fetch(url, {
       headers: {
         "Accept": "text/html"
@@ -122,22 +110,17 @@ export default class extends Controller {
         return response.text()
       })
       .then(html => {
-        // Parse the HTML string into a DOM object
         const parser = new DOMParser()
         const doc = parser.parseFromString(html, "text/html")
 
-        // Modify all <a> tags
         doc.querySelectorAll('a').forEach(link => {
           link.setAttribute('target', '_blank')
           link.setAttribute('rel', 'noopener noreferrer')
         })
 
-        // Serialize the modified DOM back to a string
         const modifiedHtml = doc.body.innerHTML
-
-        // Set the modified HTML as the content
         this.contentTarget.innerHTML = modifiedHtml
-        this.isLoaded[url] = modifiedHtml // Cache the content
+        this.isLoaded[url] = modifiedHtml
       })
       .catch(error => {
         console.error(error)

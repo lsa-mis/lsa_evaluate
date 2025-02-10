@@ -1,24 +1,24 @@
-<%# app/views/shared/_eligibility_modal.html.erb %>
+<%# app/views/shared/_modal.html.erb %>
 <div class="modal fade"
-     id="eligibilityModal"
+     id="sharedModal"
      tabindex="-1"
      role="dialog"
      aria-modal="true"
-     aria-labelledby="eligibilityModalLabel"
-     data-eligibility-modal-target="modal"
+     aria-labelledby="modalLabel"
+     data-modal-target="modal"
      inert>
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="eligibilityModalLabel">Eligibility Rules</h5>
+        <h5 class="modal-title" id="modalLabel" data-modal-target="title">Details</h5>
         <button type="button"
                 class="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
-                data-eligibility-modal-target="closeButton"></button>
+                data-modal-target="closeButton"></button>
       </div>
-      <div class="modal-body" data-eligibility-modal-target="content">
-        <!-- Full eligibility rules will be loaded here -->
+      <div class="modal-body" data-modal-target="content">
+        <!-- Content will be loaded here -->
       </div>
       <div class="modal-footer">
         <button type="button"
@@ -27,4 +27,8 @@
       </div>
     </div>
   </div>
+</div>
+
+<div data-modal-target="mainContent">
+  <!-- This will wrap the main content -->
 </div>

@@ -5,8 +5,11 @@ module ApplicantDashboardHelper
       truncate(eligibility_plain, length: 100) +
       ' ' +
       link_to('...more', '#',
-              data: { action: 'click->eligibility-modal#open',
-                      url: eligibility_rules_container_contest_description_path(contest.contest_description.container, contest.contest_description) })
+              data: {
+                action: 'click->modal#open',
+                url: eligibility_rules_container_contest_description_path(contest.contest_description.container, contest.contest_description),
+                modal_title: 'Eligibility Rules'
+              })
     else
       contest.contest_description.eligibility_rules
     end

@@ -212,10 +212,10 @@ RSpec.describe 'Judge Dashboard', type: :system do
         end
 
         # Wait for Bootstrap modal to be fully shown
-        expect(page).to have_css('#eligibilityModal[style*="display: block"]', wait: 5)
+        expect(page).to have_css('#sharedModal[style*="display: block"]', wait: 5)
 
         # Now check the content
-        within('#eligibilityModal') do
+        within('#sharedModal') do
           expect(page).to have_content('Eligibility Rules')
           expect(page).to have_css('.modal-body')
           expect(page).to have_button('Close')
@@ -231,7 +231,7 @@ RSpec.describe 'Judge Dashboard', type: :system do
         end
 
         # Wait for Bootstrap modal to be fully shown and content loaded
-        expect(page).to have_css('#eligibilityModal[style*="display: block"]', wait: 5)
+        expect(page).to have_css('#sharedModal[style*="display: block"]', wait: 5)
         expect(page).to have_content('Eligibility rules for Test Contest', wait: 5)
       end
     end

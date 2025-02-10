@@ -2,7 +2,7 @@
   <%= stylesheet_link_tag "judge_dashboard", "data-turbo-track": "reload" %>
 <% end %>
 
-<div data-controller="eligibility-modal">
+<div data-controller="modal">
   <div class="judge-dashboard">
     <h1>Judge Dashboard</h1>
 
@@ -42,7 +42,8 @@
                data-bs-parent="#contestAccordion<%= index %>">
             <div class="accordion-body">
               <button class="btn btn-outline-primary btn-sm"
-                      data-action="click->eligibility-modal#open"
+                      data-action="click->modal#open"
+                      data-modal-title="Eligibility Rules"
                       data-url="<%= eligibility_rules_container_contest_description_path(
                         assignment.contest_instance.contest_description.container,
                         assignment.contest_instance.contest_description
@@ -95,6 +96,5 @@
       </div>
     <% end %>
   </div>
-
-  <%= render 'applicant_dashboard/eligibility_modal' %>
+  <%= render 'shared/modal' %>
 </div>
