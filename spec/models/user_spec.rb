@@ -120,4 +120,46 @@ RSpec.describe User do
       end
     end
   end
+
+  describe 'helper methods' do
+    describe '#has_container_role?' do
+      let(:user) { create(:user) }
+      let(:container) { create(:container) }
+
+      it 'returns true when user has any of the specified roles' do
+        admin_role = create(:role, kind: 'Collection Administrator')
+        create(:assignment, user: user, container: container, role: admin_role)
+
+        expect(user.has_container_role?(container)).to be true
+      end
+
+      it 'returns false when user has no specified roles' do
+        judge_role = create(:role, kind: 'Judge')
+        create(:assignment, user: user, container: container, role: judge_role)
+
+        expect(user.has_container_role?(container)).to be false
+      end
+
+      it 'accepts custom role kinds' do
+        judge_role = create(:role, kind: 'Judge')
+        create(:assignment, user: user, container: container, role: judge_role)
+
+        expect(user.has_container_role?(container, [ 'Judge' ])).to be true
+      end
+    end
+
+    describe '#display_name_and_uid' do
+      let(:user) { create(:user, uid: 'test123') }
+
+      it 'returns display name and uid when display name is present' do
+        user.update(display_name: 'Test User')
+        expect(user.display_name_and_uid).to eq('Test User (test123)')
+      end
+
+      it 'returns first/last name and uid when no display name' do
+        user.update(first_name: 'Test', last_name: 'User', display_name: nil)
+        expect(user.display_name_and_uid).to eq('Test User (test123)')
+      end
+    end
+  end
 end
