@@ -1,89 +1,91 @@
 <!-- app/views/containers/_container_detail.html.erb -->
-<div id="<%= dom_id(container) %>" class="container" data-controller="eligibility-modal">
-  <div class="container-header mb-2">
-    <div class="mb-3">
-      <h1 class="mb-2"><%= container.name %></h1>
+<div id="<%= dom_id(container) %>" class="container" data-controller="eligibility-modal description-modal">
+  <div data-description-modal-target="mainContent" data-eligibility-modal-target="mainContent">
+    <div class="container-header mb-2">
+      <div class="mb-3">
+        <h1 class="mb-2"><%= container.name %></h1>
 
-      <% if policy(@container).update? %>
-        <div class="container-actions">
-          <%= link_to edit_container_path(@container), class: "btn btn-sm btn-outline-primary me-2" do %>
-            <i class="bi bi-pencil-square me-1"></i> Edit
-          <% end %>
-          <%= link_to @container,
-                      class: "btn btn-sm btn-outline-danger",
-                      data: {
-                        controller: 'confirm',
-                        confirm_message_value: 'Are you sure you want to archive this?'
-                      } do %>
-            <i class="bi bi-archive me-1"></i> Archive
-          <% end %>
-        </div>
-      <% end %>
-    </div>
+        <% if policy(@container).update? %>
+          <div class="container-actions">
+            <%= link_to edit_container_path(@container), class: "btn btn-sm btn-outline-primary me-2" do %>
+              <i class="bi bi-pencil-square me-1"></i> Edit
+            <% end %>
+            <%= link_to @container,
+                        class: "btn btn-sm btn-outline-danger",
+                        data: {
+                          controller: 'confirm',
+                          confirm_message_value: 'Are you sure you want to archive this?'
+                        } do %>
+              <i class="bi bi-archive me-1"></i> Archive
+            <% end %>
+          </div>
+        <% end %>
+      </div>
 
-    <div class="container-info card">
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-4">
-            <div class="mb-2">
-              <label class="text-muted small">Description</label>
-              <p class="mb-0"><%= container.description %></p>
+      <div class="container-info card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-2">
+                <%= render_description(container) %>
+              </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="mb-2">
-              <label class="text-muted small">Department</label>
-              <p class="mb-0"><%= container.department.name %></p>
+            <div class="col-md-4">
+              <div class="mb-2">
+                <label class="text-muted small">Department</label>
+                <p class="mb-0"><%= container.department.name %></p>
+              </div>
             </div>
-          </div>
-          <div class="col-md-4">
-            <div class="mb-2">
-              <label class="text-muted small">Visibility</label>
-              <p class="mb-0"><%= container.visibility.kind %></p>
+            <div class="col-md-4">
+              <div class="mb-2">
+                <label class="text-muted small">Visibility</label>
+                <p class="mb-0"><%= container.visibility.kind %></p>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <%= render 'entries_summary', container: @container %>
+    <%= render 'entries_summary', container: @container %>
 
-  <hr>
+    <hr>
 
-  <div class="contest-actions d-flex justify-content-between mb-4">
-    <%= link_to "Create New Contest",
-                new_container_contest_description_path(container),
-                class: "btn btn-sm btn-secondary" %>
+    <div class="contest-actions d-flex justify-content-between mb-4">
+      <%= link_to "Create New Contest",
+                  new_container_contest_description_path(container),
+                  class: "btn btn-sm btn-secondary" %>
 
-    <%= link_to "Bulk Create Contest Instances",
-                new_container_bulk_contest_instance_path(container),
-                class: "link_to" if container.contest_descriptions.any? %>
-  </div>
-
-  <div data-controller="filter">
-    <div class="form-check mb-3">
-      <input class="form-check-input"
-             type="checkbox"
-             id="statusFilter"
-             checked
-             data-action="change->filter#toggleFilter"
-             data-filter-target="statusFilter">
-      <label class="form-check-label" for="statusFilter">
-        Show only <span class="fw-bolder">Active</span> contest descriptions
-      </label>
+      <%= link_to "Bulk Create Contest Instances",
+                  new_container_bulk_contest_instance_path(container),
+                  class: "link_to" if container.contest_descriptions.any? %>
     </div>
 
-    <div class="container w-100 mx-auto">
-      <% if container_contest_descriptions.present? %>
-        <%= render 'contest_descriptions_table',
-                  container: container,
-                  descriptions: container_contest_descriptions %>
-      <% else %>
-        <div><p>No contest descriptions found.</p></div>
-      <% end %>
+    <div data-controller="filter">
+      <div class="form-check mb-3">
+        <input class="form-check-input"
+               type="checkbox"
+               id="statusFilter"
+               checked
+               data-action="change->filter#toggleFilter"
+               data-filter-target="statusFilter">
+        <label class="form-check-label" for="statusFilter">
+          Show only <span class="fw-bolder">Active</span> contest descriptions
+        </label>
+      </div>
+
+      <div class="container w-100 mx-auto">
+        <% if container_contest_descriptions.present? %>
+          <%= render 'contest_descriptions_table',
+                    container: container,
+                    descriptions: container_contest_descriptions %>
+        <% else %>
+          <div><p>No contest descriptions found.</p></div>
+        <% end %>
+      </div>
     </div>
   </div>
 
   <%= render 'shared/eligibility_modal' %>
+  <%= render 'shared/description_modal' %>
 </div>
