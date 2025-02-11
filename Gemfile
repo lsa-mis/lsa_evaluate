@@ -46,6 +46,7 @@ group :test do
   gem 'rails-controller-testing'
   gem 'selenium-webdriver'
   gem 'simplecov', require: false
+  gem 'webdrivers'
 end
 
 group :development, :staging do
@@ -66,7 +67,6 @@ group :development, :test do
   gem 'rubocop-rails-omakase', require: false
   gem 'rubocop-rspec', require: false
   gem 'rubocop-rspec_rails', require: false
-  gem 'webdrivers'
 end
 
 group :development, :staging, :test do
