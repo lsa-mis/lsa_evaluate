@@ -72,6 +72,9 @@ Rails.application.routes.draw do
       get 'lookup_user'
     end
     resources :assignments, only: %i[create destroy]
+    member do
+      get 'description'
+    end
   end
 
   resources :visibilities

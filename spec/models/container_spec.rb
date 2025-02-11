@@ -131,4 +131,71 @@ RSpec.describe Container do
       expect(Container.connection.foreign_keys('containers').any? { |fk| fk.column == 'visibility_id' }).to be true
     end
   end
+
+  describe '#entries_summary' do
+    let(:container) { create(:container) }
+    let(:campus1) { create(:campus, campus_descr: 'Campus A') }
+    let(:campus2) { create(:campus, campus_descr: 'Campus B') }
+
+    before do
+      # Setup test data
+      contest_desc = create(:contest_description, container: container, active: true)
+      contest_instance = create(:contest_instance, contest_description: contest_desc, active: true)
+
+      # Create profiles with different campuses
+      profile1 = create(:profile, campus: campus1)
+      profile2 = create(:profile, campus: campus2)
+
+      # Create entries
+      create_list(:entry, 2, profile: profile1, contest_instance: contest_instance)
+      create(:entry, profile: profile2, contest_instance: contest_instance)
+    end
+
+    it 'returns correct entry counts grouped by campus' do
+      summary = container.entries_summary
+
+      expect(summary.length).to eq(2)
+      expect(summary.find { |s| s.campus_descr == 'Campus A' }.entry_count).to eq(2)
+      expect(summary.find { |s| s.campus_descr == 'Campus B' }.entry_count).to eq(1)
+    end
+
+    it 'excludes entries from archived contest instances' do
+      contest_desc = create(:contest_description, container: container, active: true)
+      archived_instance = create(:contest_instance, contest_description: contest_desc, active: true, archived: true)
+      create(:entry, profile: create(:profile, campus: campus1), contest_instance: archived_instance)
+
+      summary = container.entries_summary
+      expect(summary.find { |s| s.campus_descr == 'Campus A' }.entry_count).to eq(2)
+    end
+
+    it 'excludes entries from inactive contest descriptions' do
+      inactive_desc = create(:contest_description, container: container, active: false)
+      inactive_instance = create(:contest_instance, contest_description: inactive_desc, active: true)
+      create(:entry, profile: create(:profile, campus: campus1), contest_instance: inactive_instance)
+
+      summary = container.entries_summary
+      expect(summary.find { |s| s.campus_descr == 'Campus A' }.entry_count).to eq(2)
+    end
+  end
+
+  describe '#total_active_entries' do
+    let(:container) { create(:container) }
+
+    it 'returns correct total of active entries' do
+      contest_desc = create(:contest_description, container: container, active: true)
+      contest_instance = create(:contest_instance, contest_description: contest_desc, active: true)
+      create_list(:entry, 3, contest_instance: contest_instance)
+
+      expect(container.total_active_entries).to eq(3)
+    end
+
+    it 'excludes deleted entries from count' do
+      contest_desc = create(:contest_description, container: container, active: true)
+      contest_instance = create(:contest_instance, contest_description: contest_desc, active: true)
+      create_list(:entry, 2, contest_instance: contest_instance)
+      create(:entry, contest_instance: contest_instance, deleted: true)
+
+      expect(container.total_active_entries).to eq(2)
+    end
+  end
 end

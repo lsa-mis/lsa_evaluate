@@ -200,4 +200,59 @@ RSpec.describe ContestInstance, type: :model do
       end
     end
   end
+
+  describe 'scopes' do
+    describe '.active_and_open' do
+      let!(:open_instance) do
+        create(:contest_instance,
+               active: true,
+               archived: false,
+               date_open: 1.day.ago,
+               date_closed: 1.day.from_now)
+      end
+
+      let!(:closed_instance) do
+        create(:contest_instance,
+               active: true,
+               archived: false,
+               date_open: 2.days.ago,
+               date_closed: 1.day.ago)
+      end
+
+      let!(:archived_instance) do
+        create(:contest_instance,
+               active: true,
+               archived: true,
+               date_open: 1.day.ago,
+               date_closed: 1.day.from_now)
+      end
+
+      it 'includes only active, non-archived, and currently open instances' do
+        active_instances = ContestInstance.active_and_open
+
+        expect(active_instances).to include(open_instance)
+        expect(active_instances).not_to include(closed_instance)
+        expect(active_instances).not_to include(archived_instance)
+      end
+    end
+
+    describe '.available_for_profile' do
+      let(:profile) { create(:profile) }
+      let(:contest_instance) { create(:contest_instance, maximum_number_entries_per_applicant: 2) }
+
+      it 'excludes contests where profile has reached maximum entries' do
+        create_list(:entry, 2, profile: profile, contest_instance: contest_instance)
+
+        available_instances = ContestInstance.available_for_profile(profile)
+        expect(available_instances).not_to include(contest_instance)
+      end
+
+      it 'includes contests where profile has not reached maximum entries' do
+        create(:entry, profile: profile, contest_instance: contest_instance)
+
+        available_instances = ContestInstance.available_for_profile(profile)
+        expect(available_instances).to include(contest_instance)
+      end
+    end
+  end
 end

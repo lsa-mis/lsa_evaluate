@@ -1,8 +1,8 @@
 # app/controllers/containers_controller.rb
 class ContainersController < ApplicationController
   include ContestDescriptionsHelper
-  before_action :set_container, only: %i[show edit update destroy]
-  before_action :authorize_container, only: %i[edit show update destroy]
+  before_action :set_container, only: %i[show edit update destroy description]
+  before_action :authorize_container, only: %i[edit show update destroy description]
   before_action :authorize_index, only: [ :index ]
 
   def index
@@ -82,6 +82,17 @@ class ContainersController < ApplicationController
   def lookup_user
     @users = User.where('uid LIKE ?', "%#{params[:uid]}%").limit(10)
     render json: @users.map { |user| { uid: user.uid, display_name: user.display_name, display_name_and_uid: user.display_name_and_uid } }
+  end
+
+  def description
+    authorize @container, :description?
+    respond_to do |format|
+      format.html {
+        render partial: 'description',
+        locals: { description: @container.description }
+      }
+      format.turbo_stream
+    end
   end
 
   private

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-browser_options = Selenium::WebDriver::Chrome::Options.new
+browser_options = Selenium::WebDriver::Firefox::Options.new
 browser_options.add_argument('--window-size=1920,1080')
 
 webdriver_options = {
-  browser: :chrome,
+  browser: :firefox,
   options: browser_options
 }
 
@@ -17,23 +17,23 @@ if ENV['TEST_SERVER_PORT'].present?
   webdriver_options[:url] = "http://#{ENV.fetch('HOST_MACHINE_IP', nil)}:9515"
 end
 
-# Register the non-headless selenium_chrome driver
-Capybara.register_driver :selenium_chrome do |app|
+# Register the non-headless selenium_firefox driver
+Capybara.register_driver :selenium_firefox do |app|
   Capybara::Selenium::Driver.new(app, **webdriver_options)
 end
 
 # Register the headless driver separately
-Capybara.register_driver :selenium_chrome_headless do |app|
+Capybara.register_driver :selenium_firefox_headless do |app|
   Capybara::Selenium::Driver.new(app, **webdriver_options.merge({ options: browser_options }))
 end
 
 # Set javascript driver to the headless version by default
-Capybara.javascript_driver = :selenium_chrome_headless
+Capybara.javascript_driver = :selenium_firefox_headless
 
 RSpec.configure do |config|
   # Choose the correct driver based on the SHOW_BROWSER environment variable
   config.before(:each, type: :system) do
-    driven_by ENV['SHOW_BROWSER'].present? ? :selenium_chrome : :selenium_chrome_headless
+    driven_by ENV['SHOW_BROWSER'].present? ? :selenium_firefox : :selenium_firefox_headless
   end
 end
 

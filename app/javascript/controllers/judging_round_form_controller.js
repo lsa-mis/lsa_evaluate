@@ -4,37 +4,28 @@ export default class extends Controller {
   static targets = ["form"]
 
   connect() {
-    console.log("JudgingRoundFormController connected")
     this.formTarget.addEventListener("submit", this.handleSubmit.bind(this))
   }
 
   async handleSubmit(event) {
-    console.log("Form submitted")
     if (this.needsConfirmation && !event.target.querySelector('input[name="confirmed"]')) {
       event.preventDefault()
-      console.log("Confirmation needed")
 
       const confirmed = await this.showConfirmationDialog()
       if (confirmed) {
-        console.log("User confirmed")
         const confirmedInput = document.createElement("input")
         confirmedInput.type = "hidden"
         confirmedInput.name = "confirmed"
         confirmedInput.value = "true"
         this.formTarget.appendChild(confirmedInput)
         this.formTarget.submit()
-      } else {
-        console.log("User cancelled")
       }
-    } else {
-      console.log("No confirmation needed")
     }
   }
 
   showConfirmationDialog() {
     return new Promise((resolve) => {
       if (typeof bootstrap === 'undefined') {
-        console.error("Bootstrap is not loaded. Falling back to window.confirm")
         return resolve(window.confirm("This round has already started. Changes may affect ongoing judging. Are you sure you want to proceed?"))
       }
 
@@ -86,9 +77,6 @@ export default class extends Controller {
 
     const startDate = new Date(startDateInput.value)
     const now = new Date()
-    console.log("Start date:", startDate)
-    console.log("Current date:", now)
-    console.log("Needs confirmation:", startDate <= now)
     return startDate <= now
   }
 }

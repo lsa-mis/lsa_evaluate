@@ -1,0 +1,34 @@
+<%# app/views/shared/_modal.html.erb %>
+<div class="modal fade"
+     id="sharedModal"
+     tabindex="-1"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="modalLabel"
+     data-modal-target="modal"
+     inert>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel" data-modal-target="title">Details</h5>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                data-modal-target="closeButton"></button>
+      </div>
+      <div class="modal-body" data-modal-target="content">
+        <!-- Content will be loaded here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div data-modal-target="mainContent">
+  <!-- This will wrap the main content -->
+</div>

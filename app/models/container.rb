@@ -45,6 +45,17 @@ class Container < ApplicationRecord
 
   after_create :assign_container_administrator
 
+  def entries_summary
+    active_entries.group(:campus_id)
+                 .joins(profile: :campus)
+                 .select('campuses.campus_descr, COUNT(*) as entry_count')
+                 .order('campuses.campus_descr')
+  end
+
+  def total_active_entries
+    active_entries.count
+  end
+
   private
 
   def assign_container_administrator
@@ -60,5 +71,13 @@ class Container < ApplicationRecord
       errors.add(:base, 'Collection Administrator role not found.')
       raise ActiveRecord::Rollback
     end
+  end
+
+  def active_entries
+    Entry.joins(contest_instance: { contest_description: :container })
+         .where(containers: { id: id })
+         .where(deleted: false)
+         .where(contest_instances: { active: true, archived: false })
+         .where(contest_descriptions: { active: true, archived: false })
   end
 end

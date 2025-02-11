@@ -1,0 +1,9 @@
+<!-- app/views/containers/_description.html.erb -->
+
+<div class="description-content">
+  <% if description.to_plain_text.present? %>
+    <%= description %>
+  <% else %>
+    <p>No description provided.</p>
+  <% end %>
+</div>
