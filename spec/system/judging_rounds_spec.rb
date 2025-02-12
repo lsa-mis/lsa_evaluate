@@ -57,7 +57,7 @@ RSpec.describe 'Judging Rounds', type: :system do
           container, contest_description, contest_instance
         )
       )
-      click_link_or_button 'Manage Round'
+      click_link_or_button 'Manage Round', wait: 5
       expect(page).to have_content('These are test instructions')
     end
 
