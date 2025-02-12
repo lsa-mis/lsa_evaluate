@@ -50,7 +50,14 @@
     <%= render 'entries_summary', container: @container %>
 
     <hr>
-
+    <div class="d-flex align-items-center mb-0">
+      <h4 class="mb-0 me-2">Contest within this Collection</h4>
+      <i class="bi bi-info-circle"
+         data-bs-toggle="tooltip"
+         data-bs-placement="right"
+         data-bs-html="true"
+         title="Summary of contests within this collection"></i>
+    </div>
     <div class="contest-actions d-flex justify-content-between mb-4">
       <%= link_to "Create New Contest",
                   new_container_contest_description_path(container),
