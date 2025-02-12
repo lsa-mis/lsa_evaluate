@@ -66,7 +66,7 @@ RSpec.describe 'Judging Round Selection', type: :system do
       visit container_contest_description_contest_instance_judging_assignments_path(
         container, contest_description, contest_instance
       )
-      click_link 'Review Rankings & Select Entries'
+      click_link 'Review Rankings & Select Entries', wait: 5
     end
 
     it 'displays all entries with their rankings' do
