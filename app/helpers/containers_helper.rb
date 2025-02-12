@@ -10,16 +10,6 @@ module ContainersHelper
         path: edit_container_contest_description_path(container, description),
         icon: 'pencil',
         title: 'Edit contest'
-      },
-      archive: {
-        path: container_contest_description_path(container, description),
-        icon: 'archive',
-        title: 'Archive contest',
-        data: {
-          method: :delete,
-          controller: 'confirm',
-          confirm_message_value: 'Are you sure you want to archive this?'
-        }
       }
     }
   end
