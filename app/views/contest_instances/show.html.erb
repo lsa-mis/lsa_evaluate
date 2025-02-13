@@ -1,26 +1,45 @@
 <div class="d-flex flex-column align-items-end">
   <%= link_to "Return to Manage Collection", container_path(@container), class: "link_to mb-1" %>
-  <%= link_to "Return to Instances", container_contest_description_contest_instances_path(@container, @contest_description), class: "link_to" %>
+  <%= link_to "View All Instances", container_contest_description_contest_instances_path(@container, @contest_description), class: "link_to" %>
 </div>
+
 <% if (content = render_editable_content('contest_instances', 'instructions')) %>
     <%= content %>
 <% end %>
 
-<h1><%= "#{@contest_instance.contest_description.name} - #{@contest_instance.date_open.year}" %></h1>
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><%= link_to @contest_instance.contest_description.container.name, container_path(@container) %></li>
+    <li class="breadcrumb-item"><%= link_to @contest_instance.contest_description.name, container_contest_description_contest_instances_path(@container, @contest_description) %></li>
+    <li class="breadcrumb-item active" aria-current="page">Instance [<%= "#{@contest_instance.date_open.strftime('%b %Y')} to #{@contest_instance.date_closed.strftime('%b %Y')}" %>]</li>
+  </ol>
+</nav>
 
-<div data-controller="tooltip-email-display">
-  <%= render @contest_instance %>
-
-  <div>
-    <%= link_to "Edit", edit_container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), class: "btn btn-sm btn-primary" %>
-    <%= link_to "Archive", container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' } %>
-  </div>
-
-  <hr>
-
-  <%= render "contest_instance_entries", entries: @contest_instance_entries %>
-
-  <% if policy(@contest_instance).view_judging_results? %>
-    <%= render "judging_results" %>
+<h1><%= "#{@contest_instance.contest_description.name}" %></h1>
+<div>
+  <% if policy(@contest_instance).update? %>
+    <div class="mb-2">
+      <%= link_to edit_container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                  class: "btn btn-sm btn-outline-primary me-2" do %>
+        <i class="bi bi-pencil-square me-1"></i> Edit
+      <% end %>
+    </div>
   <% end %>
+<div>
+
+<ul class="nav nav-tabs" id="contestInstanceTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="true">Summary</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="entries-tab" data-bs-toggle="tab" data-bs-target="#entries" type="button" role="tab" aria-controls="entries" aria-selected="false">Entries</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="judging-results-tab" data-bs-toggle="tab" data-bs-target="#judging-results" type="button" role="tab" aria-controls="judging-results" aria-selected="false">Judging Results</button>
+  </li>
+</ul>
+<div class="tab-content" id="contestInstanceTabsContent">
+  <div class="tab-pane fade show active" id="summary" role="tabpanel" aria-labelledby="summary-tab"><%= render @contest_instance %></div>
+  <div class="tab-pane fade" id="entries" role="tabpanel" aria-labelledby="entries-tab"><%= render "contest_instance_entries", entries: @contest_instance_entries %></div>
+  <div data-controller="tooltip-email-display" class="tab-pane fade" id="judging-results" role="tabpanel" aria-labelledby="judging-results-tab"><%= render "judging_results" %></div>
 </div>

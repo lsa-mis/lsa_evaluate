@@ -1,5 +1,6 @@
 <% if @contest_instance_entries.any? %>
-  <h2><%= pluralize(@contest_instance_entries.count, 'Entry') %></h2>
+  <h2>Entries</h2>
+  <h3 class="text-muted"><%= pluralize(@contest_instance_entries.count, 'Entry') %></h3>
   <table class="table table-striped w-100">
     <thead>
       <tr>
