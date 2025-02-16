@@ -1,3 +1,6 @@
+<% if (content = render_editable_content('judging_assignments', 'round_specific_instructions')) %>
+    <%= content %>
+<% end %>
 <div data-controller="tooltip-email-display">
   <div class="card mt-4">
     <div class="card-header d-flex justify-content-between align-items-center">
@@ -13,7 +16,7 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Round Number</th>
+              <th>Round</th>
               <th>Status</th>
               <th>Dates</th>
               <th>Assigned Judges</th>
@@ -27,45 +30,18 @@
                 <td>
                   <div class="mb-1">
                     <%= round.completed? ? 'Completed' : (round.active? ? 'Active' : 'Pending') %>
-                  </div>
-                  <div class="d-flex gap-1">
+
                     <% if round.completed? %>
-                      <%= button_to 'Mark Incomplete',
-                          uncomplete_container_contest_description_contest_instance_judging_round_path(
+                      <span class="badge bg-success">Completed</span>
+                      <%= link_to 'Review Rankings & Select Entries',
+                          container_contest_description_contest_instance_judging_round_path(
                             @container, @contest_description, @contest_instance, round
                           ),
-                          method: :patch,
-                          class: 'btn btn-warning btn-sm py-0 px-1 text-nowrap',
-                          style: 'font-size: 0.75rem; line-height: 1.2;',
-                          form: { style: 'display: inline-block;' } %>
+                          class: 'btn btn-primary btn-sm ms-2' %>
+                    <% elsif round.active? %>
+                      <span class="badge bg-primary">Active</span>
                     <% else %>
-                      <% if round.active? %>
-                        <%= button_to 'Deactivate',
-                            deactivate_container_contest_description_contest_instance_judging_round_path(
-                              @container, @contest_description, @contest_instance, round
-                            ),
-                            method: :patch,
-                            class: 'btn btn-warning btn-sm py-0 px-1 text-nowrap',
-                            style: 'font-size: 0.75rem; line-height: 1.2;',
-                            form: { style: 'display: inline-block;' } %>
-                      <% else %>
-                        <%= button_to 'Activate',
-                            activate_container_contest_description_contest_instance_judging_round_path(
-                              @container, @contest_description, @contest_instance, round
-                            ),
-                            method: :patch,
-                            class: 'btn btn-success btn-sm py-0 px-1 text-nowrap',
-                            style: 'font-size: 0.75rem; line-height: 1.2;',
-                            form: { style: 'display: inline-block;' } %>
-                      <% end %>
-                      <%= button_to 'Mark Complete',
-                          complete_container_contest_description_contest_instance_judging_round_path(
-                            @container, @contest_description, @contest_instance, round
-                          ),
-                          method: :patch,
-                          class: 'btn btn-info btn-sm py-0 px-1 text-nowrap',
-                          style: 'font-size: 0.75rem; line-height: 1.2;',
-                          form: { style: 'display: inline-block;' } %>
+                      <span class="badge bg-secondary">Inactive</span>
                     <% end %>
                   </div>
                 </td>
@@ -98,7 +74,43 @@
                       container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
                         @container, @contest_description, @contest_instance, round
                       ),
-                      class: 'btn btn-secondary btn-sm' %>
+                      class: 'btn btn-secondary btn-sm py-0 px-1 text-nowrap',
+                      style: 'font-size: 0.75rem; line-height: 1.2;' %>
+
+                  <% if round.completed? %>
+                      <%= button_to 'Mark Incomplete',
+                          uncomplete_container_contest_description_contest_instance_judging_round_path(
+                            @container, @contest_description, @contest_instance, round
+                          ),
+                          method: :patch,
+                          class: 'btn btn-warning btn-sm py-0 px-1 text-nowrap',
+                          style: 'font-size: 0.75rem; line-height: 1.2;' %>
+                    <% else %>
+                      <% if round.active? %>
+                        <%= button_to 'Deactivate',
+                            deactivate_container_contest_description_contest_instance_judging_round_path(
+                              @container, @contest_description, @contest_instance, round
+                            ),
+                            method: :patch,
+                            class: 'btn btn-warning btn-sm py-0 px-1 text-nowrap',
+                            style: 'font-size: 0.75rem; line-height: 1.2;' %>
+                      <% else %>
+                        <%= button_to 'Activate',
+                            activate_container_contest_description_contest_instance_judging_round_path(
+                              @container, @contest_description, @contest_instance, round
+                            ),
+                            method: :patch,
+                            class: 'btn btn-success btn-sm py-0 px-1 text-nowrap',
+                            style: 'font-size: 0.75rem; line-height: 1.2;' %>
+                      <% end %>
+                      <%= button_to 'Mark Complete',
+                          complete_container_contest_description_contest_instance_judging_round_path(
+                            @container, @contest_description, @contest_instance, round
+                          ),
+                          method: :patch,
+                          class: 'btn btn-info btn-sm py-0 px-1 text-nowrap',
+                          style: 'font-size: 0.75rem; line-height: 1.2;' %>
+                    <% end %>
                 </td>
               </tr>
             <% end %>
@@ -107,4 +119,5 @@
       </div>
     </div>
   </div>
+
 </div>
