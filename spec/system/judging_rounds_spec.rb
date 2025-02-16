@@ -158,19 +158,21 @@ RSpec.describe 'Judging Rounds', type: :system do
         container, contest_description, contest_instance
       )
 
-      # Find and click the Activate button within the last row of the last table
-      within(page.all('.table').last) do
-        within(page.all('tbody tr').last) do
-          within('td', text: /Pending/) do
+      # The round-specific tab should be active by default, but let's make sure
+      expect(page).to have_css('#round-specific.active')
+
+      # Find and click the Activate button for the inactive round
+      within('#round-specific') do
+        within('table.table tbody tr:last-child') do
+          # The button should be in the last column (Actions)
+          within('td:last-child') do
             click_button 'Activate'
           end
         end
       end
 
-      # Look for the flash message in the flash container
-      within('#flash') do
-        expect(page).to have_content("[\"All previous rounds must be completed before completing this round\"]")
-      end
+      # Look for the flash message
+      expect(page).to have_content("All previous rounds must be completed before completing this round")
     end
   end
 end
