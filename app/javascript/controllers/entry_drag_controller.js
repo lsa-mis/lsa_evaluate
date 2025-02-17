@@ -9,6 +9,67 @@ export default class extends Controller {
   }
 
   connect() {
+    // Add a style block for the loading overlay if it doesn't exist
+    if (!document.getElementById('entry-drag-styles')) {
+      const style = document.createElement('style')
+      style.id = 'entry-drag-styles'
+      style.textContent = `
+        .entry-loading-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(255, 255, 255, 0);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+          opacity: 0;
+          transition: all 0.3s ease;
+        }
+
+        .entry-loading-overlay.show {
+          background: rgba(255, 255, 255, 0.8);
+          opacity: 1;
+        }
+
+        .entry-loading-overlay.error {
+          background: rgba(255, 220, 220, 0.9);
+        }
+
+        .entry-loading-overlay .spinner-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .entry-loading-overlay .status-text {
+          font-size: 0.875rem;
+          color: #666;
+          text-align: center;
+          margin-top: 0.5rem;
+        }
+
+        .entry-loading-overlay .error-text {
+          color: #dc3545;
+          font-weight: 500;
+        }
+
+        .entry-loading-overlay .warning-text {
+          color: #ffc107;
+          font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `
+      document.head.appendChild(style)
+    }
+
     // Get the contest instance ID from the closest accordion section
     const accordionSection = this.element.closest('.accordion-collapse')
     if (!accordionSection) {
@@ -109,6 +170,10 @@ export default class extends Controller {
   handleStart(event) {
     // Reset confirmation for new drag operation
     this.moveConfirmed = true
+
+    // Add loading overlay to the dragged card
+    const card = event.item
+    this.addLoadingOverlay(card)
   }
 
   handleMove(event) {
@@ -116,6 +181,7 @@ export default class extends Controller {
     const fromAccordion = event.from.closest('.accordion-collapse')
     const toAccordion = event.to.closest('.accordion-collapse')
     if (fromAccordion && toAccordion && fromAccordion.id !== toAccordion.id) {
+      this.removeLoadingOverlay(event.item)
       return false
     }
 
@@ -123,6 +189,9 @@ export default class extends Controller {
     if (event.from === this.ratedEntriesTarget && event.to === this.availableEntriesTarget) {
       if (!this.moveConfirmed) {
         this.moveConfirmed = confirm("Are you sure you want to unrank this entry? Any comments you have written will be deleted.")
+      }
+      if (!this.moveConfirmed) {
+        this.removeLoadingOverlay(event.item)
       }
       return this.moveConfirmed
     }
@@ -133,6 +202,7 @@ export default class extends Controller {
     // If this was a drag operation and it wasn't confirmed, return the item to its original position
     if (!this.moveConfirmed && event.from === this.ratedEntriesTarget && event.to === this.availableEntriesTarget) {
       event.from.appendChild(event.item)
+      this.removeLoadingOverlay(event.item)
       return
     }
 
@@ -209,12 +279,16 @@ export default class extends Controller {
         throw new Error(data.error || 'Failed to update rankings')
       }
 
+      // Remove loading overlay before refresh
+      this.removeLoadingOverlay(event.item)
+
       // Refresh both sections using Turbo
       Turbo.visit(window.location.href, { action: "replace" })
     } catch (error) {
       console.error('Error updating rankings:', error)
-      // If there's an error, revert the UI update
+      // If there's an error, revert the UI update and show error in overlay
       this.updateUI(this.ratedEntriesTarget.children.length)
+      this.removeLoadingOverlay(event.item, true)
     }
   }
 
@@ -360,5 +434,85 @@ export default class extends Controller {
     // Move the card back to available entries
     this.availableEntriesTarget.appendChild(entryCard)
     await this.handleSortEnd({ from: this.ratedEntriesTarget, to: this.availableEntriesTarget, item: entryCard })
+  }
+
+  // Helper method to add loading overlay
+  addLoadingOverlay(element) {
+    if (!element) return
+
+    // Prevent multiple overlays
+    if (element.querySelector('.entry-loading-overlay')) {
+      return
+    }
+
+    const overlay = document.createElement('div')
+    overlay.className = 'entry-loading-overlay'
+    overlay.innerHTML = `
+      <div class="spinner-container" role="status" aria-live="polite">
+        <div class="spinner-border text-primary" role="presentation"></div>
+        <div class="status-text">Updating...</div>
+      </div>
+    `
+
+    // Ensure the card has position relative for absolute positioning of overlay
+    element.style.position = 'relative'
+    element.appendChild(overlay)
+
+    // Add show class after a small delay to trigger fade-in
+    requestAnimationFrame(() => {
+      overlay.classList.add('show')
+    })
+
+    // Set up slow connection warning
+    this.slowConnectionTimeout = setTimeout(() => {
+      const statusText = overlay.querySelector('.status-text')
+      if (statusText) {
+        statusText.innerHTML = `
+          <span class="warning-text">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Slow connection detected...
+          </span>
+          <br>
+          Still working...
+        `
+      }
+    }, 5000) // Show warning after 5 seconds
+  }
+
+  // Helper method to remove loading overlay
+  removeLoadingOverlay(element, error = false) {
+    if (!element) return
+
+    const overlay = element.querySelector('.entry-loading-overlay')
+    if (!overlay) return
+
+    // Clear slow connection timeout
+    if (this.slowConnectionTimeout) {
+      clearTimeout(this.slowConnectionTimeout)
+    }
+
+    if (error) {
+      overlay.classList.add('error')
+      const statusText = overlay.querySelector('.status-text')
+      if (statusText) {
+        statusText.innerHTML = `
+          <span class="error-text">
+            <i class="bi bi-x-circle-fill"></i>
+            Error updating entry
+          </span>
+          <br>
+          Please try again
+        `
+      }
+      // Remove error overlay after 2 seconds
+      setTimeout(() => {
+        overlay.classList.remove('show')
+        setTimeout(() => overlay.remove(), 300)
+      }, 2000)
+    } else {
+      overlay.classList.remove('show')
+      // Remove overlay after transition completes
+      setTimeout(() => overlay.remove(), 300)
+    }
   }
 }
