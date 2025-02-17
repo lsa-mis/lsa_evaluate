@@ -8,6 +8,7 @@ class JudgingRoundsController < ApplicationController
     @entries = @judging_round.entries.distinct
                 .includes(entry_rankings: [ :user ])
                 .where(entry_rankings: { judging_round_id: @judging_round.id })
+                .sort_by { |entry| @judging_round.average_rank_for_entry(entry) || Float::INFINITY }
   end
 
   def new
