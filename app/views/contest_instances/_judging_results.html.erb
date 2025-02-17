@@ -1,10 +1,9 @@
 <div class="mt-4">
-  <h2>Judging Results</h2>
   <div class="">
     <% if @contest_instance.judging_rounds.any? %>
       <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
         <div class="mb-4">
-          <h3>Round <%= round.round_number %></h3>
+          <h2>Round <%= round.round_number %></h2>
           <div class="table-responsive">
             <table class="table">
               <thead>

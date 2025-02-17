@@ -31,8 +31,11 @@
   <li class="nav-item" role="presentation">
     <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="true">Summary</button>
   </li>
-  <li class="nav-item" role="presentation">
+    <li class="nav-item" role="presentation">
     <button class="nav-link" id="entries-tab" data-bs-toggle="tab" data-bs-target="#entries" type="button" role="tab" aria-controls="entries" aria-selected="false">Entries</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="manage-judges-tab" data-bs-toggle="tab" data-bs-target="#manage-judges" type="button" role="tab" aria-controls="manage-judges" aria-selected="false">Judging Rounds</button>
   </li>
   <li class="nav-item" role="presentation">
     <button class="nav-link" id="judging-results-tab" data-bs-toggle="tab" data-bs-target="#judging-results" type="button" role="tab" aria-controls="judging-results" aria-selected="false">Judging Results</button>
@@ -41,5 +44,6 @@
 <div class="tab-content" id="contestInstanceTabsContent">
   <div class="tab-pane fade show active" id="summary" role="tabpanel" aria-labelledby="summary-tab"><%= render @contest_instance %></div>
   <div class="tab-pane fade" id="entries" role="tabpanel" aria-labelledby="entries-tab"><%= render "contest_instance_entries", entries: @contest_instance_entries %></div>
+  <div data-controller="tooltip-email-display" class="tab-pane fade" id="manage-judges" role="tabpanel" aria-labelledby="manage-judges-tab"><%= render "manage_judges", contest_instance: @contest_instance %></div>
   <div data-controller="tooltip-email-display" class="tab-pane fade" id="judging-results" role="tabpanel" aria-labelledby="judging-results-tab"><%= render "judging_results" %></div>
 </div>

@@ -24,6 +24,16 @@ RSpec.describe 'Judge Management', type: :system do
 
     context 'with non-umich email' do
       it 'creates a new judge with transformed email' do
+        click_on 'Judges assigned to this contest instance'
+
+        # Click the pool of judges tab button and wait for content
+        find('button[data-bs-target="#pool-of-judges"]').click
+
+        # Wait for the table to be visible in the pool of judges tab
+        within('#pool-of-judges') do
+          expect(page).to have_css('table.table')
+        end
+
         within('#createJudgeAccordion') do
           click_button 'Create a new judge and assign them to the pool of judges for this contest instance' # expand the accordion
           fill_in 'Email Address', with: 'newjudge@gmail.com'
@@ -33,7 +43,17 @@ RSpec.describe 'Judge Management', type: :system do
         end
 
         expect(page).to have_css('.alert.alert-success', text: 'Judge was successfully created/updated and assigned')
-        expect(page).to have_content('New Judge (newjudge@gmail.com)')
+
+        # Click the pool of judges tab button again after page reload
+        find('button[data-bs-target="#pool-of-judges"]').click
+
+        # Wait for the table to be visible and check for the new judge
+        within('#pool-of-judges') do
+          expect(page).to have_css('table.table')
+          within('table.table') do
+            expect(page).to have_content('New Judge (newjudge@gmail.com)')
+          end
+        end
 
         new_user = User.last
         expect(new_user.email).to eq('newjudge+gmail.com@umich.edu')
@@ -43,6 +63,14 @@ RSpec.describe 'Judge Management', type: :system do
 
     context 'with umich email' do
       it 'creates a new judge with original email' do
+        # Click the pool of judges tab button and wait for content
+        find('button[data-bs-target="#pool-of-judges"]').click
+
+        # Wait for the table to be visible in the pool of judges tab
+        within('#pool-of-judges') do
+          expect(page).to have_css('table.table')
+        end
+
         within('#createJudgeAccordion') do
           click_button 'Create a new judge and assign them to the pool of judges for this contest instance' # expand the accordion
           fill_in 'Email Address', with: 'newjudge@umich.edu'
@@ -52,7 +80,17 @@ RSpec.describe 'Judge Management', type: :system do
         end
 
         expect(page).to have_css('.alert.alert-success', text: 'Judge was successfully created/updated and assigned')
-        expect(page).to have_content('New Judge (newjudge@umich.edu)')
+
+        # Click the pool of judges tab button again after page reload
+        find('button[data-bs-target="#pool-of-judges"]').click
+
+        # Wait for the table to be visible and check for the new judge
+        within('#pool-of-judges') do
+          expect(page).to have_css('table.table')
+          within('table.table') do
+            expect(page).to have_content('New Judge (newjudge@umich.edu)')
+          end
+        end
 
         new_user = User.last
         expect(new_user.email).to eq('newjudge@umich.edu')
@@ -62,6 +100,14 @@ RSpec.describe 'Judge Management', type: :system do
     context 'with invalid data' do
       it 'shows validation messages' do
         initial_user_count = User.count
+
+        # Click the pool of judges tab button and wait for content
+        find('button[data-bs-target="#pool-of-judges"]').click
+
+        # Wait for the table to be visible in the pool of judges tab
+        within('#pool-of-judges') do
+          expect(page).to have_css('table.table')
+        end
 
         # Try with invalid email format
         within('#createJudgeAccordion') do
@@ -76,6 +122,14 @@ RSpec.describe 'Judge Management', type: :system do
 
         expect(page).to have_css('.alert.alert-danger', text: 'Please enter a valid email address')
         expect(User.count).to eq(initial_user_count)
+
+        # Click the pool of judges tab button again after error
+        find('button[data-bs-target="#pool-of-judges"]').click
+
+        # Wait for the table to be visible in the pool of judges tab
+        within('#pool-of-judges') do
+          expect(page).to have_css('table.table')
+        end
 
         # Try with missing required fields
         within('#createJudgeAccordion') do
@@ -106,8 +160,13 @@ RSpec.describe 'Judge Management', type: :system do
     end
 
     it 'displays judge with formatted email' do
-      within('.card', text: /Pool of judges assigned to this contest instance/i) do
-        within('table') do
+      # Click the pool of judges tab button and wait for content
+      find('button[data-bs-target="#pool-of-judges"]').click
+
+      # Wait for the table to be visible and check for the judge
+      within('#pool-of-judges') do
+        expect(page).to have_css('table.table')
+        within('table.table') do
           expect(page).to have_content('Existing Judge (judge@gmail.com)')
         end
       end
@@ -116,8 +175,13 @@ RSpec.describe 'Judge Management', type: :system do
     it 'allows removing a judge' do
       assignment = JudgingAssignment.last
 
-      within('.card', text: /Pool of judges assigned to this contest instance/i) do
-        within('table') do
+      # Click the pool of judges tab button and wait for content
+      find('button[data-bs-target="#pool-of-judges"]').click
+
+      # Wait for the table to be visible and remove the judge
+      within('#pool-of-judges') do
+        expect(page).to have_css('table.table')
+        within('table.table') do
           accept_confirm do
             click_button 'Remove'
           end
@@ -126,9 +190,13 @@ RSpec.describe 'Judge Management', type: :system do
 
       expect(page).to have_css('.alert.alert-success', text: 'Judge assignment was successfully removed')
 
-      # Verify the judge is no longer in the current judges table
-      within('.card', text: /Pool of judges assigned to this contest instance/i) do
-        within('table tbody') do
+      # Click the pool of judges tab button again after page reload
+      find('button[data-bs-target="#pool-of-judges"]').click
+
+      # Verify the judge is no longer in the table
+      within('#pool-of-judges') do
+        expect(page).to have_css('table.table')
+        within('table.table tbody') do
           expect(page).to have_no_content('Existing Judge')
         end
       end
