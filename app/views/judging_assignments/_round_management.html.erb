@@ -12,79 +12,70 @@
           class: 'btn btn-primary' %>
     </div>
     <div class="card-body">
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Round</th>
-              <th>Status</th>
-              <th>Dates</th>
-              <th>Assigned Judges</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
-              <tr>
-                <td><%= round.round_number %></td>
-                <td>
-                  <div class="mb-1">
-                    <%= round.completed? ? 'Completed' : (round.active? ? 'Active' : 'Pending') %>
-
-                    <% if round.completed? %>
-                      <span class="badge bg-success">Completed</span>
-                      <%= link_to 'Review Rankings & Select Entries',
-                          container_contest_description_contest_instance_judging_round_path(
-                            @container, @contest_description, @contest_instance, round
-                          ),
-                          class: 'btn btn-primary btn-sm ms-2' %>
-                    <% elsif round.active? %>
-                      <span class="badge bg-primary">Active</span>
-                    <% else %>
-                      <span class="badge bg-secondary">Inactive</span>
-                    <% end %>
-                  </div>
-                </td>
-                <td>
-                  <%= format_datetime(round.start_date) %> -
-                  <%= format_datetime(round.end_date) %>
-                </td>
-                <td>
-                  <% if round.judges.any? %>
-                    <span class="text-muted">
-                      <%= round.judges.map { |judge|
-                        content_tag(:span,
-                          display_email(judge.email),
-                          data: {
-                            'bs-toggle': 'tooltip',
-                            'bs-html': 'true',
-                            'bs-title': "#{h(judge.display_name_or_first_name_last_name)}<br>#{h(display_email(judge.email))}"
-                          }
-                        )
-                      }.join(', ').html_safe %>
-                    </span>
-                  <% else %>
-                    <span class="text-danger opacity-50">
-                      No judges assigned
-                    </span>
-                  <% end %>
-                </td>
-                <td>
-                  <%= link_to 'Manage Round',
-                      container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+      <div class="judging-rounds">
+        <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
+          <div class="card mb-3 border-<%= round.completed? ? 'secondary' : (round.active? ? 'success' : 'warning') %>">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Round <%= round.round_number %></h5>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-<%= round.completed? ? 'secondary' : (round.active? ? 'success' : 'warning') %>">
+                  <%= round.completed? ? 'Completed' : (round.active? ? 'Active' : 'Pending') %>
+                </span>
+                <% if round.completed? %>
+                  <%= link_to 'Review Rankings & Select Entries',
+                      container_contest_description_contest_instance_judging_round_path(
                         @container, @contest_description, @contest_instance, round
                       ),
-                      class: 'btn btn-secondary btn-sm py-0 px-1 text-nowrap',
-                      style: 'font-size: 0.75rem; line-height: 1.2;' %>
+                      class: 'btn btn-primary btn-sm' %>
+                <% end %>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col">
+                  <strong><i class="bi bi-calendar me-1"></i> Dates:</strong>
+                  <%= format_datetime(round.start_date) %> - <%= format_datetime(round.end_date) %>
+                </div>
+              </div>
 
-                  <% if round.completed? %>
+              <div class="row mb-3">
+                <div class="col">
+                  <div class="d-flex align-items-center">
+                    <strong class="me-3"><i class="bi bi-people me-1"></i> Judges Assigned:</strong>
+                    <div class="d-flex flex-wrap">
+                      <% if round.judges.any? %>
+                        <% round.judges.each do |judge| %>
+                          <span class="badge bg-secondary text-white me-2 mb-1"
+                                data-bs-toggle="tooltip"
+                                data-bs-html="true"
+                                data-bs-title="<%= h(judge.display_name_or_first_name_last_name) %><br><%= h(display_email(judge.email)) %>">
+                            <%= display_email(judge.email) %>
+                          </span>
+                        <% end %>
+                      <% else %>
+                        <em class="text-muted">No judges assigned</em>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col">
+                  <div class="d-flex gap-2 flex-wrap">
+                    <%= link_to 'Manage Round',
+                        container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+                          @container, @contest_description, @contest_instance, round
+                        ),
+                        class: 'btn btn-secondary btn-sm' %>
+
+                    <% if round.completed? %>
                       <%= button_to 'Mark Incomplete',
                           uncomplete_container_contest_description_contest_instance_judging_round_path(
                             @container, @contest_description, @contest_instance, round
                           ),
                           method: :patch,
-                          class: 'btn btn-warning btn-sm py-0 px-1 text-nowrap',
-                          style: 'font-size: 0.75rem; line-height: 1.2;' %>
+                          class: 'btn btn-warning btn-sm' %>
                     <% else %>
                       <% if round.active? %>
                         <%= button_to 'Deactivate',
@@ -92,32 +83,29 @@
                               @container, @contest_description, @contest_instance, round
                             ),
                             method: :patch,
-                            class: 'btn btn-warning btn-sm py-0 px-1 text-nowrap',
-                            style: 'font-size: 0.75rem; line-height: 1.2;' %>
+                            class: 'btn btn-warning btn-sm' %>
                       <% else %>
                         <%= button_to 'Activate',
                             activate_container_contest_description_contest_instance_judging_round_path(
                               @container, @contest_description, @contest_instance, round
                             ),
                             method: :patch,
-                            class: 'btn btn-success btn-sm py-0 px-1 text-nowrap',
-                            style: 'font-size: 0.75rem; line-height: 1.2;' %>
+                            class: 'btn btn-success btn-sm' %>
                       <% end %>
                       <%= button_to 'Mark Complete',
                           complete_container_contest_description_contest_instance_judging_round_path(
                             @container, @contest_description, @contest_instance, round
                           ),
                           method: :patch,
-                          class: 'btn btn-info btn-sm py-0 px-1 text-nowrap',
-                          style: 'font-size: 0.75rem; line-height: 1.2;' %>
+                          class: 'btn btn-info btn-sm' %>
                     <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
-
 </div>
