@@ -50,11 +50,13 @@ class JudgingRound < ApplicationRecord
 
   def activate!
     return false unless valid?
+
+    self.active = true  # Set this first so validation picks up the change
     return false unless validate_previous_rounds_completed
 
     JudgingRound.transaction do
       contest_instance.judging_rounds.active.update_all(active: false)
-      update!(active: true)
+      save!
     end
     true
   rescue ActiveRecord::RecordInvalid => e
@@ -97,7 +99,10 @@ class JudgingRound < ApplicationRecord
                      .where('round_number < ?', round_number)
 
     if previous_rounds.exists?(completed: false)
-      errors.add(:base, 'All previous rounds must be completed before completing this round')
+      error_message = active_changed? && active ?
+        'All previous rounds must be completed before activating this round' :
+        'All previous rounds must be completed before completing this round'
+      errors.add(:base, error_message)
       return false
     end
 
