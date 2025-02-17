@@ -162,17 +162,15 @@ RSpec.describe 'Judging Rounds', type: :system do
       expect(page).to have_css('#round-specific.active')
 
       # Find and click the Activate button for the inactive round
-      within('#round-specific') do
-        within('table.table tbody tr:last-child') do
-          # The button should be in the last column (Actions)
-          within('td:last-child') do
-            click_button 'Activate'
-          end
+      within('.judging-rounds') do
+        # Find the last card (which should be the inactive round)
+        within('.card:last-child') do
+          click_button 'Activate'
         end
       end
 
       # Look for the flash message
-      expect(page).to have_content("All previous rounds must be completed before completing this round")
+      expect(page).to have_content("All previous rounds must be completed before activating this round")
     end
   end
 end
