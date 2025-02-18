@@ -92,12 +92,14 @@ class ContestInstance < ApplicationRecord
     active && !archived && Time.current.between?(date_open, date_closed)
   end
 
-  def judging_open?
+  def judging_open?(user = nil)
     current_round = judging_rounds.where(active: true)
                                .where('start_date <= ? AND end_date >= ?', Time.zone.now, Time.zone.now)
                                .first
     return false unless current_round
-    true
+    return true unless user
+
+    judge_assigned_to_round?(user, current_round)
   end
 
   def judge_evaluations_complete?

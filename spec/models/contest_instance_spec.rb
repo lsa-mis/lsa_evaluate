@@ -88,60 +88,68 @@ RSpec.describe ContestInstance, type: :model do
   end
 
   describe 'judging status methods' do
-    let(:contest_instance) { create(:contest_instance) }
+    let(:contest_instance) do
+      travel_to(Time.zone.local(2024, 2, 1, 12, 0, 0)) do
+        create(:contest_instance,
+          date_open: 10.days.ago,
+          date_closed: 5.days.ago
+        )
+      end
+    end
 
     describe '#judging_open?' do
-      let(:contest_instance) do
-        create(:contest_instance,
-              date_open: 2.days.ago,
-              date_closed: 1.day.ago)
+      let(:judge) { create(:user, :with_judge_role) }
+      let!(:judging_round) do
+        create(:judging_round,
+          contest_instance: contest_instance,
+          active: true,
+          start_date: 4.days.ago,  # 1 day after contest closes
+          end_date: 2.days.from_now
+        )
       end
 
-      context 'when there is no current judging round' do
-        it 'returns false' do
-          expect(contest_instance.judging_open?).to be false
-        end
-      end
-
-      context 'with an active judging round' do
-        let!(:judging_round) do
-          create(:judging_round,
-                contest_instance: contest_instance,
-                start_date: 1.hour.ago,
-                end_date: 1.day.from_now,
-                active: true)
-        end
-
-        it 'returns true when within judging round dates' do
+      context 'when no user is specified' do
+        it 'returns true if there is an active round within date range' do
           expect(contest_instance.judging_open?).to be true
         end
 
-        it 'returns false when before judging round start_date' do
-          travel_to(judging_round.start_date - 1.day) do
-            expect(contest_instance.judging_open?).to be false
-          end
+        it 'returns false if there is no active round' do
+          judging_round.update!(active: false)
+          expect(contest_instance.judging_open?).to be false
         end
 
-        it 'returns false when after judging round end_date' do
-          travel_to(judging_round.end_date + 1.day) do
-            expect(contest_instance.judging_open?).to be false
-          end
+        it 'returns false if active round is outside date range' do
+          judging_round.update!(
+            start_date: 1.day.from_now,
+            end_date: 3.days.from_now
+          )
+          expect(contest_instance.judging_open?).to be false
         end
       end
 
-      context 'with an inactive judging round' do
-        let!(:judging_round) do
-          round = create(:judging_round,
-                contest_instance: contest_instance,
-                start_date: Time.current,
-                end_date: 1.day.from_now)
-          round.deactivate!
-          round
+      context 'when user is specified' do
+        before do
+          create(:judging_assignment, user: judge, contest_instance: contest_instance, active: true)
         end
 
+        it 'returns true if judge is assigned to the active round' do
+          create(:round_judge_assignment, user: judge, judging_round: judging_round, active: true)
+          expect(contest_instance.judging_open?(judge)).to be true
+        end
 
-        it 'returns false even when within judging round dates' do
-          expect(contest_instance.judging_open?).to be false
+        it 'returns false if judge is not assigned to the active round' do
+          expect(contest_instance.judging_open?(judge)).to be false
+        end
+
+        it 'returns false if judge assignment is inactive' do
+          create(:round_judge_assignment, user: judge, judging_round: judging_round, active: false)
+          expect(contest_instance.judging_open?(judge)).to be false
+        end
+
+        it 'returns false if contest assignment is inactive' do
+          create(:round_judge_assignment, user: judge, judging_round: judging_round, active: true)
+          contest_instance.judging_assignments.last.update!(active: false)
+          expect(contest_instance.judging_open?(judge)).to be false
         end
       end
     end

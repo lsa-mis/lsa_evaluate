@@ -55,11 +55,16 @@
               <div class="w-100">
                 <h4 class="mb-0"><%= assignment.contest_instance.contest_description.name %></h4>
                 <% if assignment.contest_instance.current_judging_round %>
-                  <p class="text-muted mb-0">
-                    Round: <%= assignment.contest_instance.current_judging_round.round_number %>
-                    (<%= format_datetime(assignment.contest_instance.current_judging_round.start_date) %> -
-                    <%= format_datetime(assignment.contest_instance.current_judging_round.end_date) %>)
-                  </p>
+                  <% assigned_round = @assigned_rounds.find_by(contest_instance_id: assignment.contest_instance.id, active: true) %>
+                  <% if assigned_round %>
+                    <p class="text-muted mb-0">
+                      Round: <%= assigned_round.round_number %>
+                      (<%= format_datetime(assigned_round.start_date) %> -
+                      <%= format_datetime(assigned_round.end_date) %>)
+                    </p>
+                  <% else %>
+                    <p class="text-muted mb-0">No active rounds assigned to you</p>
+                  <% end %>
                 <% else %>
                   <p class="text-muted mb-0">No active round</p>
                 <% end %>
@@ -85,30 +90,37 @@
                 <strong>Instructions:</strong><br/>
                 <%= simple_format(assignment.contest_instance.current_judging_round.special_instructions) %>
               </p>
-              <% if assignment.contest_instance.judging_open? %>
-                <div class="row" data-controller="entry-drag"
-                     data-entry-drag-url-value="<%= update_rankings_container_contest_description_contest_instance_judging_round_path(
-                       assignment.contest_instance.contest_description.container,
-                       assignment.contest_instance.contest_description,
-                       assignment.contest_instance,
-                       assignment.contest_instance.current_judging_round
-                     ) %>"
-                     data-entry-drag-required-count-value="<%= assignment.contest_instance.current_judging_round.required_entries_count %>"
-                     data-entry-drag-finalized-value="<%= EntryRanking.where(
-                       judging_round: assignment.contest_instance.current_judging_round,
-                       user: current_user
-                     ).any?(&:finalized?) %>">
+              <% if assignment.contest_instance.judging_open?(current_user) %>
+                <% assigned_round = @assigned_rounds.find_by(contest_instance_id: assignment.contest_instance.id, active: true) %>
+                <% if assigned_round %>
+                  <div class="row" data-controller="entry-drag"
+                       data-entry-drag-url-value="<%= update_rankings_container_contest_description_contest_instance_judging_round_path(
+                         assignment.contest_instance.contest_description.container,
+                         assignment.contest_instance.contest_description,
+                         assignment.contest_instance,
+                         assigned_round
+                       ) %>"
+                       data-entry-drag-required-count-value="<%= assigned_round.required_entries_count %>"
+                       data-entry-drag-finalized-value="<%= EntryRanking.where(
+                         judging_round: assigned_round,
+                         user: current_user
+                       ).any?(&:finalized?) %>">
 
-                  <div class="col-md-6">
-                    <%= render partial: 'judge_dashboard/available_entries',
-                              locals: { assignment: assignment, current_user: current_user } %>
-                  </div>
+                    <div class="col-md-6">
+                      <%= render partial: 'judge_dashboard/available_entries',
+                                locals: { assignment: assignment, current_user: current_user } %>
+                    </div>
 
-                  <div class="col-md-6">
-                    <%= render partial: 'judge_dashboard/selected_entries',
-                              locals: { assignment: assignment, current_user: current_user } %>
+                    <div class="col-md-6">
+                      <%= render partial: 'judge_dashboard/selected_entries',
+                                locals: { assignment: assignment, current_user: current_user } %>
+                    </div>
                   </div>
-                </div>
+                <% else %>
+                  <div class="alert alert-info">
+                    You are not assigned to the current judging round.
+                  </div>
+                <% end %>
               <% else %>
                 <div class="alert alert-info">
                   Judging is not currently open for this contest.
