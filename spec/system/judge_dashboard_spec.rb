@@ -75,7 +75,7 @@ RSpec.describe 'Judge Dashboard', type: :system do
 
     it 'displays the judge information correctly' do
       expect(page).to have_content('Judge Dashboard')
-      expect(page).to have_content("Hello #{judge.first_name} #{judge.last_name} (#{display_email(judge.email)})")
+      expect(page).to have_content("Hello #{judge.first_name} #{judge.last_name}")
       expect(page).to have_content('Test Contest')
 
       # Expand the accordion

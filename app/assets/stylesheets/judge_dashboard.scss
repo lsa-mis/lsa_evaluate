@@ -190,3 +190,40 @@
     font-size: 0.7rem;
   }
 }
+
+// Instructions section styling
+.instructions-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #2c3e50;
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  ul, ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+}
+
+.card {
+  &.shadow-sm {
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+      box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+}
+
+// Collapse icon animation
+[data-bs-toggle="collapse"] {
+  .bi-chevron-down {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  &.collapsed .bi-chevron-down {
+    transform: rotate(-90deg);
+  }
+}
