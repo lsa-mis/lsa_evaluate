@@ -88,17 +88,23 @@ RSpec.describe ContestInstance, type: :model do
   end
 
   describe 'judging status methods' do
-    let(:contest_instance) { create(:contest_instance) }
+    let(:contest_instance) do
+      travel_to(Time.zone.local(2024, 2, 1, 12, 0, 0)) do
+        create(:contest_instance,
+          date_open: 10.days.ago,
+          date_closed: 5.days.ago
+        )
+      end
+    end
 
     describe '#judging_open?' do
-      let(:contest_instance) { create(:contest_instance) }
       let(:judge) { create(:user, :with_judge_role) }
       let!(:judging_round) do
         create(:judging_round,
           contest_instance: contest_instance,
           active: true,
-          start_date: 1.day.ago,
-          end_date: 1.day.from_now
+          start_date: 4.days.ago,  # 1 day after contest closes
+          end_date: 2.days.from_now
         )
       end
 
@@ -113,7 +119,10 @@ RSpec.describe ContestInstance, type: :model do
         end
 
         it 'returns false if active round is outside date range' do
-          judging_round.update!(start_date: 1.day.from_now, end_date: 2.days.from_now)
+          judging_round.update!(
+            start_date: 1.day.from_now,
+            end_date: 3.days.from_now
+          )
           expect(contest_instance.judging_open?).to be false
         end
       end
