@@ -18,7 +18,7 @@ module ApplicationHelper
       safe_join([ content_html, edit_link ], ' ').html_safe
     else
       # If the user doesn't have the role, just render the content
-      content_html.html_safe
+      html_escape(content_html)
     end
   end
 
