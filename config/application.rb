@@ -29,6 +29,11 @@ module LsaEvaluate
     config.time_zone = 'Eastern Time (US & Canada)'
     config.active_record.default_timezone = :utc
     config.exceptions_app = self.routes
+
+    # Configure CSRF protection to work with OmniAuth SAML
+    # This allows SAML callbacks to work properly without disabling CSRF protection
+    config.action_controller.forgery_protection_origin_check = false
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
