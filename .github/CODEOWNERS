@@ -1,2 +1,91 @@
+# CODEOWNERS file for lsa_evaluate
+# Each line is a file pattern followed by one or more owners.
+# Order is important; the last matching pattern takes precedence.
+
+# Default owners for everything in the repo
 * @rsmoke
+
+#################################################
+# Repository Configuration
+#################################################
+
+# GitHub specific files and workflows
 /.github/ @rsmoke
+
+# Configuration files
+/config/ @rsmoke
+/.ruby-version @rsmoke
+/.tool-versions @rsmoke
+/.rubocop.yml @rsmoke
+/.rspec @rsmoke
+/.gitattributes @rsmoke
+/.gitignore @rsmoke
+/.babelrc @rsmoke
+/jest.config.js @rsmoke
+/Capfile @rsmoke
+/Procfile.dev @rsmoke
+/Rakefile @rsmoke
+/config.ru @rsmoke
+
+# Dependency management
+/Gemfile @rsmoke
+/Gemfile.lock @rsmoke
+/package.json @rsmoke
+/yarn.lock @rsmoke
+
+#################################################
+# Application Code
+#################################################
+
+# Core application code
+/app/ @rsmoke
+
+# MVC Components
+/app/models/ @rsmoke
+/app/views/ @rsmoke
+/app/controllers/ @rsmoke
+
+# Frontend assets
+/app/assets/ @rsmoke
+/app/javascript/ @rsmoke
+
+# Additional application components
+/app/helpers/ @rsmoke
+/app/mailers/ @rsmoke
+/app/jobs/ @rsmoke
+/app/channels/ @rsmoke
+/app/policies/ @rsmoke
+/app/services/ @rsmoke
+/app/forms/ @rsmoke
+/app/inputs/ @rsmoke
+
+# Database related files
+/db/ @rsmoke
+
+# Library code
+/lib/ @rsmoke
+/lib/tasks/ @rsmoke
+/lib/capistrano/ @rsmoke
+
+#################################################
+# Testing and Documentation
+#################################################
+
+# Test files
+/spec/ @rsmoke
+
+# Documentation
+*.md @rsmoke
+/LICENSE @rsmoke
+
+#################################################
+# Public and Binary Files
+#################################################
+
+# Public files
+/public/ @rsmoke
+
+# Binary and storage directories
+/bin/ @rsmoke
+/vendor/ @rsmoke
+/storage/ @rsmoke
