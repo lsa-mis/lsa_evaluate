@@ -1,5 +1,12 @@
+# Use different authentication sources based on environment
+<% if Rails.env.production? %>
+authentication: <%= Rails.application.credentials.dig(:skylight, :authentication) %>
+<% else %>
+authentication: <%= ENV["SKYLIGHT_AUTHENTICATION"] %>
+<% end %>
+
+<% revision = Rails.env.production? ? (File.exist?('REVISION') ? File.read('REVISION').strip : 'unknown') : ENV["HATCHBOX_REVISION"] %>
 deploy:
-  id: <%= ENV["HATCHBOX_RELEASE"] %>
-  git_sha: <%= ENV["HATCHBOX_REVISION"] %>
-  # The deploy description is optional.
-  description: "Deployed <%= ENV["HATCHBOX_REVISION"] %> on <%= Rails.env %>"
+  id: <%= Rails.env.production? ? revision : ENV["HATCHBOX_RELEASE"] %>
+  git_sha: <%= revision %>
+  description: "Deployed <%= revision %> on <%= Rails.env %>"
