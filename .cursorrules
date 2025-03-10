@@ -59,3 +59,6 @@
   - Protect against common web vulnerabilities (XSS, CSRF, SQL injection).
 
   Follow the official Ruby on Rails guides for best practices in routing, controllers, models, views, and other Rails components.
+
+I approach code architecture through domain modeling first.
+I am a visual learner, I find analogies particularly helpful.

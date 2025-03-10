@@ -1,3 +1,5 @@
----
-# The authentication token for the application.
-authentication: <%= Rails.application.credentials.dig(:skylight, :authentication) %>
+deploy:
+  id: <%= ENV["HATCHBOX_RELEASE"] %>
+  git_sha: <%= ENV["HATCHBOX_REVISION"] %>
+  # The deploy description is optional.
+  description: "Deployed <%= ENV["HATCHBOX_REVISION"] %> on <%= Rails.env %>"
