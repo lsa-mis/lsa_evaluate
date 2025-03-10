@@ -60,6 +60,36 @@
                 </div>
               </div>
 
+              <div class="row mb-2">
+                <div class="col">
+                  <strong class="me-3">Minimum entries to be evaluated per judge:</strong>
+                  <%= round.required_entries_count %>
+                </div>
+              </div>
+
+              <div class="row flex justify-content-space-around">
+                <strong>Comment requirements:</strong>
+                <div class="col-4">
+                  <p class="ms-3 small">Internal:</strong>
+                    <%= round.require_internal_comments ? 'Required' : 'Optional' %>
+                    <% if round.require_internal_comments && round.min_internal_comment_words > 0 %>
+                      (minimum <%= pluralize(round.min_internal_comment_words, 'word') %>)
+                    <% end %>
+                  </p>
+                </div>
+                <div class="col-4">
+                  <p class="ms-3 small">External:</strong>
+                    <%= round.require_external_comments ? 'Required' : 'Optional' %>
+                    <% if round.require_external_comments && round.min_external_comment_words > 0 %>
+                      (minimum <%= pluralize(round.min_external_comment_words, 'word') %>)
+                    <% end %>
+                  </p>
+                </div>
+              </div>
+
+
+
+
               <div class="row">
                 <div class="col">
                   <div class="d-flex gap-2 flex-wrap">
