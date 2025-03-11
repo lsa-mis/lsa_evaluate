@@ -1,106 +1,138 @@
 <div class="mt-4">
+  <% if @contest_instance.judging_rounds.any? %>
+    <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
+      <div class="p-4 mb-4 card border-primary">
+        <h2>Round <%= round.round_number %></h2>
+        <div class="d-flex align-items-center mb-3">
+          <div class="d-inline-block"
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+               data-bs-html="true"
+               title="Email results to applicants for round <%= round.round_number %><br><small>Contact: <%= h(@container.contact_email.presence || 'Not set') %></small>">
+            <%= button_to send_round_results_container_contest_description_contest_instance_path(
+                @container,
+                @contest_description,
+                @contest_instance,
+                round_id: round.id
+              ),
+              method: :post,
+              class: "btn btn-sm btn-info me-3",
+              disabled: !round.complete?,
+              data: {
+                confirm: "Are you sure you want to send evaluation results to all applicants for round #{round.round_number}?"
+              } do %>
+              <i class="bi bi-envelope text-white"></i>
+              Email round <%= round.round_number %> results
+            <% end %>
+          </div>
 
-    <% if @contest_instance.judging_rounds.any? %>
-      <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
-        <div class="mb-4">
-          <h2>Round <%= round.round_number %></h2>
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
+          <% if round.emails_sent_count > 0 %>
+            <span class="badge bg-secondary"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="top"
+                  title="Number of times emails have been sent for this round">
+              <i class="bi bi-envelope-check me-1"></i>
+              Emails sent: <%= round.emails_sent_count %> time<%= 's' if round.emails_sent_count > 1 %>
+            </span>
+          <% end %>
+        </div>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Entry ID</th>
+                <th>Title</th>
+                <th>Average Rank</th>
+                <th>Individual Rankings</th>
+                <th>Comments</th>
+                <th>Selected for Next Round</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% entries_with_avg_rank = round.entries.distinct.map do |entry|
+                    avg_rank = entry.entry_rankings.where(judging_round: round).average(:rank)
+                    [entry, avg_rank || Float::INFINITY]
+                  end.sort_by { |_, avg_rank| avg_rank } %>
+
+              <% entries_with_avg_rank.each do |entry, _| %>
                 <tr>
-                  <th>Entry ID</th>
-                  <th>Title</th>
-                  <th>Average Rank</th>
-                  <th>Individual Rankings</th>
-                  <th>Comments</th>
-                  <th>Selected for Next Round</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% entries_with_avg_rank = round.entries.distinct.map do |entry|
-                     avg_rank = entry.entry_rankings.where(judging_round: round).average(:rank)
-                     [entry, avg_rank || Float::INFINITY]
-                   end.sort_by { |_, avg_rank| avg_rank } %>
-
-                <% entries_with_avg_rank.each do |entry, _| %>
-                  <tr>
-                    <td><%= entry.id %></td>
-                    <td><%= entry.title %></td>
-                    <td>
-                      <%= entry.entry_rankings.where(judging_round: round).average(:rank)&.round(2) || 'No rankings' %>
-                    </td>
-                    <td>
-                      <div class="rankings-container">
-                        <% rankings = entry.entry_rankings.where(judging_round: round) %>
-                        <% if rankings.any? %>
-                          <% rankings.each do |ranking| %>
-                            <div class="mb-2 d-flex align-items-center" style="font-size: 0.9rem;">
-                              <div class="rankings-email">
-                                <%= content_tag(:span,
-                                  display_email(ranking.user.email),
-                                  data: {
-                                    'bs-toggle': 'tooltip',
-                                    'bs-html': 'true',
-                                    'bs-title': "#{h(ranking.user.display_name_or_first_name_last_name)}<br>#{h(display_email(ranking.user.email))}"
-                                  }
-                                ) %>
-                              </div>
-                              <span class="badge bg-secondary ranking-badge"><%= ranking.rank || 'Not ranked' %></span>
-                            </div>
-                          <% end %>
-                        <% else %>
-                          <div class="text-muted">No rankings yet</div>
-                        <% end %>
-                      </div>
-                    </td>
-                    <td>
-                      <div class="comments-container scrollable-container">
-                        <% rankings = entry.entry_rankings.where(judging_round: round) %>
-                        <% has_comments = false %>
+                  <td><%= entry.id %></td>
+                  <td><%= entry.title %></td>
+                  <td>
+                    <%= entry.entry_rankings.where(judging_round: round).average(:rank)&.round(2) || 'No rankings' %>
+                  </td>
+                  <td>
+                    <div class="rankings-container">
+                      <% rankings = entry.entry_rankings.where(judging_round: round) %>
+                      <% if rankings.any? %>
                         <% rankings.each do |ranking| %>
-                          <% if ranking.external_comments.present? || ranking.internal_comments.present? %>
-                            <% has_comments = true %>
-                            <div class="mb-2 border-bottom pb-2">
-                              <strong><%= content_tag(:span,
+                          <div class="mb-2 d-flex align-items-center" style="font-size: 0.9rem;">
+                            <div class="rankings-email">
+                              <%= content_tag(:span,
                                 display_email(ranking.user.email),
                                 data: {
                                   'bs-toggle': 'tooltip',
                                   'bs-html': 'true',
                                   'bs-title': "#{h(ranking.user.display_name_or_first_name_last_name)}<br>#{h(display_email(ranking.user.email))}"
                                 }
-                              ) %></strong>
-                              <% if ranking.external_comments.present? %>
-                                <div class="text-muted small mt-1">
-                                  <strong class="text-primary">External:</strong>
-                                  <%= ranking.external_comments %>
-                                </div>
-                              <% end %>
-                              <% if ranking.internal_comments.present? %>
-                                <div class="text-muted small mt-1">
-                                  <strong class="text-secondary">Internal:</strong>
-                                  <%= ranking.internal_comments %>
-                                </div>
-                              <% end %>
+                              ) %>
                             </div>
-                          <% end %>
+                            <span class="badge bg-secondary ranking-badge"><%= ranking.rank || 'Not ranked' %></span>
+                          </div>
                         <% end %>
-                        <% unless has_comments %>
-                          <div class="text-muted">No comments yet</div>
+                      <% else %>
+                        <div class="text-muted">No rankings yet</div>
+                      <% end %>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="comments-container scrollable-container">
+                      <% rankings = entry.entry_rankings.where(judging_round: round) %>
+                      <% has_comments = false %>
+                      <% rankings.each do |ranking| %>
+                        <% if ranking.external_comments.present? || ranking.internal_comments.present? %>
+                          <% has_comments = true %>
+                          <div class="mb-2 border-bottom pb-2">
+                            <strong><%= content_tag(:span,
+                              display_email(ranking.user.email),
+                              data: {
+                                'bs-toggle': 'tooltip',
+                                'bs-html': 'true',
+                                'bs-title': "#{h(ranking.user.display_name_or_first_name_last_name)}<br>#{h(display_email(ranking.user.email))}"
+                              }
+                            ) %></strong>
+                            <% if ranking.external_comments.present? %>
+                              <div class="text-muted small mt-1">
+                                <strong class="text-primary">External:</strong>
+                                <%= ranking.external_comments %>
+                              </div>
+                            <% end %>
+                            <% if ranking.internal_comments.present? %>
+                              <div class="text-muted small mt-1">
+                                <strong class="text-secondary">Internal:</strong>
+                                <%= ranking.internal_comments %>
+                              </div>
+                            <% end %>
+                          </div>
                         <% end %>
-                        <div style="height: 180px;"></div>
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <%= boolean_to_yes_no(entry.entry_rankings.where(judging_round: round, selected_for_next_round: true).exists?) %>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
+                      <% end %>
+                      <% unless has_comments %>
+                        <div class="text-muted">No comments yet</div>
+                      <% end %>
+                      <div style="height: 180px;"></div>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <%= boolean_to_yes_no(entry.entry_rankings.where(judging_round: round, selected_for_next_round: true).exists?) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
         </div>
-      <% end %>
-    <% else %>
-      <p class="text-muted">No judging rounds have been created yet.</p>
+      </div>
     <% end %>
+  <% else %>
+    <p class="text-muted">No judging rounds have been created yet.</p>
+  <% end %>
 </div>
