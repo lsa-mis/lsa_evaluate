@@ -19,7 +19,8 @@
               class: "btn btn-sm btn-info me-3",
               disabled: !round.complete?,
               data: {
-                confirm: "Are you sure you want to send evaluation results to all applicants for round #{round.round_number}?"
+                controller: "confirm",
+                confirm_message_value: "Are you sure you want to send evaluation results to all applicants for round #{round.round_number}?"
               } do %>
               <i class="bi bi-envelope text-white"></i>
               Email round <%= round.round_number %> results
