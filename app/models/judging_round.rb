@@ -5,6 +5,7 @@
 #  id                         :bigint           not null, primary key
 #  active                     :boolean          default(FALSE), not null
 #  completed                  :boolean          default(FALSE), not null
+#  emails_sent_count          :integer          default(0), not null
 #  end_date                   :datetime
 #  min_external_comment_words :integer          default(0), not null
 #  min_internal_comment_words :integer          default(0), not null
@@ -47,6 +48,11 @@ class JudgingRound < ApplicationRecord
   scope :active, -> { where(active: true) }
 
   before_create :set_active_by_default
+
+  # Alias for completed? to match what's used in views
+  def complete?
+    completed?
+  end
 
   def activate!
     return false unless valid?
