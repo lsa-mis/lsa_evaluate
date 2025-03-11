@@ -1,7 +1,7 @@
 class ContestInstancesController < ApplicationController
   before_action :set_container
   before_action :set_contest_description
-  before_action :set_contest_instance, only: %i[show edit update destroy]
+  before_action :set_contest_instance, only: %i[show edit update destroy send_round_results]
   before_action :authorize_container_access
 
   # GET /contest_instances
@@ -76,6 +76,47 @@ class ContestInstancesController < ApplicationController
         format.html { redirect_to container_contest_description_contest_instances_path(@container, @contest_description), alert: @contest_description.errors.full_messages.to_sentence }
       end
     end
+  end
+
+  # POST /containers/:container_id/contest_descriptions/:contest_description_id/contest_instances/:id/send_round_results
+  def send_round_results
+    authorize @contest_instance, :manage?
+
+    round_id = params[:round_id]
+    judging_round = @contest_instance.judging_rounds.find_by(id: round_id)
+
+    if judging_round.nil?
+      redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                 alert: 'Judging round not found.'
+      return
+    end
+
+    if !judging_round.completed?
+      redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                 alert: 'Cannot send results for an incomplete judging round.'
+      return
+    end
+
+    # Get all entries for this round
+    entries = judging_round.entries.uniq
+
+    email_count = 0
+
+    # Send an email for each entry
+    entries.each do |entry|
+      if Rails.env.development?
+        ResultsMailer.entry_evaluation_notification(entry, judging_round).deliver_now
+      else
+        ResultsMailer.entry_evaluation_notification(entry, judging_round).deliver_later
+      end
+      email_count += 1
+    end
+
+    # Increment the emails sent counter for this round
+    judging_round.increment!(:emails_sent_count)
+
+    redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+               notice: "Successfully queued #{email_count} evaluation result emails for round #{judging_round.round_number}. This is email batch ##{judging_round.emails_sent_count}."
   end
 
   private
