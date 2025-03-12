@@ -9,19 +9,14 @@
                data-bs-placement="top"
                data-bs-html="true"
                title="Email results to applicants for round <%= round.round_number %><br><small>Contact: <%= h(@container.contact_email.presence || 'Not set') %></small>">
-            <%= button_to send_round_results_container_contest_description_contest_instance_path(
+            <%= link_to email_preferences_container_contest_description_contest_instance_path(
                 @container,
                 @contest_description,
                 @contest_instance,
                 round_id: round.id
               ),
-              method: :post,
               class: "btn btn-sm btn-info me-3",
-              disabled: !round.complete?,
-              data: {
-                controller: "confirm",
-                confirm_message_value: "Are you sure you want to send evaluation results to all applicants for round #{round.round_number}?"
-              } do %>
+              disabled: !round.complete? do %>
               <i class="bi bi-envelope text-white"></i>
               Email round <%= round.round_number %> results
             <% end %>
