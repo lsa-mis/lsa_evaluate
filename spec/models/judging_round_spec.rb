@@ -208,4 +208,55 @@ RSpec.describe JudgingRound, type: :model do
       end
     end
   end
+
+  describe 'email tracking functionality' do
+    let(:contest_instance) { create(:contest_instance) }
+    let!(:first_round) do
+      create(:judging_round,
+             contest_instance: contest_instance,
+             round_number: 1,
+             start_date: contest_instance.date_closed + 1.day,
+             end_date: contest_instance.date_closed + 2.days)
+    end
+
+    it 'defaults emails_sent_count to 0' do
+      expect(first_round.emails_sent_count).to eq(0)
+    end
+
+    it 'increments emails_sent_count correctly' do
+      expect {
+        first_round.increment!(:emails_sent_count)
+      }.to change { first_round.reload.emails_sent_count }.from(0).to(1)
+
+      expect {
+        first_round.increment!(:emails_sent_count)
+      }.to change { first_round.reload.emails_sent_count }.from(1).to(2)
+    end
+
+    context 'with multiple rounds' do
+      let!(:second_round) do
+        create(:judging_round,
+               contest_instance: contest_instance,
+               round_number: 2,
+               start_date: first_round.end_date + 1.hour,
+               emails_sent_count: 0)
+      end
+
+      before do
+        # Set first round to have some emails sent for testing
+        first_round.update!(emails_sent_count: 2)
+      end
+
+      it 'tracks emails_sent_count independently for each round' do
+        expect(first_round.reload.emails_sent_count).to eq(2)
+        expect(second_round.emails_sent_count).to eq(0)
+
+        second_round.increment!(:emails_sent_count)
+        expect(second_round.reload.emails_sent_count).to eq(1)
+
+        # Ensure first round count remains unchanged
+        expect(first_round.reload.emails_sent_count).to eq(2)
+      end
+    end
+  end
 end

@@ -28,5 +28,6 @@ FactoryBot.define do
     department
     visibility
     notes { "Notes for #{name}" }
+    contact_email { "contact@example.com" }
   end
 end

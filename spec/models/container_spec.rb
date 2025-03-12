@@ -101,7 +101,8 @@ RSpec.describe Container do
           name: 'Test Container',
           department:,
           visibility:,
-          creator: user
+          creator: user,
+          contact_email: 'test@example.com'
         )
       end
 
