@@ -14,7 +14,8 @@ RSpec.describe ResultsMailer, type: :mailer do
     # Create a second entry for the second ranking
     let(:entry2) { create(:entry, title: 'Second Entry', profile: profile, contest_instance: contest_instance, category: category, pen_name: 'Writer Pen') }
     let(:judging_round) { create(:judging_round, contest_instance: contest_instance, round_number: 1, completed: true,
-                                start_date: 3.weeks.ago, end_date: 2.weeks.ago) }
+                                start_date: 3.weeks.ago, end_date: 2.weeks.ago,
+                                include_average_ranking: true, include_advancement_status: true) }
     let(:judge) { create(:user, :with_judge_role) }
 
     # Create the judging assignment to link the judge to the contest
@@ -83,6 +84,8 @@ RSpec.describe ResultsMailer, type: :mailer do
       before do
         # Update the existing ranking to be not selected for next round
         ranking1.update_column(:selected_for_next_round, false)
+        # Make sure preferences are enabled
+        judging_round.update(include_average_ranking: true, include_advancement_status: true)
       end
 
       it 'indicates the entry was not selected' do
@@ -105,7 +108,8 @@ RSpec.describe ResultsMailer, type: :mailer do
     context 'when it is the final round' do
       # Make sure the final round dates come after the first round end date
       let(:final_round) { create(:judging_round, contest_instance: contest_instance, round_number: 2, completed: true,
-                                start_date: 1.week.ago, end_date: 2.days.ago) }
+                                start_date: 1.week.ago, end_date: 2.days.ago,
+                                include_average_ranking: true, include_advancement_status: true) }
 
       before do
         # Assign the same judge to the final round
@@ -120,6 +124,69 @@ RSpec.describe ResultsMailer, type: :mailer do
 
       it 'indicates the entry is a finalist' do
         expect(@mail.body.encoded).to include('selected as a finalist')
+      end
+    end
+
+    context 'with email preferences' do
+      context 'when include_average_ranking is false' do
+        before do
+          judging_round.update(include_average_ranking: false)
+        end
+
+        it 'does not include the average ranking' do
+          expect(mail.body.encoded).not_to include('average ranking of')
+        end
+      end
+
+      context 'when include_average_ranking is true' do
+        before do
+          judging_round.update(include_average_ranking: true)
+        end
+
+        it 'includes the average ranking' do
+          expect(mail.body.encoded).to include('average ranking of')
+        end
+      end
+
+      context 'when include_advancement_status is false' do
+        before do
+          judging_round.update(include_advancement_status: false)
+        end
+
+        it 'does not include advancement status' do
+          expect(mail.body.encoded).not_to include('has been selected to advance')
+          expect(mail.body.encoded).not_to include('selected as a finalist')
+          expect(mail.body.encoded).not_to include('not selected to advance')
+        end
+      end
+
+      context 'when include_advancement_status is true' do
+        before do
+          judging_round.update(include_advancement_status: true)
+        end
+
+        it 'includes advancement status' do
+          # Since our test entry is selected for next round, it should include this message
+          expect(mail.body.encoded).to include('has been selected')
+        end
+      end
+
+      context 'when both preferences are false' do
+        before do
+          judging_round.update(include_average_ranking: false, include_advancement_status: false)
+        end
+
+        it 'excludes both sections' do
+          expect(mail.body.encoded).not_to include('average ranking of')
+          expect(mail.body.encoded).not_to include('has been selected')
+          expect(mail.body.encoded).not_to include('not selected')
+        end
+
+        it 'still includes other content' do
+          expect(mail.body.encoded).to include('Test Entry')
+          expect(mail.body.encoded).to include('Category: Poetry')
+          expect(mail.body.encoded).to include('Great work!')
+        end
       end
     end
   end

@@ -63,7 +63,7 @@ RSpec.describe 'Judging Results Email', type: :system do
     allow(ResultsMailer).to receive(:entry_evaluation_notification).and_return(double(deliver_now: true, deliver_later: true))
   end
 
-  it 'shows completed round email counter and enables/disables buttons correctly', :js do
+  it 'shows completed round email counter and enables/disables links correctly', :js do
     # Visit the contest instance page
     visit container_contest_description_contest_instance_path(container, contest_description, contest_instance)
 
@@ -75,25 +75,25 @@ RSpec.describe 'Judging Results Email', type: :system do
     expect(page).to have_content('Round 1')
     expect(page).to have_content('Round 2')
 
-    # Get all buttons with email text
-    buttons = page.all('button', text: /Email round \d+ results/)
+    # Get all links with email text
+    links = page.all('a', text: /Email round \d+ results/)
 
-    # Check there are 2 buttons (one for each round)
-    expect(buttons.size).to eq(2)
+    # Check there are 2 links (one for each round)
+    expect(links.size).to eq(2)
 
-    # First button should be for round 1 and enabled
-    expect(buttons[0].text).to include('Email round 1 results')
-    expect(buttons[0]['disabled']).to eq('false').or eq(false).or be_nil
+    # First link should be for round 1 and enabled
+    expect(links[0].text).to include('Email round 1 results')
+    expect(links[0]['disabled']).to be_nil
 
-    # Second button should be for round 2 and disabled
-    expect(buttons[1].text).to include('Email round 2 results')
-    expect(buttons[1]['disabled']).to eq('true').or eq(true)
+    # Second link should be for round 2 and disabled
+    expect(links[1].text).to include('Email round 2 results')
+    expect(links[1]['disabled']).to eq('disabled')
 
     # Check that the badge is displayed for round 1
     expect(page).to have_content('Emails sent: 1 time')
   end
 
-  it 'sends emails and increments counter when button is clicked', :js do
+  it 'navigates to email preferences and sends emails', :js do
     # Visit the contest instance page
     visit container_contest_description_contest_instance_path(container, contest_description, contest_instance)
 
@@ -104,9 +104,16 @@ RSpec.describe 'Judging Results Email', type: :system do
     # Initial badge count
     expect(page).to have_content('Emails sent: 1 time')
 
-    # Click the email button for round 1
+    # Click the email link for round 1
+    click_link 'Email round 1 results'
+
+    # Verify we're on the email preferences page
+    expect(page).to have_content('Email Results Preferences')
+    expect(page).to have_content('Round 1 Email Content Options')
+
+    # Submit the form with default preferences
     accept_confirm do
-      click_button 'Email round 1 results'
+      click_button 'Send Emails'
     end
 
     # Verify success message appears
