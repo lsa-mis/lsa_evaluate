@@ -78,7 +78,26 @@ class ContestInstancesController < ApplicationController
     end
   end
 
-  # POST /containers/:container_id/contest_descriptions/:contest_description_id/contest_instances/:id/send_round_results
+  def email_preferences
+    set_contest_instance
+    authorize @contest_instance, :send_round_results?
+
+    round_id = params[:round_id]
+    @judging_round = @contest_instance.judging_rounds.find_by(id: round_id)
+
+    if @judging_round.nil?
+      redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                 alert: 'Judging round not found.'
+      return
+    end
+
+    if !@judging_round.completed?
+      redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                 alert: 'Cannot send results for an incomplete judging round.'
+      nil
+    end
+  end
+
   def send_round_results
     authorize @contest_instance, :send_round_results?
 
@@ -95,6 +114,14 @@ class ContestInstancesController < ApplicationController
       redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
                  alert: 'Cannot send results for an incomplete judging round.'
       return
+    end
+
+    # Update email preferences if they were provided
+    if params[:include_average_ranking].present? || params[:include_advancement_status].present?
+      judging_round.update(
+        include_average_ranking: params[:include_average_ranking] == '1',
+        include_advancement_status: params[:include_advancement_status] == '1'
+      )
     end
 
     # Get all entries for this round
