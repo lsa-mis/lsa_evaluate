@@ -13,10 +13,11 @@ Submitted: <%= @entry.created_at.strftime("%B %d, %Y") %>
 
 EVALUATION RESULTS - ROUND <%= @round.round_number %>
 =================
-<% if @avg_rank.present? %>
+<% if @avg_rank.present? && @round.include_average_ranking %>
 Your submission received an average ranking of <%= @avg_rank %> from our judging panel.
 <% end %>
 
+<% if @round.include_advancement_status %>
 <% if @selected_for_next_round && @contest_instance.judging_rounds.exists?(round_number: @round.round_number + 1) %>
 CONGRATULATIONS! Your entry has been selected to advance to Round <%= @round.round_number + 1 %>.
 <% elsif @round.round_number == @contest_instance.judging_rounds.maximum(:round_number) %>
@@ -27,6 +28,7 @@ We regret to inform you that your entry was not selected as a finalist.
 <% end %>
 <% elsif !@selected_for_next_round %>
 We regret to inform you that your entry was not selected to advance to the next round of judging.
+<% end %>
 <% end %>
 
 <% if @external_comments_with_judges.any? %>
