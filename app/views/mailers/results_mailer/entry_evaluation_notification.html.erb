@@ -96,28 +96,30 @@
 
     <h2>Evaluation Results - Round <%= @round.round_number %></h2>
 
-    <% if @avg_rank.present? %>
+    <% if @avg_rank.present? && @round.include_average_ranking %>
       <p>Your submission received an average ranking of <span class="result-highlight"><%= @avg_rank %></span> from our judging panel.</p>
     <% end %>
 
-    <% if @selected_for_next_round && @contest_instance.judging_rounds.exists?(round_number: @round.round_number + 1) %>
-      <div class="advance-notice">
-        <p><strong>Congratulations!</strong> Your entry has been selected to advance to Round <%= @round.round_number + 1 %>.</p>
-      </div>
-    <% elsif @round.round_number == @contest_instance.judging_rounds.maximum(:round_number) %>
-      <% if @selected_for_next_round %>
+    <% if @round.include_advancement_status %>
+      <% if @selected_for_next_round && @contest_instance.judging_rounds.exists?(round_number: @round.round_number + 1) %>
         <div class="advance-notice">
-          <p><strong>Congratulations!</strong> Your entry has been selected as a finalist.</p>
+          <p><strong>Congratulations!</strong> Your entry has been selected to advance to Round <%= @round.round_number + 1 %>.</p>
         </div>
-      <% else %>
+      <% elsif @round.round_number == @contest_instance.judging_rounds.maximum(:round_number) %>
+        <% if @selected_for_next_round %>
+          <div class="advance-notice">
+            <p><strong>Congratulations!</strong> Your entry has been selected as a finalist.</p>
+          </div>
+        <% else %>
+          <div class="not-advance-notice">
+            <p>We regret to inform you that your entry was not selected as a finalist.</p>
+          </div>
+        <% end %>
+      <% elsif !@selected_for_next_round %>
         <div class="not-advance-notice">
-          <p>We regret to inform you that your entry was not selected as a finalist.</p>
+          <p>We regret to inform you that your entry was not selected to advance to the next round of judging.</p>
         </div>
       <% end %>
-    <% elsif !@selected_for_next_round %>
-      <div class="not-advance-notice">
-        <p>We regret to inform you that your entry was not selected to advance to the next round of judging.</p>
-      </div>
     <% end %>
 
     <% if @external_comments_with_judges.any? %>
