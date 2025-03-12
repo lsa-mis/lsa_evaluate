@@ -5,7 +5,10 @@
 #  id                         :bigint           not null, primary key
 #  active                     :boolean          default(FALSE), not null
 #  completed                  :boolean          default(FALSE), not null
+#  emails_sent_count          :integer          default(0), not null
 #  end_date                   :datetime
+#  include_advancement_status :boolean          default(FALSE)
+#  include_average_ranking    :boolean          default(FALSE)
 #  min_external_comment_words :integer          default(0), not null
 #  min_internal_comment_words :integer          default(0), not null
 #  require_external_comments  :boolean          default(FALSE), not null

@@ -51,6 +51,10 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :letter_opener_web
   config.action_mailer.perform_deliveries = true
 
+  # Use the inline adapter for Active Job in development so emails sent with deliver_later
+  # will be processed immediately and show up in letter_opener_web
+  config.active_job.queue_adapter = :inline
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 

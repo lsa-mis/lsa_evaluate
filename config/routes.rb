@@ -34,6 +34,10 @@ Rails.application.routes.draw do
   resources :containers do
     resources :contest_descriptions do
       resources :contest_instances do
+        member do
+          get 'email_preferences'
+          post 'send_round_results'
+        end
         resources :judging_rounds do
           member do
             patch :activate

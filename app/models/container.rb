@@ -5,6 +5,7 @@
 # Table name: containers
 #
 #  id            :bigint           not null, primary key
+#  contact_email :string(255)
 #  name          :string(255)
 #  notes         :text(65535)
 #  created_at    :datetime         not null
@@ -40,6 +41,8 @@ class Container < ApplicationRecord
   validates :name, presence: true, uniqueness: true
   validates :department_id, presence: { message: 'You must select a department' }
   validates :visibility_id, presence: { message: 'You must select a visibility option' }
+  validates :contact_email, presence: { message: 'You must enter a contact email' }
+  validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP, message: 'You must enter a valid email address' }
 
   scope :visible, -> { joins(:visibility).where(visibilities: { kind: 'Public' }) } # Only show containers with 'Public' visibility
 
