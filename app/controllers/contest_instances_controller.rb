@@ -80,7 +80,7 @@ class ContestInstancesController < ApplicationController
 
   # POST /containers/:container_id/contest_descriptions/:contest_description_id/contest_instances/:id/send_round_results
   def send_round_results
-    authorize @contest_instance, :manage?
+    authorize @contest_instance, :send_round_results?
 
     round_id = params[:round_id]
     judging_round = @contest_instance.judging_rounds.find_by(id: round_id)
