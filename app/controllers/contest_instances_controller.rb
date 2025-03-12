@@ -104,7 +104,7 @@ class ContestInstancesController < ApplicationController
 
     # Send an email for each entry
     entries.each do |entry|
-      if Rails.env.development?
+      if Rails.env.local?
         ResultsMailer.entry_evaluation_notification(entry, judging_round).deliver_now
       else
         ResultsMailer.entry_evaluation_notification(entry, judging_round).deliver_later
