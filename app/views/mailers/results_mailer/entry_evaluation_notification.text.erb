@@ -29,13 +29,14 @@ We regret to inform you that your entry was not selected as a finalist.
 We regret to inform you that your entry was not selected to advance to the next round of judging.
 <% end %>
 
-<% if @external_comments.any? %>
+<% if @external_comments_with_judges.any? %>
 FEEDBACK FROM JUDGES
 =================
 Our judges have provided the following feedback on your submission:
 
-<% @external_comments.each do |comment| %>
-* <%= comment.gsub(/\n/, "\n  ") %>
+<% @external_comments_with_judges.each do |comment_data| %>
+* From Judge: <%= comment_data[:judge] %>
+  <%= comment_data[:comment].gsub(/\n/, "\n  ") %>
 
 <% end %>
 <% end %>

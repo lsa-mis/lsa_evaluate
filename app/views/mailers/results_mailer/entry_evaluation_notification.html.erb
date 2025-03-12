@@ -49,6 +49,11 @@
       background-color: #f9f9f9;
       border-left: 3px solid #1a5a96;
     }
+    .judge-name {
+      color: #1a5a96;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+    }
     .advance-notice {
       background-color: #d4edda;
       color: #155724;
@@ -115,13 +120,14 @@
       </div>
     <% end %>
 
-    <% if @external_comments.any? %>
+    <% if @external_comments_with_judges.any? %>
       <h3>Feedback from Judges</h3>
       <p>Our judges have provided the following feedback on your submission:</p>
 
-      <% @external_comments.each do |comment| %>
+      <% @external_comments_with_judges.each do |comment_data| %>
         <div class="comment">
-          <%= simple_format(comment) %>
+          <p class="judge-name"><strong>From Judge: <%= comment_data[:judge] %></strong></p>
+          <%= simple_format(comment_data[:comment]) %>
         </div>
       <% end %>
     <% end %>

@@ -24,7 +24,15 @@ class ResultsMailer < ApplicationMailer
     @selected_for_next_round = @rankings.any?(&:selected_for_next_round?)
 
     # Only include external comments that are meant to be shared with applicants
-    @external_comments = @rankings.map(&:external_comments).compact.reject(&:empty?)
+    # and include the judge information with each comment
+    @external_comments_with_judges = @rankings.map do |ranking|
+      if ranking.external_comments.present? && !ranking.external_comments.empty?
+        {
+          comment: ranking.external_comments,
+          judge: ranking.user.display_name_or_first_name_last_name
+        }
+      end
+    end.compact
 
     subject = "Evaluation Results for \"#{@entry.title}\" - #{@contest_description.name}"
 
