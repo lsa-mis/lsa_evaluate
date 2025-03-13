@@ -36,7 +36,7 @@ Rails.application.configure do
 
   # Logging
   config.log_level = :info
-  config.log_tags  = [:request_id]
+  config.log_tags  = [ :request_id ]
 
   if ENV['RAILS_LOG_TO_STDOUT'].present?
     logger           = ActiveSupport::Logger.new($stdout)
@@ -65,8 +65,8 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Active Job
-  # config.active_job.queue_adapter     = :resque
-  # config.active_job.queue_name_prefix = "lsa_evaluate_staging"
+  config.active_job.queue_adapter = :async
+  config.active_job.queue_name_prefix = 'lsa_evaluate_staging'
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
