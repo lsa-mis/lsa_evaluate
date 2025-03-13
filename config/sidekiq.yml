@@ -1,0 +1,25 @@
+---
+:concurrency: 5
+:max_retries: 3
+
+# Sidekiq will run this file through ERB when loading it
+:queues:
+  - [critical, 3]
+  - [default, 2]
+  - [<%= ENV['RAILS_ENV'] || 'development' %>, 2]
+  - [<%= ENV['RAILS_ENV'] || 'development' %>_mailers, 2]
+  - [low, 1]
+
+development:
+  :concurrency: 5
+
+test:
+  :concurrency: 1
+
+staging:
+  :concurrency: 10
+  :max_retries: 5
+
+production:
+  :concurrency: 20
+  :max_retries: 10
