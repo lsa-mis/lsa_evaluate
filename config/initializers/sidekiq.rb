@@ -9,8 +9,8 @@ redis_config = {
 Sidekiq.configure_server do |config|
   config.redis = redis_config
 
-  # In Sidekiq 7.3.x, we need to use the options hash directly
-  Sidekiq.options[:retry] = 5
+  # Set default retry count for Sidekiq 7.3.x
+  # The retry option is now set in the sidekiq.yml file
 end
 
 Sidekiq.configure_client do |config|
