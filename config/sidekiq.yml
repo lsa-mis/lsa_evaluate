@@ -9,6 +9,8 @@
   - [default, 2]
   - [<%= ENV['RAILS_ENV'] || 'development' %>, 2]
   - [<%= ENV['RAILS_ENV'] || 'development' %>_mailers, 2]
+  - [lsa_evaluate_<%= ENV['RAILS_ENV'] || 'development' %>_default, 2]
+  - [lsa_evaluate_<%= ENV['RAILS_ENV'] || 'development' %>_mailers, 2]
   - [low, 1]
 
 # Environment-specific configurations
