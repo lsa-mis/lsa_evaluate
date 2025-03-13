@@ -1,6 +1,8 @@
 ---
 :concurrency: 5
-:max_retries: 3
+# In Sidekiq 7.x, max_retries is set via default_worker_options
+:default_worker_options:
+  retry: 3
 
 # Sidekiq will run this file through ERB when loading it
 :queues:
@@ -12,14 +14,20 @@
 
 development:
   :concurrency: 5
+  :default_worker_options:
+    retry: 3
 
 test:
   :concurrency: 1
+  :default_worker_options:
+    retry: 3
 
 staging:
   :concurrency: 10
-  :max_retries: 5
+  :default_worker_options:
+    retry: 5
 
 production:
   :concurrency: 20
-  :max_retries: 10
+  :default_worker_options:
+    retry: 10
