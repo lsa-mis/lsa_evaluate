@@ -65,7 +65,7 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Active Job
-  config.active_job.queue_adapter = :async
+  config.active_job.queue_adapter = :sidekiq
   config.active_job.queue_name_prefix = 'lsa_evaluate_staging'
 
   # Do not dump schema after migrations.
