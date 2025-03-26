@@ -95,11 +95,26 @@ RSpec.describe ContestInstancesController, type: :controller do
 
         # Configure ActiveJob to use inline adapter for testing
         ActiveJob::Base.queue_adapter = :inline
+
+        # Mock the mailer to return a proper mail object
+        allow(ResultsMailer).to receive(:entry_evaluation_notification).and_wrap_original do |original_method, *args|
+          mail = original_method.call(*args)
+          allow(mail).to receive(:deliver_now) do
+            ActionMailer::Base.deliveries << mail
+            true
+          end
+          allow(mail).to receive(:deliver_later) do
+            ActionMailer::Base.deliveries << mail
+            true
+          end
+          mail
+        end
       end
 
       it 'sends emails for each entry' do
-        expect(ResultsMailer).to receive(:entry_evaluation_notification).with(entry1, judging_round).and_call_original
-        expect(ResultsMailer).to receive(:entry_evaluation_notification).with(entry2, judging_round).and_call_original
+        # Verify the mailer was called with the correct arguments
+        expect(ResultsMailer).to receive(:entry_evaluation_notification).with(entry1, judging_round)
+        expect(ResultsMailer).to receive(:entry_evaluation_notification).with(entry2, judging_round)
 
         expect {
           post :send_round_results, params: {
