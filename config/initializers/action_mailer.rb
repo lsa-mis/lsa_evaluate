@@ -13,8 +13,9 @@ ActionMailer::Base.class_eval do
   end
 
   # Hook into the delivery process
-  self.register_observer(-> (message) { message.delivery_method.settings[:return_response] = true })
-  self.register_interceptor(-> (message) { message })
+  # Remove problematic observer and interceptor
+  # self.register_observer(-> (message) { message.delivery_method.settings[:return_response] = true })
+  # self.register_interceptor(-> (message) { message })
   # Remove problematic observer that causes recursion
   # self.register_observer(-> (message) {
   #   message.deliver_later unless Rails.env.test?
