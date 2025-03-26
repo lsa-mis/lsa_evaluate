@@ -68,6 +68,13 @@ Rails.application.configure do
   config.active_job.queue_adapter = :sidekiq
   config.active_job.queue_name_prefix = 'lsa_evaluate_staging'
 
+  # Mount letter_opener_web for viewing emails in staging
+  config.after_initialize do
+    Rails.application.routes.prepend do
+      mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.staging?
+    end
+  end
+
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 end
