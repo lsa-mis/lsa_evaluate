@@ -49,6 +49,7 @@ Rails.application.configure do
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
+  config.ssl_options = { hsts: false } # This disables the HSTS header while still forcing SSL. The header is set in the nginx config on the server.
 
   # Ensure the session cookies are also set to secure in production
   config.session_store :cookie_store, key: 'evaluate_session', secure: Rails.env.production?
