@@ -80,7 +80,7 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     user_name: 'apikey',
     password: Rails.application.credentials.sendgrid[:apikey],
-    domain: evaluate.lsa.umich.edu,
+    domain: 'evaluate.lsa.umich.edu',
     address: 'smtp.sendgrid.net',
     port: 587,
     authentication: :plain,
