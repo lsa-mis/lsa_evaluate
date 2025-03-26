@@ -131,7 +131,8 @@ class ContestInstancesController < ApplicationController
 
     # Send an email for each entry
     entries.each do |entry|
-      ResultsMailer.entry_evaluation_notification(entry, judging_round).deliver_later
+      mail = ResultsMailer.entry_evaluation_notification(entry, judging_round)
+      mail.deliver_later
       email_count += 1
     end
 
