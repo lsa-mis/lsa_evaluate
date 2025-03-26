@@ -49,6 +49,7 @@ Rails.application.configure do
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   config.force_ssl = true
+  config.ssl_options = { hsts: false } # This disables the HSTS header while still forcing SSL. The header is set in the nginx config on the server.
 
   # Ensure the session cookies are also set to secure in production
   config.session_store :cookie_store, key: 'evaluate_session', secure: Rails.env.production?
@@ -64,14 +65,30 @@ Rails.application.configure do
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter     = :resque
-  # config.active_job.queue_name_prefix = "lsa_evaluate_production"
+  config.active_job.queue_adapter = :sidekiq
+  config.active_job.queue_name_prefix = 'lsa_evaluate_production'
 
   config.action_mailer.perform_caching = false
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
+
+  # SendGrid configuration for email delivery
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.smtp_settings = {
+    user_name: 'apikey',
+    password: Rails.application.credentials.sendgrid[:apikey],
+    domain: evaluate.lsa.umich.edu,
+    address: 'smtp.sendgrid.net',
+    port: 587,
+    authentication: :plain,
+    enable_starttls_auto: true
+  }
+
+  # Set the host for URL generation in emails
+  config.action_mailer.default_url_options = { host: 'evaluate.lsa.umich.edu', protocol: 'https' }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #333;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      margin-bottom: 20px;
+    }
+    .logo {
+      max-width: 150px;
+    }
+    h1, h2, h3 {
+      color: #1a5a96;
+      margin-top: 20px;
+    }
+    .entry-details {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      font-size: 0.8em;
+      color: #666;
+    }
+    .result-highlight {
+      font-weight: bold;
+      color: #1a5a96;
+      font-size: 1.1em;
+    }
+    .comment {
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-left: 3px solid #1a5a96;
+    }
+    .judge-name {
+      color: #1a5a96;
+      margin-bottom: 5px;
+      font-size: 0.9em;
+    }
+    .advance-notice {
+      background-color: #d4edda;
+      color: #155724;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+    .not-advance-notice {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <!-- Optional logo -->
+      <!-- <img src="[LOGO_URL]" alt="University Logo" class="logo"> -->
+      <h1><%= @contest_description.name %></h1>
+    </div>
+
+    <p>Dear <%= @user.display_name_or_first_name_last_name %>,</p>
+
+    <p>Thank you for your submission to the <%= @contest_description.name %>. We appreciate your participation and the effort you put into your work.</p>
+
+    <div class="entry-details">
+      <h2>Your Entry Details</h2>
+      <p><strong>Title:</strong> <%= @entry.title %></p>
+      <p><strong>Submitted:</strong> <%= @entry.created_at.strftime("%B %d, %Y") %></p>
+      <% if @entry.category.present? %>
+        <p><strong>Category:</strong> <%= @entry.category.kind %></p>
+      <% end %>
+      <% if @entry.pen_name.present? %>
+        <p><strong>Pen Name:</strong> <%= @entry.pen_name %></p>
+      <% end %>
+    </div>
+
+    <h2>Evaluation Results - Round <%= @round.round_number %></h2>
+
+    <% if @avg_rank.present? && @round.include_average_ranking %>
+      <p>Your submission received an average ranking of <span class="result-highlight"><%= @avg_rank %></span> from our judging panel.</p>
+    <% end %>
+
+    <% if @round.include_advancement_status %>
+      <% if @selected_for_next_round && @contest_instance.judging_rounds.exists?(round_number: @round.round_number + 1) %>
+        <div class="advance-notice">
+          <p><strong>Congratulations!</strong> Your entry has been selected to advance to Round <%= @round.round_number + 1 %>.</p>
+        </div>
+      <% elsif @round.round_number == @contest_instance.judging_rounds.maximum(:round_number) %>
+        <% if @selected_for_next_round %>
+          <div class="advance-notice">
+            <p><strong>Congratulations!</strong> Your entry has been selected as a finalist.</p>
+          </div>
+        <% else %>
+          <div class="not-advance-notice">
+            <p>We regret to inform you that your entry was not selected as a finalist.</p>
+          </div>
+        <% end %>
+      <% elsif !@selected_for_next_round %>
+        <div class="not-advance-notice">
+          <p>We regret to inform you that your entry was not selected to advance to the next round of judging.</p>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% if @external_comments_with_judges.any? %>
+      <h3>Feedback from Judges</h3>
+      <p>Our judges have provided the following feedback on your submission:</p>
+
+      <% @external_comments_with_judges.each do |comment_data| %>
+        <div class="comment">
+          <p class="judge-name"><strong>From Judge: <%= comment_data[:judge] %></strong></p>
+          <%= simple_format(comment_data[:comment]) %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <p>We value your creativity and hope you found this competition to be a rewarding experience. Your participation contributes to the vibrant artistic and academic community at our university.</p>
+
+    <% if @contact_email.present? %>
+      <p>If you have any questions about the judging process or results, please contact <%= @contact_email %>.</p>
+    <% end %>
+
+    <div class="footer">
+      <p>This is an automated email. Please do not reply to this message.</p>
+      <p>&copy; <%= Date.today.year %> <%= @container.name %> | All Rights Reserved</p>
+    </div>
+  </div>
+</body>
+</html>

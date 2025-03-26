@@ -3,6 +3,7 @@
 # Table name: containers
 #
 #  id            :bigint           not null, primary key
+#  contact_email :string(255)
 #  name          :string(255)
 #  notes         :text(65535)
 #  created_at    :datetime         not null
@@ -100,7 +101,8 @@ RSpec.describe Container do
           name: 'Test Container',
           department:,
           visibility:,
-          creator: user
+          creator: user,
+          contact_email: 'test@example.com'
         )
       end
 

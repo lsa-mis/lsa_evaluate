@@ -6,6 +6,12 @@ Rails.application.routes.draw do
   get 'bulk_contest_instances/create'
   root 'static_pages#home'
 
+  # Sidekiq Web UI
+  require 'sidekiq/web'
+  authenticate :user, ->(user) { user.axis_mundi? } do
+    mount Sidekiq::Web => '/sidekiq'
+  end
+
   resources :entries do
     member do
       patch 'soft_delete'
@@ -34,6 +40,10 @@ Rails.application.routes.draw do
   resources :containers do
     resources :contest_descriptions do
       resources :contest_instances do
+        member do
+          get 'email_preferences'
+          post 'send_round_results'
+        end
         resources :judging_rounds do
           member do
             patch :activate

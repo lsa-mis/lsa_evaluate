@@ -36,7 +36,7 @@ Rails.application.configure do
 
   # Logging
   config.log_level = :info
-  config.log_tags  = [:request_id]
+  config.log_tags  = [ :request_id ]
 
   if ENV['RAILS_LOG_TO_STDOUT'].present?
     logger           = ActiveSupport::Logger.new($stdout)
@@ -52,7 +52,7 @@ Rails.application.configure do
 
   # Action Mailer
   host = 'https://evaluate-staging.lsa.umich.edu/'
-  config.action_mailer.default_url_options = { host: }
+  config.action_mailer.default_url_options = { host: host }
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_caching = false
   config.action_mailer.delivery_method = :letter_opener_web
@@ -65,8 +65,8 @@ Rails.application.configure do
   config.active_support.report_deprecations = false
 
   # Active Job
-  # config.active_job.queue_adapter     = :resque
-  # config.active_job.queue_name_prefix = "lsa_evaluate_staging"
+  config.active_job.queue_adapter = :sidekiq
+  config.active_job.queue_name_prefix = 'lsa_evaluate_staging'
 
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false

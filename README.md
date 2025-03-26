@@ -47,4 +47,20 @@ In its initial implementation, LSA Evaluate will serve the University of Michiga
    rails server
   ```
 
+## Email Configuration with SendGrid
+
+This application uses SendGrid for email delivery in the production environment. Follow these steps to set it up:
+
+1. Create a SendGrid account if you don't have one already
+2. Generate an API key in the SendGrid dashboard
+3. Set the following environment variables in your production environment:
+   ```
+   SENDGRID_USERNAME=apikey
+   SENDGRID_API_KEY=your_sendgrid_api_key_here
+   DOMAIN_NAME=yourdomain.com
+   ```
+4. Ensure Sidekiq is set up and running to process emails asynchronously
+
+Emails are automatically configured to be sent asynchronously through Sidekiq background jobs.
+
 ## This project is licensed under the [MIT License](https://github.com/your-repo/lsa-evaluate/blob/main/LICENSE)

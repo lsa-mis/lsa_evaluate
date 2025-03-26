@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_08_193135) do
+ActiveRecord::Schema[7.2].define(version: 2025_03_12_173602) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -147,6 +147,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_08_193135) do
     t.bigint "visibility_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "contact_email"
     t.index ["department_id"], name: "index_containers_on_department_id"
     t.index ["visibility_id"], name: "index_containers_on_visibility_id"
   end
@@ -269,6 +270,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_08_193135) do
     t.integer "min_external_comment_words", default: 0, null: false
     t.text "special_instructions"
     t.integer "required_entries_count", default: 0, null: false
+    t.integer "emails_sent_count", default: 0, null: false
+    t.boolean "include_average_ranking", default: false
+    t.boolean "include_advancement_status", default: false
     t.index ["contest_instance_id", "round_number"], name: "index_judging_rounds_on_contest_instance_id_and_round_number", unique: true
     t.index ["contest_instance_id"], name: "index_judging_rounds_on_contest_instance_id"
   end

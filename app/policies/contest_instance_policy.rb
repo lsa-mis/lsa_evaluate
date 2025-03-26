@@ -58,7 +58,11 @@ class ContestInstancePolicy < ApplicationPolicy
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end
 
-    def deactivate?
+  def deactivate?
+    user&.has_container_role?(record.contest_description.container) || axis_mundi?
+  end
+
+  def send_round_results?
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end
 end

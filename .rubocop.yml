@@ -23,7 +23,7 @@ Rails/UnknownEnv:
     - test
     - production
     - staging
-    
+
 # String Literals Style
 Style/StringLiterals:
   EnforcedStyle: single_quotes
@@ -52,3 +52,6 @@ Capybara:
 # RSpec Rails settings
 RSpecRails:
   Enabled: true
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 12

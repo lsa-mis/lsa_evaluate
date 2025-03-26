@@ -22,6 +22,7 @@ gem 'pagy', '~> 6.4'
 gem 'puma'
 gem 'pundit'
 gem 'redis', '~> 5.0'
+gem 'sidekiq', '~> 7.3'
 gem 'sassc-rails'
 gem 'simple_form', '~> 5.3'
 gem 'stimulus-rails'
@@ -37,6 +38,7 @@ group :development do
   gem 'capistrano', '~> 3.17', require: false
   gem 'capistrano-rails', '~> 1.6', '>= 1.6.1', require: false
   gem 'capistrano-asdf', require: false
+  gem 'capistrano-sidekiq', '~> 2.0', require: false
   gem 'web-console'
 end
 

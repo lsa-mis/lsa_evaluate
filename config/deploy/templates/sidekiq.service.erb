@@ -1,0 +1,22 @@
+[Unit]
+Description=sidekiq
+After=syslog.target network.target
+
+[Service]
+Type=simple
+WorkingDirectory=<%= current_path %>
+ExecStart=/bin/bash -lc 'bundle exec sidekiq -e <%= fetch(:rails_env) %> -C <%= current_path %>/config/sidekiq.yml'
+User=<%= fetch(:user) %>
+Group=<%= fetch(:user) %>
+UMask=0002
+RestartSec=1
+Restart=on-failure
+StandardOutput=append:<%= shared_path %>/log/sidekiq.log
+StandardError=append:<%= shared_path %>/log/sidekiq.error.log
+
+# Greatly reduce Ruby memory fragmentation and heap usage
+# https://www.mikeperham.com/2018/04/25/taming-rails-memory-bloat/
+Environment=MALLOC_ARENA_MAX=2
+
+[Install]
+WantedBy=multi-user.target

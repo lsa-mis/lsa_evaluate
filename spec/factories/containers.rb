@@ -3,6 +3,7 @@
 # Table name: containers
 #
 #  id            :bigint           not null, primary key
+#  contact_email :string(255)
 #  name          :string(255)
 #  notes         :text(65535)
 #  created_at    :datetime         not null
@@ -27,5 +28,6 @@ FactoryBot.define do
     department
     visibility
     notes { "Notes for #{name}" }
+    contact_email { "contact@example.com" }
   end
 end
