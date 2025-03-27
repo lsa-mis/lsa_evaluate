@@ -19,25 +19,25 @@ namespace :email do
 
     puts "Sending test email to #{recipient}..."
     begin
-      # First build the mail object to inspect its properties
-      mail = TestMailer.test_email(recipient)
-
-      # Print message details before sending
-      puts 'Message details:'
-      puts "  From: #{mail.from.first || 'Not set'}"
-      puts "  Reply-To: #{mail.reply_to&.first || 'Not set'}"
-      puts "  Subject: #{mail.subject || 'Not set'}"
-      puts 'Headers:'
-      mail.header.fields.each do |field|
-        puts "  #{field.name}: #{field.value}" unless field.name =~ /content-/i
-      end
-
-      # Now deliver the message based on the queue parameter
       if queue_delivery
+        # For queued delivery, don't inspect the message before sending
         puts 'Queuing email delivery through Sidekiq...'
-        mail.deliver_later
+        TestMailer.test_email(recipient).deliver_later
         puts 'Email successfully queued in Sidekiq!'
       else
+        # For direct delivery, we can inspect the message
+        mail = TestMailer.test_email(recipient)
+
+        # Print message details before sending
+        puts 'Message details:'
+        puts "  From: #{mail.from.first || 'Not set'}"
+        puts "  Reply-To: #{mail.reply_to&.first || 'Not set'}"
+        puts "  Subject: #{mail.subject || 'Not set'}"
+        puts 'Headers:'
+        mail.header.fields.each do |field|
+          puts "  #{field.name}: #{field.value}" unless field.name =~ /content-/i
+        end
+
         mail.deliver_now
         puts 'Test email sent directly (bypassing Sidekiq)!'
       end
