@@ -2,7 +2,7 @@ require 'sidekiq'
 
 # Configure Redis connection
 redis_config = {
-  url: ENV.fetch('REDIS_URL') { 'redis://localhost:6379/1' },
+  url: ENV.fetch('REDIS_URL') { "redis://:#{Rails.application.credentials.redis_password}@localhost:6379/1" },
   ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE } # Only if using Redis over SSL
 }
 
