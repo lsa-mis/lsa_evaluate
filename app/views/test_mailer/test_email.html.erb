@@ -1,22 +1,14 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
-  </head>
-  <body>
-    <h1>Email Configuration Test</h1>
+<h1>Email Configuration Test</h1>
 
-    <p><%= @message %></p>
+<p><%= @message %></p>
 
-    <p>This message confirms your email settings are working correctly.</p>
+<p>This message confirms your email settings are working correctly.</p>
 
-    <h2>Email Configuration:</h2>
-    <ul>
-      <li><strong>From:</strong> <%= @sender %></li>
-      <li><strong>Reply-To:</strong> <%= @reply_to %></li>
-    </ul>
+<h2>Email Configuration:</h2>
+<ul>
+  <li><strong>From:</strong> <%= @sender %></li>
+  <li><strong>Reply-To:</strong> <%= @reply_to %></li>
+</ul>
 
-    <p>This is a system-generated email. Please do not reply directly to this message.</p>
-    <p>If you need assistance, please contact <a href="mailto:<%= @reply_to %>"><%= @reply_to %></a>.</p>
-  </body>
-</html>
+<p>This is a system-generated email. Please do not reply directly to this message.</p>
+<p>If you need assistance, please contact <a href="mailto:<%= @reply_to %>"><%= @reply_to %></a>.</p>
