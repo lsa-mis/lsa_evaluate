@@ -36,9 +36,15 @@ class ResultsMailer < ApplicationMailer
 
     subject = "Evaluation Results for \"#{@entry.title}\" - #{@contest_description.name}"
 
-    mail(
+    # Set mail options - override reply_to if container has a contact email
+    mail_options = {
       to: @user.email,
       subject: subject
-    )
+    }
+
+    # Override reply_to with container's contact_email if present
+    mail_options[:reply_to] = @contact_email if @container.contact_email.present?
+
+    mail(mail_options)
   end
 end
