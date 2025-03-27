@@ -9,7 +9,18 @@ namespace :email do
   desc 'Send a test email to verify configuration'
   task :test, [ :email, :queue ] => :environment do |_t, args|
     recipient = args[:email] || Rails.application.credentials.dig(:sendgrid, :mailer_sender)
-    queue_delivery = args[:queue]&.downcase == 'true'
+
+    # Check if Sidekiq is available
+    sidekiq_available = defined?(Sidekiq) == 'constant' && Sidekiq.class == Module
+    queue_delivery_requested = args[:queue]&.downcase == 'true'
+
+    # Set queue_delivery to false if Sidekiq is not available
+    queue_delivery = queue_delivery_requested && sidekiq_available
+
+    # Show a warning if user requested Sidekiq but it's not available
+    if queue_delivery_requested && !sidekiq_available
+      puts "WARNING: Sidekiq is not available. Email will be sent directly."
+    end
 
     if recipient.nil?
       puts 'ERROR: No recipient email provided and no default contact email configured.'
