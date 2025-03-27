@@ -11,7 +11,7 @@ namespace :email do
 
     puts 'Sending test email to #{recipient}...'
     begin
-      email = TestMailer.test_email(recipient).deliver_now
+      email = TestMailer.test_email(recipient).deliver_later
       puts 'Test email sent successfully!'
       puts "Message ID: #{email.message_id}"
       puts "From: #{email.from.first}"
