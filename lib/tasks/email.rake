@@ -13,8 +13,8 @@ namespace :email do
     begin
       email = TestMailer.test_email(recipient).deliver_later
       puts 'Test email sent successfully!'
-      puts "Message ID: #{email.message_id}"
-      puts "From: #{email.from.first}"
+      puts "Message ID: #{email.message_id || 'Not set'}"
+      puts "From: #{email.from.first || 'Not set'}"
       puts "Reply-To: #{email.reply_to&.first || 'Not set'}"
       puts 'Headers:'
       email.header.fields.each do |field|
