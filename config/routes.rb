@@ -43,6 +43,7 @@ Rails.application.routes.draw do
         member do
           get 'email_preferences'
           post 'send_round_results'
+          get :export_entries
         end
         resources :judging_rounds do
           member do
