@@ -65,4 +65,8 @@ class ContestInstancePolicy < ApplicationPolicy
   def send_round_results?
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end
+
+  def export_entries?
+    user&.has_container_role?(record.contest_description.container) || axis_mundi?
+  end
 end
