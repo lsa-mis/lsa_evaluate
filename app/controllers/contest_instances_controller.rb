@@ -143,6 +143,28 @@ class ContestInstancesController < ApplicationController
                notice: "Successfully queued #{email_count} evaluation result emails for round #{judging_round.round_number}. This is email batch ##{judging_round.emails_sent_count}."
   end
 
+  def export_entries
+    @contest_instance = ContestInstance.find(params[:id])
+    @contest_description = @contest_instance.contest_description
+    @container = @contest_description.container
+
+    authorize @contest_instance
+
+    @entries = @contest_instance.entries.active.includes(:profile, :category)
+
+    respond_to do |format|
+      format.csv do
+        filename = "#{@contest_description.name.parameterize}-entries_printed-#{Time.zone.today}.csv"
+
+        csv_data = generate_entries_csv(@entries, @contest_description, @contest_instance)
+
+        send_data csv_data,
+                  type: 'text/csv; charset=utf-8; header=present',
+                  disposition: "attachment; filename=#{filename}"
+      end
+    end
+  end
+
   private
 
   def authorize_container_access
@@ -178,5 +200,47 @@ class ContestInstancesController < ApplicationController
       :min_internal_comment_words, :min_external_comment_words,
       category_ids: [], class_level_ids: []
     )
+  end
+
+  def generate_entries_csv(entries, contest_description, contest_instance)
+    require 'csv'
+
+    CSV.generate do |csv|
+      # Header section - split across multiple columns for better layout
+      contest_info = "#{contest_description.name} - #{contest_instance.date_open.strftime('%b %Y')} to #{contest_instance.date_closed.strftime('%b %Y')}"
+
+      # Distribute header across columns more evenly
+      header_row1 = [contest_info] + Array.new(11, '')
+      csv << header_row1
+      csv << Array.new(12, '')  # Empty row as separator with 12 empty cells
+
+      # Column headers
+      headers = [
+        'Title', 'Category',
+        'Pen Name', 'First Name', 'Last Name', 'UMID', 'Uniqname',
+        'Class Level', 'Campus', 'Entry ID', 'Created At', 'Disqualified'
+      ]
+      csv << headers
+
+      # Entry data
+      entries.each do |entry|
+        profile = entry.profile
+
+        csv << [
+          entry.title,
+          entry.category&.kind,
+          entry.pen_name,
+          profile&.user&.first_name,
+          profile&.user&.last_name,
+          profile&.umid,
+          profile&.user&.uniqname,
+          profile&.class_level&.name,
+          profile&.campus&.campus_descr,
+          entry.id,
+          entry.created_at.strftime('%m/%d/%Y %I:%M %p'),
+          entry.disqualified? ? 'Yes' : 'No'
+        ]
+      end
+    end
   end
 end
