@@ -10,6 +10,7 @@ gem 'actiontext'
 gem 'bootsnap', require: false
 gem 'country_select'
 gem 'cssbundling-rails'
+gem 'csv', '~> 3.2'
 gem 'devise', '~> 4.9'
 gem 'google-cloud-storage', '~> 1.52'
 gem 'image_processing', '~> 1.2'

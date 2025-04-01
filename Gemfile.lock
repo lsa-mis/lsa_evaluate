@@ -133,6 +133,7 @@ GEM
     crass (1.0.6)
     cssbundling-rails (1.4.1)
       railties (>= 6.0.0)
+    csv (3.3.3)
     database_cleaner-active_record (2.2.0)
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0.0)
@@ -551,6 +552,7 @@ DEPENDENCIES
   capybara
   country_select
   cssbundling-rails
+  csv (~> 3.2)
   database_cleaner-active_record (~> 2.0)
   debug
   devise (~> 4.9)
