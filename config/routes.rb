@@ -85,6 +85,7 @@ Rails.application.routes.draw do
     resources :assignments, only: %i[create destroy]
     member do
       get 'description'
+      get :active_applicants_report
     end
   end
 
