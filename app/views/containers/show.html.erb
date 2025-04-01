@@ -12,6 +12,11 @@
 
 <hr>
 
+<h3 class="mt-4">Reports</h3>
+<%= render 'active_applicants_report_form' %>
+
+<hr>
+
 <h3 class="mt-4">User Permissions</h3>
   <% if (content = render_editable_content('container', 'permissions')) %>
       <%= content %>

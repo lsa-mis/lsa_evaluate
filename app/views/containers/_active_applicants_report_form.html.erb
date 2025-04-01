@@ -1,0 +1,30 @@
+<%= turbo_frame_tag "active_applicants_report_form" do %>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="card-title mb-0">Active Applicants Report</h5>
+    </div>
+    <div class="card-body">
+      <%= form_with url: active_applicants_report_container_path(@container, format: :csv), method: :get, data: { turbo: false } do |f| %>
+        <div class="mb-3">
+          <label class="form-label">Select Contest Descriptions</label>
+          <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+            <% @active_contest_descriptions.each do |contest_description| %>
+              <div class="form-check">
+                <%= check_box_tag "contest_description_ids[]",
+                    contest_description.id,
+                    false,
+                    class: "form-check-input",
+                    id: "contest_description_#{contest_description.id}" %>
+                <%= label_tag "contest_description_#{contest_description.id}",
+                    contest_description.name,
+                    class: "form-check-label" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <%= f.submit "Generate Report", class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
