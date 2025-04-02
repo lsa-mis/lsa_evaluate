@@ -7,6 +7,18 @@
   <div class="card-body">
     <p class="mb-4">
       Select which information to include in the evaluation result emails for this round:
+      <button type="button"
+              class="btn btn-sm btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#baseEmailModal">
+        Sample of the base email
+      </button>
+      <button type="button"
+              class="btn btn-sm btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#optionsEmailModal">
+        Sample of the email with options
+      </button>
     </p>
 
     <%= form_with url: send_round_results_container_contest_description_contest_instance_path(
@@ -45,5 +57,45 @@
         <%= link_to "Cancel", container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), class: "btn btn-secondary" %>
       </div>
     <% end %>
+  </div>
+</div>
+
+<!-- Base Email Modal -->
+<div class="modal fade" id="baseEmailModal" tabindex="-1" aria-labelledby="baseEmailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="baseEmailModalLabel">Base Email Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="email-preview">
+          <%= image_tag asset_path("base_email.png"), class: "img-fluid", alt: "Base email preview" %>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Options Email Modal -->
+<div class="modal fade" id="optionsEmailModal" tabindex="-1" aria-labelledby="optionsEmailModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="optionsEmailModalLabel">Email with Options Preview</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="email-preview">
+          <%= image_tag asset_path("email_with_extra_info.png"), class: "img-fluid", alt: "Email with options preview" %>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
   </div>
 </div>

@@ -1,7 +1,7 @@
 # app/controllers/containers_controller.rb
 class ContainersController < ApplicationController
   include ContestDescriptionsHelper
-  before_action :set_container, only: %i[show edit update destroy description]
+  before_action :set_container, only: %i[show edit update destroy description active_applicants_report]
   before_action :authorize_container, only: %i[edit show update destroy description]
   before_action :authorize_index, only: [ :index ]
 
@@ -15,6 +15,7 @@ class ContainersController < ApplicationController
     ).includes(:user, :role)
     @assignment = @container.assignments.build
     @container_contest_descriptions = @container.contest_descriptions.reorder('contest_descriptions.name ASC')
+    @active_contest_descriptions = @container.contest_descriptions.active.reorder('contest_descriptions.name ASC')
   end
 
   def new
@@ -92,6 +93,51 @@ class ContainersController < ApplicationController
         locals: { description: @container.description }
       }
       format.turbo_stream
+    end
+  end
+
+  def active_applicants_report
+    contest_description_ids = params[:contest_description_ids] || []
+    @active_contest_descriptions = @container.contest_descriptions.active.where(id: contest_description_ids)
+
+    authorize @container
+
+    if @active_contest_descriptions.empty?
+      respond_to do |format|
+        format.csv { redirect_to @container, alert: 'Please select at least one contest description.' }
+        format.html { redirect_to @container, alert: 'Please select at least one contest description.' }
+      end
+      return
+    end
+
+    service = ActiveApplicantsReportService.new(
+      container: @container,
+      contest_descriptions: @active_contest_descriptions
+    )
+
+    @profiles = service.call
+
+    respond_to do |format|
+      format.csv do
+        filename = "active-applicants-in-#{@container.name.parameterize}_#{Time.zone.today}.csv"
+
+        csv_data = CSV.generate do |csv|
+          csv << ['Last Name', 'First Name', 'Email']
+
+          @profiles.each do |profile|
+            csv << [
+              profile.last_name,
+              profile.first_name,
+              profile.user.email
+            ]
+          end
+        end
+
+        send_data csv_data,
+                  type: 'text/csv; charset=utf-8; header=present',
+                  disposition: "attachment; filename=#{filename}"
+      end
+      format.html { redirect_to @container, alert: 'Please request the report in CSV format.' }
     end
   end
 

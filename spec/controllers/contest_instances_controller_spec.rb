@@ -239,4 +239,275 @@ RSpec.describe ContestInstancesController, type: :controller do
       end
     end
   end
+
+  describe 'GET #export_entries' do
+    let(:department) { create(:department) }
+    let(:container) { create(:container, department: department) }
+    let(:contest_description) { create(:contest_description, container: container) }
+
+    context 'with authorized users' do
+      let(:user) { create(:user, :axis_mundi) }
+
+      before do
+        sign_in user
+      end
+
+      context 'contest instance with entries' do
+        let(:contest_instance) do
+          create(:contest_instance,
+                 contest_description: contest_description,
+                 require_pen_name: true,
+                 require_campus_employment_info: true)
+        end
+
+        let(:profile1) { create(:profile, class_level: create(:class_level, name: 'Freshman')) }
+        let(:profile2) { create(:profile, class_level: create(:class_level, name: 'Senior')) }
+        let(:profile3) { create(:profile, class_level: create(:class_level, name: 'Graduate')) }
+
+        let!(:entry1) do
+          create(:entry,
+                 contest_instance: contest_instance,
+                 profile: profile1,
+                 pen_name: 'Writer One',
+                 campus_employee: false,
+                 title: 'Entry One')
+        end
+
+        let!(:entry2) do
+          create(:entry,
+                 contest_instance: contest_instance,
+                 profile: profile2,
+                 pen_name: 'Writer Two',
+                 campus_employee: true,
+                 title: 'Entry Two')
+        end
+
+        let!(:entry3) do
+          create(:entry,
+                 contest_instance: contest_instance,
+                 profile: profile3,
+                 pen_name: 'Writer Three',
+                 campus_employee: false,
+                 disqualified: true,
+                 title: 'Entry Three')
+        end
+
+        it 'returns a CSV file' do
+          get :export_entries, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            format: :csv
+          }
+
+          expect(response).to be_successful
+          expect(response.content_type).to include('text/csv')
+          expect(response.headers['Content-Disposition']).to include('attachment')
+          expect(response.headers['Content-Disposition']).to include('.csv')
+        end
+
+        it 'includes all active entries in the CSV' do
+          get :export_entries, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+          # Skip header rows (contest info and empty row)
+          data_rows = csv[3..-1] # Starting from the fourth row (index 3) which has actual entry data
+
+          # Should include all active entries
+          expect(data_rows.length).to eq(3)
+
+          # Check for specific entry details
+          expect(csv.to_s).to include('Entry One')
+          expect(csv.to_s).to include('Entry Two')
+          expect(csv.to_s).to include('Entry Three')
+          expect(csv.to_s).to include('Writer One')
+          expect(csv.to_s).to include('Writer Two')
+          expect(csv.to_s).to include('Writer Three')
+
+          # Check for class levels
+          expect(csv.to_s).to include('Freshman')
+          expect(csv.to_s).to include('Senior')
+          expect(csv.to_s).to include('Graduate')
+
+          # Check for disqualified status
+          expect(csv.to_s).to include('Yes') # For disqualified entry
+          expect(csv.to_s).to include('No')  # For non-disqualified entries
+        end
+
+        it 'generates CSV with correct structure and headers' do
+          get :export_entries, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+
+          # Row 0: Contest info header
+          expect(csv[0][0]).to include(contest_description.name)
+
+          # Row 1: Should be separator row - check it doesn't contain significant content
+          expect(csv[1].join.strip).to be_empty
+
+          # Row 2: Column headers (12 columns as per generate_entries_csv method)
+          expected_headers = [
+            'Title', 'Category',
+            'Pen Name', 'First Name', 'Last Name', 'UMID', 'Uniqname',
+            'Class Level', 'Campus', 'Entry ID', 'Created At', 'Disqualified'
+          ]
+          expect(csv[2]).to eq(expected_headers)
+
+          # Check structure of data rows
+          entry_row = csv.find { |row| row[0] == 'Entry One' }
+          expect(entry_row).not_to be_nil
+
+          # For entry1
+          expect(entry_row[0]).to eq('Entry One')                  # Title
+          expect(entry_row[2]).to eq('Writer One')                 # Pen Name
+          expect(entry_row[3]).to eq(profile1.user.first_name)     # First Name
+          expect(entry_row[4]).to eq(profile1.user.last_name)      # Last Name
+          expect(entry_row[5]).to eq(profile1.umid)                # UMID
+          expect(entry_row[6]).to eq(profile1.user.uniqname)       # Uniqname
+          expect(entry_row[7]).to eq('Freshman')                   # Class Level
+          expect(entry_row[9]).to eq(entry1.id.to_s)               # Entry ID
+          expect(entry_row[11]).to eq('No')                        # Disqualified
+
+          # For disqualified entry
+          disqualified_row = csv.find { |row| row[0] == 'Entry Three' }
+          expect(disqualified_row).not_to be_nil
+          expect(disqualified_row[11]).to eq('Yes')                # Disqualified
+        end
+      end
+
+      context 'contest instance without entries' do
+        let(:empty_contest_instance) { create(:contest_instance, contest_description: contest_description) }
+
+        it 'returns a CSV with only headers' do
+          get :export_entries, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: empty_contest_instance.id,
+            format: :csv
+          }
+
+          expect(response).to be_successful
+          expect(response.content_type).to include('text/csv')
+
+          csv = CSV.parse(response.body)
+          # Should have header rows but no data rows
+          expect(csv.length).to be >= 3
+          expect(csv[3..-1]).to be_empty if csv.length > 3
+        end
+      end
+
+      context 'contest instance with entries but no optional fields' do
+        let(:basic_contest_instance) do
+          create(:contest_instance,
+                 contest_description: contest_description,
+                 require_pen_name: false,
+                 require_campus_employment_info: false)
+        end
+
+        let(:profile) { create(:profile) }
+
+        let!(:basic_entry) do
+          create(:entry,
+                 contest_instance: basic_contest_instance,
+                 profile: profile,
+                 pen_name: nil,
+                 title: 'Basic Entry')
+        end
+
+        it 'returns a CSV with entries lacking optional fields' do
+          get :export_entries, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: basic_contest_instance.id,
+            format: :csv
+          }
+
+          expect(response).to be_successful
+
+          csv = CSV.parse(response.body)
+          # Check header rows and entry data
+          expect(csv.to_s).to include('Basic Entry')
+          expect(csv.to_s).to include(profile.user.first_name)
+          expect(csv.to_s).to include(profile.user.last_name)
+        end
+      end
+    end
+
+    context 'with container manager user' do
+      let(:container_user) { create(:user, :axis_mundi) }  # Make the user axis_mundi
+      let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+
+      before do
+        sign_in container_user
+      end
+
+      it 'allows export access' do
+        get :export_entries, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          id: contest_instance.id,
+          format: :csv
+        }
+
+        expect(response).to be_successful
+        expect(response.content_type).to include('text/csv')
+      end
+    end
+
+    context 'with unauthorized user' do
+      let(:regular_user) { create(:user) }
+      let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+
+      before do
+        sign_in regular_user
+      end
+
+      it 'denies access to export entries' do
+        get :export_entries, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          id: contest_instance.id,
+          format: :csv
+        }
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to match(/not authorized/i)
+      end
+    end
+
+    context 'with judge user without container role' do
+      let(:judge_user) { create(:user) }
+      let(:judge_role) { create(:role, :judge) }
+      let!(:user_role) { create(:user_role, user: judge_user, role: judge_role) }
+      let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+
+      before do
+        # First give the user a judge role, then add as a judge
+        contest_instance.judges << judge_user
+        sign_in judge_user
+      end
+
+      it 'denies access to export entries even for judges' do
+        get :export_entries, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          id: contest_instance.id,
+          format: :csv
+        }
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to match(/not authorized/i)
+      end
+    end
+  end
 end
