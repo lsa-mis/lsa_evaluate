@@ -7,6 +7,11 @@ RSpec.describe UsersDashboardController, type: :controller do
   let!(:admin_user) { create(:user, :with_collection_admin_role) }
   let!(:regular_user) { create(:user) }
 
+  # Test data for filtering tests
+  let!(:user_abc) { create(:user, principal_name: 'abc123', email: 'abc123@example.com') }
+  let!(:user_def) { create(:user, principal_name: 'def456', email: 'def456@example.com') }
+  let!(:user_abc_alt) { create(:user, principal_name: 'abc789', email: 'xyz@example.com') }
+
   describe 'GET #index' do
     context 'when user is not logged in' do
       it 'redirects to login page' do
@@ -34,6 +39,33 @@ RSpec.describe UsersDashboardController, type: :controller do
       it 'sorts users by specified column' do
         get :index, params: { sort: 'current_sign_in_at', direction: 'desc' }
         expect(assigns(:users).to_sql).to include('ORDER BY `users`.`current_sign_in_at` DESC')
+      end
+
+      context 'filtering' do
+        it 'filters users by principal_name' do
+          get :index, params: { principal_name_filter: 'abc' }
+          expect(assigns(:users)).to include(user_abc, user_abc_alt)
+          expect(assigns(:users)).not_to include(user_def)
+        end
+
+        it 'filters users by email' do
+          get :index, params: { email_filter: 'def' }
+          expect(assigns(:users)).to include(user_def)
+          expect(assigns(:users)).not_to include(user_abc, user_abc_alt)
+        end
+
+        it 'filters users by both principal_name and email' do
+          get :index, params: { principal_name_filter: 'abc', email_filter: 'xyz' }
+          expect(assigns(:users)).to include(user_abc_alt)
+          expect(assigns(:users)).not_to include(user_abc, user_def)
+        end
+
+        it 'preserves filters when sorting' do
+          get :index, params: { principal_name_filter: 'abc', sort: 'email', direction: 'asc' }
+          expect(assigns(:users)).to include(user_abc, user_abc_alt)
+          expect(assigns(:users)).not_to include(user_def)
+          expect(assigns(:users).to_sql).to include('ORDER BY `users`.`email` ASC')
+        end
       end
     end
 
