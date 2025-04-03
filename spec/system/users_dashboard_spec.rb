@@ -10,6 +10,11 @@ RSpec.describe 'Users Dashboard', type: :system do
   let!(:manager_user) { create(:user, :with_collection_manager_role) }
   let!(:multi_role_user) { create(:user, :with_judge_role, :with_collection_admin_role, :with_collection_manager_role) }
 
+  # Test data for filtering
+  let!(:user_abc) { create(:user, principal_name: 'abc123', email: 'abc123@example.com') }
+  let!(:user_def) { create(:user, principal_name: 'def456', email: 'def456@example.com') }
+  let!(:user_abc_alt) { create(:user, principal_name: 'abc789', email: 'xyz@example.com') }
+
   context 'when logged in as axis mundi user' do
     before do
       driven_by(:selenium_chrome_headless)
@@ -41,6 +46,66 @@ RSpec.describe 'Users Dashboard', type: :system do
       create_list(:user, 25)  # Create more than one page worth of users
       visit users_dashboard_index_path
       expect(page).to have_css('.pagination')
+    end
+
+    describe 'filtering functionality' do
+      it 'filters users by principal name' do
+        fill_in 'Principal Name:', with: 'abc'
+        click_button 'Filter'
+
+        expect(page).to have_content('abc123')
+        expect(page).to have_content('abc789')
+        expect(page).not_to have_content('def456')
+      end
+
+      it 'filters users by email' do
+        fill_in 'Email:', with: 'def'
+        click_button 'Filter'
+
+        expect(page).to have_content('def456@example.com')
+        expect(page).not_to have_content('abc123@example.com')
+        expect(page).not_to have_content('xyz@example.com')
+      end
+
+      it 'filters users by both principal name and email' do
+        fill_in 'Principal Name:', with: 'abc'
+        fill_in 'Email:', with: 'xyz'
+        click_button 'Filter'
+
+        expect(page).to have_content('abc789')
+        expect(page).to have_content('xyz@example.com')
+        expect(page).not_to have_content('abc123')
+        expect(page).not_to have_content('def456')
+      end
+
+      it 'preserves filters when sorting' do
+        fill_in 'Principal Name:', with: 'abc'
+        click_button 'Filter'
+
+        expect(page).to have_content('abc123')
+        expect(page).to have_content('abc789')
+
+        click_on 'Email'
+
+        expect(page).to have_content('abc123')
+        expect(page).to have_content('abc789')
+        expect(page).not_to have_content('def456')
+        expect(current_url).to include('principal_name_filter=abc')
+      end
+
+      it 'clears filters when clicking Clear button' do
+        fill_in 'Principal Name:', with: 'abc'
+        click_button 'Filter'
+
+        expect(page).to have_content('abc123')
+        expect(page).not_to have_content('def456')
+
+        click_link 'Clear'
+
+        expect(page).to have_content('abc123')
+        expect(page).to have_content('def456')
+        expect(page).not_to have_current_path(/principal_name_filter/)
+      end
     end
   end
 

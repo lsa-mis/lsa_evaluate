@@ -78,6 +78,7 @@ namespace :deploy do
   before 'bundler:install', 'debug:print_ruby_version'
   before :starting,     :check_revision
   after  :finishing,    'puma:restart'
+  after  :finishing,    'sidekiq:manual_restart'
 end
 
 namespace :debug do
@@ -107,6 +108,19 @@ namespace :debug do
           info "Rails Version: #{rails_version.strip}"
         end
       end
+    end
+  end
+end
+
+namespace :sidekiq do
+  desc 'Manually restart Sidekiq service'
+  task :manual_restart do
+    on roles(:app) do
+      puts "\n\n=========================================================="
+      puts "IMPORTANT: Sidekiq needs to be restarted manually!"
+      puts "Please run the following command on the server as a user with sudo privileges:"
+      puts "sudo systemctl restart sidekiq"
+      puts "==========================================================\n\n"
     end
   end
 end

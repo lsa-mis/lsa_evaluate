@@ -3,11 +3,25 @@ class UsersDashboardController < ApplicationController
 
   def index
     authorize :users_dashboard
+    users = policy_scope(User).includes(:roles)
+
+    # Filter by principal_name if a search parameter is present
+    if params[:principal_name_filter].present?
+      users = users.where("principal_name LIKE ?", "#{params[:principal_name_filter]}%")
+    end
+
+    # Filter by email if a search parameter is present
+    if params[:email_filter].present?
+      users = users.where("email LIKE ?", "#{params[:email_filter]}%")
+    end
+
     @pagy, @users = pagy(
-      policy_scope(User)
-        .order(sort_column => sort_direction)
-        .includes(:roles),
-      items: 20  # Explicitly set number of items per page
+      users.order(sort_column => sort_direction),
+      items: 20,  # Explicitly set number of items per page
+      params: {
+        principal_name_filter: params[:principal_name_filter],
+        email_filter: params[:email_filter]
+      }.compact # Pass filters to pagination links
     )
   end
 
