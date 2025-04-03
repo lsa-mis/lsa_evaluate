@@ -2,6 +2,40 @@
 <div class="container mt-4">
   <h1>Users Dashboard</h1>
 
+  <div class="card mb-4">
+    <div class="card-body">
+      <%= form_with(url: users_dashboard_index_path, method: :get, data: { turbo_frame: "_top" }, class: "row g-3 align-items-center") do |f| %>
+        <div class="col-auto">
+          <%= f.label :principal_name_filter, "Principal Name:", class: "col-form-label" %>
+        </div>
+        <div class="col-auto">
+          <%= f.text_field :principal_name_filter, value: params[:principal_name_filter], class: "form-control", placeholder: "Enter principal name..." %>
+        </div>
+
+        <div class="col-auto">
+          <%= f.label :email_filter, "Email:", class: "col-form-label" %>
+        </div>
+        <div class="col-auto">
+          <%= f.text_field :email_filter, value: params[:email_filter], class: "form-control", placeholder: "Enter email..." %>
+        </div>
+
+        <!-- Preserve existing sort parameters -->
+        <%= hidden_field_tag :sort, params[:sort] if params[:sort].present? %>
+        <%= hidden_field_tag :direction, params[:direction] if params[:direction].present? %>
+
+        <div class="col-auto">
+          <%= f.submit "Filter", class: "btn btn-primary" %>
+        </div>
+
+        <% if params[:principal_name_filter].present? || params[:email_filter].present? %>
+          <div class="col-auto">
+            <%= link_to "Clear", users_dashboard_index_path(sort: params[:sort], direction: params[:direction]), class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-body">
       <div class="table-responsive">
@@ -47,22 +81,3 @@
     </div>
   </div>
 </div>
-
-<%# Helper for sorting columns %>
-<% content_for :head do %>
-  <%= javascript_tag do %>
-    document.addEventListener("turbo:load", function() {
-      const sortLinks = document.querySelectorAll("[data-sort]");
-      sortLinks.forEach(link => {
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          const url = new URL(window.location);
-          url.searchParams.set("sort", link.dataset.sort);
-          url.searchParams.set("direction",
-            url.searchParams.get("direction") === "asc" ? "desc" : "asc");
-          Turbo.visit(url);
-        });
-      });
-    });
-  <% end %>
-<% end %>
