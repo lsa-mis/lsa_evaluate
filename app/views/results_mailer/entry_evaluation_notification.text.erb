@@ -1,0 +1,54 @@
+<%= @contest_description.name %>
+
+Dear <%= @user.display_name_or_first_name_last_name %>,
+
+Thank you for your submission to the <%= @contest_description.name %>. We appreciate your participation and the effort you put into your work.
+
+YOUR ENTRY DETAILS
+=================
+Title: <%= @entry.title %>
+Submitted: <%= @entry.created_at.strftime("%B %d, %Y") %>
+<% if @entry.category.present? %>Category: <%= @entry.category.kind %><% end %>
+<% if @entry.pen_name.present? %>Pen Name: <%= @entry.pen_name %><% end %>
+
+EVALUATION RESULTS - ROUND <%= @round.round_number %>
+=================
+<% if @avg_rank.present? && @round.include_average_ranking %>
+Your submission received an average ranking of <%= @avg_rank %> from our judging panel.
+<% end %>
+
+<% if @round.include_advancement_status %>
+<% if @selected_for_next_round && @contest_instance.judging_rounds.exists?(round_number: @round.round_number + 1) %>
+CONGRATULATIONS! Your entry has been selected to advance to Round <%= @round.round_number + 1 %>.
+<% elsif @round.round_number == @contest_instance.judging_rounds.maximum(:round_number) %>
+<% if @selected_for_next_round %>
+CONGRATULATIONS! Your entry has been selected as a finalist.
+<% else %>
+We regret to inform you that your entry was not selected as a finalist.
+<% end %>
+<% elsif !@selected_for_next_round %>
+We regret to inform you that your entry was not selected to advance to the next round of judging.
+<% end %>
+<% end %>
+
+<% if @external_comments_with_judges.any? %>
+FEEDBACK FROM JUDGES
+=================
+Our judges have provided the following feedback on your submission:
+
+<% @external_comments_with_judges.each do |comment_data| %>
+* From Judge: <%= comment_data[:judge] %>
+  <%= comment_data[:comment].gsub(/\n/, "\n  ") %>
+
+<% end %>
+<% end %>
+
+We value your creativity and hope you found this competition to be a rewarding experience. Your participation contributes to the vibrant artistic and academic community at our university.
+
+<% if @contact_email.present? %>
+If you have any questions about the judging process or results, please contact <%= @contact_email %>.
+<% end %>
+
+---
+This is an automated email. Please do not reply to this message.
+© <%= Time.now.year %> <%= @container.name %> | All Rights Reserved
