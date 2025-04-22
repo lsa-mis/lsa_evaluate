@@ -25,7 +25,7 @@
   <%= render partial: "containers/assignments_table", locals: { container: @container, assignments: @assignments } %>
 <% end %>
 
-<h3 class="mt-4">Add New Permission</h3>
+<h4 class="mt-4">Add New Permission</h4>
 <%= turbo_frame_tag "new_assignment" do %>
   <%= render partial: 'containers/assignment_form', locals: { container: @container, assignment: @assignment } %>
 <% end %>

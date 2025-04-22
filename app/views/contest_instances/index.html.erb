@@ -27,8 +27,9 @@
   <%= @contest_description.notes %>
 </div>
 <div>
-  <%= link_to "Edit", edit_container_contest_description_path(@container, @contest_description), class: "btn btn-sm btn-primary" %>
-  <%= link_to "Archive", container_contest_description_path(@container, @contest_description), data: { controller: 'confirm', confirm_message_value: 'Are you sure you want to archive this?' } %>
+  <%= link_to edit_container_contest_description_path(@container, @contest_description), class: "btn btn-sm btn-outline-primary me-2" do %>
+  <i class="bi bi-pencil-square me-1"></i> Edit Contest
+  <% end %>
 </div>
 <hr>
 <h2><%= "#{pluralize(@contest_instances.count, "instance")} of this contest" %></h2>
@@ -110,13 +111,13 @@
               <td><%= contest_instance.require_campus_employment_info %></td>
               <td><%= contest_instance.require_finaid_info %></td>
               <td class="text-center">
-                <div class="d-flex flex-column">
+                <div class="d-flex flex-row">
                   <%= link_to container_contest_description_contest_instance_path(@container, @contest_description, contest_instance),
                         class: 'd-block',
                         data: { 'bs-toggle': 'tooltip' },
                         title: 'View instance',
                         aria: { label: 'View instance' } do %>
-                    <i class="bi bi-eye" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                    <i class="bi bi-eye fs-4 text-um-blue" aria-hidden="true"></i>
                     <span class="visually-hidden">View instance</span>
                   <% end %>
                   <%= link_to edit_container_contest_description_contest_instance_path(@container, @contest_description, contest_instance),
@@ -124,7 +125,7 @@
                               data: { 'bs-toggle': 'tooltip' },
                               title: 'Edit instance',
                               aria: { label: 'Edit instance' } do %>
-                    <i class="bi bi-pencil" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                    <i class="bi bi-pencil fs-4 text-um-blue" aria-hidden="true"></i>
                     <span class="visually-hidden">Edit instance</span>
                   <% end %>
 
