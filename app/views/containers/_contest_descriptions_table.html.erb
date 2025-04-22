@@ -28,14 +28,14 @@
           </td>
           <td><%= boolean_to_yes_no(description.active) %></td>
           <td class="text-center">
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-row">
               <% contest_description_action_links(container, description).each do |action, config| %>
                 <%= link_to config[:path],
                       class: 'd-block',
                       data: config[:data]&.merge('bs-toggle': 'tooltip'),
                       title: config[:title],
                       aria: { label: config[:title] } do %>
-                  <i class="bi bi-<%= config[:icon] %>" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  <i class="bi bi-<%= config[:icon] %> fs-4 text-um-blue" aria-hidden="true"></i>
                   <span class="visually-hidden"><%= config[:title] %></span>
                 <% end %>
               <% end %>
