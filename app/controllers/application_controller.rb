@@ -42,7 +42,7 @@ class ApplicationController < ActionController::Base
   rescue Pundit::NotAuthorizedError => exception
     logger.info('!!!!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
     policy_name = exception.policy.class.to_s.underscore
-    message = 'You are not authorized to perform this action.'
+    message = '!!! Not authorized !!!'
 
     flash[:alert] = message
     Rails.logger.error("#!#!#!# Pundit error: #{message} - User: #{current_user&.id}, Action: #{exception.query}, Policy: #{policy_name.humanize}")
