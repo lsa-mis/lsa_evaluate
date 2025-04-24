@@ -17,6 +17,9 @@ if ENV['TEST_SERVER_PORT'].present?
   webdriver_options[:url] = "http://#{ENV.fetch('HOST_MACHINE_IP', nil)}:9515"
 end
 
+# Increase default wait time
+Capybara.default_max_wait_time = 10
+
 # Register the non-headless selenium_firefox driver
 Capybara.register_driver :selenium_firefox do |app|
   Capybara::Selenium::Driver.new(app, **webdriver_options)
@@ -34,6 +37,15 @@ RSpec.configure do |config|
   # Choose the correct driver based on the SHOW_BROWSER environment variable
   config.before(:each, type: :system) do
     driven_by ENV['SHOW_BROWSER'].present? ? :selenium_firefox : :selenium_firefox_headless
+  end
+
+  # Add debugging for system tests
+  config.after(:each, type: :system) do |example|
+    if example.exception
+      puts "Page HTML at failure:"
+      puts page.html
+      puts "Current URL: #{page.current_url}"
+    end
   end
 end
 
