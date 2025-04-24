@@ -40,24 +40,17 @@ class ApplicationController < ActionController::Base
   def handle_exceptions
     yield
   rescue Pundit::NotAuthorizedError => exception
-    # Rails.logger.info('!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
-    user_not_authorized(exception)
-  rescue ActiveRecord::RecordNotFound => exception
-    Rails.logger.info('!!!!!!! Handling ActiveRecord::RecordNotFound in ApplicationController')
-    redirect_to not_found_path
-  end
-
-  # Private method for handling Pundit not authorized errors
-  def user_not_authorized(exception)
     logger.info('!!!!!!! Handling Pundit::NotAuthorizedError in ApplicationController')
     policy_name = exception.policy.class.to_s.underscore
-    message = '!!! Not authorized !!!'
+    message = 'You are not authorized to perform this action.'
 
     flash[:alert] = message
     Rails.logger.error("#!#!#!# Pundit error: #{message} - User: #{current_user&.id}, Action: #{exception.query}, Policy: #{policy_name.humanize}")
 
-    # Redirect back or to root if referer is not available
-    redirect_to(request.referer || root_path)
+    redirect_to root_path
+  rescue ActiveRecord::RecordNotFound => exception
+    Rails.logger.info('!!!!!!! Handling ActiveRecord::RecordNotFound in ApplicationController')
+    redirect_to not_found_path
   end
 
   # Log exceptions in detail
