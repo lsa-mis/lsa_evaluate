@@ -1,8 +1,8 @@
 class ContestInstancesController < ApplicationController
   before_action :set_container
+  before_action :authorize_container_access
   before_action :set_contest_description
   before_action :set_contest_instance, only: %i[show edit update destroy send_round_results]
-  before_action :authorize_container_access
 
   # GET /contest_instances
   def index
@@ -168,24 +168,21 @@ class ContestInstancesController < ApplicationController
 
   private
 
+  def set_container
+    @container = policy_scope(Container).find_by(id: params[:container_id])
+    raise Pundit::NotAuthorizedError unless @container
+  end
+
   def authorize_container_access
     authorize @container, :access_contest_instances?
   end
 
-  def set_contest_instance
-    @contest_instance = @contest_description.contest_instances.find(params[:id])
-  end
-
-  def set_container
-    @container = policy_scope(Container).find_by(id: params[:container_id])
-    unless @container
-      flash[:alert] = 'You are not authorized to access this container.'
-      redirect_to root_path
-    end
-  end
-
   def set_contest_description
     @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
+  end
+
+  def set_contest_instance
+    @contest_instance = @contest_description.contest_instances.find(params[:id])
   end
 
   def redirect_to_contest_instance_path
