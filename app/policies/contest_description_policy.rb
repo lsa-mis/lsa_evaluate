@@ -1,4 +1,15 @@
 class ContestDescriptionPolicy < ApplicationPolicy
+  class Scope < Scope
+    def resolve
+      if user&.axis_mundi?
+        scope.all
+      else
+        scope.joins(:container)
+             .where(containers: { id: user&.containers&.pluck(:id) || [] })
+      end
+    end
+  end
+
   def index?
     true
   end

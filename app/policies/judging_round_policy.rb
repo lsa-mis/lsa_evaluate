@@ -1,6 +1,19 @@
 class JudgingRoundPolicy < ApplicationPolicy
+  class Scope < Scope
+    def resolve
+      if user&.axis_mundi?
+        scope.all
+      else
+        scope.joins(contest_instance: { contest_description: :container })
+             .where(containers: { id: user&.containers&.pluck(:id) || [] })
+             .or(scope.joins(:judging_assignments)
+                      .where(judging_assignments: { user: user, active: true }))
+      end
+    end
+  end
+
   def show?
-    user&.has_container_role?(record.contest_instance.contest_description.container) || 
+    user&.has_container_role?(record.contest_instance.contest_description.container) ||
     record.contest_instance.judges.include?(user) ||
     axis_mundi?
   end

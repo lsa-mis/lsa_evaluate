@@ -79,11 +79,11 @@ class ContestDescriptionsController < ApplicationController
   end
 
   def set_container
-    @container = Container.find(params[:container_id])
+    @container = policy_scope(Container).find(params[:container_id])
   end
 
   def set_contest_description
-    @contest_description = ContestDescription.find(params[:id])
+    @contest_description = policy_scope(ContestDescription).find(params[:id])
   end
 
   def contest_description_params

@@ -138,9 +138,9 @@ class JudgingAssignmentsController < ApplicationController
   private
 
   def set_contest_instance
-    @container = Container.find(params[:container_id])
-    @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
-    @contest_instance = @contest_description.contest_instances.find(params[:contest_instance_id])
+    @container = policy_scope(Container).find(params[:container_id])
+    @contest_description = policy_scope(ContestDescription).find(params[:contest_description_id])
+    @contest_instance = policy_scope(ContestInstance).find(params[:contest_instance_id])
   end
 
   def set_judging_assignment

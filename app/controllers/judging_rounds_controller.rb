@@ -124,8 +124,8 @@ class JudgingRoundsController < ApplicationController
             entry_id = ranking_data['entry_id'].presence || ranking_data[:entry_id].presence
             next unless entry_id
 
-            entry = Entry.find(entry_id)
-            entry_ranking = EntryRanking.find_or_initialize_by(
+            entry = policy_scope(Entry).find(entry_id)
+            entry_ranking = policy_scope(EntryRanking).find_or_initialize_by(
               entry: entry,
               judging_round: @judging_round,
               user: current_user
@@ -144,8 +144,8 @@ class JudgingRoundsController < ApplicationController
           entry_id = ranking_data['entry_id'].presence || ranking_data[:entry_id].presence
 
           if entry_id && ranking_data['rank'].present?
-            entry = Entry.find(entry_id)
-            entry_ranking = EntryRanking.find_or_initialize_by(
+            entry = policy_scope(Entry).find(entry_id)
+            entry_ranking = policy_scope(EntryRanking).find_or_initialize_by(
               entry: entry,
               judging_round: @judging_round,
               user: current_user
@@ -273,7 +273,7 @@ class JudgingRoundsController < ApplicationController
   private
 
   def set_contest_instance
-    @contest_instance = ContestInstance.find(params[:contest_instance_id])
+    @contest_instance = policy_scope(ContestInstance).find(params[:contest_instance_id])
     @contest_description = @contest_instance.contest_description
     @container = @contest_description.container
   end

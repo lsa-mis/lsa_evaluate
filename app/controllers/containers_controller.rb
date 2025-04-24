@@ -148,7 +148,7 @@ class ContainersController < ApplicationController
   end
 
   def set_container
-    @container = Container.find(params[:id])
+    @container = policy_scope(Container).find(params[:id])
   end
 
   def authorize_index

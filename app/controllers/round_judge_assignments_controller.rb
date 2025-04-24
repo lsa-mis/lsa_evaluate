@@ -11,7 +11,7 @@ class RoundJudgeAssignmentsController < ApplicationController
 
   def create
     @round_judge_assignment = @judging_round.round_judge_assignments.build(round_judge_assignment_params)
-    
+
     if @round_judge_assignment.save
       redirect_to container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
         @container, @contest_description, @contest_instance, @judging_round
@@ -33,10 +33,10 @@ class RoundJudgeAssignmentsController < ApplicationController
   private
 
   def set_judging_round
-    @container = Container.find(params[:container_id])
-    @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
-    @contest_instance = @contest_description.contest_instances.find(params[:contest_instance_id])
-    @judging_round = @contest_instance.judging_rounds.find(params[:judging_round_id])
+    @container = policy_scope(Container).find(params[:container_id])
+    @contest_description = policy_scope(ContestDescription).find(params[:contest_description_id])
+    @contest_instance = policy_scope(ContestInstance).find(params[:contest_instance_id])
+    @judging_round = policy_scope(JudgingRound).find(params[:judging_round_id])
   end
 
   def set_round_judge_assignment

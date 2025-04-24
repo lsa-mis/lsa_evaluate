@@ -1,4 +1,16 @@
 class EntryPolicy < ApplicationPolicy
+  class Scope < Scope
+    def resolve
+      if user&.axis_mundi?
+        scope.all
+      else
+        scope.where(profile: user&.profile)
+             .or(scope.joins(contest_instance: { contest_description: :container })
+                      .where(containers: { id: user&.containers&.pluck(:id) || [] }))
+      end
+    end
+  end
+
   def create?
     (record.profile.user == user && record.contest_instance.open?) || axis_mundi?
   end

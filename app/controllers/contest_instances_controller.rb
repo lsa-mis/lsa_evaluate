@@ -144,7 +144,7 @@ class ContestInstancesController < ApplicationController
   end
 
   def export_entries
-    @contest_instance = ContestInstance.find(params[:id])
+    @contest_instance = ContestInstance.accessible_by(current_ability).find(params[:id])
     @contest_description = @contest_instance.contest_description
     @container = @contest_description.container
 
@@ -176,7 +176,7 @@ class ContestInstancesController < ApplicationController
   end
 
   def set_container
-    @container = Container.find(params[:container_id])
+    @container = Container.accessible_by(current_ability).find(params[:container_id])
   end
 
   def set_contest_description

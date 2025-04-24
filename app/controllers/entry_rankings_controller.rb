@@ -99,9 +99,9 @@ class EntryRankingsController < ApplicationController
 
   def set_entry_ranking
     @entry_ranking = if params[:id] && params[:id] != 'new'
-      EntryRanking.find_by(id: params[:id])
+      policy_scope(EntryRanking).find_by(id: params[:id])
     elsif params[:entry_id]
-      EntryRanking.find_by(
+      policy_scope(EntryRanking).find_by(
         entry_id: params[:entry_id],
         judging_round: @judging_round,
         user: current_user
@@ -113,9 +113,9 @@ class EntryRankingsController < ApplicationController
     @judging_round = if @entry_ranking&.judging_round
       @entry_ranking.judging_round
     elsif params[:judging_round_id]
-      JudgingRound.find(params[:judging_round_id])
+      policy_scope(JudgingRound).find(params[:judging_round_id])
     elsif params[:entry_ranking]
-      JudgingRound.find(entry_ranking_params[:judging_round_id])
+      policy_scope(JudgingRound).find(entry_ranking_params[:judging_round_id])
     end
 
     if @judging_round.nil?
@@ -129,9 +129,9 @@ class EntryRankingsController < ApplicationController
   end
 
   def set_contest_instance
-    @container = Container.find(params[:container_id])
-    @contest_description = @container.contest_descriptions.find(params[:contest_description_id])
-    @contest_instance = @contest_description.contest_instances.find(params[:contest_instance_id])
+    @container = policy_scope(Container).find(params[:container_id])
+    @contest_description = policy_scope(ContestDescription).find(params[:contest_description_id])
+    @contest_instance = policy_scope(ContestInstance).find(params[:contest_instance_id])
     true
   rescue ActiveRecord::RecordNotFound => e
     render json: { errors: [ 'Contest instance not found' ] }, status: :unprocessable_entity
