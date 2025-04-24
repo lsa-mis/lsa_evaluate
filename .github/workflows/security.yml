@@ -28,10 +28,7 @@ jobs:
 
     env:
       RAILS_ENV: test
-      DATABASE_USERNAME: root
-      DATABASE_PASSWORD: password
-      DATABASE_HOST: 127.0.0.1
-      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      RACK_ENV: test
 
     steps:
       - uses: actions/checkout@v4
