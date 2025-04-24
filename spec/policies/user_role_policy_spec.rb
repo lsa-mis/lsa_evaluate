@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe UserRolePolicy do
   let(:user_with_axis_mundi) { create(:user, :with_axis_mundi_role) }
   let(:regular_user) { create(:user) }
-  let(:user_role) { UserRole.first }  # Use the first UserRole created by the :with_axis_mundi_role trait
+  let(:user_role) { create(:user_role, user: user_with_axis_mundi, role: create(:role, :axis_mundi)) }
 
   shared_examples 'grants access to Axis Mundi role' do |action|
     it "grants access to users with the Axis Mundi role for #{action}" do
