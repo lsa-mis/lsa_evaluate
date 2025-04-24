@@ -1,0 +1,61 @@
+name: Security and Test Checks
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    branches: [ main, staging ]
+  schedule:
+    - cron: '0 0 * * 1' # Run weekly on Monday at midnight UTC
+
+jobs:
+  security_and_tests:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: lsa_evaluate_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.4'
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Set up database
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: mysql2://root:password@localhost:3306/lsa_evaluate_test
+        run: |
+          bundle exec rails db:create
+          bundle exec rails db:schema:load
+
+      - name: Run security audit
+        run: bundle exec rake security:audit
+
+      - name: Run Brakeman
+        run: bundle exec brakeman -A
+
+      - name: Run bundle audit
+        run: bundle audit check --update
+
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: mysql2://root:password@localhost:3306/lsa_evaluate_test
+        run: bundle exec rspec
