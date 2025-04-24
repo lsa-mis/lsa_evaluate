@@ -31,6 +31,7 @@ jobs:
       RACK_ENV: test
       LOCAL_MYSQL_DATABASE_PASSWORD: password
       DATABASE_USERNAME: root
+      DATABASE_URL: mysql2://root:password@127.0.0.1:3306/lsa_evaluate_test
 
     steps:
       - uses: actions/checkout@v4
