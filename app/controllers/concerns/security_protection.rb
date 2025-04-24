@@ -33,7 +33,7 @@ module SecurityProtection
           ip: request.remote_ip,
           path: request.path,
           user_agent: request.user_agent,
-          params: request.params.to_unsafe_h
+          params: request.params.to_h
         }
       )
       return render_403
@@ -62,7 +62,7 @@ module SecurityProtection
     path = request.path.downcase
     return true if path.end_with?('.php')
     return true if path.include?('php')
-    return true if request.params.to_unsafe_h.values.any? { |v| v.to_s.include?('<?php') }
+    return true if request.params.values.any? { |v| v.to_s.include?('<?php') }
 
     # Check for common PHP vulnerability probe patterns
     suspicious_patterns = [
@@ -72,7 +72,7 @@ module SecurityProtection
     ]
 
     suspicious_patterns.any? do |pattern|
-      request.params.to_unsafe_h.values.any? { |v| v.to_s.downcase.include?(pattern) }
+      request.params.values.any? { |v| v.to_s.downcase.include?(pattern) }
     end
   end
 
