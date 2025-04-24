@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main, staging ]
   schedule:
-    - cron: '0 0 * * 1' # Run weekly on Monday at midnight UTC
+    - cron: '0 0 * * 1' # Run weekly on Monday at midnight UTC *
 
 jobs:
   security_and_tests:
