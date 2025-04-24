@@ -1,11 +1,11 @@
-
 default: &default
   adapter: mysql2
   encoding: utf8mb4
   collation: utf8mb4_unicode_ci
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: root
-  password: <%= ENV['LOCAL_MYSQL_DATABASE_PASSWORD'] %>
+  username: <%= ENV.fetch("DATABASE_USERNAME") { "root" } %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD") { "password" } %>
+  host: <%= ENV.fetch("DATABASE_HOST") { "localhost" } %>
   port: 3306
 
 development:
@@ -22,12 +22,12 @@ test:
 
 staging:
   <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
+  database: lsa_evaluate_staging
 
 production:
   <<: *default
   # url: <%= ENV["DATABASE_URL"] %>
-  database: evaluate_db_prod
+  database: lsa_evaluate_production
   username: <%= Rails.application.credentials.mysql[:prod_user] %>
   password: <%= Rails.application.credentials.mysql[:prod_password] %>
   host: <%= Rails.application.credentials.mysql[:prod_servername] %>
