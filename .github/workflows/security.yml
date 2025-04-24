@@ -11,9 +11,10 @@ on:
 jobs:
   security_and_tests:
     runs-on: ubuntu-latest
+
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: lsa_evaluate_test
@@ -25,6 +26,13 @@ jobs:
           --health-timeout=5s
           --health-retries=3
 
+    env:
+      RAILS_ENV: test
+      DATABASE_USERNAME: root
+      DATABASE_PASSWORD: password
+      DATABASE_HOST: 127.0.0.1
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -35,12 +43,18 @@ jobs:
           bundler-cache: true
 
       - name: Install dependencies
-        run: bundle install
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-client libmysqlclient-dev
+          bundle install
+
+      - name: Wait for MySQL
+        run: |
+          while ! mysqladmin ping -h"127.0.0.1" -P"3306" --silent; do
+            sleep 1
+          done
 
       - name: Set up database
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: mysql2://root:password@localhost:3306/lsa_evaluate_test
         run: |
           bundle exec rails db:create
           bundle exec rails db:schema:load
@@ -55,7 +69,4 @@ jobs:
         run: bundle audit check --update
 
       - name: Run tests
-        env:
-          RAILS_ENV: test
-          DATABASE_URL: mysql2://root:password@localhost:3306/lsa_evaluate_test
         run: bundle exec rspec
