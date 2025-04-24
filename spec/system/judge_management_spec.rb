@@ -4,30 +4,42 @@ RSpec.describe 'Judge Management', type: :system do
   let(:container) { create(:container) }
   let(:contest_description) { create(:contest_description, container: container) }
   let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
-  let(:admin_user) { create(:user) }
+  let(:admin_user) { create(:user, :axis_mundi) }
   let(:admin_role) { create(:role, kind: 'Collection Administrator') }
   let!(:judge_role) { create(:role, kind: 'Judge') }
 
   before do
-    # Assign admin role and create container assignment
+    # Create and assign the Collection Administrator role
     admin_user.roles << admin_role
+
+    # Create the container assignment with the Collection Administrator role
     create(:assignment, user: admin_user, container: container, role: admin_role)
+
     sign_in admin_user
+
+    # Visit the judging assignments page
+    visit container_contest_description_contest_instance_judging_assignments_path(
+      container, contest_description, contest_instance
+    )
+
+    # Wait for the page to load with more specific expectations
+    expect(page).to have_current_path(
+      container_contest_description_contest_instance_judging_assignments_path(
+        container, contest_description, contest_instance
+      )
+    )
+    expect(page).to have_selector('div.container')
+    expect(page).to have_css('h2', text: /Manage Judging for/)
   end
 
   describe 'creating a new judge' do
-    before do
-      visit container_contest_description_contest_instance_judging_assignments_path(
-        container, contest_description, contest_instance
-      )
-    end
-
     context 'with non-umich email' do
       it 'creates a new judge with transformed email' do
-        click_on 'Judges assigned to this contest instance'
 
         # Click the pool of judges tab button and wait for content
-        find('button[data-bs-target="#pool-of-judges"]').click
+        expect(page).to have_selector('button#pool-of-judges-tab')
+        find('button#pool-of-judges-tab').click
+        expect(page).to have_selector('#pool-of-judges.tab-pane')
 
         # Wait for the table to be visible in the pool of judges tab
         within('#pool-of-judges') do
@@ -45,7 +57,7 @@ RSpec.describe 'Judge Management', type: :system do
         expect(page).to have_css('.alert.alert-success', text: 'Judge was successfully created/updated and assigned')
 
         # Click the pool of judges tab button again after page reload
-        find('button[data-bs-target="#pool-of-judges"]').click
+        find('button#pool-of-judges-tab').click
 
         # Wait for the table to be visible and check for the new judge
         within('#pool-of-judges') do
@@ -63,8 +75,8 @@ RSpec.describe 'Judge Management', type: :system do
 
     context 'with umich email' do
       it 'creates a new judge with original email' do
-        # Click the pool of judges tab button and wait for content
-        find('button[data-bs-target="#pool-of-judges"]').click
+        # Click the pool of judges tab button
+        find('button#pool-of-judges-tab').click
 
         # Wait for the table to be visible in the pool of judges tab
         within('#pool-of-judges') do
@@ -82,7 +94,7 @@ RSpec.describe 'Judge Management', type: :system do
         expect(page).to have_css('.alert.alert-success', text: 'Judge was successfully created/updated and assigned')
 
         # Click the pool of judges tab button again after page reload
-        find('button[data-bs-target="#pool-of-judges"]').click
+        find('button#pool-of-judges-tab').click
 
         # Wait for the table to be visible and check for the new judge
         within('#pool-of-judges') do
@@ -101,8 +113,8 @@ RSpec.describe 'Judge Management', type: :system do
       it 'shows validation messages' do
         initial_user_count = User.count
 
-        # Click the pool of judges tab button and wait for content
-        find('button[data-bs-target="#pool-of-judges"]').click
+        # Click the pool of judges tab button
+        find('button#pool-of-judges-tab').click
 
         # Wait for the table to be visible in the pool of judges tab
         within('#pool-of-judges') do
@@ -124,7 +136,7 @@ RSpec.describe 'Judge Management', type: :system do
         expect(User.count).to eq(initial_user_count)
 
         # Click the pool of judges tab button again after error
-        find('button[data-bs-target="#pool-of-judges"]').click
+        find('button#pool-of-judges-tab').click
 
         # Wait for the table to be visible in the pool of judges tab
         within('#pool-of-judges') do
@@ -160,8 +172,8 @@ RSpec.describe 'Judge Management', type: :system do
     end
 
     it 'displays judge with formatted email' do
-      # Click the pool of judges tab button and wait for content
-      find('button[data-bs-target="#pool-of-judges"]').click
+      # Click the pool of judges tab button
+      find('button#pool-of-judges-tab').click
 
       # Wait for the table to be visible and check for the judge
       within('#pool-of-judges') do
@@ -175,8 +187,8 @@ RSpec.describe 'Judge Management', type: :system do
     it 'allows removing a judge' do
       assignment = JudgingAssignment.last
 
-      # Click the pool of judges tab button and wait for content
-      find('button[data-bs-target="#pool-of-judges"]').click
+      # Click the pool of judges tab button
+      find('button#pool-of-judges-tab').click
 
       # Wait for the table to be visible and remove the judge
       within('#pool-of-judges') do
@@ -191,7 +203,7 @@ RSpec.describe 'Judge Management', type: :system do
       expect(page).to have_css('.alert.alert-success', text: 'Judge assignment was successfully removed')
 
       # Click the pool of judges tab button again after page reload
-      find('button[data-bs-target="#pool-of-judges"]').click
+      find('button#pool-of-judges-tab').click
 
       # Verify the judge is no longer in the table
       within('#pool-of-judges') do
