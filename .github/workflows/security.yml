@@ -29,6 +29,8 @@ jobs:
     env:
       RAILS_ENV: test
       RACK_ENV: test
+      LOCAL_MYSQL_DATABASE_PASSWORD: password
+      DATABASE_USERNAME: root
 
     steps:
       - uses: actions/checkout@v4
