@@ -144,7 +144,8 @@ class ContestInstancesController < ApplicationController
   end
 
   def export_entries
-    @contest_instance = ContestInstance.accessible_by(current_ability).find(params[:id])
+    @contest_instance = ContestInstance.find(params[:id])
+    authorize @contest_instance, :export_entries?
     @contest_description = @contest_instance.contest_description
     @container = @contest_description.container
 
@@ -176,7 +177,11 @@ class ContestInstancesController < ApplicationController
   end
 
   def set_container
-    @container = policy_scope(Container).find(params[:container_id])
+    @container = policy_scope(Container).find_by(id: params[:container_id])
+    unless @container
+      flash[:alert] = 'You are not authorized to access this container.'
+      redirect_to root_path
+    end
   end
 
   def set_contest_description
