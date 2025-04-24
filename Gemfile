@@ -22,6 +22,7 @@ gem 'omniauth-saml', '~> 2.1'
 gem 'pagy', '~> 6.4'
 gem 'puma'
 gem 'pundit'
+gem 'rack-attack'
 gem 'redis', '~> 5.0'
 gem 'sentry-ruby'
 gem 'sentry-rails'
@@ -59,6 +60,8 @@ group :development, :staging do
 end
 
 group :development, :test do
+  gem 'brakeman'
+  gem 'bundler-audit'
   gem 'capybara'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'pry-byebug'
@@ -72,6 +75,7 @@ group :development, :test do
   gem 'rubocop-rails-omakase', require: false
   gem 'rubocop-rspec', require: false
   gem 'rubocop-rspec_rails', require: false
+  gem 'safety_net'
 end
 
 group :development, :staging, :test do
