@@ -128,12 +128,22 @@ class EntriesController < ApplicationController
                      .joins(contest_instance: { contest_description: :container })
                      .where(containers: { id: admin_container_ids })
     end
+  rescue Pundit::NotAuthorizedError
+    flash.now[:alert] = '!!! Not authorized !!!'
+    render 'shared/unauthorized', status: :unauthorized
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_entry
-      @entry = policy_scope(Entry).find(params[:id])
+      @entry = if action_name == 'applicant_profile'
+                 Entry.find(params[:id])
+               else
+                 policy_scope(Entry).find(params[:id])
+               end
+    rescue ActiveRecord::RecordNotFound
+      flash[:alert] = '!!! Not authorized !!!'
+      redirect_to root_path
     end
 
     def authorize_entry
