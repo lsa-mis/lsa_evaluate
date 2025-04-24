@@ -71,7 +71,7 @@ jobs:
         run: bundle exec brakeman -A
 
       - name: Run bundle audit
-        run: bundle audit check --update
+        run: bundle exec bundle-audit check --update
 
       - name: Run tests
         run: bundle exec rspec
