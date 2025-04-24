@@ -120,6 +120,7 @@ Rails.application.routes.draw do
   # Place this at the very end of the file to catch all undefined routes
   match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|
     req.path.exclude?('/rails/active_storage') &&
-    req.path.exclude?('/letter_opener')
+    req.path.exclude?('/letter_opener') &&
+    req.path != '/'
   }
 end
