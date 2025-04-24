@@ -1,4 +1,4 @@
-<%= render @contest_description %>
+<%= render partial: 'contest_description', locals: { contest_description: @contest_description } %>
 
 <div>
   <%= link_to "Edit", edit_container_contest_description_path([@container, @contest_description]) %> |

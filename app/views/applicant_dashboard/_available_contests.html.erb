@@ -3,9 +3,9 @@
   <% if params[:filter] && (params[:filter][:department_id].present? || params[:filter][:container_id].present?) %>
     <h2>Filtered Contests</h2>
     <p>
-      Showing contests for 
+      Showing contests for
       <% if params[:filter][:department_id].present? %>
-        <% department = Department.find_by(id: params[:filter][:department_id]) %>
+        <% department = policy_scope(Department).find_by(id: params[:filter][:department_id]) %>
         <% if department %>
           Department: <strong><%= department.name %></strong>
         <% end %>
@@ -14,7 +14,7 @@
         and
       <% end %>
       <% if params[:filter][:container_id].present? %>
-        <% container = Container.find_by(id: params[:filter][:container_id]) %>
+        <% container = policy_scope(Container).find_by(id: params[:filter][:container_id]) %>
         <% if container %>
           Collection: <strong><%= container.name %></strong>
         <% end %>
@@ -31,20 +31,20 @@
     <% if params[:filter] && (params[:filter][:department_id].present? || params[:filter][:container_id].present?) %>
       <span>Currently filtering by:</span>
       <% if params[:filter][:department_id].present? %>
-        <% department = Department.find_by(id: params[:filter][:department_id]) %>
+        <% department = policy_scope(Department).find_by(id: params[:filter][:department_id]) %>
         <% if department %>
           <span class="badge bg-primary">Department: <%= department.name %></span>
         <% end %>
       <% end %>
       <% if params[:filter][:container_id].present? %>
-        <% container = Container.find_by(id: params[:filter][:container_id]) %>
+        <% container = policy_scope(Container).find_by(id: params[:filter][:container_id]) %>
         <% if container %>
           <span class="badge bg-success">Collection: <%= container.name %></span>
         <% end %>
       <% end %>
     <% end %>
   </div>
-  
+
   <% if @active_contests_by_container.any? %>
     <% @active_contests_by_container.each do |container, contests| %>
       <%= render partial: 'applicant_dashboard/contest_table', locals: { container: container, contests: contests } %>

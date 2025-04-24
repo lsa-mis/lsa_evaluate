@@ -1,6 +1,6 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @entry %>
+<%= render partial: 'entry', locals: { entry: @entry } %>
 
 <div>
   <%= link_to "Return to Dashboard", applicant_dashboard_path, class: "link_to" %>
