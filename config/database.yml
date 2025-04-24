@@ -3,40 +3,29 @@ default: &default
   encoding: utf8mb4
   collation: utf8mb4_unicode_ci
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  username: <%= ENV.fetch("DATABASE_USERNAME") { "root" } %>
+  password: <%= ENV.fetch['LOCAL_MYSQL_DATABASE_PASSWORD'] %>
   port: 3306
 
 development:
   <<: *default
   database: lsa_evaluate_development
-  username: <%= ENV.fetch("DATABASE_USERNAME") { "root" } %>
-  password: <%= ENV.fetch("DATABASE_PASSWORD") { "password" } %>
-  host: <%= ENV.fetch("DATABASE_HOST") { "localhost" } %>
 
 development_feature:
   <<: *default
   database: lsa_evaluate_development_feature
-  username: <%= ENV.fetch("DATABASE_USERNAME") { "root" } %>
-  password: <%= ENV.fetch("DATABASE_PASSWORD") { "password" } %>
-  host: <%= ENV.fetch("DATABASE_HOST") { "localhost" } %>
 
 test:
   <<: *default
   database: lsa_evaluate_test
-  username: root
-  password: password
-  host: 127.0.0.1
 
 staging:
   <<: *default
-  database: lsa_evaluate_staging
-  username: <%= ENV.fetch("DATABASE_USERNAME") { "root" } %>
-  password: <%= ENV.fetch("DATABASE_PASSWORD") { "password" } %>
-  host: <%= ENV.fetch("DATABASE_HOST") { "localhost" } %>
+  url: <%= ENV["DATABASE_URL"] %>
 
 production:
   <<: *default
-  # url: <%= ENV["DATABASE_URL"] %>
-  database: lsa_evaluate_production
+  database: evaluate_db_prod
   username: <%= Rails.application.credentials.mysql[:prod_user] %>
   password: <%= Rails.application.credentials.mysql[:prod_password] %>
   host: <%= Rails.application.credentials.mysql[:prod_servername] %>
