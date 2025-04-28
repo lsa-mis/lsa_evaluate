@@ -15,9 +15,9 @@
                 @contest_instance,
                 round_id: round.id
               ),
-              class: "btn btn-sm btn-info me-3",
+              class: "btn btn-sm btn-outline-primary me-3",
               disabled: !round.complete? do %>
-              <i class="bi bi-envelope text-white"></i>
+              <i class="bi bi-envelope text-um-blue"></i>
               Email round <%= round.round_number %> results
             <% end %>
           </div>
@@ -28,7 +28,7 @@
                   data-bs-placement="top"
                   title="Number of times emails have been sent for this round">
               <i class="bi bi-envelope-check me-1"></i>
-              Emails sent: <%= round.emails_sent_count %> time<%= 's' if round.emails_sent_count > 1 %>
+              Emails sent: <%= pluralize(round.emails_sent_count, 'time') %>
             </span>
           <% end %>
         </div>

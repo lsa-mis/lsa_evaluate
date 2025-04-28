@@ -52,6 +52,13 @@
         </div>
 
         <h3 class="mt-4">Comment Requirements</h3>
+        <div class="card mb-4">
+          <div class="card-body">
+            <% if (content = render_editable_content('judging_rounds', 'comment_interface_behavior')) %>
+              <%= content %>
+            <% end %>
+          </div>
+        </div>
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
