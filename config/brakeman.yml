@@ -1,5 +1,5 @@
 ---
-# This is a Brakeman configuration file
+# Brakeman configuration file
 # https://brakemanscanner.org/docs/options/
 
 # Scan paths
@@ -11,6 +11,8 @@ noscan:
   - tmp
   - log
   - coverage
+  - spec
+  - test
 
 # Output options
 output_files:
@@ -23,44 +25,21 @@ exit_on_warn: true  # Exit with non-zero status if warnings are found
 
 # Scanning options
 min_confidence: 2  # Only show high and medium confidence warnings
-skip_files: []
-ignore_methods: []
-skip_checks: []
-ignore_model_output: false
-only_files: []
-only_checks: []
 run_all_checks: true
-absolute_paths: false
-run_checks: []
-exclude_checks: []
-url_safe_methods: []
 warning_limit: 100
-sql_safe_methods: []
-assume_all_routes: false
-engines:
-  - all
-allow_check_paths_in_config: false
 
-# Custom configuration
-ignore_checks:
-  - CheckRenderInline
-  - CheckRenderDoS
-  - CheckJSONEncoding
-  - CheckJSONParsing
-  - CheckLinkToHref
-  - CheckModelAttrAccessible
-  - CheckModelAttributes
-  - CheckModelSerialize
-  - CheckRedirect
-  - CheckRender
-  - CheckSelectTag
-  - CheckSelectVulnerability
-  - CheckSend
-  - CheckSendFile
-  - CheckSimpleFormat
-  - CheckStripTags
-  - CheckSymbolDoSCVE
-  - CheckTranslateBug
-  - CheckUnsafeReflection
-  - CheckValidationRegex
-  - CheckWithoutProtection
+# Ignore specific categories of warnings
+# This is much more targeted than the previous configuration
+exclude_checks:
+  # Skip less critical or noisy checks
+  - UnscopedFind        # Often reports unscoped find calls which may be acceptable in admin controllers
+  - Render              # Dynamic render paths with weak confidence
+  - LinkToHref          # Link issues which may be handled through other validations
+
+# Note: We deliberately don't ignore major security issues such as:
+# - SQL Injection
+# - Command Injection
+# - Cross-Site Scripting (XSS)
+# - Cross-Site Request Forgery (CSRF)
+# - Mass Assignment
+# - etc.
