@@ -1,4 +1,23 @@
 class ContestInstancePolicy < ApplicationPolicy
+  class Scope < Scope
+    def resolve
+      if user&.axis_mundi?
+        scope.all
+      else
+        # Return contest instances for containers where the user has a role
+        # First get the container IDs where the user has a role
+        container_ids = user&.containers&.pluck(:id) || []
+
+        if container_ids.any?
+          # Then find contest instances linked to those containers through contest descriptions
+          scope.joins(contest_description: :container).where(contest_descriptions: { container_id: container_ids })
+        else
+          scope.none
+        end
+      end
+    end
+  end
+
   def index?
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end
