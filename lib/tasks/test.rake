@@ -8,7 +8,7 @@ namespace :test do
     jest_success = system('yarn test')
 
     puts "\n=== Running Brakeman Security Scan ===\n"
-    brakeman_success = system('bundle exec brakeman -A -q')
+    brakeman_success = system('bundle exec brakeman')
 
     if !rspec_success || !jest_success || !brakeman_success
       puts "\n❌ Tests failed!"
@@ -34,8 +34,14 @@ namespace :test do
   desc 'Run only Brakeman security scan'
   task brakeman: :environment do
     puts "\n=== Running Brakeman Security Scan ===\n"
-    exit 1 unless system('bundle exec brakeman -A -q')
-    puts "\n✅ Brakeman security scan passed!"
+    result = system('bundle exec brakeman')
+
+    if result
+      puts "\n✅ Brakeman security scan passed!"
+    else
+      puts "\n❌ Brakeman found security issues!"
+      exit 1
+    end
   end
 end
 
