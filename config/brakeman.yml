@@ -1,0 +1,66 @@
+---
+# This is a Brakeman configuration file
+# https://brakemanscanner.org/docs/options/
+
+# Scan paths
+app_path: .
+additional_checks_path: []
+noscan:
+  - vendor
+  - node_modules
+  - tmp
+  - log
+  - coverage
+
+# Output options
+output_files:
+  - tmp/brakeman-report.html
+  - tmp/brakeman-report.json
+quiet: false
+report_progress: true
+pager: false
+exit_on_warn: true  # Exit with non-zero status if warnings are found
+
+# Scanning options
+min_confidence: 2  # Only show high and medium confidence warnings
+skip_files: []
+ignore_methods: []
+skip_checks: []
+ignore_model_output: false
+only_files: []
+only_checks: []
+run_all_checks: true
+absolute_paths: false
+run_checks: []
+exclude_checks: []
+url_safe_methods: []
+warning_limit: 100
+sql_safe_methods: []
+assume_all_routes: false
+engines:
+  - all
+allow_check_paths_in_config: false
+
+# Custom configuration
+ignore_checks:
+  - CheckRenderInline
+  - CheckRenderDoS
+  - CheckJSONEncoding
+  - CheckJSONParsing
+  - CheckLinkToHref
+  - CheckModelAttrAccessible
+  - CheckModelAttributes
+  - CheckModelSerialize
+  - CheckRedirect
+  - CheckRender
+  - CheckSelectTag
+  - CheckSelectVulnerability
+  - CheckSend
+  - CheckSendFile
+  - CheckSimpleFormat
+  - CheckStripTags
+  - CheckSymbolDoSCVE
+  - CheckTranslateBug
+  - CheckUnsafeReflection
+  - CheckValidationRegex
+  - CheckWithoutProtection

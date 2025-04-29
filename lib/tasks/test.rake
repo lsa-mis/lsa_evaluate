@@ -1,5 +1,5 @@
 namespace :test do
-  desc 'Run all tests (RSpec and Jest)'
+  desc 'Run all tests (RSpec, Jest, and Brakeman)'
   task all: :environment do
     puts "\n=== Running RSpec Tests ===\n"
     rspec_success = system('bundle exec rspec')
@@ -7,7 +7,10 @@ namespace :test do
     puts "\n=== Running Jest Tests ===\n"
     jest_success = system('yarn test')
 
-    if !rspec_success || !jest_success
+    puts "\n=== Running Brakeman Security Scan ===\n"
+    brakeman_success = system('bundle exec brakeman -A -q')
+
+    if !rspec_success || !jest_success || !brakeman_success
       puts "\n❌ Tests failed!"
       exit 1
     else
@@ -26,6 +29,13 @@ namespace :test do
     puts "\n=== Running RSpec Tests ===\n"
     exit 1 unless system('bundle exec rspec --format documentation')
     puts "\n✅ RSpec tests passed!"
+  end
+
+  desc 'Run only Brakeman security scan'
+  task brakeman: :environment do
+    puts "\n=== Running Brakeman Security Scan ===\n"
+    exit 1 unless system('bundle exec brakeman -A -q')
+    puts "\n✅ Brakeman security scan passed!"
   end
 end
 
