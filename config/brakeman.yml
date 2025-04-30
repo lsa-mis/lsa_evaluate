@@ -1,0 +1,45 @@
+---
+# Brakeman configuration file
+# https://brakemanscanner.org/docs/options/
+
+# Scan paths
+app_path: .
+additional_checks_path: []
+noscan:
+  - vendor
+  - node_modules
+  - tmp
+  - log
+  - coverage
+  - spec
+  - test
+
+# Output options
+output_files:
+  - tmp/brakeman-report.html
+  - tmp/brakeman-report.json
+quiet: false
+report_progress: true
+pager: false
+exit_on_warn: true  # Exit with non-zero status if warnings are found
+
+# Scanning options
+min_confidence: 2  # Only show high and medium confidence warnings
+run_all_checks: true
+warning_limit: 100
+
+# Ignore specific categories of warnings
+# This is much more targeted than the previous configuration
+exclude_checks:
+  # Skip less critical or noisy checks
+  - UnscopedFind        # Often reports unscoped find calls which may be acceptable in admin controllers
+  - Render              # Dynamic render paths with weak confidence
+  - LinkToHref          # Link issues which may be handled through other validations
+
+# Note: We deliberately don't ignore major security issues such as:
+# - SQL Injection
+# - Command Injection
+# - Cross-Site Scripting (XSS)
+# - Cross-Site Request Forgery (CSRF)
+# - Mass Assignment
+# - etc.

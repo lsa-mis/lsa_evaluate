@@ -79,89 +79,101 @@ class ContestInstancesController < ApplicationController
   end
 
   def email_preferences
-    set_contest_instance
-    authorize @contest_instance, :send_round_results?
+    begin
+      set_contest_instance
+      authorize @contest_instance, :send_round_results?
 
-    round_id = params[:round_id]
-    @judging_round = @contest_instance.judging_rounds.find_by(id: round_id)
+      round_id = params[:round_id]
+      @judging_round = @contest_instance.judging_rounds.find_by(id: round_id)
 
-    if @judging_round.nil?
-      redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
-                 alert: 'Judging round not found.'
-      return
-    end
+      if @judging_round.nil?
+        redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                   alert: 'Judging round not found.'
+        return
+      end
 
-    if !@judging_round.completed?
-      redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
-                 alert: 'Cannot send results for an incomplete judging round.'
-      nil
+      if !@judging_round.completed?
+        redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                   alert: 'Cannot send results for an incomplete judging round.'
+        nil
+      end
+    rescue Pundit::NotAuthorizedError
+      flash[:alert] = 'Not authorized to perform this action'
+      redirect_to root_path
     end
   end
 
   def send_round_results
-    authorize @contest_instance, :send_round_results?
+    begin
+      authorize @contest_instance, :send_round_results?
 
-    round_id = params[:round_id]
-    judging_round = @contest_instance.judging_rounds.find_by(id: round_id)
+      round_id = params[:round_id]
+      judging_round = @contest_instance.judging_rounds.find_by(id: round_id)
 
-    if judging_round.nil?
+      if judging_round.nil?
+        redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                  alert: 'Judging round not found.'
+        return
+      end
+
+      if !judging_round.completed?
+        redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                  alert: 'Cannot send results for an incomplete judging round.'
+        return
+      end
+
+      # Update email preferences if they were provided
+      if params[:include_average_ranking].present? || params[:include_advancement_status].present?
+        judging_round.update(
+          include_average_ranking: params[:include_average_ranking] == '1',
+          include_advancement_status: params[:include_advancement_status] == '1'
+        )
+      end
+
+      # Get all entries for this round
+      entries = judging_round.entries.uniq
+
+      email_count = 0
+
+      # Send an email for each entry
+      entries.each do |entry|
+        mail = ResultsMailer.entry_evaluation_notification(entry, judging_round)
+        mail.deliver_later
+        email_count += 1
+      end
+
+      # Increment the emails sent counter for this round
+      judging_round.increment!(:emails_sent_count)
+
       redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
-                 alert: 'Judging round not found.'
-      return
+                notice: "Successfully queued #{email_count} evaluation result emails for round #{judging_round.round_number}. This is email batch ##{judging_round.emails_sent_count}."
+    rescue Pundit::NotAuthorizedError
+      flash[:alert] = 'Not authorized to perform this action'
+      redirect_to root_path
     end
-
-    if !judging_round.completed?
-      redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
-                 alert: 'Cannot send results for an incomplete judging round.'
-      return
-    end
-
-    # Update email preferences if they were provided
-    if params[:include_average_ranking].present? || params[:include_advancement_status].present?
-      judging_round.update(
-        include_average_ranking: params[:include_average_ranking] == '1',
-        include_advancement_status: params[:include_advancement_status] == '1'
-      )
-    end
-
-    # Get all entries for this round
-    entries = judging_round.entries.uniq
-
-    email_count = 0
-
-    # Send an email for each entry
-    entries.each do |entry|
-      mail = ResultsMailer.entry_evaluation_notification(entry, judging_round)
-      mail.deliver_later
-      email_count += 1
-    end
-
-    # Increment the emails sent counter for this round
-    judging_round.increment!(:emails_sent_count)
-
-    redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
-               notice: "Successfully queued #{email_count} evaluation result emails for round #{judging_round.round_number}. This is email batch ##{judging_round.emails_sent_count}."
   end
 
   def export_entries
-    @contest_instance = ContestInstance.find(params[:id])
-    @contest_description = @contest_instance.contest_description
-    @container = @contest_description.container
+    begin
+      @contest_instance = @contest_description.contest_instances.find(params[:id])
+      authorize @contest_instance, :export_entries?
 
-    authorize @contest_instance
+      @entries = @contest_instance.entries.active.includes(:profile, :category)
 
-    @entries = @contest_instance.entries.active.includes(:profile, :category)
+      respond_to do |format|
+        format.csv do
+          filename = "#{@contest_description.name.parameterize}-entries_printed-#{Time.zone.today}.csv"
 
-    respond_to do |format|
-      format.csv do
-        filename = "#{@contest_description.name.parameterize}-entries_printed-#{Time.zone.today}.csv"
+          csv_data = generate_entries_csv(@entries, @contest_description, @contest_instance)
 
-        csv_data = generate_entries_csv(@entries, @contest_description, @contest_instance)
-
-        send_data csv_data,
-                  type: 'text/csv; charset=utf-8; header=present',
-                  disposition: "attachment; filename=#{filename}"
+          send_data csv_data,
+                    type: 'text/csv; charset=utf-8; header=present',
+                    disposition: "attachment; filename=#{filename}"
+        end
       end
+    rescue Pundit::NotAuthorizedError
+      flash[:alert] = 'Not authorized to access this contest instance'
+      redirect_to root_path
     end
   end
 
@@ -176,7 +188,7 @@ class ContestInstancesController < ApplicationController
   end
 
   def set_container
-    @container = Container.find(params[:container_id])
+    @container = policy_scope(Container).find(params[:container_id])
   end
 
   def set_contest_description
