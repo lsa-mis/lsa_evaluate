@@ -1,47 +1,39 @@
 namespace :test do
+  def run_test(name, command)
+    puts "\n=== Running #{name} ===\n"
+    success = system(command)
+    puts "\n#{success ? '✅' : '❌'} - #{name} #{success ? 'passed' : 'failed'}"
+    success
+  end
+
   desc 'Run all tests (RSpec, Jest, and Brakeman)'
   task all: :environment do
-    puts "\n=== Running RSpec Tests ===\n"
-    rspec_success = system('bundle exec rspec')
+    rspec_success = run_test('RSpec Tests', 'bundle exec rspec')
+    jest_success = run_test('Jest Tests', 'yarn test')
+    brakeman_success = run_test('Brakeman Security Scan', 'bundle exec brakeman')
 
-    puts "\n=== Running Jest Tests ===\n"
-    jest_success = system('yarn test')
-
-    puts "\n=== Running Brakeman Security Scan ===\n"
-    brakeman_success = system('bundle exec brakeman')
-
-    if !rspec_success || !jest_success || !brakeman_success
-      puts "\n❌ Tests failed!"
-      exit 1
-    else
-      puts "\n✅ All tests passed!"
-    end
+    puts "\n================================================"
+    puts "\n✅ RSpec Tests passed!" if rspec_success else puts "\n❌ RSpec Tests failed!"
+    puts "\n✅ Jest Tests passed!" if jest_success else puts "\n❌ Jest Tests failed!"
+    puts "\n✅ Brakeman Security Scan passed!" if brakeman_success else puts "\n❌ Brakeman Security Scan failed!"
+    puts "\n================================================"
+    puts "\n❌ Tests failed!" unless rspec_success && jest_success && brakeman_success
+    exit 1 unless rspec_success && jest_success && brakeman_success
   end
 
   desc 'Run only JavaScript tests'
   task js: :environment do
-    puts "\n=== Running Jest Tests ===\n"
-    exit 1 unless system('yarn test')
+    run_test('Jest Tests', 'yarn test') || exit(1)
   end
 
   desc 'Run only RSpec tests'
   task rspec: :environment do
-    puts "\n=== Running RSpec Tests ===\n"
-    exit 1 unless system('bundle exec rspec --format documentation')
-    puts "\n✅ RSpec tests passed!"
+    run_test('RSpec Tests', 'bundle exec rspec --format documentation') || exit(1)
   end
 
   desc 'Run only Brakeman security scan'
   task brakeman: :environment do
-    puts "\n=== Running Brakeman Security Scan ===\n"
-    result = system('bundle exec brakeman')
-
-    if result
-      puts "\n✅ Brakeman security scan passed!"
-    else
-      puts "\n❌ Brakeman found security issues!"
-      exit 1
-    end
+    run_test('Brakeman Security Scan', 'bundle exec brakeman') || exit(1)
   end
 end
 
