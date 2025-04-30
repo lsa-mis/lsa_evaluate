@@ -13,9 +13,9 @@ namespace :test do
     brakeman_success = run_test('Brakeman Security Scan', 'bundle exec brakeman')
 
     puts "\n================================================"
-    puts "\n✅ RSpec Tests passed!" if rspec_success else puts "\n❌ RSpec Tests failed!"
-    puts "\n✅ Jest Tests passed!" if jest_success else puts "\n❌ Jest Tests failed!"
-    puts "\n✅ Brakeman Security Scan passed!" if brakeman_success else puts "\n❌ Brakeman Security Scan failed!"
+    puts rspec_success ? "\n✅ RSpec Tests passed!" : "\n❌ RSpec Tests failed!"
+    puts jest_success ? "\n✅ Jest Tests passed!" : "\n❌ Jest Tests failed!"
+    puts brakeman_success ? "\n✅ Brakeman Security Scan passed!" : "\n❌ Brakeman Security Scan failed!"
     puts "\n================================================"
     puts "\n❌ Tests failed!" unless rspec_success && jest_success && brakeman_success
     exit 1 unless rspec_success && jest_success && brakeman_success
