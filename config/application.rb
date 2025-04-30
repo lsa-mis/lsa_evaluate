@@ -43,5 +43,51 @@ module LsaEvaluate
     # config.eager_load_paths << Rails.root.join("extras")
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Add security middleware
+    config.middleware.use Rack::Defense
+
+    # Configure rate limiting
+    config.action_dispatch.rate_limiter = {
+      limit: 300,
+      period: 5.minutes,
+      store: :redis,
+      key: ->(request) { request.ip }
+    }
+  end
+end
+
+# Custom middleware to block PHP-related requests
+class Rack::Defense
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    request = Rack::Request.new(env)
+
+    # Block requests with PHP-related content
+    if request.post? && (
+      request.path.include?('.php') ||
+      request.query_string.include?('php') ||
+      request.content_type.to_s.include?('php') ||
+      request.body.read.to_s.include?('php')
+    )
+      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
+    end
+
+    # Block requests with suspicious headers
+    if request.headers['User-Agent'].to_s.include?('Custom-AsyncHttpClient') ||
+       request.headers['X-Request-Id'].to_s.include?('cve_2024_4577')
+      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
+    end
+
+    # Block known malicious IPs
+    suspicious_ips = ['91.99.22.81'] # Add more IPs as needed
+    if suspicious_ips.include?(request.ip)
+      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
+    end
+
+    @app.call(env)
   end
 end
