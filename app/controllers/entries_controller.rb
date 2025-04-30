@@ -1,6 +1,7 @@
 class EntriesController < ApplicationController
   include AvailableContestsConcern
-  before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified applicant_profile ]
+  before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified ]
+  before_action :set_entry_for_profile, only: %i[ applicant_profile ]
   before_action :authorize_entry, only: %i[show edit update destroy]
   before_action :authorize_index, only: [ :index ]
 
@@ -117,10 +118,10 @@ class EntriesController < ApplicationController
     if @profile.user == current_user || current_user.axis_mundi?
       @entries = Entry.active.where(profile: @profile)
     else
-      # For container administrators, only show entries from their containers
+      # For container administrators and managers, only show entries from their containers
+      admin_role_ids = Role.where(kind: ['Collection Administrator', 'Collection Manager']).pluck(:id)
       admin_container_ids = current_user.assignments
-                                      .where(role: 'container_admin')
-                                      .joins(:container)
+                                      .where(role_id: admin_role_ids)
                                       .pluck(:container_id)
 
       @entries = Entry.active
@@ -133,6 +134,11 @@ class EntriesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_entry
+      @entry = policy_scope(Entry).find(params[:id])
+    end
+
+    # For applicant_profile, we want to find the entry first, then authorize it
+    def set_entry_for_profile
       @entry = Entry.find(params[:id])
     end
 

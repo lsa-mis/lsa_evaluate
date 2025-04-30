@@ -35,4 +35,35 @@ RSpec.describe 'Homepage Navigation', type: :system do
       expect(page).to have_css('[data-interaction-target="content"]')
     end
   end
+
+  context 'when user has specific roles' do
+    let(:regular_user) { create(:user) }
+    let(:employee) { create(:user, :employee) }
+    let(:administrator) { create(:user, :with_collection_admin_role) }
+    let(:manager) { create(:user, :with_collection_manager_role) }
+
+    it 'does not show containers_path button to regular users' do
+      sign_in regular_user
+      visit root_path
+      expect(page).not_to have_link('Contest Collections')
+    end
+
+    it 'shows containers_path button to employees' do
+      sign_in employee
+      visit root_path
+      expect(page).to have_link('Contest Collections')
+    end
+
+    it 'shows containers_path button to administrators' do
+      sign_in administrator
+      visit root_path
+      expect(page).to have_link('Contest Collections')
+    end
+
+    it 'shows containers_path button to managers' do
+      sign_in manager
+      visit root_path
+      expect(page).to have_link('Contest Collections')
+    end
+  end
 end

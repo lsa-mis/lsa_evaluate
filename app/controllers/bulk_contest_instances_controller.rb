@@ -38,7 +38,7 @@ class BulkContestInstancesController < ApplicationController
   private
 
   def set_container
-    @container = Container.find(params[:container_id])
+    @container = policy_scope(Container).find(params[:container_id])
   end
 
   def authorize_container_access

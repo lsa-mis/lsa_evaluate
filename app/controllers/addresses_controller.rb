@@ -60,7 +60,7 @@ class AddressesController < ApplicationController
   private
 
   def set_address
-    @address = Address.find(params[:id])
+    @address = policy_scope(Address).find(params[:id])
   end
 
   def address_params

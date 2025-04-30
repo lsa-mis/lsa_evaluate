@@ -43,7 +43,7 @@ class ApplicationController < ActionController::Base
     user_not_authorized(exception)
   rescue ActiveRecord::RecordNotFound => exception
     Rails.logger.info('!!!!!!! Handling ActiveRecord::RecordNotFound in ApplicationController')
-    redirect_to not_found_path
+    redirect_to root_path, alert: '!!! Not authorized !!!'
   end
 
   # Private method for handling Pundit not authorized errors

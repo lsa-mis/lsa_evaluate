@@ -38,6 +38,7 @@ group :development do
   gem 'annotate'
   gem 'better_errors'
   gem 'binding_of_caller'
+  gem 'brakeman'
   gem 'capistrano', '~> 3.17', require: false
   gem 'capistrano-rails', '~> 1.6', '>= 1.6.1', require: false
   gem 'capistrano-asdf', require: false

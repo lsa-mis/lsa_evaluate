@@ -1,9 +1,12 @@
 # app/controllers/containers_controller.rb
 class ContainersController < ApplicationController
   include ContestDescriptionsHelper
+  after_action :verify_authorized, except: :lookup_user
   before_action :set_container, only: %i[show edit update destroy description active_applicants_report]
-  before_action :authorize_container, only: %i[edit show update destroy description]
-  before_action :authorize_index, only: [ :index ]
+  before_action :authorize_container, only: %i[show edit destroy]
+  before_action :authorize_new_container, only: :new
+  before_action :authorize_admin_content, only: :admin_content
+  before_action :authorize_index, only: :index
 
   def index
     @containers = policy_scope(Container)
@@ -143,20 +146,28 @@ class ContainersController < ApplicationController
 
   private
 
-  def authorize_container
-    authorize @container
-  end
-
   def set_container
-    @container = Container.find(params[:id])
-  end
-
-  def authorize_index
-    authorize Container
+    @container = policy_scope(Container).find(params[:id])
   end
 
   def container_params
     params.require(:container).permit(:name, :description, :notes, :contact_email, :department_id, :visibility_id,
                                       assignments_attributes: %i[id user_id role_id _destroy])
+  end
+
+  def authorize_container
+    authorize @container
+  end
+
+  def authorize_new_container
+    authorize Container, :new?
+  end
+
+  def authorize_admin_content
+    authorize Container, :admin_content?
+  end
+
+  def authorize_index
+    authorize Container
   end
 end

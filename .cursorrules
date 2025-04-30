@@ -57,6 +57,7 @@
   - Implement proper authentication and authorization (e.g., Devise, Pundit).
   - Use strong parameters in controllers.
   - Protect against common web vulnerabilities (XSS, CSRF, SQL injection).
+  - Use Brakeman to scan for security vulnerabilities.
 
   Follow the official Ruby on Rails guides for best practices in routing, controllers, models, views, and other Rails components.
 
