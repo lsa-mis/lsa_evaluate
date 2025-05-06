@@ -9,12 +9,11 @@ RSpec.describe 'Profile Access', type: :system do
   let(:axis_mundi_role) { create(:role, kind: 'Axis mundi') }
   let(:collection_admin_role) { create(:role, kind: 'Collection Administrator') }
   let(:regular_user) { create(:user) }
-  let(:axis_mundi_user) { create(:user) }
-  let(:collection_admin) { create(:user) }
+  let(:axis_mundi_user) { create(:user, :axis_mundi) }
+  let(:collection_admin) { create(:user, :with_collection_admin_role) }
   let(:entry) { create(:entry, profile: profile, contest_instance: contest_instance) }
 
   before do
-    create(:user_role, user: axis_mundi_user, role: axis_mundi_role)
     create(:assignment, user: collection_admin, container: container, role: collection_admin_role)
     entry
   end
