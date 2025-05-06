@@ -20,6 +20,41 @@ require 'action_cable/engine'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Custom middleware to block PHP-related requests
+class Rack::Defense
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    request = Rack::Request.new(env)
+
+    # Block requests with PHP-related content
+    if request.post? && (
+      request.path.include?('.php') ||
+      request.query_string.include?('php') ||
+      request.content_type.to_s.include?('php') ||
+      request.body.read.to_s.include?('php')
+    )
+      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
+    end
+
+    # Block requests with suspicious headers
+    if request.env['HTTP_USER_AGENT'].to_s.include?('Custom-AsyncHttpClient') ||
+       request.env['HTTP_X_REQUEST_ID'].to_s.include?('cve_2024_4577')
+      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
+    end
+
+    # Block known malicious IPs
+    suspicious_ips = ['91.99.22.81'] # Add more IPs as needed
+    if suspicious_ips.include?(request.ip)
+      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
+    end
+
+    @app.call(env)
+  end
+end
+
 module LsaEvaluate
   class Application < Rails::Application # rubocop:disable Style/Documentation
     # Initialize configuration defaults for originally generated Rails version.
@@ -54,40 +89,5 @@ module LsaEvaluate
       store: :redis,
       key: ->(request) { request.ip }
     }
-  end
-end
-
-# Custom middleware to block PHP-related requests
-class Rack::Defense
-  def initialize(app)
-    @app = app
-  end
-
-  def call(env)
-    request = Rack::Request.new(env)
-
-    # Block requests with PHP-related content
-    if request.post? && (
-      request.path.include?('.php') ||
-      request.query_string.include?('php') ||
-      request.content_type.to_s.include?('php') ||
-      request.body.read.to_s.include?('php')
-    )
-      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
-    end
-
-    # Block requests with suspicious headers
-    if request.headers['User-Agent'].to_s.include?('Custom-AsyncHttpClient') ||
-       request.headers['X-Request-Id'].to_s.include?('cve_2024_4577')
-      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
-    end
-
-    # Block known malicious IPs
-    suspicious_ips = ['91.99.22.81'] # Add more IPs as needed
-    if suspicious_ips.include?(request.ip)
-      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
-    end
-
-    @app.call(env)
   end
 end
