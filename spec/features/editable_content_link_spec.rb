@@ -2,18 +2,19 @@
 
 require 'rails_helper'
 
-RSpec.describe 'EditableContent' do
+RSpec.describe 'EditableContent', type: :system do
+  before do
+    driven_by(:selenium_chrome_headless)
+  end
+
   let!(:instructions) do
-    create(:editable_content, page: 'home', section: 'instructions',
-                              content: 'A short paragraph explaining LSA Evaluate.')
+    create(:editable_content, page: 'home', section: 'instructions')
   end
   let!(:user) { create(:user) }
-  let!(:admin) { create(:user) }
-  let!(:role) { create(:role, kind: 'Axis mundi') }
+  let!(:admin) { create(:user, :axis_mundi) }
 
   context 'when axis_mundi is logged in' do
     before do
-      admin.roles << role
       login_as(admin)
       visit root_path
     end
@@ -23,7 +24,7 @@ RSpec.describe 'EditableContent' do
     end
 
     it 'displays a pencil icon within the edit link' do
-      expect(page).to have_css('a[href="' + edit_editable_content_path(instructions) + '"] .bi.bi-pencil')
+      expect(page).to have_css('a.edit-link i.bi.bi-pencil')
     end
   end
 
@@ -38,7 +39,7 @@ RSpec.describe 'EditableContent' do
     end
 
     it 'does not display a pencil icon within the edit link' do
-      expect(page).to have_no_css('a[href="' + edit_editable_content_path(instructions) + '"] .bi.bi-pencil')
+      expect(page).to have_no_css('a.edit-link i.bi.bi-pencil')
     end
   end
 
