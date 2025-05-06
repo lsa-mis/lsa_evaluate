@@ -54,7 +54,7 @@ class UserRolesController < ApplicationController
   private
 
   def set_user_role
-    @user_role = UserRole.find(params[:id])
+    @user_role = policy_scope(UserRole).find(params[:id])
   end
 
   def user_role_params
