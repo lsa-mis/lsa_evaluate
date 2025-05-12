@@ -1,0 +1,56 @@
+<div class="card bg-light mt-4">
+  <div class="card-header bg-light">
+    <div class="d-flex align-items-center">
+      <i class="bi bi-clock-history me-2 text-muted"></i>
+      <h5 class="card-title mb-0 text-muted">Past Contest Entries</h5>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <% if (content = render_editable_content('applicant_dashboard', 'inactivesubmission_summary')) %>
+      <div class="p-3 border-bottom">
+        <%= content %>
+      </div>
+    <% end %>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Contest</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Submitted</th>
+            <th class="text-center">Entry</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @entries.joins(:contest_instance).where(contest_instances: { active: false }).each do |entry| %>
+            <tr id="<%= dom_id(entry) %>" data-controller="fade-out">
+              <td><small><%= "#{entry.contest_instance.contest_description.name } - #{entry.contest_instance.date_open.year}" %></small></td>
+              <td><small><%= entry.title %></small></td>
+              <td><small><%= entry.category.kind %></small></td>
+              <td><small><%= entry.created_at.strftime("%b %d, %Y") %></small></td>
+              <td class="text-center">
+                <% if entry.entry_file.attached? %>
+                  <div class="d-flex flex-row justify-content-center">
+                    <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"),
+                                target: "_blank", rel: "noopener", class: "me-2",
+                                title: "View in new tab", aria: { label: "View file" } do %>
+                      <i class="bi bi-eye text-muted" style="font-size: 1.2rem;" aria-hidden="true"></i>
+                    <% end %>
+                    <%= link_to rails_blob_path(entry.entry_file, disposition: "attachment"),
+                                download: "", class: "me-2",
+                                title: "Download file", aria: { label: "Download file" } do %>
+                      <i class="bi bi-download text-muted" style="font-size: 1.2rem;" aria-hidden="true"></i>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <small class="text-muted">No file</small>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
