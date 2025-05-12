@@ -14,13 +14,19 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-12 available-contests" id="available-contests">
+          <%= render 'applicant_dashboard/available_contests' %>
+        </div>
+      </div>
+      <div class="row">
         <div class="col-12 submissions-summary" id="submissions-summary">
           <%= render 'applicant_dashboard/submissions_summary', submissions: @submissions %>
         </div>
       </div>
+      <hr class="my-4 w-75 mx-auto">
       <div class="row">
-        <div class="col-12 available-contests" id="available-contests">
-          <%= render 'applicant_dashboard/available_contests' %>
+        <div class="col-12 submissions-summary" id="inactive-submissions-summary">
+          <%= render 'applicant_dashboard/inactive_submissions_summary', submissions: @submissions %>
         </div>
       </div>
     </div>
