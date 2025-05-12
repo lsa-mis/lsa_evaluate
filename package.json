@@ -16,7 +16,7 @@
     "postcss-cli": "^11.0.0",
     "sass": "^1.70.0",
     "sortablejs": "^1.15.6",
-    "trix": "^2.1.12"
+    "trix": "^2.1.15"
   },
   "scripts": {
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
