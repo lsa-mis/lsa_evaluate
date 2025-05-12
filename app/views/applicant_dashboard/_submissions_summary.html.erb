@@ -1,6 +1,6 @@
 <div class="mt-4">
   <div class="">
-    <h2 class="">Contests You Have Entered:</h2>
+    <h2 class="">Active Contests You Have Entered:</h2>
     <% if (content = render_editable_content('applicant_dashboard', 'submission_summary')) %>
       <%= content %>
     <% end %>
@@ -18,7 +18,7 @@
         </tr>
       </thead>
       <tbody>
-        <% @entries.each do |entry| %>
+        <% @entries.joins(:contest_instance).where(contest_instances: { active: true }).each do |entry| %>
           <tr id="<%= dom_id(entry) %>" data-controller="fade-out">
             <td><%= "#{entry.contest_instance.contest_description.name } - #{entry.contest_instance.date_open.year}" %></td>
             <td><%= entry.title %></td>
@@ -26,14 +26,18 @@
             <td><%= entry.created_at.strftime("%B %d, %Y") %></td>
             <td class="text-center">
               <% if entry.entry_file.attached? %>
-                <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"), target: "_blank", rel: "noopener", class: "me-2", title: "View in new tab" do %>
-                  <i class="bi bi-eye" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                  <span class="visually-hidden">View file</span>
-                <% end %>
-                <%= link_to rails_blob_path(entry.entry_file, disposition: "attachment"), download: "", class: "me-2", title: "Download file" do %>
-                  <i class="bi bi-download" style="font-size: 1.5rem;" aria-hidden="true"></i>
-                  <span class="visually-hidden">Download file</span>
-                <% end %>
+                <div class="d-flex flex-row justify-content-center">
+                  <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"),
+                              target: "_blank", rel: "noopener", class: "me-2",
+                              title: "View in new tab", aria: { label: "View file" } do %>
+                    <i class="bi bi-eye" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  <% end %>
+                  <%= link_to rails_blob_path(entry.entry_file, disposition: "attachment"),
+                              download: "", class: "me-2",
+                              title: "Download file", aria: { label: "Download file" } do %>
+                    <i class="bi bi-download" style="font-size: 1.5rem;" aria-hidden="true"></i>
+                  <% end %>
+                </div>
               <% else %>
                 No file attached
               <% end %>

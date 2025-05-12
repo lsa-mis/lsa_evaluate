@@ -63,7 +63,11 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
                           { page: "judging_assignments", section: "round_specific_instructions",
                             content: ActionText::RichText.new(body: "Instructions for the round_specific_instructions") },
                           { page: "judging_rounds", section: "comment_interface_behavior",
-                            content: ActionText::RichText.new(body: "Instructions for the comment_interface_behavior") }
+                            content: ActionText::RichText.new(body: "Instructions for the comment_interface_behavior") },
+                          { page: "applicant_dashboard", section: "inactivesubmission_summary",
+                            content: ActionText::RichText.new(body: "Instructions for the inactivesubmission_summary") },
+                          { page: "containers", section: "form_instructions",
+                            content: ActionText::RichText.new(body: "Instructions for the form_instructions") }
                         ])
 
   # Seed data for School

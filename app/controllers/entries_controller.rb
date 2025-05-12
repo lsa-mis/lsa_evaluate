@@ -139,7 +139,7 @@ class EntriesController < ApplicationController
 
     # For applicant_profile, we want to find the entry first, then authorize it
     def set_entry_for_profile
-      @entry = Entry.find(params[:id])
+      @entry = policy_scope(Entry).find(params[:id])
     end
 
     def authorize_entry

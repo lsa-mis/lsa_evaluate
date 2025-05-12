@@ -1,4 +1,7 @@
 <div id="container_form">
+  <% if (content = render_editable_content('container', 'form_instructions')) %>
+    <%= content %>
+  <% end %>
   <%= simple_form_for(@container, html: { id: 'new_container_form' }) do |f| %>
     <%= f.error_notification %>
     <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
@@ -17,10 +20,11 @@
 
       <%= f.input :visibility_id,
                   collection: Visibility.all,
+                  label: 'Dashboard Visibility',
                   label_method: :kind,
                   value_method: :id,
                   hint: safe_join([
-                    content_tag(:strong, "Public"), " visibility means that this collection of contests will be visible in the applicant's dashboard. ",
+                    content_tag(:strong, "Public"), " visibility means that this collection of contests will be visible to all user's of LSA Evaluate.",
                     tag(:br),
                     content_tag(:strong, "Private"), " visibility requires you provide a special link to applicants in order for them to apply to this collection of contests, it will NOT be visible in the applicant's dashboard."
                   ]),

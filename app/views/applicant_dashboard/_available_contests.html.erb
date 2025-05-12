@@ -3,7 +3,7 @@
   <% if params[:filter] && (params[:filter][:department_id].present? || params[:filter][:container_id].present?) %>
     <h2>Filtered Contests</h2>
     <p>
-      Showing contests for 
+      Showing contests for
       <% if params[:filter][:department_id].present? %>
         <% department = Department.find_by(id: params[:filter][:department_id]) %>
         <% if department %>
@@ -44,7 +44,7 @@
       <% end %>
     <% end %>
   </div>
-  
+
   <% if @active_contests_by_container.any? %>
     <% @active_contests_by_container.each do |container, contests| %>
       <%= render partial: 'applicant_dashboard/contest_table', locals: { container: container, contests: contests } %>
