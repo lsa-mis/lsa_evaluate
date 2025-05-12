@@ -317,7 +317,7 @@ GEM
       rspec-mocks (~> 3.12)
       rspec-support (~> 3.12)
     racc (1.8.1)
-    rack (3.1.12)
+    rack (3.1.14)
     rack-accept (0.4.5)
       rack (>= 0.4)
     rack-protection (4.1.1)
