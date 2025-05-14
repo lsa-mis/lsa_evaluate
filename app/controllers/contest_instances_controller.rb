@@ -202,7 +202,7 @@ class ContestInstancesController < ApplicationController
 
   def contest_instance_params
     params.require(:contest_instance).permit(
-      :active, :archived, :contest_description_id, :date_open, :date_closed,
+      :active, :contest_description_id, :date_open, :date_closed,
       :notes, :judging_open, :judge_evaluations_complete,
       :maximum_number_entries_per_applicant, :require_pen_name,
       :require_campus_employment_info, :require_finaid_info, :created_by,

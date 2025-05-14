@@ -71,7 +71,6 @@ class BulkContestInstancesController < ApplicationController
         new_instance.date_closed = params[:bulk_contest_instance_form][:date_closed]
         new_instance.created_by = current_user.email
         new_instance.active = false
-        new_instance.archived = false
 
         # Copy relationships if they exist
         if last_instance

@@ -292,7 +292,6 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
   )
 
   contest_description2 = ContestDescription.create!(
-    archived: true,
     container: container1,
     name: 'Arthur Miller',
     short_name: 'AM',
@@ -331,7 +330,6 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
 
   # Do the same for the other contest instances
   contest_instance2 = ContestInstance.create!(
-    archived: true,
     contest_description: contest_description2,
     date_open: DateTime.now - 60,
     date_closed: DateTime.now - 30,

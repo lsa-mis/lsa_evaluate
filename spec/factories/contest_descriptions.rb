@@ -28,7 +28,6 @@ FactoryBot.define do
     sequence(:created_by) { |n| "Creator #{n}" }
     container
     active { false }
-    archived { false }
 
     transient do
       eligibility_rules_body { "Eligibility rules for #{name}" }
@@ -42,10 +41,6 @@ FactoryBot.define do
 
     trait :active do
       active { true }
-    end
-
-    trait :archived do
-      archived { true }
     end
 
     trait :with_instance do

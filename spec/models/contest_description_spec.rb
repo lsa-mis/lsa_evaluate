@@ -57,25 +57,10 @@ RSpec.describe ContestDescription, type: :model do
 
   describe 'scopes' do
     let!(:active_contest) { create(:contest_description, active: true) }
-    let!(:archived_contest) { create(:contest_description, archived: true) }
 
     describe '.active' do
       it 'includes active contests' do
         expect(ContestDescription.active).to include(active_contest)
-      end
-
-      it 'excludes non-active contests' do
-        expect(ContestDescription.active).not_to include(archived_contest)
-      end
-    end
-
-    describe '.archived' do
-      it 'includes archived contests' do
-        expect(ContestDescription.archived).to include(archived_contest)
-      end
-
-      it 'excludes non-archived contests' do
-        expect(ContestDescription.archived).not_to include(active_contest)
       end
     end
   end

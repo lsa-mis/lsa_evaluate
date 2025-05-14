@@ -87,7 +87,7 @@ class ContestDescriptionsController < ApplicationController
   end
 
   def contest_description_params
-    params.require(:contest_description).permit(:created_by, :active, :archived,
+    params.require(:contest_description).permit(:created_by, :active,
                                                 :eligibility_rules, :name, :notes,
                                                 :short_name,
                                                 :container_id)

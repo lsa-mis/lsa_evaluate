@@ -59,7 +59,7 @@ class ContestInstance < ApplicationRecord
 
   # Scopes
   scope :active_and_open, -> {
-    where(active: true, archived: false)
+    where(active: true)
     .where('date_open <= ? AND date_closed >= ?', Time.zone.now, Time.zone.now)
   }
 
@@ -89,7 +89,7 @@ class ContestInstance < ApplicationRecord
   }
 
   def open?
-    active && !archived && Time.current.between?(date_open, date_closed)
+    active && Time.current.between?(date_open, date_closed)
   end
 
   def judging_open?(user = nil)

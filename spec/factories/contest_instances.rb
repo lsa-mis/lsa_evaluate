@@ -38,7 +38,6 @@ FactoryBot.define do
     date_open { 1.day.ago }
     date_closed { 1.day.from_now }
     active { true }
-    archived { false }
     notes { "Notes for contest instance" }
     has_course_requirement { false }
     course_requirement_description { "Course requirements" }
@@ -73,10 +72,6 @@ FactoryBot.define do
       after(:create) do |contest_instance|
         create(:judging_round, contest_instance: contest_instance)
       end
-    end
-
-    trait :archived do
-      archived { true }
     end
 
     trait :inactive do

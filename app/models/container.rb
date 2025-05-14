@@ -80,7 +80,7 @@ class Container < ApplicationRecord
     Entry.joins(contest_instance: { contest_description: :container })
          .where(containers: { id: id })
          .where(deleted: false)
-         .where(contest_instances: { active: true, archived: false })
-         .where(contest_descriptions: { active: true, archived: false })
+         .where(contest_instances: { active: true })
+         .where(contest_descriptions: { active: true })
   end
 end

@@ -161,15 +161,6 @@ RSpec.describe Container do
       expect(summary.find { |s| s.campus_descr == 'Campus B' }.entry_count).to eq(1)
     end
 
-    it 'excludes entries from archived contest instances' do
-      contest_desc = create(:contest_description, container: container, active: true)
-      archived_instance = create(:contest_instance, contest_description: contest_desc, active: true, archived: true)
-      create(:entry, profile: create(:profile, campus: campus1), contest_instance: archived_instance)
-
-      summary = container.entries_summary
-      expect(summary.find { |s| s.campus_descr == 'Campus A' }.entry_count).to eq(2)
-    end
-
     it 'excludes entries from inactive contest descriptions' do
       inactive_desc = create(:contest_description, container: container, active: false)
       inactive_instance = create(:contest_instance, contest_description: inactive_desc, active: true)

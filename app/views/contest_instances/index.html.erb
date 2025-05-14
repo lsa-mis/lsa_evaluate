@@ -7,7 +7,6 @@
 </div>
 <div class="d-flex gap-3">
     <div>Active: <%= boolean_to_yes_no(@contest_description.active) %></div>
-    <div>Archived: <%= boolean_to_yes_no(@contest_description.archived) %></div>
 </div>
 <div data-controller="modal">
     <% eligibility_plain = @contest_description.eligibility_rules.to_plain_text %>
@@ -54,7 +53,6 @@
         <thead class="thead-light">
     <tr>
       <th style="font-size: .75rem;" rowspan="2">Active</th>
-      <th style="font-size: .75rem;" rowspan="2">Archived</th>
       <th style="font-size: .75rem;" rowspan="2">Entries per user</th>
       <th style="font-size: .75rem;" rowspan="2">Total entries submitted</th>
       <th style="font-size: .75rem;" rowspan="2">Start accepting submissions</th>
@@ -85,7 +83,6 @@
               data-filter-target="filterRow"
             >
               <td><%= boolean_to_yes_no(contest_instance.active) %></td>
-              <td><%= boolean_to_yes_no(contest_instance.archived) %></td>
               <td><%= contest_instance.maximum_number_entries_per_applicant %></td>
               <td><%= contest_instance.entries.active.count %></td>
               <td><%= format_datetime(contest_instance.date_open) %></td>
