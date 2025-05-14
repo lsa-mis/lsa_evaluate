@@ -6,12 +6,4 @@ module EntriesHelper
       ''
     end
   end
-
-  def archived_icon(entry)
-    if entry.archived
-      content_tag(:i, '', class: 'bi bi-eye', style: 'font-size: 1.5rem;', aria: { hidden: 'true' })
-    else
-      ''
-    end
-  end
 end
