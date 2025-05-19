@@ -1,0 +1,39 @@
+<div class="entry-details">
+  <div class="mb-3">
+    <strong>Entry ID:</strong> <%= entry.id %>
+  </div>
+  <div class="mb-3">
+    <strong>Title:</strong> <%= entry.title %>
+  </div>
+  <div class="mb-3">
+    <strong>Category:</strong> <%= entry.category&.kind || 'N/A' %>
+  </div>
+  <div class="mb-3">
+    <strong>Pen Name:</strong> <%= entry.pen_name.presence || 'Not provided' %>
+  </div>
+  <div class="mb-3">
+    <strong>Applicant Name:</strong> <%= entry.profile&.display_name || 'N/A' %>
+  </div>
+  <div class="mb-3">
+    <strong>Username:</strong> <%= entry.profile&.user&.email&.split('@')&.first || 'N/A' %>
+  </div>
+  <div class="mb-3">
+    <strong>Class Level:</strong> <%= entry.profile&.class_level&.name || 'N/A' %>
+  </div>
+  <div class="mb-3">
+    <strong>Campus:</strong> <%= entry.profile&.campus&.campus_descr || 'N/A' %>
+  </div>
+  <div class="mb-3">
+    <strong>Date Created:</strong> <%= entry.created_at.strftime('%B %d, %Y %I:%M %p') %>
+  </div>
+
+  <div class="mt-4 d-flex justify-content-end">
+    <% if entry.entry_file.attached? %>
+      <%= link_to rails_blob_path(entry.entry_file, disposition: "inline"), class: "btn btn-primary", target: "_blank" do %>
+        <i class="bi bi-file-earmark-pdf me-1"></i> View Entry File
+      <% end %>
+    <% else %>
+      <span class="text-muted">No file attached</span>
+    <% end %>
+  </div>
+</div>
