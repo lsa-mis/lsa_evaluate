@@ -18,6 +18,22 @@ class EntryPolicy < ApplicationPolicy
     axis_mundi?
   end
 
+  def show?
+    # Allow users to see their own entries
+    return true if record.profile.user == user
+
+    # Allow collection admins/managers to see entries from their containers
+    container = record.contest_instance.contest_description.container
+    return true if user&.has_container_role?(container)
+
+    # Allow judges to see entries they've been assigned to judge
+    judged_contest_instance_ids = user.judging_assignments.pluck(:contest_instance_id)
+    return true if judged_contest_instance_ids.include?(record.contest_instance_id)
+
+    # Fall back to axis_mundi check
+    axis_mundi?
+  end
+
   class Scope < Scope
     def resolve
       base_scope = scope.where(deleted: false) # Only show non-deleted entries by default
