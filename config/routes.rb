@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       patch 'soft_delete'
       patch :toggle_disqualified
       get :applicant_profile
+      get :modal_details
     end
   end
 
