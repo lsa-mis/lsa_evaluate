@@ -36,7 +36,7 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Entry ID</th>
+                <th class="small">Entry ID</th>
                 <th>Title</th>
                 <th>Average Rank</th>
                 <th>Individual Rankings</th>
@@ -52,7 +52,18 @@
 
               <% entries_with_avg_rank.each do |entry, _| %>
                 <tr>
-                  <td><%= entry.id %></td>
+                  <td>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            data-action="click->modal#open"
+                            data-url="<%= modal_details_entry_path(entry) %>"
+                            data-modal-title="Entry <%= entry.id %> Details"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="View entry details">
+                      <%= entry.id %>
+                    </button>
+                  </td>
                   <td><%= entry.title %></td>
                   <td>
                     <%= entry.entry_rankings.where(judging_round: round).average(:rank)&.round(2) || 'No rankings' %>
