@@ -14,7 +14,7 @@ class EntryPolicy < ApplicationPolicy
   def view_applicant_profile?
     container = record.contest_instance.contest_description.container
     record.profile.user == user ||
-    user&.has_container_role?(container, ['Collection Administrator', 'Collection Manager']) ||
+    user&.has_container_role?(container, [ 'Collection Administrator', 'Collection Manager' ]) ||
     axis_mundi?
   end
 
@@ -27,8 +27,7 @@ class EntryPolicy < ApplicationPolicy
     return true if user&.has_container_role?(container)
 
     # Allow judges to see entries they've been assigned to judge
-    judged_contest_instance_ids = user.judging_assignments.pluck(:contest_instance_id)
-    return true if judged_contest_instance_ids.include?(record.contest_instance_id)
+    return true if user&.judging_assignments&.pluck(:contest_instance_id)&.include?(record.contest_instance_id)
 
     # Fall back to axis_mundi check
     axis_mundi?
