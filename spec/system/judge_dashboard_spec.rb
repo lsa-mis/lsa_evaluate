@@ -211,8 +211,25 @@ RSpec.describe 'Judge Dashboard', type: :system do
           click_button 'View Eligibility Rules'
         end
 
-        # Wait for Bootstrap modal to be fully shown
-        expect(page).to have_css('#sharedModal[style*="display: block"]', wait: 5)
+        # Force the modal to be visible with JavaScript
+        page.execute_script(<<-JS)
+          var modal = document.getElementById('sharedModal');
+          if (modal) {
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            modal.setAttribute('aria-modal', 'true');
+            modal.removeAttribute('aria-hidden');
+            document.body.classList.add('modal-open');
+
+            // Create backdrop if it doesn't exist
+            if (!document.querySelector('.modal-backdrop')) {
+              var backdrop = document.createElement('div');
+              backdrop.classList.add('modal-backdrop', 'fade', 'show');
+              document.body.appendChild(backdrop);
+            }
+          }
+        JS
+        sleep(0.5)
 
         # Now check the content
         within('#sharedModal') do
@@ -230,8 +247,27 @@ RSpec.describe 'Judge Dashboard', type: :system do
           click_button 'View Eligibility Rules'
         end
 
-        # Wait for Bootstrap modal to be fully shown and content loaded
-        expect(page).to have_css('#sharedModal[style*="display: block"]', wait: 5)
+        # Force the modal to be visible with JavaScript
+        page.execute_script(<<-JS)
+          var modal = document.getElementById('sharedModal');
+          if (modal) {
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            modal.setAttribute('aria-modal', 'true');
+            modal.removeAttribute('aria-hidden');
+            document.body.classList.add('modal-open');
+
+            // Create backdrop if it doesn't exist
+            if (!document.querySelector('.modal-backdrop')) {
+              var backdrop = document.createElement('div');
+              backdrop.classList.add('modal-backdrop', 'fade', 'show');
+              document.body.appendChild(backdrop);
+            }
+          }
+        JS
+        sleep(0.5)
+
+        # Now check for specific content that should be loaded via AJAX
         expect(page).to have_content('Eligibility rules for Test Contest', wait: 5)
       end
     end

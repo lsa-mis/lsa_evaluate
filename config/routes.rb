@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       patch 'soft_delete'
       patch :toggle_disqualified
       get :applicant_profile
+      get :modal_details
     end
   end
 
@@ -44,6 +45,7 @@ Rails.application.routes.draw do
           get 'email_preferences'
           post 'send_round_results'
           get :export_entries
+          get :export_round_results
         end
         resources :judging_rounds do
           member do

@@ -31,5 +31,4 @@ class ContestDescription < ApplicationRecord
   validates :name, presence: true, uniqueness: true
 
   scope :active, -> { where(active: true) }
-  scope :archived, -> { where(archived: true) }
 end

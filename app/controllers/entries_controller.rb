@@ -1,6 +1,6 @@
 class EntriesController < ApplicationController
   include AvailableContestsConcern
-  before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified ]
+  before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified modal_details ]
   before_action :set_entry_for_profile, only: %i[ applicant_profile ]
   before_action :authorize_entry, only: %i[show edit update destroy]
   before_action :authorize_index, only: [ :index ]
@@ -14,6 +14,12 @@ class EntriesController < ApplicationController
   # GET /entries/1 or /entries/1.json
   def show
     authorize @entry
+  end
+
+  # GET /entries/1/modal_details
+  def modal_details
+    authorize @entry, :show?
+    render layout: false
   end
 
   # GET /entries/new

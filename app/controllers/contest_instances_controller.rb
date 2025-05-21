@@ -177,6 +177,42 @@ class ContestInstancesController < ApplicationController
     end
   end
 
+  def export_round_results
+    begin
+      @contest_instance = @contest_description.contest_instances.find(params[:id])
+      authorize @contest_instance, :export_entries?
+
+      round_id = params[:round_id]
+      judging_round = @contest_instance.judging_rounds.find_by(id: round_id)
+
+      if judging_round.nil?
+        redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                  alert: 'Judging round not found.'
+        return
+      end
+
+      @entries = judging_round.entries.distinct.includes(
+        :profile, :category,
+        entry_rankings: [:user]
+      )
+
+      respond_to do |format|
+        format.csv do
+          filename = "#{@contest_description.name.parameterize}-round-#{judging_round.round_number}-results-#{Time.zone.today}.csv"
+
+          csv_data = generate_round_results_csv(@entries, @contest_description, @contest_instance, judging_round)
+
+          send_data csv_data,
+                    type: 'text/csv; charset=utf-8; header=present',
+                    disposition: "attachment; filename=#{filename}"
+        end
+      end
+    rescue Pundit::NotAuthorizedError
+      flash[:alert] = 'Not authorized to access this contest instance'
+      redirect_to root_path
+    end
+  end
+
   private
 
   def authorize_container_access
@@ -202,7 +238,7 @@ class ContestInstancesController < ApplicationController
 
   def contest_instance_params
     params.require(:contest_instance).permit(
-      :active, :archived, :contest_description_id, :date_open, :date_closed,
+      :active, :contest_description_id, :date_open, :date_closed,
       :notes, :judging_open, :judge_evaluations_complete,
       :maximum_number_entries_per_applicant, :require_pen_name,
       :require_campus_employment_info, :require_finaid_info, :created_by,
@@ -252,6 +288,68 @@ class ContestInstancesController < ApplicationController
           entry.created_at.strftime('%m/%d/%Y %I:%M %p'),
           entry.disqualified? ? 'Yes' : 'No'
         ]
+      end
+    end
+  end
+
+  def generate_round_results_csv(entries, contest_description, contest_instance, judging_round)
+    require 'csv'
+
+    CSV.generate do |csv|
+      # Header section
+      contest_info = "#{contest_description.name} - Round #{judging_round.round_number} Results"
+      header_row1 = [contest_info] + Array.new(15, '')
+      csv << header_row1
+      csv << Array.new(16, '')  # Empty row as separator
+
+      # Column headers
+      headers = [
+        'Title', 'Category',
+        'Pen Name', 'First Name', 'Last Name', 'UMID', 'Uniqname',
+        'Class Level', 'Campus', 'Entry ID', 'Selected for Next Round',
+        'Judge Name', 'Score', 'Judge Comments [External]', 'Judge Comments [Internal]'
+      ]
+      csv << headers
+
+      # Entry data
+      entries.each do |entry|
+        profile = entry.profile
+        rankings = entry.entry_rankings.where(judging_round: judging_round)
+        selected = rankings.exists?(selected_for_next_round: true)
+
+        # Base entry data
+        base_data = [
+          entry.title,
+          entry.category&.kind,
+          entry.pen_name,
+          profile&.user&.first_name,
+          profile&.user&.last_name,
+          profile&.umid,
+          profile&.user&.uniqname,
+          profile&.class_level&.name,
+          profile&.campus&.campus_descr,
+          entry.id,
+          selected ? 'Yes' : 'No'
+        ]
+
+        # If there are rankings, create a row for each judge's ranking
+        if rankings.any?
+          rankings.each do |ranking|
+            score = ranking.rank
+            external_comments = ranking.external_comments.presence || 'No comment entered'
+            internal_comments = ranking.internal_comments.presence || 'No comment entered'
+
+            csv << base_data + [
+              "#{ranking.user.display_name_or_first_name_last_name} (#{ranking.user.uid})",
+              score,
+              external_comments,
+              internal_comments
+            ]
+          end
+        else
+          # If no rankings, just output the base data with empty judge fields
+          csv << base_data + [ '', '' ]
+        end
       end
     end
   end

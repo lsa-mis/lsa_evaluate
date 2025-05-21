@@ -2,7 +2,21 @@
   <% if @contest_instance.judging_rounds.any? %>
     <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
       <div class="p-4 mb-4 card border-primary">
-        <h2>Round <%= round.round_number %></h2>
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Round <%= round.round_number %></h2>
+          <%= link_to export_round_results_container_contest_description_contest_instance_path(
+                @container,
+                @contest_description,
+                @contest_instance,
+                round_id: round.id,
+                format: :csv
+                ),
+                class: "btn btn-sm btn-outline-primary",
+                data: { turbo: false } do %>
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+            Export round <%= round.round_number %> results
+          <% end %>
+        </div>
         <div class="d-flex align-items-center mb-3">
           <div class="d-inline-block"
                data-bs-toggle="tooltip"
@@ -36,7 +50,7 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Entry ID</th>
+                <th class="small">Entry ID</th>
                 <th>Title</th>
                 <th>Average Rank</th>
                 <th>Individual Rankings</th>
@@ -52,7 +66,18 @@
 
               <% entries_with_avg_rank.each do |entry, _| %>
                 <tr>
-                  <td><%= entry.id %></td>
+                  <td>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            data-action="click->modal#open"
+                            data-url="<%= modal_details_entry_path(entry) %>"
+                            data-modal-title="Entry <%= entry.id %> Details"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="View entry details">
+                      <%= entry.id %>
+                    </button>
+                  </td>
                   <td><%= entry.title %></td>
                   <td>
                     <%= entry.entry_rankings.where(judging_round: round).average(:rank)&.round(2) || 'No rankings' %>

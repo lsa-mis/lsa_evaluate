@@ -214,7 +214,6 @@ RSpec.describe ContestInstance, type: :model do
       let!(:open_instance) do
         create(:contest_instance,
                active: true,
-               archived: false,
                date_open: 1.day.ago,
                date_closed: 1.day.from_now)
       end
@@ -222,25 +221,15 @@ RSpec.describe ContestInstance, type: :model do
       let!(:closed_instance) do
         create(:contest_instance,
                active: true,
-               archived: false,
                date_open: 2.days.ago,
                date_closed: 1.day.ago)
       end
 
-      let!(:archived_instance) do
-        create(:contest_instance,
-               active: true,
-               archived: true,
-               date_open: 1.day.ago,
-               date_closed: 1.day.from_now)
-      end
-
-      it 'includes only active, non-archived, and currently open instances' do
+      it 'includes only active and currently open instances' do
         active_instances = ContestInstance.active_and_open
 
         expect(active_instances).to include(open_instance)
         expect(active_instances).not_to include(closed_instance)
-        expect(active_instances).not_to include(archived_instance)
       end
     end
 
