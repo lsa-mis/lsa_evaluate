@@ -17,6 +17,7 @@ require 'rspec/rails'
 require 'factory_bot_rails'
 require 'pundit/rspec'
 require 'selenium-webdriver'
+require 'capybara/rails'
 
 puts "!*!*!*! Running in environment: #{Rails.env} !*!*!*!"
 puts "!*!*!*! Running SHOW_BROWSER?: #{ENV['SHOW_BROWSER'].present? ? '✅' : '🙈'} !*!*!*!"
@@ -64,7 +65,9 @@ RSpec.configure do |config|
   config.include Devise::Test::IntegrationHelpers, type: :system
 
   config.include RequestSpecHelpers, type: :request
-  Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
+
+  # Remove this duplicate line as we're already requiring support files above
+  # Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 
   # Include Warden helpers if needed
   config.include Warden::Test::Helpers
@@ -96,5 +99,20 @@ RSpec.configure do |config|
     OmniAuth.config.on_failure = proc { |env|
       OmniAuth::FailureEndpoint.new(env).redirect_to_failure
     }
+  end
+
+  # Configure Capybara for system tests
+  config.before(:each, type: :system) do
+    if ENV['SHOW_BROWSER'].present?
+      driven_by :selenium_chrome
+    else
+      driven_by :selenium_chrome_headless
+    end
+    Capybara.default_max_wait_time = 5
+  end
+
+  # Use rack_test driver for specific tests that need response headers
+  config.before(:each, type: :system, js: false) do
+    driven_by :rack_test
   end
 end

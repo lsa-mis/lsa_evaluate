@@ -111,7 +111,10 @@ RSpec.describe 'Judging Round Selection', type: :system do
       # Wait for the checkbox to be unchecked via Turbo Stream
       expect(page).to have_css("input[name='selected_for_next_round']:not(:checked)", wait: 5)
 
-      # Force a reload to ensure we get the latest database state
+      # Wait for the flash message to appear
+      expect(page).to have_css('.alert.alert-success', text: 'Entry selection updated successfully', wait: 5)
+
+      # Force a reload and wait for the database to be updated
       entry2_ranking.reload
       expect(entry2_ranking.selected_for_next_round).to be false
     end
