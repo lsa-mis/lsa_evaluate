@@ -2,7 +2,21 @@
   <% if @contest_instance.judging_rounds.any? %>
     <% @contest_instance.judging_rounds.order(:round_number).each do |round| %>
       <div class="p-4 mb-4 card border-primary">
-        <h2>Round <%= round.round_number %></h2>
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>Round <%= round.round_number %></h2>
+          <%= link_to export_round_results_container_contest_description_contest_instance_path(
+                @container,
+                @contest_description,
+                @contest_instance,
+                round_id: round.id,
+                format: :csv
+                ),
+                class: "btn btn-sm btn-outline-primary",
+                data: { turbo: false } do %>
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+            Export round <%= round.round_number %> results
+          <% end %>
+        </div>
         <div class="d-flex align-items-center mb-3">
           <div class="d-inline-block"
                data-bs-toggle="tooltip"
