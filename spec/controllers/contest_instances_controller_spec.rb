@@ -510,4 +510,139 @@ RSpec.describe ContestInstancesController, type: :controller do
       end
     end
   end
+
+  describe 'GET #export_round_results' do
+    let(:department) { create(:department) }
+    let(:container) { create(:container, department: department) }
+    let(:contest_description) { create(:contest_description, container: container) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+    let(:judging_round) { create(:judging_round, contest_instance: contest_instance, completed: true) }
+
+    context 'with authorized users' do
+      let(:user) { create(:user, :axis_mundi) }
+
+      before do
+        sign_in user
+      end
+
+      context 'with entries and rankings' do
+        let(:profile1) { create(:profile) }
+        let(:profile2) { create(:profile) }
+        let(:judge) { create(:user, :with_judge_role) }
+        let!(:entry1) { create(:entry, contest_instance: contest_instance, profile: profile1, title: 'Entry One') }
+        let!(:entry2) { create(:entry, contest_instance: contest_instance, profile: profile2, title: 'Entry Two') }
+
+        before do
+          # Create judging assignment first
+          create(:judging_assignment, user: judge, contest_instance: contest_instance, active: true)
+          create(:round_judge_assignment, user: judge, judging_round: judging_round, active: true)
+
+          # Now create rankings
+          create(:entry_ranking, entry: entry1, judging_round: judging_round, user: judge, rank: 1, external_comments: 'Great work!')
+          create(:entry_ranking, entry: entry2, judging_round: judging_round, user: judge, rank: 2, external_comments: 'Good effort')
+        end
+
+        it 'returns a successful CSV response' do
+          get :export_round_results, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            round_id: judging_round.id,
+            format: :csv
+          }
+
+          expect(response).to be_successful
+          expect(response.content_type).to include('text/csv')
+          expect(response.headers['Content-Disposition']).to include('attachment')
+          expect(response.headers['Content-Disposition']).to include('.csv')
+        end
+
+        it 'includes all entries and their rankings in the CSV' do
+          get :export_round_results, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            round_id: judging_round.id,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+
+          # Check headers
+          expected_headers = ['Entry ID', 'Title', 'Selected for Next Round']
+          expected_headers.each do |header|
+            expect(csv[2]).to include(header)
+          end
+
+          # Check entry data
+          expect(csv.to_s).to include('Entry One')
+          expect(csv.to_s).to include('Entry Two')
+          expect(csv.to_s).to include('Great work!')
+          expect(csv.to_s).to include('Good effort')
+        end
+      end
+
+      context 'with no entries' do
+        it 'returns a CSV with only headers' do
+          get :export_round_results, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            round_id: judging_round.id,
+            format: :csv
+          }
+
+          expect(response).to be_successful
+          csv = CSV.parse(response.body)
+          # The CSV should have 3 rows: contest info, empty row, and headers
+          expect(csv.length).to eq(3)
+          expect(csv[0][0]).to include(contest_description.name) # Contest info
+          expect(csv[1].join.strip).to be_empty # Empty row
+          expect(csv[2]).to include('Entry ID', 'Title', 'Selected for Next Round')
+        end
+      end
+    end
+
+    context 'with non-existent judging round' do
+      let(:user) { create(:user, :axis_mundi) }
+
+      before do
+        sign_in user
+      end
+
+      it 'redirects with an alert' do
+        get :export_round_results, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          id: contest_instance.id,
+          round_id: 9999,
+          format: :csv
+        }
+
+        expect(response).to redirect_to(container_contest_description_contest_instance_path(container, contest_description, contest_instance))
+        expect(flash[:alert]).to eq('Judging round not found.')
+      end
+    end
+
+    context 'with unauthorized user' do
+      let(:regular_user) { create(:user) }
+
+      before do
+        sign_in regular_user
+      end
+
+      it 'denies access to export round results' do
+        get :export_round_results, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          id: contest_instance.id,
+          round_id: judging_round.id,
+          format: :csv
+        }
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to match(/not authorized/i)
+      end
+    end
+  end
 end
