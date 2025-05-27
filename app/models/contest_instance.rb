@@ -88,6 +88,14 @@ class ContestInstance < ApplicationRecord
     where.not(id: maxed_out_contest_instance_ids)
   }
 
+  scope :active_for_contest_description, ->(contest_description_id) {
+    where(active: true, contest_description_id: contest_description_id)
+  }
+
+  scope :for_contest_description, ->(contest_description_id) {
+    where(contest_description_id: contest_description_id)
+  }
+
   def open?
     active && Time.current.between?(date_open, date_closed)
   end
