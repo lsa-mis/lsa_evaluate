@@ -26,7 +26,22 @@ class ContestDescriptionsController < ApplicationController
   end
 
   def update
-    handle_save(@contest_description.update(contest_description_params), 'updated')
+    # Check if trying to deactivate with active instances
+    if contest_description_params[:active] == "0" && @contest_description.active_contest_instances.any?
+      flash.now[:alert] = "Cannot deactivate contest description while it has active instances. Please deactivate all instances first."
+
+      respond_to do |format|
+        format.turbo_stream {
+          render turbo_stream: [
+            turbo_stream.replace('flash', partial: 'shared/flash_messages'),
+            turbo_stream.replace('contest_description_form', partial: 'contest_descriptions/form', locals: { contest_description: @contest_description })
+          ], status: :unprocessable_entity
+        }
+        format.html { render :edit, status: :unprocessable_entity }
+      end
+    else
+      handle_save(@contest_description.update(contest_description_params), 'updated')
+    end
   end
 
   def destroy
