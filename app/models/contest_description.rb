@@ -29,6 +29,19 @@ class ContestDescription < ApplicationRecord
 
   validates :created_by, presence: true
   validates :name, presence: true, uniqueness: true
+  validate :cannot_deactivate_with_active_instances
 
   scope :active, -> { where(active: true) }
+
+  def active_contest_instances
+    contest_instances.where(active: true)
+  end
+
+  private
+
+  def cannot_deactivate_with_active_instances
+    if will_save_change_to_active? && !active && contest_instances.where(active: true).exists?
+      errors.add(:active, 'Cannot deactivate contest description while instances are active.')
+    end
+  end
 end

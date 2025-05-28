@@ -162,12 +162,22 @@ RSpec.describe Container do
     end
 
     it 'excludes entries from inactive contest descriptions' do
-      inactive_desc = create(:contest_description, container: container, active: false)
-      inactive_instance = create(:contest_instance, contest_description: inactive_desc, active: true)
-      create(:entry, profile: create(:profile, campus: campus1), contest_instance: inactive_instance)
+      # Create an active contest description with an active instance and entry
+      active_desc = create(:contest_description, container: container, active: true)
+      active_instance = create(:contest_instance, contest_description: active_desc, active: true)
+      create(:entry, profile: create(:profile, campus: campus1), contest_instance: active_instance)
 
+      # Verify the entry is included initially
       summary = container.entries_summary
-      expect(summary.find { |s| s.campus_descr == 'Campus A' }.entry_count).to eq(2)
+      expect(summary.find { |s| s.campus_descr == 'Campus A' }.entry_count).to eq(3) # 2 from setup + 1 new
+
+      # Deactivate both the instance and description (business rule: must deactivate instance first)
+      active_instance.update!(active: false)
+      active_desc.update!(active: false)
+
+      # Now verify that entries from the deactivated contest description are excluded
+      summary = container.entries_summary
+      expect(summary.find { |s| s.campus_descr == 'Campus A' }.entry_count).to eq(2) # Back to original 2
     end
   end
 

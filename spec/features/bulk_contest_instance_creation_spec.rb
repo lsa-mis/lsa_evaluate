@@ -11,8 +11,8 @@ RSpec.describe "Bulk Contest Instance Creation", type: :feature do
     end
 
     it "shows only contest descriptions that have existing instances" do
-      description1 = create(:contest_description, container: @container)
-      description2 = create(:contest_description, container: @container)
+      description1 = create(:contest_description, :active, container: @container)
+      description2 = create(:contest_description, :active, container: @container)
       create(:contest_instance, contest_description: description1)
       create(:contest_instance, contest_description: description2)
 
@@ -22,13 +22,13 @@ RSpec.describe "Bulk Contest Instance Creation", type: :feature do
       expect(page).to have_content(description2.name)
 
       # Create a new contest description without instances
-      new_description = create(:contest_description, container: @container)
+      new_description = create(:contest_description, :active, container: @container)
       expect(page).to have_no_content(new_description.name)
     end
 
     it "allows selection of multiple contest descriptions" do
-      description1 = create(:contest_description, container: @container)
-      description2 = create(:contest_description, container: @container)
+      description1 = create(:contest_description, :active, container: @container)
+      description2 = create(:contest_description, :active, container: @container)
       create(:contest_instance, contest_description: description1)
       create(:contest_instance, contest_description: description2)
 
@@ -42,7 +42,7 @@ RSpec.describe "Bulk Contest Instance Creation", type: :feature do
     end
 
     it "requires date selection" do
-      description = create(:contest_description, container: @container)
+      description = create(:contest_description, :active, container: @container)
       create(:contest_instance, contest_description: description)
 
       visit new_container_bulk_contest_instance_path(@container)
@@ -55,7 +55,7 @@ RSpec.describe "Bulk Contest Instance Creation", type: :feature do
     end
 
     it "creates new instances based on most recent existing instances" do
-      description = create(:contest_description, container: @container)
+      description = create(:contest_description, :active, container: @container)
       existing_instance = create(:contest_instance, contest_description: description)
       new_open_date = 1.month.from_now
       new_close_date = 2.months.from_now
@@ -78,7 +78,7 @@ RSpec.describe "Bulk Contest Instance Creation", type: :feature do
     end
 
     it "validates date ranges" do
-      description = create(:contest_description, container: @container)
+      description = create(:contest_description, :active, container: @container)
       create(:contest_instance, contest_description: description)
 
       visit new_container_bulk_contest_instance_path(@container)

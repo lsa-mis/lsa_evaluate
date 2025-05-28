@@ -64,4 +64,27 @@ RSpec.describe ContestDescription, type: :model do
       end
     end
   end
+
+  describe 'deactivation with active instances' do
+    let(:container) { create(:container) }
+    let!(:description) { create(:contest_description, container: container, active: true) }
+    let!(:active_instance) { create(:contest_instance, contest_description: description, active: true) }
+    let!(:inactive_instance) { create(:contest_instance, contest_description: description, active: false) }
+
+    it 'is not valid to deactivate if any contest_instance is active' do
+      description.active = false
+      expect(description).not_to be_valid
+      expect(description.errors[:active]).to include('Cannot deactivate contest description while instances are active.')
+    end
+
+    it 'is valid to deactivate if all contest_instances are inactive' do
+      active_instance.update!(active: false)
+      description.active = false
+      expect(description).to be_valid
+    end
+
+    it 'returns only active contest_instances from #active_contest_instances' do
+      expect(description.active_contest_instances).to contain_exactly(active_instance)
+    end
+  end
 end

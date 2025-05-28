@@ -47,6 +47,10 @@
       Show only <span class="fw-bolder">Active</span> contest instances
     </label>
   </div>
+  <div class="mb-3">
+    This contest has <span class="fw-bolder small"><%= pluralize(@contest_instances.active_for_contest_description(@contest_description.id).count, "active instance") %></span>
+    and <span class="fw-bolder small"><%= pluralize(@contest_instances.for_contest_description(@contest_description.id).count - @contest_instances.active_for_contest_description(@contest_description.id).count, "inactive instance") %></span>.
+  </div>
 
   <div id="contest_instances" class="table-responsive">
       <table class="table table-striped table-bordered">

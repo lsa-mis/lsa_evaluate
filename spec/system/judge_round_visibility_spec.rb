@@ -4,7 +4,7 @@ RSpec.describe 'Judge Round Visibility', type: :system do
   include ApplicationHelper
 
   let(:container) { create(:container) }
-  let(:contest_description) { create(:contest_description, container: container) }
+  let(:contest_description) { create(:contest_description, :active, container: container) }
   let(:contest_instance) { create(:contest_instance,
     contest_description: contest_description,
     date_open: 5.days.ago,

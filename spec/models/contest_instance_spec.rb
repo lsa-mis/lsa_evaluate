@@ -252,4 +252,19 @@ RSpec.describe ContestInstance, type: :model do
       end
     end
   end
+
+  describe 'activation with inactive contest_description' do
+    let(:description) { create(:contest_description, active: false) }
+    let(:instance) { build(:contest_instance, contest_description: description, active: true) }
+
+    it 'is not valid to activate if contest_description is inactive' do
+      expect(instance).not_to be_valid
+      expect(instance.errors[:active]).to include('Cannot activate a contest instance when its contest description is inactive.')
+    end
+
+    it 'is valid to activate if contest_description is active' do
+      description.update!(active: true)
+      expect(instance).to be_valid
+    end
+  end
 end

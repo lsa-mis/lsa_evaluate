@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe JudgeDashboardController, type: :controller do
   let(:container) { create(:container) }
-  let(:contest_description) { create(:contest_description, container: container) }
+  let(:contest_description) { create(:contest_description, :active, container: container) }
 
   # Start at a known point in time
   before(:all) do

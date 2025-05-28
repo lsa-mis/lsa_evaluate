@@ -74,6 +74,11 @@
         </label>
       </div>
 
+      <div class="mb-3">
+        This collection has <span class="fw-bolder small"><%= pluralize(container_contest_descriptions.active.count, "active description") %></span>
+        and <span class="fw-bolder small"><%= pluralize(container_contest_descriptions.count - container_contest_descriptions.active.count, "inactive description") %></span>.
+      </div>
+
       <div class="container w-100 mx-auto">
         <% if container_contest_descriptions.present? %>
           <%= render 'contest_descriptions_table',

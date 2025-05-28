@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'Judging Round Selection', type: :system do
   let(:container) { create(:container) }
-  let(:contest_description) { create(:contest_description, container: container) }
+  let(:contest_description) { create(:contest_description, :active, container: container) }
   let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
   let(:judging_round) do
     create(:judging_round,

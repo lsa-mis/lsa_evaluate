@@ -56,6 +56,7 @@ class ContestInstance < ApplicationRecord
   validate :must_have_at_least_one_category
   validate :only_one_active_per_contest_description
   validate :date_closed_after_date_open
+  validate :cannot_activate_if_description_inactive
 
   # Scopes
   scope :active_and_open, -> {
@@ -86,6 +87,14 @@ class ContestInstance < ApplicationRecord
       .pluck('entries.contest_instance_id')
 
     where.not(id: maxed_out_contest_instance_ids)
+  }
+
+  scope :active_for_contest_description, ->(contest_description_id) {
+    where(active: true, contest_description_id: contest_description_id)
+  }
+
+  scope :for_contest_description, ->(contest_description_id) {
+    where(contest_description_id: contest_description_id)
   }
 
   def open?
@@ -169,6 +178,12 @@ class ContestInstance < ApplicationRecord
   def date_closed_after_date_open
     if date_open && date_closed && date_closed < date_open
       errors.add(:date_closed, 'must be after date contest opens')
+    end
+  end
+
+  def cannot_activate_if_description_inactive
+    if active && contest_description && !contest_description.active?
+      errors.add(:active, 'Cannot activate a contest instance when its contest description is inactive.')
     end
   end
 end
