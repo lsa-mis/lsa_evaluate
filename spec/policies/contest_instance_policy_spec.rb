@@ -4,7 +4,7 @@ RSpec.describe ContestInstancePolicy do
   subject { described_class.new(user, contest_instance) }
 
   let(:container) { create(:container) }
-  let(:contest_description) { create(:contest_description, container: container) }
+  let(:contest_description) { create(:contest_description, :active, container: container) }
   let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
   let(:container_admin_role) { create(:role, kind: 'Collection Administrator') }
   let(:axis_mundi_role) { create(:role, kind: 'Axis Mundi') }

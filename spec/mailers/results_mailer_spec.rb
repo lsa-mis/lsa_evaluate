@@ -7,7 +7,7 @@ RSpec.describe ResultsMailer, type: :mailer do
     let(:profile) { create(:profile, user: user) }
     let(:department) { create(:department) }
     let(:container) { create(:container, name: 'Test Container', department: department, contact_email: 'contact@example.com') }
-    let(:contest_description) { create(:contest_description, name: 'Test Contest', container: container) }
+    let(:contest_description) { create(:contest_description, :active, name: 'Test Contest', container: container) }
     let(:contest_instance) { create(:contest_instance, contest_description: contest_description, date_open: 2.months.ago, date_closed: 1.month.ago) }
     let(:category) { create(:category, kind: 'Poetry') }
     let(:entry) { create(:entry, title: 'Test Entry', profile: profile, contest_instance: contest_instance, category: category, pen_name: 'Writer Pen') }

@@ -14,7 +14,7 @@ RSpec.describe 'Judge Dashboard', type: :system do
   let(:judge) { create(:user, first_name: 'John', last_name: 'Doe', email: 'judge+gmail.com@umich.edu') }
   let(:judge_role) { create(:role, :judge) }
   let(:container) { create(:container) }
-  let(:contest_description) { create(:contest_description, container: container, name: 'Test Contest') }
+  let(:contest_description) { create(:contest_description, :active, container: container, name: 'Test Contest') }
   let(:contest_instance) { create(:contest_instance,
     contest_description: contest_description,
     date_open: 2.months.ago,
@@ -120,7 +120,7 @@ RSpec.describe 'Judge Dashboard', type: :system do
     it 'only shows assigned contests' do
       # Create another contest that the judge is not assigned to
       other_container = create(:container)
-      other_contest_description = create(:contest_description, container: other_container, name: 'Other Contest')
+      other_contest_description = create(:contest_description, :active, container: other_container, name: 'Other Contest')
       unassigned_contest = create(:contest_instance,
         contest_description: other_contest_description,
         date_open: 2.months.ago,
@@ -163,7 +163,7 @@ RSpec.describe 'Judge Dashboard', type: :system do
 
     context 'when attempting to access unassigned contest data' do
       let(:unassigned_container) { create(:container) }
-      let(:unassigned_contest_description) { create(:contest_description, container: unassigned_container, name: 'Unassigned Contest') }
+      let(:unassigned_contest_description) { create(:contest_description, :active, container: unassigned_container, name: 'Unassigned Contest') }
       let(:unassigned_contest) { create(:contest_instance,
         contest_description: unassigned_contest_description,
         date_open: 2.months.ago,
