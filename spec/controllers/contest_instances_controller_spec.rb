@@ -7,7 +7,7 @@ RSpec.describe ContestInstancesController, type: :controller do
     let(:department) { create(:department) }
     let(:user) { create(:user, :axis_mundi) } # Admin user with full privileges
     let(:container) { create(:container, department: department) }
-    let(:contest_description) { create(:contest_description, container: container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
     let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
     let(:judging_round) { create(:judging_round, contest_instance: contest_instance, completed: true) }
 
@@ -72,7 +72,7 @@ RSpec.describe ContestInstancesController, type: :controller do
     let(:department) { create(:department) }
     let(:user) { create(:user, :axis_mundi) } # Admin user with full privileges
     let(:container) { create(:container, department: department) }
-    let(:contest_description) { create(:contest_description, container: container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
     let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
 
     before do
@@ -243,7 +243,7 @@ RSpec.describe ContestInstancesController, type: :controller do
   describe 'GET #export_entries' do
     let(:department) { create(:department) }
     let(:container) { create(:container, department: department) }
-    let(:contest_description) { create(:contest_description, container: container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
 
     context 'with authorized users' do
       let(:user) { create(:user, :axis_mundi) }
@@ -514,7 +514,7 @@ RSpec.describe ContestInstancesController, type: :controller do
   describe 'GET #export_round_results' do
     let(:department) { create(:department) }
     let(:container) { create(:container, department: department) }
-    let(:contest_description) { create(:contest_description, container: container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
     let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
     let(:judging_round) { create(:judging_round, contest_instance: contest_instance, completed: true) }
 

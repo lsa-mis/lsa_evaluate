@@ -1,7 +1,7 @@
 class ContestInstancesController < ApplicationController
   before_action :set_container
   before_action :set_contest_description
-  before_action :set_contest_instance, only: %i[show edit update destroy send_round_results]
+  before_action :set_contest_instance, only: %i[show edit update destroy send_round_results deactivate]
   before_action :authorize_container_access
 
   # GET /contest_instances
@@ -210,6 +210,21 @@ class ContestInstancesController < ApplicationController
     rescue Pundit::NotAuthorizedError
       flash[:alert] = 'Not authorized to access this contest instance'
       redirect_to root_path
+    end
+  end
+
+  def deactivate
+    @contest_instance.update(active: false)
+    @contest_description = @contest_instance.contest_description
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace(
+          'active-instances-list',
+          partial: 'contest_descriptions/active_instances_inline',
+          locals: { contest_description: @contest_description }
+        )
+      end
+      format.html { redirect_to container_contest_description_path(@contest_description.container, @contest_description), notice: 'Instance deactivated.' }
     end
   end
 

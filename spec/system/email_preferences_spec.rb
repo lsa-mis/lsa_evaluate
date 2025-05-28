@@ -4,7 +4,7 @@ RSpec.describe 'Email Preferences', type: :system do
   let(:department) { create(:department, name: 'Test Department') }
   let(:admin_user) { create(:user, :axis_mundi) }
   let(:container) { create(:container, name: 'Test Container', department: department, contact_email: 'admin@example.com') }
-  let(:contest_description) { create(:contest_description, name: 'Test Contest', container: container) }
+  let(:contest_description) { create(:contest_description, :active, name: 'Test Contest', container: container) }
   let(:contest_instance) { create(:contest_instance, contest_description: contest_description, date_open: 4.months.ago, date_closed: 3.months.ago) }
 
   # Create applicant user and entry

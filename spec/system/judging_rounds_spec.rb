@@ -5,7 +5,7 @@ RSpec.describe 'Judging Rounds', type: :system do
 
   let(:admin) { create(:user) }
   let(:container) { create(:container) }
-  let(:contest_description) { create(:contest_description, container: container) }
+  let(:contest_description) { create(:contest_description, :active, container: container) }
   let(:contest_instance) { create(:contest_instance,
     contest_description: contest_description,
     date_open: 2.days.ago,

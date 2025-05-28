@@ -46,6 +46,7 @@ Rails.application.routes.draw do
           post 'send_round_results'
           get :export_entries
           get :export_round_results
+          patch :deactivate
         end
         resources :judging_rounds do
           member do
