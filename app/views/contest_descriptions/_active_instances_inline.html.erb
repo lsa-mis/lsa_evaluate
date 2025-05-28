@@ -1,0 +1,27 @@
+<turbo-frame id="active-instances-list">
+  <% active_instances = contest_description.active_contest_instances %>
+  <% if active_instances.any? %>
+    <div class="mt-4">
+      <h5>Active Contest Instances</h5>
+      <ul class="list-group">
+        <% active_instances.each do |instance| %>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <strong><%= instance.display_name %></strong>
+              <span class="text-muted small">[<%= l(instance.date_open, format: :short) %> - <%= l(instance.date_closed, format: :short) %>]</span>
+            </span>
+            <%= button_to 'Deactivate',
+                  deactivate_container_contest_description_contest_instance_path(
+                    contest_description.container, contest_description, instance
+                  ),
+                  method: :patch,
+                  data: { turbo_frame: 'active-instances-list' },
+                  class: 'btn btn-danger btn-sm' %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <div class="mt-4 text-muted">No active contest instances.</div>
+  <% end %>
+</turbo-frame>
