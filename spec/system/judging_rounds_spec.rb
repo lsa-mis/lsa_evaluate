@@ -9,7 +9,8 @@ RSpec.describe 'Judging Rounds', type: :system do
   let(:contest_instance) { create(:contest_instance,
     contest_description: contest_description,
     date_open: 2.days.ago,
-    date_closed: 1.day.ago
+    date_closed: 1.day.ago,
+    active: true
   ) }
 
   before do
@@ -69,6 +70,7 @@ RSpec.describe 'Judging Rounds', type: :system do
       )
       judge = create(:user, :with_judge_role)
       create(:judging_assignment, user: judge, contest_instance: contest_instance)
+      create(:round_judge_assignment, user: judge, judging_round: judging_round)
 
       sign_in judge
       visit judge_dashboard_path
