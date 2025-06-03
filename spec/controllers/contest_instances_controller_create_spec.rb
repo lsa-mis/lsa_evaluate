@@ -4,7 +4,9 @@ RSpec.describe ContestInstancesController, type: :controller do
   let(:department) { create(:department) }
   let(:user) { create(:user, :axis_mundi) }
   let(:container) { create(:container, department: department) }
-  let(:contest_description) { create(:contest_description, container: container) }
+  let(:contest_description) { create(:contest_description, :active, container: container) }
+  let!(:category) { create(:category, kind: 'Fiction_Base') }
+  let!(:class_level) { create(:class_level, name: 'Undergraduate_Base') }
 
   before do
     sign_in user
@@ -21,7 +23,9 @@ RSpec.describe ContestInstancesController, type: :controller do
         require_pen_name: false,
         require_campus_employment_info: false,
         require_finaid_info: false,
-        created_by: user.email
+        created_by: user.email,
+        category_ids: [category.id],
+        class_level_ids: [class_level.id]
       }
     end
 

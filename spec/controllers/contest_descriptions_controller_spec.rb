@@ -4,7 +4,7 @@ RSpec.describe ContestDescriptionsController, type: :controller do
   let(:department) { create(:department) }
   let(:user) { create(:user, :axis_mundi) }
   let(:container) { create(:container, department: department) }
-  let(:contest_description) { create(:contest_description, container: container) }
+  let(:contest_description) { create(:contest_description, :active, container: container) }
 
   before do
     sign_in user
@@ -167,7 +167,7 @@ RSpec.describe ContestDescriptionsController, type: :controller do
         put :update, params: {
           container_id: container.id,
           id: contest_description.id,
-          contest_description: { active: false }
+          contest_description: { active: "0" }
         }
 
         expect(response.status).to eq(422)
@@ -180,7 +180,7 @@ RSpec.describe ContestDescriptionsController, type: :controller do
         put :update, params: {
           container_id: container.id,
           id: contest_description.id,
-          contest_description: { active: false }
+          contest_description: { active: "0" }
         }, as: :turbo_stream
 
         expect(response.status).to eq(422)

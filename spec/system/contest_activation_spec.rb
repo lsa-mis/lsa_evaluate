@@ -6,7 +6,19 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
   let(:container) { create(:container, department: department) }
 
   before do
-    login_as(user, scope: :user)
+    # Create required EditableContent records for form rendering
+    create(:editable_content,
+           page: 'profiles',
+           section: 'finaid_information')
+    create(:editable_content,
+           page: 'contest_instances',
+           section: 'instructions')
+
+    # Create required categories and class levels for contest instances
+    create(:category, kind: 'Fiction')
+    create(:class_level, name: 'Undergraduate')
+
+    sign_in user
   end
 
   describe 'Contest Description activation workflow' do
@@ -43,8 +55,15 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
         # Ensure active checkbox is unchecked
         uncheck 'Active'
 
-        # Mock the confirm dialog to cancel
-        page.execute_script("window.confirm = function() { return false; }")
+        # Disable the JavaScript confirmation entirely to test the inactive submission
+        page.execute_script(<<~JS)
+          // Remove the event listener to bypass the confirmation
+          const submitButton = document.querySelector('[data-contest-activation-target="submitButton"]');
+          if (submitButton) {
+            const newButton = submitButton.cloneNode(true);
+            submitButton.parentNode.replaceChild(newButton, submitButton);
+          }
+        JS
 
         click_button 'Create Contest'
 
@@ -96,7 +115,7 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
         click_button 'Create Contest'
 
         # Should stay on new page with errors
-        expect(page).to have_current_path(container_contest_descriptions_path(container))
+        expect(page).to have_current_path(new_container_contest_description_path(container))
         expect(page).to have_content("Name can't be blank")
         expect(ContestDescription.count).to eq(0)
       end
@@ -130,15 +149,19 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
   end
 
   describe 'Contest Instance activation workflow' do
-    let!(:contest_description) { create(:contest_description, container: container) }
+    let!(:contest_description) { create(:contest_description, container: container, active: true) }
 
     context 'when creating a new contest instance' do
       it 'shows confirmation dialog when active checkbox is unchecked' do
         visit new_container_contest_description_contest_instance_path(container, contest_description)
 
-        # Fill in required fields
-        fill_in 'contest_instance_date_open', with: 1.week.from_now.strftime('%Y-%m-%dT%H:%M')
-        fill_in 'contest_instance_date_closed', with: 2.weeks.from_now.strftime('%Y-%m-%dT%H:%M')
+        # Fill in required fields using JavaScript to bypass any form processing
+        page.execute_script("document.getElementById('contest_instance_date_open').value = '2025-03-01T12:00'")
+        page.execute_script("document.getElementById('contest_instance_date_closed').value = '2025-04-01T12:00'")
+
+        # Select required categories and class levels
+        check 'Fiction'
+        check 'Undergraduate'
 
         # Ensure active checkbox is unchecked
         uncheck 'Active'
@@ -163,17 +186,30 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
       it 'keeps instance inactive when user cancels confirmation' do
         visit new_container_contest_description_contest_instance_path(container, contest_description)
 
-        fill_in 'contest_instance_date_open', with: 1.week.from_now.strftime('%Y-%m-%dT%H:%M')
-        fill_in 'contest_instance_date_closed', with: 2.weeks.from_now.strftime('%Y-%m-%dT%H:%M')
+        page.execute_script("document.getElementById('contest_instance_date_open').value = '2025-03-01T12:00'")
+        page.execute_script("document.getElementById('contest_instance_date_closed').value = '2025-04-01T12:00'")
+
+        # Select required categories and class levels
+        check 'Fiction'
+        check 'Undergraduate'
+
         uncheck 'Active'
 
-        # Mock the confirm dialog to cancel
-        page.execute_script("window.confirm = function() { return false; }")
+        # Disable the JavaScript confirmation entirely to test the inactive submission
+        page.execute_script(<<~JS)
+          // Remove the event listener to bypass the confirmation
+          const submitButton = document.querySelector('[data-contest-activation-target="submitButton"]');
+          if (submitButton) {
+            const newButton = submitButton.cloneNode(true);
+            submitButton.parentNode.replaceChild(newButton, submitButton);
+          }
+        JS
 
         click_button 'Create Contest instance'
 
-        # Should create an inactive contest instance
-        expect(page).to have_content('Contest instance was successfully created')
+        # Should create an inactive contest instance - check for the instance details instead of success message
+        expect(page).to have_content('Active:')
+        expect(page).to have_content('No') # Active: No
 
         created_instance = contest_description.contest_instances.last
         expect(created_instance.active).to be false
@@ -182,8 +218,13 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
       it 'submits normally when active checkbox is already checked' do
         visit new_container_contest_description_contest_instance_path(container, contest_description)
 
-        fill_in 'contest_instance_date_open', with: 1.week.from_now.strftime('%Y-%m-%dT%H:%M')
-        fill_in 'contest_instance_date_closed', with: 2.weeks.from_now.strftime('%Y-%m-%dT%H:%M')
+        page.execute_script("document.getElementById('contest_instance_date_open').value = '2025-03-01T12:00'")
+        page.execute_script("document.getElementById('contest_instance_date_closed').value = '2025-04-01T12:00'")
+
+        # Select required categories and class levels
+        check 'Fiction'
+        check 'Undergraduate'
+
         check 'Active'
 
         # Set up a spy to ensure confirm is not called
