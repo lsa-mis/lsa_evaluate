@@ -34,6 +34,9 @@ export default class extends Controller {
       return
     }
 
+    // Prevent the default form submission temporarily
+    event.preventDefault()
+
     // Show confirmation dialog synchronously
     const message = this.confirmMessageValue ||
       "This contest will be created as inactive. Would you like to make it active now? " +
@@ -50,8 +53,14 @@ export default class extends Controller {
       console.log("User cancelled, checkbox remains unchecked")
     }
 
-    // Let the normal form submission proceed
-    console.log("Allowing normal form submission to proceed")
+    // Now submit the form using requestSubmit to trigger proper form validation
+    console.log("Submitting form using requestSubmit")
+    if (this.submitButtonTarget.form.requestSubmit) {
+      this.submitButtonTarget.form.requestSubmit(this.submitButtonTarget)
+    } else {
+      // Fallback for older browsers
+      this.submitButtonTarget.form.submit()
+    }
   }
 
   checkActivation(event) {
