@@ -19,6 +19,9 @@ application.register("comments-counter", CommentsCounterController)
 import ConfirmController from "./confirm_controller"
 application.register("confirm", ConfirmController)
 
+import ContestActivationController from "./contest_activation_controller"
+application.register("contest-activation", ContestActivationController)
+
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
 

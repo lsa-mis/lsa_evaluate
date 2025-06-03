@@ -1,16 +1,20 @@
 <%= simple_form_for([@container, @contest_description, @contest_instance],
     html: {
       data: {
-        controller: "form-validation",
+        controller: "form-validation contest-activation",
         action: "submit->form-validation#submitForm",
-        form_validation_target: "form"
+        form_validation_target: "form",
+        contest_activation_is_new_record_value: @contest_instance.new_record?,
+        contest_activation_confirm_message_value: "This contest instance will be created as inactive. Would you like to make it active now? Active instances accept entries during the specified open and close dates."
       }
     }) do |f| %>
   <%= f.error_notification %>
   <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
   <div class="form-inputs">
-    <%= f.input :active, hint: "Specify whether this contest is currently accepting entries during the contest open and close dates specified below." %>
+    <%= f.input :active,
+        hint: "Specify whether this contest is currently accepting entries during the contest open and close dates specified below.",
+        input_html: { data: { contest_activation_target: "activeCheckbox" } } %>
     <%= f.association :contest_description, label_method: :name %>
     <div class="row">
       <div class="col-md-6">
@@ -120,7 +124,9 @@
   </div>
 
   <div class="form-actions py-2">
-    <%= f.button :submit, class: "btn btn-primary" %>
+    <%= f.button :submit,
+        class: "btn btn-primary",
+        data: { contest_activation_target: "submitButton" } %>
     <%= link_to "Cancel", (f.object.new_record? ? container_contest_description_contest_instances_path(@container, @contest_description) : container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance)), class: "text-danger link_to" %>
   </div>
 <% end %>
