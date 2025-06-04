@@ -40,18 +40,24 @@ describe("ContestActivationController", () => {
 
         checkbox.checked = true
 
-        // Mock form submission
+        // Mock form submission - listen for submit event
         let formSubmitted = false
         form.addEventListener('submit', (e) => {
           e.preventDefault()
           formSubmitted = true
         })
 
-        // Click submit button
-        const clickEvent = new Event('click', { cancelable: true })
-        submitButton.dispatchEvent(clickEvent)
+        // Mock requestSubmit if it doesn't exist
+        if (!form.requestSubmit) {
+          form.requestSubmit = function() {
+            const submitEvent = new Event('submit', { cancelable: true, bubbles: true })
+            this.dispatchEvent(submitEvent)
+          }
+        }
 
-        expect(clickEvent.defaultPrevented).toBe(false)
+        // Click submit button - this will trigger the controller's event listener
+        submitButton.click()
+
         expect(formSubmitted).toBe(true)
       })
     })
@@ -79,10 +85,17 @@ describe("ContestActivationController", () => {
           formSubmitted = true
         })
 
+        // Mock requestSubmit if it doesn't exist
+        if (!form.requestSubmit) {
+          form.requestSubmit = function() {
+            const submitEvent = new Event('submit', { cancelable: true, bubbles: true })
+            this.dispatchEvent(submitEvent)
+          }
+        }
+
         try {
           // Click submit button
-          const clickEvent = new Event('click', { cancelable: true })
-          submitButton.dispatchEvent(clickEvent)
+          submitButton.click()
 
           // Check that confirmation was shown
           expect(confirmMessage).toContain('This contest will be created as inactive')
@@ -116,10 +129,17 @@ describe("ContestActivationController", () => {
           formSubmitted = true
         })
 
+        // Mock requestSubmit if it doesn't exist
+        if (!form.requestSubmit) {
+          form.requestSubmit = function() {
+            const submitEvent = new Event('submit', { cancelable: true, bubbles: true })
+            this.dispatchEvent(submitEvent)
+          }
+        }
+
         try {
           // Click submit button
-          const clickEvent = new Event('click', { cancelable: true })
-          submitButton.dispatchEvent(clickEvent)
+          submitButton.click()
 
           // Check that checkbox remains unchecked
           expect(checkbox.checked).toBe(false)
@@ -131,25 +151,8 @@ describe("ContestActivationController", () => {
         }
       })
 
-      it("uses custom confirmation message when provided", () => {
-        container.innerHTML = `
-          <form data-controller="contest-activation"
-                data-contest-activation-is-new-record-value="true"
-                data-contest-activation-confirm-message-value="Custom message for testing">
-            <input type="checkbox"
-                   data-contest-activation-target="activeCheckbox"
-                   name="contest_description[active]">
-            <button type="submit"
-                    data-contest-activation-target="submitButton">Create Contest</button>
-          </form>
-        `
-
-        const checkbox = container.querySelector('[data-contest-activation-target="activeCheckbox"]')
-        const submitButton = container.querySelector('[data-contest-activation-target="submitButton"]')
-
-        checkbox.checked = false
-
-        // Mock window.confirm
+      it("uses custom confirmation message when provided", (done) => {
+        // Mock window.confirm FIRST
         const originalConfirm = window.confirm
         let confirmMessage = ''
         window.confirm = (message) => {
@@ -157,14 +160,80 @@ describe("ContestActivationController", () => {
           return true
         }
 
-        try {
-          // Click submit button
-          const clickEvent = new Event('click', { cancelable: true })
-          submitButton.dispatchEvent(clickEvent)
+        // Mock HTMLFormElement.prototype.requestSubmit globally for JSDOM
+        const originalRequestSubmit = HTMLFormElement.prototype.requestSubmit
+        HTMLFormElement.prototype.requestSubmit = function(submitter) {
+          const submitEvent = new Event('submit', { cancelable: true, bubbles: true })
+          // Set the submitter property on the event
+          Object.defineProperty(submitEvent, 'submitter', {
+            value: submitter,
+            writable: false
+          })
+          this.dispatchEvent(submitEvent)
+        }
 
-          expect(confirmMessage).toBe('Custom message for testing')
-        } finally {
+        try {
+          // Create container and add HTML with custom confirmation message
+          container.innerHTML = `
+            <form data-controller="contest-activation"
+                  data-contest-activation-is-new-record-value="true"
+                  data-contest-activation-confirm-message-value="Custom message for testing">
+              <input type="checkbox"
+                     data-contest-activation-target="activeCheckbox"
+                     name="contest_description[active]">
+              <button type="submit"
+                      data-contest-activation-target="submitButton">Create Contest</button>
+            </form>
+          `
+
+          // Wait for Stimulus to connect the controller
+          setTimeout(() => {
+            const checkbox = container.querySelector('[data-contest-activation-target="activeCheckbox"]')
+            const submitButton = container.querySelector('[data-contest-activation-target="submitButton"]')
+            const form = container.querySelector('form')
+
+            checkbox.checked = false
+
+            // Mock form submission
+            let formSubmitted = false
+            form.addEventListener('submit', (e) => {
+              e.preventDefault()
+              formSubmitted = true
+            })
+
+            // Click the submit button
+            submitButton.click()
+
+            // Verify the custom confirmation message was shown
+            expect(confirmMessage).toBe('Custom message for testing')
+
+            // Check that checkbox was checked after confirmation
+            expect(checkbox.checked).toBe(true)
+
+            // Form should be submitted
+            expect(formSubmitted).toBe(true)
+
+            done()
+          }, 50) // Give Stimulus time to initialize
+        } catch (error) {
+          // Restore original methods in case of error
           window.confirm = originalConfirm
+          if (originalRequestSubmit) {
+            HTMLFormElement.prototype.requestSubmit = originalRequestSubmit
+          } else {
+            delete HTMLFormElement.prototype.requestSubmit
+          }
+          done(error)
+        } finally {
+          // Clean up will happen after the test completes
+          setTimeout(() => {
+            window.confirm = originalConfirm
+            if (originalRequestSubmit) {
+              HTMLFormElement.prototype.requestSubmit = originalRequestSubmit
+            } else {
+              delete HTMLFormElement.prototype.requestSubmit
+            }
+          }, 100)
         }
       })
     })
@@ -207,13 +276,12 @@ describe("ContestActivationController", () => {
       }
 
       try {
-        // Click submit button
-        const clickEvent = new Event('click', { cancelable: true })
-        submitButton.dispatchEvent(clickEvent)
+        // Click submit button - since isNewRecord is false,
+        // the controller won't interfere and normal form submission should occur
+        submitButton.click()
 
         expect(confirmCalled).toBe(false)
         expect(formSubmitted).toBe(true)
-        expect(clickEvent.defaultPrevented).toBe(false)
       } finally {
         window.confirm = originalConfirm
       }
@@ -221,25 +289,46 @@ describe("ContestActivationController", () => {
   })
 
   describe("controller connection", () => {
-    it("logs connection message", () => {
+    it("logs connection message", (done) => {
+      // Save original console.log
       const originalLog = console.log
-      let logMessage = ''
-      console.log = (message) => {
-        logMessage = message
+      const capturedLogs = []
+
+      // Mock console.log BEFORE creating any controller
+      console.log = (...args) => {
+        capturedLogs.push(args.join(' '))
+        originalLog(...args) // Also call original to help debug
       }
 
       try {
-        container.innerHTML = `
-          <form data-controller="contest-activation"
-                data-contest-activation-is-new-record-value="true">
+        // Create a new container with the controller
+        const testContainer = document.createElement('div')
+        testContainer.innerHTML = `
+          <div data-controller="contest-activation"
+               data-contest-activation-is-new-record-value="true">
             <input type="checkbox" data-contest-activation-target="activeCheckbox">
             <button type="submit" data-contest-activation-target="submitButton">Submit</button>
-          </form>
+          </div>
         `
 
-        expect(logMessage).toBe('contest-activation controller connected')
-      } finally {
+        // Add to DOM - this will trigger Stimulus to instantiate the controller
+        // and call its connect() method
+        document.body.appendChild(testContainer)
+
+        // Wait a bit for Stimulus to process
+        setTimeout(() => {
+          // The connection should have been logged
+          const hasConnectionLog = capturedLogs.some(log => log.includes('contest-activation controller connected'))
+          expect(hasConnectionLog).toBe(true)
+
+          // Cleanup
+          document.body.removeChild(testContainer)
+          console.log = originalLog
+          done()
+        }, 50)
+      } catch (error) {
         console.log = originalLog
+        done(error)
       }
     })
   })
