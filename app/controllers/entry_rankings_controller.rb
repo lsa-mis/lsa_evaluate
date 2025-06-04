@@ -43,10 +43,18 @@ class EntryRankingsController < ApplicationController
     authorize @entry_ranking, :select_for_next_round?
 
     selected = params[:selected_for_next_round] == '1'
-    Rails.logger.debug { "Selected value before update: #{selected}" }
 
-    if @entry_ranking.update_column(:selected_for_next_round, selected)
-      Rails.logger.debug { "Value after update: #{@entry_ranking.reload.selected_for_next_round}" }
+    # Update ALL rankings for this entry in this round, not just one
+    entry = @entry_ranking.entry
+    judging_round = @entry_ranking.judging_round
+
+    # Update all rankings for this entry
+    updated = EntryRanking.where(entry: entry, judging_round: judging_round)
+                          .update_all(selected_for_next_round: selected)
+
+    if updated > 0
+      Rails.logger.info { "Updated #{updated} rankings for entry #{entry.id} - selected_for_next_round: #{selected}" }
+
       respond_to do |format|
         format.html {
           redirect_back(fallback_location: container_contest_description_contest_instance_judging_round_path(
@@ -57,11 +65,11 @@ class EntryRankingsController < ApplicationController
           flash.now[:notice] = 'Entry selection updated successfully'
           render turbo_stream: [
             turbo_stream.replace(
-              "selected_for_next_round_#{@entry_ranking.entry.id}",
+              "selected_for_next_round_#{entry.id}",
               partial: 'judging_rounds/entry_checkbox',
               locals: {
-                entry: @entry_ranking.entry,
-                judging_round: @judging_round,
+                entry: entry,
+                judging_round: judging_round,
                 container: @container,
                 contest_description: @contest_description,
                 contest_instance: @contest_instance
@@ -80,11 +88,11 @@ class EntryRankingsController < ApplicationController
         }
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
-            "selected_for_next_round_#{@entry_ranking.entry.id}",
+            "selected_for_next_round_#{entry.id}",
             partial: 'judging_rounds/entry_checkbox',
             locals: {
-              entry: @entry_ranking.entry,
-              judging_round: @judging_round,
+              entry: entry,
+              judging_round: judging_round,
               container: @container,
               contest_description: @contest_description,
               contest_instance: @contest_instance

@@ -137,7 +137,11 @@ RSpec.describe EntryRankingsController, type: :controller do
           selected_for_next_round: '1'
         }
 
-        expect(entry_ranking.reload.selected_for_next_round).to be true
+        # Check that ALL rankings for this entry are updated
+        EntryRanking.where(entry: entry_ranking.entry, judging_round: judging_round).each do |ranking|
+          expect(ranking.reload.selected_for_next_round).to be true
+        end
+
         expect(response).to redirect_to(
           container_contest_description_contest_instance_judging_round_path(
             container, contest_description, contest_instance, judging_round
@@ -147,7 +151,9 @@ RSpec.describe EntryRankingsController, type: :controller do
       end
 
       it 'allows deselection of entry for next round' do
-        entry_ranking.update(selected_for_next_round: true)
+        # First set all rankings to selected
+        EntryRanking.where(entry: entry_ranking.entry, judging_round: judging_round)
+                    .update_all(selected_for_next_round: true)
 
         patch :select_for_next_round, params: {
           container_id: container.id,
@@ -158,7 +164,11 @@ RSpec.describe EntryRankingsController, type: :controller do
           selected_for_next_round: '0'
         }
 
-        expect(entry_ranking.reload.selected_for_next_round).to be false
+        # Check that ALL rankings for this entry are updated
+        EntryRanking.where(entry: entry_ranking.entry, judging_round: judging_round).each do |ranking|
+          expect(ranking.reload.selected_for_next_round).to be false
+        end
+
         expect(flash[:notice]).to eq('Entry selection updated successfully.')
       end
     end

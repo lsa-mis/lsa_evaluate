@@ -3,15 +3,6 @@ require 'rails_helper'
 RSpec.describe JudgeDashboardController, type: :controller do
   let(:container) { create(:container) }
   let(:contest_description) { create(:contest_description, :active, container: container) }
-
-  # Start at a known point in time
-  before(:all) do
-    travel_to Time.zone.local(2024, 2, 1, 12, 0, 0)
-  end
-
-  after(:all) do
-  end
-
   let(:contest_instance) do
     create(:contest_instance,
       contest_description: contest_description,
@@ -43,6 +34,7 @@ RSpec.describe JudgeDashboardController, type: :controller do
   end
 
   before do
+    travel_to Time.zone.local(2024, 2, 1, 12, 0, 0)
     sign_in judge
   end
 
@@ -134,6 +126,35 @@ RSpec.describe JudgeDashboardController, type: :controller do
       before do
         get :index
       end
+
+    context 'when contest_instance is inactive' do
+      it 'does not display the contest in the judge dashboard' do
+        contest_instance = create(:contest_instance, active: false, contest_description: contest_description)
+        judging_round = create(:judging_round, contest_instance: contest_instance, active: true, completed: false)
+        create(:judging_assignment, user: judge, contest_instance: contest_instance, active: true)
+        create(:round_judge_assignment, user: judge, judging_round: judging_round, active: true)
+
+        get :index
+
+        expect(assigns(:judging_assignments)).to be_empty
+        expect(response.body).not_to include(contest_instance.contest_description.name)
+      end
+    end
+
+    context 'when contest_instance is active but the assigned judging round is completed' do
+      it 'does not display the contest in the judge dashboard' do
+        # contest_instance = create(:contest_instance, active: true, contest_description: contest_description)
+        # judging_round = create(:judging_round, contest_instance: contest_instance, active: true, completed: true)
+        create(:judging_assignment, user: judge, contest_instance: contest_instance, active: true)
+        create(:round_judge_assignment, user: judge, judging_round: round_1)
+        round_1.update!(completed: true)
+
+        get :index
+
+        expect(assigns(:judging_assignments)).to be_empty
+        expect(response.body).not_to include(contest_instance.contest_description.name)
+      end
+    end
 
       it 'assigns empty @judging_assignments' do
         expect(assigns(:judging_assignments)).to be_empty

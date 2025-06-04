@@ -1,7 +1,11 @@
 <div id="contest_description_form" class="mb-1">
   <%= simple_form_for([@container, @contest_description],
     html: {
-      id: 'new_contest_description_form'
+      id: 'new_contest_description_form',
+      data: {
+        controller: "contest-activation",
+        contest_activation_is_new_record_value: @contest_description.new_record?
+      }
     }) do |f| %>
     <%= f.error_notification %>
     <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
@@ -12,11 +16,15 @@
       <%= f.input :eligibility_rules, as: :rich_text_area, hint: "These notes display on the applicant entry form and on the assigned judges' dashboard" %>
       <%= f.input :notes, as: :rich_text_area, hint: "These notes are not visible on the applicant entry form" %>
       <%= f.input :short_name %>
-      <%= f.input :active, hint: "Toggle this checkbox to make the contest active. When active, administrators will be able to manage the submitted entries. Judges, during their assigned judging period, will be able to view the entries and provide feedback. Note that the contest's instances availabilty for submissions will follow the visibility settings based on specific dates configured in each contest instance. If this checkbox is unchecked, the contest and its instances will remain inactive and hidden from evaluation workflows." %>
+      <%= f.input :active,
+          hint: "Toggle this checkbox to make the contest active. When active, administrators will be able to manage the submitted entries. Judges, during their assigned judging period, will be able to view the entries and provide feedback. Note that the contest's instances availabilty for submissions will follow the visibility settings based on specific dates configured in each contest instance. If this checkbox is unchecked, the contest and its instances will remain inactive and hidden from evaluation workflows.",
+          input_html: { data: { contest_activation_target: "activeCheckbox" } } %>
     </div>
 
     <div class="form-actions">
-      <%= f.button :submit, (f.object.new_record? ? "Create Contest" : "Update Contest"), class: "btn btn-primary" %>
+      <%= f.button :submit, (f.object.new_record? ? "Create Contest" : "Update Contest"),
+          class: "btn btn-primary",
+          data: { contest_activation_target: "submitButton" } %>
       <%= link_to "Cancel", (f.object.new_record? ? container_path(@container) : container_contest_description_contest_instances_path(@container, @contest_description)), class: "text-danger link_to" %>
     </div>
   <% end %>

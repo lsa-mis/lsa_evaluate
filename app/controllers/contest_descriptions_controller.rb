@@ -88,7 +88,10 @@ class ContestDescriptionsController < ApplicationController
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace('contest_description_form', partial: 'contest_descriptions/form', locals: { contest_description: @contest_description }), status: :unprocessable_entity
         }
-        format.html { render action_name.to_sym, status: :unprocessable_entity }
+        format.html {
+          template = action_name == 'create' ? :new : :edit
+          render template, status: :unprocessable_entity
+        }
       end
     end
   end

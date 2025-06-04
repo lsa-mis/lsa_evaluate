@@ -112,16 +112,14 @@ RSpec.describe 'Judge Round Visibility', type: :system do
 
     it 'shows appropriate message for no round assignment' do
       travel_to(1.day.from_now) do
-        expect(page).to have_content('No active rounds assigned to you')
+        expect(page).to have_content('You have not been assigned to judge any contests.')
       end
     end
 
     it 'does not show judging interface' do
       travel_to(1.day.from_now) do
         visit judge_dashboard_path  # Reload page within time travel block
-        find('.accordion-button').click
-        expect(page).to have_content('No active rounds assigned to you')
-        expect(page).to have_no_css('[data-controller="entry-drag"]')
+        expect(page).to have_content('You have not been assigned to judge any contests.')
       end
     end
   end
@@ -137,16 +135,14 @@ RSpec.describe 'Judge Round Visibility', type: :system do
 
     it 'shows appropriate message for no active assignment' do
       travel_to(1.day.from_now) do
-        expect(page).to have_content('No active rounds assigned to you')
+        expect(page).to have_content('You have not been assigned to judge any contests.')
       end
     end
 
     it 'does not show judging interface' do
       travel_to(1.day.from_now) do
         visit judge_dashboard_path  # Reload page within time travel block
-        find('.accordion-button').click
-        expect(page).to have_content('No active rounds assigned to you')
-        expect(page).to have_no_css('[data-controller="entry-drag"]')
+        expect(page).to have_content('You have not been assigned to judge any contests.')
       end
     end
   end

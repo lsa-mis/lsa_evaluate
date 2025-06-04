@@ -25,6 +25,14 @@ global.ResizeObserver = class ResizeObserver {
   disconnect() {}
 }
 
+// Add HTMLFormElement.prototype.requestSubmit polyfill for JSDOM
+if (!HTMLFormElement.prototype.requestSubmit) {
+  HTMLFormElement.prototype.requestSubmit = function() {
+    const submitEvent = new Event('submit', { cancelable: true, bubbles: true })
+    this.dispatchEvent(submitEvent)
+  }
+}
+
 // Add any missing DOM methods that might be required by your tests
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

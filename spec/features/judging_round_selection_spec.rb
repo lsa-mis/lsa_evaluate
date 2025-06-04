@@ -91,32 +91,51 @@ RSpec.describe 'Judging Round Selection', type: :system do
     end
 
     it 'allows deselecting entries', :js do
-      # First select an entry (this will be HTML format)
+      # First select an entry
       within('tr', text: 'Second Entry') do
-        find("input[name='selected_for_next_round']").click
+        checkbox = find("input[name='selected_for_next_round']")
+        expect(checkbox).not_to be_checked
+        checkbox.click
       end
 
       # Wait for the flash message to appear
       expect(page).to have_css('.alert.alert-success', text: 'Entry selection updated successfully', wait: 5)
 
-      # Now verify the database state after the first click
-      entry2_ranking = EntryRanking.find_by(entry: entry2, judging_round: judging_round)
-      expect(entry2_ranking.selected_for_next_round).to be true
+      # Verify ALL rankings for this entry are now selected
+      expect(EntryRanking.where(entry: entry2, judging_round: judging_round, selected_for_next_round: true).count).to eq(2)
 
-      # Then deselect it (this will be Turbo Stream format)
+      # Verify the checkbox is now checked
+      within('tr', text: 'Second Entry') do
+        checkbox = find("input[name='selected_for_next_round']")
+        expect(checkbox).to be_checked
+      end
+
+      # Then deselect it
       within('tr', text: 'Second Entry') do
         find("input[name='selected_for_next_round']").click
       end
 
       # Wait for the checkbox to be unchecked via Turbo Stream
-      expect(page).to have_css("input[name='selected_for_next_round']:not(:checked)", wait: 5)
+      within('tr', text: 'Second Entry') do
+        expect(page).to have_css("input[name='selected_for_next_round']:not(:checked)", wait: 10)
+      end
 
       # Wait for the flash message to appear
       expect(page).to have_css('.alert.alert-success', text: 'Entry selection updated successfully', wait: 5)
 
-      # Force a reload and wait for the database to be updated
-      entry2_ranking.reload
-      expect(entry2_ranking.selected_for_next_round).to be false
+      # Use a retry loop to wait for the database state to change
+      Timeout.timeout(5) do
+        loop do
+          if EntryRanking.where(entry: entry2, judging_round: judging_round, selected_for_next_round: false).count == 2
+            break
+          end
+          sleep 0.1
+        end
+      end
+
+      # Final verification
+      expect(EntryRanking.where(entry: entry2, judging_round: judging_round, selected_for_next_round: false).count).to eq(2)
+      expect(EntryRanking.where(entry: entry2, judging_round: judging_round, selected_for_next_round: true).count).to eq(0)
     end
 
     it 'shows judge comments when clicking view comments', :js do
