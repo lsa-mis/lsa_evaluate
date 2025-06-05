@@ -7,8 +7,7 @@ RSpec.describe ProfilePolicy do
     create(:profile, accepted_financial_aid_notice: true, preferred_first_name: 'John', preferred_last_name: 'Doe',
                      umid: '12345678', grad_date: Date.today + 1.year, degree: 'Bachelor',
                      class_level_id: create(:class_level).id, campus_id: create(:campus).id,
-                     school_id: create(:school).id, home_address: create(:address),
-                     campus_address: create(:address))
+                     school_id: create(:school).id)
   end
 
   let(:axis_mundi_role) { create(:role, kind: 'Axis Mundi') }
@@ -46,25 +45,25 @@ RSpec.describe ProfilePolicy do
     let(:user) { create(:user) } # The user we're testing
     let(:another_user) { create(:user) } # A different user
     let(:profile) { create(:profile, user: another_user) } # Profile belongs to another user
-  
+
     it 'permits new and create actions' do
       # Ensure the user does not have a profile
       expect(user.profile).to be_nil
-  
+
       # Test new? policy
       expect(subject).to permit_action(:new)
-  
+
       # Test create? policy
       expect(subject).to permit_action(:create)
     end
-  
+
     it 'forbids show, update, and destroy actions' do
       # Test show? policy
       expect(subject).not_to permit_action(:show)
-  
+
       # Test update? policy
       expect(subject).not_to permit_action(:update)
-  
+
       # Test destroy? policy
       expect(subject).not_to permit_action(:destroy)
     end
