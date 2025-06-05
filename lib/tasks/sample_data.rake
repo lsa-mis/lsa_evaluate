@@ -1,140 +1,72 @@
 namespace :sample_data do
-  desc 'Create sample contest entries for testing'
-  task create_entries: :environment do
-    if Rails.env.production?
-      puts 'This task cannot be run in the production environment.'
-      exit
-    end
+  desc 'Create sample data for development'
+  task create: :environment do
+    # Create roles if they don't exist
+    axis_mundi_role = Role.find_or_create_by!(kind: 'Axis Mundi', description: 'Administrator role')
+    collection_admin_role = Role.find_or_create_by!(kind: 'Collection Administrator', description: 'Collection administrator role')
 
-    # Find or create required records
-    contest_description = ContestDescription.first || ContestDescription.create!(
-      name: 'Sample Contest 2024',
-      created_by: 'system',
-      container: Container.first || Container.create!(
-        name: 'Sample Container',
-        department: Department.first || Department.create!(name: 'Sample Department'),
-        visibility: Visibility.first || Visibility.create!(kind: 'Public')
-      )
-    )
+    # Create campuses if they don't exist
+    ann_arbor_campus = Campus.find_or_create_by!(name: 'Ann Arbor', description: 'Ann Arbor campus')
+    dearborn_campus = Campus.find_or_create_by!(name: 'Dearborn', description: 'Dearborn campus')
+    flint_campus = Campus.find_or_create_by!(name: 'Flint', description: 'Flint campus')
 
-    contest_instance = ContestInstance.first ||
-      ContestInstance.create!(
-        contest_description: contest_description,
-        description: 'A sample contest for testing',
-        date_open: Date.today,
-        date_closed: 1.month.from_now,
-        require_pen_name: true,
-        created_by: 'system'
-      )
+    # Create schools if they don't exist
+    lsa = School.find_or_create_by!(name: 'LSA', description: 'College of Literature, Science, and the Arts')
+    engineering = School.find_or_create_by!(name: 'Engineering', description: 'College of Engineering')
+    business = School.find_or_create_by!(name: 'Business', description: 'Ross School of Business')
 
-    category = Category.first || Category.create!(kind: 'Poetry', description: 'Poetry submissions')
+    # Create class levels if they don't exist
+    freshman = ClassLevel.find_or_create_by!(name: 'Freshman', description: 'First year student')
+    sophomore = ClassLevel.find_or_create_by!(name: 'Sophomore', description: 'Second year student')
+    junior = ClassLevel.find_or_create_by!(name: 'Junior', description: 'Third year student')
+    senior = ClassLevel.find_or_create_by!(name: 'Senior', description: 'Fourth year student')
 
-    # Create required reference data if not exists
-    class_level = ClassLevel.first || ClassLevel.create!(name: 'Senior', description: 'Fourth year student')
-    school = School.first || School.create!(name: 'Literature, Science, and the Arts')
-    campus = Campus.first || Campus.create!(campus_descr: 'Ann Arbor', campus_cd: 1)
-
-    # Create address types if they don't exist
-    home_type = AddressType.find_or_create_by!(kind: 'Home', description: 'Home address')
-    campus_type = AddressType.find_or_create_by!(kind: 'Campus', description: 'Campus address')
-
-    # Sample titles for creative writing entries
-    titles = [
-      'The Last Sunset',
-      'Whispers in the Wind',
-      'Beyond the Horizon',
-      'Echoes of Tomorrow',
-      'The Silent Garden',
-      'Memories of Rain',
-      'The Forgotten Door',
-      'Dancing Shadows',
-      'The Crystal Key',
-      "Autumn's Secret",
-      'The Time Keeper',
-      "Midnight's Promise",
-      'The Paper Boat',
-      "Winter's Song"
-    ]
-
-    # Create entries
-    titles.each_with_index do |title, index|
-      # Create addresses
-      home_address = Address.create!(
-        address_type: home_type,
-        address1: "#{1000 + index} Home St",
-        city: 'Ann Arbor',
-        state: 'MI',
-        zip: '48109',
-        country: 'USA'
+    # Create sample users with profiles
+    5.times do |index|
+      # Create user
+      user = User.create!(
+        email: "user#{index + 1}@example.com",
+        first_name: Faker::Name.first_name,
+        last_name: Faker::Name.last_name,
+        uniqname: "user#{index + 1}",
+        uid: "user#{index + 1}",
+        display_name: "User #{index + 1}",
+        password: 'passwordpassword',
+        affiliations_attributes: [
+          { name: 'student' },
+          { name: 'member' }
+        ]
       )
 
-      campus_address = Address.create!(
-        address_type: campus_type,
-        address1: "#{2000 + index} Campus Dr",
-        city: 'Ann Arbor',
-        state: 'MI',
-        zip: '48109',
-        country: 'USA'
+      # Create profile
+      p = Profile.create!(
+        user: user,
+        preferred_first_name: user.first_name,
+        preferred_last_name: user.last_name,
+        umid: format('%08d', rand(10000000..99999999)),
+        class_level: [freshman, sophomore, junior, senior].sample,
+        school: [lsa, engineering, business].sample,
+        campus: [ann_arbor_campus, dearborn_campus, flint_campus].sample,
+        major: Faker::Educator.subject,
+        department: Faker::Educator.subject,
+        grad_date: Date.today + rand(1..4).years,
+        degree: ['Bachelor\'s', 'Master\'s', 'PhD'].sample,
+        receiving_financial_aid: [true, false].sample,
+        accepted_financial_aid_notice: true,
+        campus_employee: [true, false].sample,
+        financial_aid_description: Faker::Lorem.paragraph,
+        hometown_publication: Faker::Address.city,
+        pen_name: Faker::Book.author
       )
 
-      # Create a user for each entry
-      user = User.find_or_create_by!(email: "author#{index + 1}@example.com") do |u|
-        u.first_name = 'Author'
-        u.last_name = "#{index + 1}"
-        u.password = 'ThisIsALongPassword123!@#'
-        u.password_confirmation = 'ThisIsALongPassword123!@#'
-      end
-
-      # Create a profile for the user
-      profile = Profile.find_or_create_by!(user: user) do |p|
-        p.preferred_first_name = user.first_name
-        p.preferred_last_name = user.last_name
-        p.grad_date = Date.new(2024, 5, 1)
-        p.degree = 'BA'
-        p.umid = format('%08d', index + 10000000)  # 8-digit UMID
-        p.class_level = class_level
-        p.campus = campus
-        p.school = school
-        p.major = 'Creative Writing'
-        p.home_address = home_address
-        p.campus_address = campus_address
-      end
-
-      Entry.find_or_create_by!(title: title) do |entry|
-        entry.contest_instance = contest_instance
-        entry.profile = profile
-        entry.category = category
-        entry.pen_name = "Poet#{index + 1}"
-        entry.created_at = Time.current - rand(1..30).days
-
-        # Create a temporary markdown file
-        temp_file = Tempfile.new([ 'entry', '.md' ])
-        temp_file.write("# #{title}\n\n")
-        temp_file.write("## By #{entry.pen_name}\n\n")
-        temp_file.write("This is a sample entry for testing purposes.\n\n")
-        temp_file.write('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
-        temp_file.rewind
-
-        # Convert to PDF using pandoc
-        pdf_file = Tempfile.new([ 'entry', '.pdf' ])
-        system("pandoc #{temp_file.path} -o #{pdf_file.path}")
-
-        # Attach the PDF file to the entry
-        entry.entry_file.attach(
-          io: File.open(pdf_file.path),
-          filename: "#{title.downcase.gsub(/[^a-z0-9]/, '_')}.pdf",
-          content_type: 'application/pdf'
-        )
-
-        temp_file.close
-        temp_file.unlink
-        pdf_file.close
-        pdf_file.unlink
-
-        puts "Created entry: #{title} by #{profile.preferred_first_name} #{profile.preferred_last_name} (#{entry.pen_name})"
+      # Assign roles to some users
+      if index < 2
+        UserRole.create!(user: user, role: axis_mundi_role)
+      elsif index < 4
+        UserRole.create!(user: user, role: collection_admin_role)
       end
     end
 
-    puts "\nCreated #{titles.length} sample entries for contest: #{contest_instance.contest_description.name}"
+    puts 'Sample data created successfully!'
   end
 end
