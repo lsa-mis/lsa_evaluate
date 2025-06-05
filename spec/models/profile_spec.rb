@@ -20,34 +20,28 @@
 #  umid                          :string(255)
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
-#  campus_address_id             :bigint
 #  campus_id                     :bigint
 #  class_level_id                :bigint
-#  home_address_id               :bigint
 #  school_id                     :bigint
 #  user_id                       :bigint           not null
 #
 # Indexes
 #
-#  campus_id_idx                        (campus_id)
-#  class_level_id_idx                   (class_level_id)
-#  id_unq_idx                           (id) UNIQUE
-#  index_profiles_on_campus_address_id  (campus_address_id)
-#  index_profiles_on_campus_id          (campus_id)
-#  index_profiles_on_class_level_id     (class_level_id)
-#  index_profiles_on_home_address_id    (home_address_id)
-#  index_profiles_on_school_id          (school_id)
-#  index_profiles_on_umid               (umid) UNIQUE
-#  index_profiles_on_user_id            (user_id)
-#  school_id_idx                        (school_id)
-#  user_id_idx                          (user_id)
+#  campus_id_idx                     (campus_id)
+#  class_level_id_idx                (class_level_id)
+#  id_unq_idx                        (id) UNIQUE
+#  index_profiles_on_campus_id       (campus_id)
+#  index_profiles_on_class_level_id  (class_level_id)
+#  index_profiles_on_school_id       (school_id)
+#  index_profiles_on_umid            (umid) UNIQUE
+#  index_profiles_on_user_id         (user_id)
+#  school_id_idx                     (school_id)
+#  user_id_idx                       (user_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (campus_address_id => addresses.id)
 #  fk_rails_...  (campus_id => campuses.id)
 #  fk_rails_...  (class_level_id => class_levels.id)
-#  fk_rails_...  (home_address_id => addresses.id)
 #  fk_rails_...  (school_id => schools.id)
 #  fk_rails_...  (user_id => users.id)
 #
@@ -56,14 +50,11 @@ require 'rails_helper'
 RSpec.describe Profile do
   let(:user) { create(:user) }
 
-  let(:addresses) { create_list(:address, 2) }
   let(:associated_records) do
     {
       class_level: create(:class_level),
       school: create(:school),
-      campus: create(:campus),
-      home_address: addresses.first,
-      campus_address: addresses.second
+      campus: create(:campus)
     }
   end
 
@@ -159,26 +150,6 @@ RSpec.describe Profile do
     it 'belongs to campus' do
       expect(profile.campus).to  eq(associated_records[:campus])
     end
-
-    it 'belongs to home_address' do
-      expect(profile.home_address).to eq(associated_records[:home_address])
-    end
-
-    it 'belongs to campus_address' do
-      expect(profile.campus_address).to eq(associated_records[:campus_address])
-    end
-
-    it 'accepts nested attributes for home_address' do
-      profile_attributes = attributes_for(:profile, home_address_attributes: attributes_for(:address))
-      profile = described_class.new(profile_attributes)
-      expect(profile.home_address).to be_present
-    end
-
-    it 'accepts nested attributes for campus_address' do
-      profile_attributes = attributes_for(:profile, campus_address_attributes: attributes_for(:address))
-      profile = described_class.new(profile_attributes)
-      expect(profile.campus_address).to be_present
-    end
   end
 
   describe 'callbacks' do
@@ -202,9 +173,7 @@ RSpec.describe Profile do
       {
         class_level: create(:class_level),
         school: create(:school),
-        campus: create(:campus),
-        home_address: create(:address),
-        campus_address: create(:address)
+        campus: create(:campus)
       }
     end
 
