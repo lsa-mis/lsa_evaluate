@@ -16,12 +16,10 @@
       </div>
       <div class="justify-content-start">
         <div class="d-flex justify-content-start ps-2 gap-5">
-          <div class="">Local(campus) Address:<%= simple_format(profile.campus_address.full_address, {class:"fw-light"}) if profile.campus_address %></div>
-          <div class="">Hometown Address:<%= simple_format(profile.home_address.full_address, {class:"fw-light"}) if profile.home_address %></div>
+          <% if profile.pen_name.present? %>
+            <div class="ps-2"><p class="m-0">Default pen name: <%= simple_format(profile.pen_name, {class:"fw-light"}) %></p></div>
+          <% end %>
         </div>
-        <% if profile.pen_name.present? %>
-          <div class="ps-2"><p class="m-0">Default pen name: <%= simple_format(profile.pen_name, {class:"fw-light"}) %></p></div>
-        <% end %>
       </div>
     </div>
   </div>
@@ -31,55 +29,65 @@
       <h2>Academic Information</h2>
     </div>
     <div class="card-body">
-      <div class="d-flex justify-content-start">
-        <div class="text-start ms-4">
-          <p>Class Level:<br><span class="fw-light"> <%= profile.class_level.name if profile.class_level %></span></p>
-          <p>School or College:<br><span class="fw-light"> <%= profile.school.name if profile.school %></span></p>
-          <p>Primary Campus Class Location:<br><span class="fw-light"> <%= profile.campus.campus_descr if profile.campus %></span></p>
-          <% if @profile&.major.present? %>
-            <p>Major (if undergraduate):<br><span class="fw-light"> <%= profile.major %></span></p>
-          <% end %>
-          <% if @profile&.department.present? %>
-            <p>Department (if graduate):<br><span class="fw-light"> <%= profile.department if profile.department %></span></p>
-          <% end %>
-          <p>Expected Graduation Date:<br><span class="fw-light"> <%= profile.grad_date.strftime("%B %Y") %></span></p>
-          <p>Degree:<br><span class="fw-light"> <%= profile.degree %></span></p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <% if @profile.receiving_financial_aid && @profile.financial_aid_description.present? %>
-    <div class="card mt-5">
-      <div class="header card-header">
-        <h2>Financial Aid</h2>
-      </div>
-      <div class="card-body">
-        <div class="d-flex justify-content-start">
-          <div class=" text-start ms-4">
-            <p>Financial Aid:<br><span class="fw-light"> <%= profile.receiving_financial_aid ? 'Yes' : 'No' %></span></p>
-            <% if profile.receiving_financial_aid %>
-              <p>Financial Aid Description:<br><span class="fw-light"> <%= profile.financial_aid_description %></span></p>
+      <div class="ps-2">
+        <div class="d-flex justify-content-start gap-5">
+          <div class="">
+            <p class="m-0">Class Level: <%= simple_format(profile.class_level.name, {class:"fw-light"}) %></p>
+            <p class="m-0">School or College: <%= simple_format(profile.school.name, {class:"fw-light"}) %></p>
+            <p class="m-0">Primary Campus Class Location: <%= simple_format(profile.campus.campus_descr, {class:"fw-light"}) %></p>
+            <% if profile.major.present? %>
+              <p class="m-0">Major: <%= simple_format(profile.major, {class:"fw-light"}) %></p>
             <% end %>
+            <% if profile.department.present? %>
+              <p class="m-0">Department: <%= simple_format(profile.department, {class:"fw-light"}) %></p>
+            <% end %>
+            <p class="m-0">Expected Graduation Date: <%= simple_format(profile.grad_date.strftime("%B %Y"), {class:"fw-light"}) %></p>
+            <p class="m-0">Degree: <%= simple_format(profile.degree, {class:"fw-light"}) %></p>
           </div>
         </div>
       </div>
     </div>
-  <% end %>
+  </div>
 
   <div class="card mt-5">
     <div class="header card-header">
       <h2>Publicity</h2>
     </div>
     <div class="card-body">
-      <div class="d-flex justify-content-start">
-        <div class=" text-start ms-4">
-            Entrant’s name as it will appear in publicity:<br>
-             <small><em class="fw-light">(This is the name you entered as your preferred name.)</em></small>
+      <div class="ps-2">
+        <div class="d-flex justify-content-start">
+          <div class=" text-start ms-4">
+            Entrant's name as it will appear in publicity:<br>
+            <small><em class="fw-light">(This is the name you entered as your preferred name.)</em></small>
             <%= simple_format(profile.display_name, {class:"fw-light"}) %>
-          <% if profile.hometown_publication.present? %>
-            <p>Name of your hometown newspaper or preferred media outlet:<br><span class="fw-light"> <%= profile.hometown_publication %></span></p>
-          <% end %>
+          </div>
+        </div>
+        <% if profile.hometown_publication.present? %>
+          <div class="d-flex justify-content-start">
+            <div class=" text-start ms-4">
+              Hometown newspaper or preferred media outlet:<br>
+              <%= simple_format(profile.hometown_publication, {class:"fw-light"}) %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-5">
+    <div class="header card-header">
+      <h2>Financial Aid</h2>
+    </div>
+    <div class="card-body">
+      <div class="ps-2">
+        <div class="d-flex justify-content-start">
+          <div class=" text-start ms-4">
+            Receiving financial aid: <%= simple_format(profile.receiving_financial_aid ? "Yes" : "No", {class:"fw-light"}) %>
+            <% if profile.receiving_financial_aid && profile.financial_aid_description.present? %>
+              <br>
+              Description: <%= simple_format(profile.financial_aid_description, {class:"fw-light"}) %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

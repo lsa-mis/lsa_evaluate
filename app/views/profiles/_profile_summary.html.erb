@@ -7,31 +7,10 @@
         <h2>Welcome<br><%= @profile.preferred_first_name %>!</h2>
         <p class="text-white fw-light"><small>UMID: <%= @profile.umid %></small></p>
       </div>
-      <!-- Edit Profile Link -->
-      <div class="align-self-start pt-2">
-        <%= link_to edit_profile_path(@profile), class: 'text-white link-underline link-underline-opacity-0' do %>
-          <i class="bi bi-pencil"></i> <span class="fw-light">Edit</span>
-        <% end %>
-      </div>
+
     </div>
   <hr>
   <div class="text-white text-start small">
-    <!-- Address Section -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-xxl-1">
-      <div class="col">
-        <p class="text-white m-0">
-          Hometown Address:
-          <%= simple_format(@profile.home_address.full_address, class: "text-white fw-light lh-1 pt-1 ms-2 small") if @profile.home_address %>
-        </p>
-      </div>
-      <div class="col">
-        <p class="text-white m-0">
-          Local(campus) Address:
-          <%= simple_format(@profile.campus_address.full_address, class: "text-white fw-light lh-1 ms-2 pt-1 small") if @profile.campus_address %>
-        </p>
-      </div>
-    </div>
-    <hr>
 
     <!-- Other Profile Data -->
     <div class="row row-cols-1 row-cols-sm-3 row-cols-xxl-1">
@@ -134,10 +113,19 @@
     </div>
   </div>
 
-  <!-- Last Updated -->
-  <div class="pb-1">
-    <p class="text-white">
-      <small><em>Last updated:<br> <%= @profile.updated_at.strftime("%B %d, %Y") %></em></small>
-    </p>
+  <div class="d-flex flex justify-content-between align-items-center">
+    <!-- Last Updated -->
+    <div class="pb-1">
+      <p class="text-white">
+        <small><em>Last updated:<br>
+        <span class="fw-light ms-2"><%= @profile.updated_at.strftime("%B %d, %Y") %></span></em></small>
+      </p>
+    </div>
+      <!-- Edit Profile Link -->
+    <div class="align-self-start pt-2">
+      <%= link_to edit_profile_path(@profile), class: 'text-white link-underline link-underline-opacity-0' do %>
+        <i class="bi bi-pencil"></i>
+      <% end %>
+    </div>
   </div>
 </div>

@@ -4,9 +4,6 @@
 
 import { application } from "./application"
 
-import AddressCopyController from "./address_copy_controller"
-application.register("address-copy", AddressCopyController)
-
 import CharacterCounterController from "./character_counter_controller"
 application.register("character-counter", CharacterCounterController)
 
