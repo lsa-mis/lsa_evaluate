@@ -28,8 +28,6 @@ class ProfilesController < ApplicationController
       Rails.logger.debug { "^^^^^^^^^^^^^^^^ Profile is nil for user: #{current_user.inspect}" }
     else
       authorize @profile
-      @profile.build_home_address
-      @profile.build_campus_address
     end
   end
 
@@ -86,8 +84,6 @@ class ProfilesController < ApplicationController
                                     :major,
                                     :department, :grad_date, :degree, :receiving_financial_aid,
                                     :accepted_financial_aid_notice, :financial_aid_description,
-                                    :hometown_publication, :pen_name,
-                                    home_address_attributes: %i[id address1 address2 city state zip country address_type_id],
-                                    campus_address_attributes: %i[id address1 address2 city state zip country address_type_id])
+                                    :hometown_publication, :pen_name)
   end
 end
