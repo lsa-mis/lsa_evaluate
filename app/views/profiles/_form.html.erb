@@ -5,7 +5,7 @@
         <%= f.error_notification %>
         <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
-        <div class="form-inputs" data-controller="address-copy" >
+        <div class="form-inputs">
           <h2 class="mt-4">Contact Information</h2>
           <div class= "ms-4">
             <div class="row">
@@ -28,69 +28,6 @@
               <div class="col">
                 <%= f.input :pen_name, label: "Default pen name (optional)", hint: "Set a default pen name to use for future contest entries that require one. You can leave this blank if you prefer to enter a pen name each time. The pen name should bear no resemblance to your real name or any other personal information." %>
               </div>
-            </div>
-
-            <div class= "mt-4 ms-2">
-              <h3 class="mt-4">Local (campus) Address</h3>
-              <small class="text-muted">(Please provide your current campus address)</small>
-              <%= f.simple_fields_for :campus_address do |address_form| %>
-                <div class="row">
-                  <div class="col">
-                    <%= address_form.input :address1, input_html: { data: { target: "address-copy.campusAddress1" } } %>
-                  </div>
-                  <div class="col">
-                    <%= address_form.input :address2, input_html: { data: { target: "address-copy.campusAddress2" } } %>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <%= address_form.input :city, input_html: { data: { target: "address-copy.campusCity" } } %>
-                  </div>
-                  <div class="col">
-                    <%= address_form.input :state, collection: Address::STATES, input_html: { data: { target: "address-copy.campusState" } } %>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <%= address_form.input :zip, input_html: { data: { target: "address-copy.campusZip" } } %>
-                  </div>
-                  <div class="col">
-                    <%= address_form.input :country, priority: ["United States"], input_html: { data: { target: "address-copy.campusCountry" } } %>
-                    <%= address_form.input :address_type_id, as: :hidden, input_html: { value: AddressType.find_by(kind: 'Campus').id } %>
-                  </div>
-                </div>
-              <% end %>
-
-              <button type="button" data-action="click->address-copy#copy" class="btn btn-sm btn-secondary">Copy Local (campus) Address to Hometown Address</button>
-
-              <h3 class="mt-4" >Hometown Address</h3>
-              <%= f.simple_fields_for :home_address do |address_form| %>
-                <div class="row">
-                  <div class="col">
-                    <%= address_form.input :address1, input_html: { data: { target: "address-copy.homeAddress1" } } %>
-                  </div>
-                  <div class="col">
-                    <%= address_form.input :address2, input_html: { data: { target: "address-copy.homeAddress2" } } %>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <%= address_form.input :city, input_html: { data: { target: "address-copy.homeCity" } } %>
-                  </div>
-                  <div class="col">
-                    <%= address_form.input :state, collection: Address::STATES, input_html: { data: { target: "address-copy.homeState" } } %>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <%= address_form.input :zip, input_html: { data: { target: "address-copy.homeZip" } } %>
-                  </div>
-                  <div class="col">
-                    <%= address_form.input :country, priority: ["United States"], input_html: { data: { target: "address-copy.homeCountry" } } %>
-                    <%= address_form.input :address_type_id, as: :hidden, input_html: { value: AddressType.find_by(kind: 'Home').id } %>
-                  </div>
-                </div>
-              <% end %>
             </div>
           </div>
 
@@ -117,13 +54,11 @@
           <h2 class="mt-4">Publicity</h2>
           <div class= "ms-4">
             <div class="row">
-
-                <div class="col">
-                <%= f.input :hometown_publication, label: "Name of your hometown newspaper or preferred media outlet:", hint: "For some contests, if your manuscript earns an award, the award’s committee will forward a press release to your local newspaper or media outlet." %>
-                </div>
+              <div class="col">
+                <%= f.input :hometown_publication, label: "Name of your hometown newspaper or preferred media outlet:", hint: "For some contests, if your manuscript earns an award, the award's committee will forward a press release to your local newspaper or media outlet." %>
+              </div>
             </div>
           </div>
-
         </div>
         <div class="shadow p-3 mb-3 bg-body rounded" >
           <% if (content = render_editable_content('profiles', 'information')) %>
