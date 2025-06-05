@@ -20,34 +20,28 @@
 #  umid                          :string(255)
 #  created_at                    :datetime         not null
 #  updated_at                    :datetime         not null
-#  campus_address_id             :bigint
 #  campus_id                     :bigint
 #  class_level_id                :bigint
-#  home_address_id               :bigint
 #  school_id                     :bigint
 #  user_id                       :bigint           not null
 #
 # Indexes
 #
-#  campus_id_idx                        (campus_id)
-#  class_level_id_idx                   (class_level_id)
-#  id_unq_idx                           (id) UNIQUE
-#  index_profiles_on_campus_address_id  (campus_address_id)
-#  index_profiles_on_campus_id          (campus_id)
-#  index_profiles_on_class_level_id     (class_level_id)
-#  index_profiles_on_home_address_id    (home_address_id)
-#  index_profiles_on_school_id          (school_id)
-#  index_profiles_on_umid               (umid) UNIQUE
-#  index_profiles_on_user_id            (user_id)
-#  school_id_idx                        (school_id)
-#  user_id_idx                          (user_id)
+#  campus_id_idx                     (campus_id)
+#  class_level_id_idx                (class_level_id)
+#  id_unq_idx                        (id) UNIQUE
+#  index_profiles_on_campus_id       (campus_id)
+#  index_profiles_on_class_level_id  (class_level_id)
+#  index_profiles_on_school_id       (school_id)
+#  index_profiles_on_umid            (umid) UNIQUE
+#  index_profiles_on_user_id         (user_id)
+#  school_id_idx                     (school_id)
+#  user_id_idx                       (user_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (campus_address_id => addresses.id)
 #  fk_rails_...  (campus_id => campuses.id)
 #  fk_rails_...  (class_level_id => class_levels.id)
-#  fk_rails_...  (home_address_id => addresses.id)
 #  fk_rails_...  (school_id => schools.id)
 #  fk_rails_...  (user_id => users.id)
 #
@@ -60,17 +54,11 @@ class Profile < ApplicationRecord
   belongs_to :campus, optional: true
   has_many :entries, dependent: :restrict_with_error
 
-  belongs_to :home_address, class_name: 'Address', optional: true
-  belongs_to :campus_address, class_name: 'Address', optional: true
-
-  accepts_nested_attributes_for :home_address, allow_destroy: true
-  accepts_nested_attributes_for :campus_address, allow_destroy: true
-
   validates :preferred_first_name, presence: true, length: { in: 1..255 }
   validates :preferred_last_name, presence: true, length: { in: 1..255 }
-  validates :umid, 
-    presence: true, 
-    uniqueness: true, 
+  validates :umid,
+    presence: true,
+    uniqueness: true,
     length: { is: 8 },
     format: { with: /\A\d{8}\z/, message: "must be exactly 8 digits" }
   validates :grad_date, presence: true
@@ -79,9 +67,6 @@ class Profile < ApplicationRecord
   validates :class_level_id, presence: true
   validates :campus_id, presence: true
   validates :school_id, presence: true
-  validates :home_address, presence: true
-  validates :campus_address, presence: true
-
 
   def display_name
     "#{preferred_first_name} #{preferred_last_name}"
