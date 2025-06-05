@@ -30,9 +30,7 @@ module UserCreationHelpers
       campus: create(:campus),
       grad_date: Date.today + 1.year,
       degree: "Bachelor's",
-      umid: format('%08d', rand(10000000..99999999)),
-      home_address: create(:address, address_type: create(:address_type, :home)),
-      campus_address: create(:address, address_type: create(:address_type, :campus))
+      umid: format('%08d', rand(10000000..99999999))
     )
 
     user
@@ -64,9 +62,7 @@ module UserCreationHelpers
       campus: create(:campus),
       grad_date: Date.today + 1.year,
       degree: "Master's",
-      umid: format('%08d', rand(10000000..99999999)),
-      home_address: create(:address, address_type: create(:address_type, :home)),
-      campus_address: create(:address, address_type: create(:address_type, :campus))
+      umid: format('%08d', rand(10000000..99999999))
     )
 
     user
