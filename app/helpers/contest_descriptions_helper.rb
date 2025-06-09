@@ -10,7 +10,7 @@ module ContestDescriptionsHelper
                          container_contest_description_contest_instance_path(description.container, description, first_active), class: 'btn btn-sm btn-primary small')
       summary += '<br>'
     end
-    summary += "<small>Total: #{pluralize(total_instances, 'instance')}</small>"
+    summary += "<small>#{pluralize(total_instances, 'instance')}</small>"
 
     content_tag(:div, summary.html_safe, class: 'text-muted')
   end
