@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_12_173602) do
+ActiveRecord::Schema[7.2].define(version: 2025_06_05_210643) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.text "body", size: :long
@@ -47,30 +47,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_12_173602) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "address_types", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "kind", null: false
-    t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["id"], name: "id_unq_idx", unique: true
-    t.index ["kind"], name: "index_address_types_on_kind", unique: true
-  end
-
-  create_table "addresses", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "address1"
-    t.string "address2"
-    t.string "city"
-    t.string "state"
-    t.string "zip"
-    t.string "country"
-    t.bigint "address_type_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["address_type_id"], name: "address_type_id_idx"
-    t.index ["address_type_id"], name: "index_addresses_on_address_type_id"
-    t.index ["id"], name: "id_unq_idx", unique: true
   end
 
   create_table "affiliations", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -294,17 +270,13 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_12_173602) do
     t.string "pen_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "home_address_id"
-    t.bigint "campus_address_id"
     t.boolean "campus_employee", default: false, null: false
     t.string "department"
     t.string "umid"
-    t.index ["campus_address_id"], name: "index_profiles_on_campus_address_id"
     t.index ["campus_id"], name: "campus_id_idx"
     t.index ["campus_id"], name: "index_profiles_on_campus_id"
     t.index ["class_level_id"], name: "class_level_id_idx"
     t.index ["class_level_id"], name: "index_profiles_on_class_level_id"
-    t.index ["home_address_id"], name: "index_profiles_on_home_address_id"
     t.index ["id"], name: "id_unq_idx", unique: true
     t.index ["school_id"], name: "index_profiles_on_school_id"
     t.index ["school_id"], name: "school_id_idx"
@@ -385,7 +357,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_12_173602) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "addresses", "address_types"
   add_foreign_key "affiliations", "users"
   add_foreign_key "assignments", "containers"
   add_foreign_key "assignments", "roles"
@@ -407,8 +378,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_12_173602) do
   add_foreign_key "judging_assignments", "contest_instances"
   add_foreign_key "judging_assignments", "users"
   add_foreign_key "judging_rounds", "contest_instances"
-  add_foreign_key "profiles", "addresses", column: "campus_address_id"
-  add_foreign_key "profiles", "addresses", column: "home_address_id"
   add_foreign_key "profiles", "campuses"
   add_foreign_key "profiles", "class_levels"
   add_foreign_key "profiles", "schools"

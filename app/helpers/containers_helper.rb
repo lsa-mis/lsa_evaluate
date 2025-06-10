@@ -18,8 +18,8 @@ module ContainersHelper
     eligibility_plain = description.eligibility_rules.to_plain_text
     if eligibility_plain.length > 100
       content_tag(:div) do
-        truncate(eligibility_plain, length: 100, omission: '') +
-        link_to('...more', '#',
+        truncate(eligibility_plain, length: 60, omission: '') +
+        link_to(' ...more', '#',
           data: {
             action: 'click->modal#open',
             url: eligibility_rules_container_contest_description_path(description.container, description),

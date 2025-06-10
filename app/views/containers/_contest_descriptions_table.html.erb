@@ -1,41 +1,56 @@
 <%# app/views/containers/_contest_descriptions_table.html.erb %>
 <div class="table-responsive">
-  <table class="table table-striped w-100">
+  <table class="table table-sm table-striped align-middle w-100">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Summary</th>
-        <th>Short Name</th>
-        <th>Eligibility Rules</th>
-        <th>Notes</th>
-        <th>Active</th>
-        <th class="text-center">Actions</th>
+        <th class="p-1">Name</th>
+        <th class="p-1">Status</th>
+        <th class="p-1">Short Name</th>
+        <th class="p-1">Eligibility</th>
+        <th class="p-1">Notes</th>
+        <th class="p-1">Active</th>
+        <th class="p-1 text-center">Actions</th>
       </tr>
     </thead>
     <tbody>
       <% descriptions.each do |description| %>
         <tr data-status="<%= description.active %>" data-filter-target="filterRow">
-          <td><%= description.name %></td>
-          <td><%= contest_description_summary(description) %></td>
-          <td><%= description.short_name %></td>
-          <td class="card-text w-50">
-            <%= render_eligibility_rules(description) %>
+          <th scope="row" class="p-1 fw-normal">
+            <span class="d-block text-truncate" style="max-width: 180px;" title="<%= description.name %>">
+              <%= description.name %>
+            </span>
+          </th>
+          <td class="p-1">
+            <%= contest_description_summary(description) %>
           </td>
-          <td>
+          <td class="p-1">
+            <span class="d-block text-truncate" style="max-width: 100px;" title="<%= description.short_name %>">
+              <%= description.short_name %>
+            </span>
+          </td>
+          <td class="card-text w-50 p-1 ">
+
+            <%# <span class="d-block text-truncate" style="max-width: 200px;" title="<%= strip_tags(description.eligibility_rules.to_plain_text) %>
+              <%= render_eligibility_rules(description) %>
+            <%# </span> %>
+          </td>
+          <td class="p-1">
             <% if description.notes.present? %>
-              <%= link_to "view", container_contest_description_contest_instances_path(container, description) %>
+              <%= link_to "view", container_contest_description_contest_instances_path(container, description), class: "btn btn-link btn-sm p-0", title: "View notes", aria: { label: "View notes for #{description.name}" } %>
             <% end %>
           </td>
-          <td><%= boolean_to_yes_no(description.active) %></td>
-          <td class="text-center">
-            <div class="d-flex flex-row">
+          <td class="p-1 text-success fw-bold">
+            <%= boolean_to_yes_no(description.active) %>
+          </td>
+          <td class="p-1 text-center">
+            <div class="d-flex flex-row justify-content-center gap-1">
               <% contest_description_action_links(container, description).each do |action, config| %>
                 <%= link_to config[:path],
-                      class: 'd-block',
+                      class: 'btn btn-link btn-sm p-0',
                       data: config[:data]&.merge('bs-toggle': 'tooltip'),
                       title: config[:title],
                       aria: { label: config[:title] } do %>
-                  <i class="bi bi-<%= config[:icon] %> fs-4 text-um-blue" aria-hidden="true"></i>
+                  <i class="bi bi-<%= config[:icon] %> fs-5 text-um-blue" aria-hidden="true"></i>
                   <span class="visually-hidden"><%= config[:title] %></span>
                 <% end %>
               <% end %>

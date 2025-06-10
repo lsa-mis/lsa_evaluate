@@ -86,42 +86,6 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
                   { name: 'Other' }
                 ])
 
-  AddressType.create([
-                      { kind: 'Home', description: 'Home address' },
-                      { kind: 'Campus', description: 'Campus address' }
-                    ])
-
-  # Create Addresses
-  Address.create([
-                  {
-                    address1: Faker::Address.street_address,
-                    address2: Faker::Address.secondary_address,
-                    city: Faker::Address.city,
-                    state: Faker::Address.state_abbr,
-                    zip: Faker::Address.zip_code,
-                    country: Faker::Address.country_code,
-                    address_type: AddressType.find_by(kind: 'Home')
-                  },
-                  {
-                    address1: Faker::Address.street_address,
-                    address2: Faker::Address.secondary_address,
-                    city: Faker::Address.city,
-                    state: Faker::Address.state_abbr,
-                    zip: Faker::Address.zip_code,
-                    country: Faker::Address.country_code,
-                    address_type: AddressType.find_by(kind: 'Campus')
-                  },
-                  {
-                    address1: Faker::Address.street_address,
-                    address2: Faker::Address.secondary_address,
-                    city: Faker::Address.city,
-                    state: Faker::Address.state_abbr,
-                    zip: Faker::Address.zip_code,
-                    country: Faker::Address.country_code,
-                    address_type: AddressType.find_by(kind: 'Home')
-                  }
-                ])
-
   # Seed data for Campus
   Campus.create([
                   { campus_descr: 'Ann Arbor', campus_cd: 100 },
