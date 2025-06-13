@@ -3,15 +3,25 @@ version: "3.8"
 services:
   saturn_test_app:
     hostname: saturn_test_app
+
     build:
       context: ../
       dockerfile: .saturnci/Dockerfile
+
     image: ${SATURN_TEST_APP_IMAGE_URL}
+
     volumes:
       - ../:/code
+
     depends_on:
       - postgres
       - chrome
+
+    # Optionally, you can add a local .saturnci.env file to provide environment
+    # variables when you run your SaturnCI setup locally.
+    env_file:
+      - .env
+
     environment:
       DOCKER_ENV: "true"
       DATABASE_USERNAME: saturn
