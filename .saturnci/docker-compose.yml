@@ -17,7 +17,7 @@ services:
     env_file:
       - .env
     environment:
-      DOCKER_ENV: "true"
+      SATURNCI_ENV: "true"
       DATABASE_USERNAME: root
       DATABASE_PASSWORD: ""
       DATABASE_HOST: mysql
