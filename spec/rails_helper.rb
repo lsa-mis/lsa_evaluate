@@ -124,14 +124,8 @@ RSpec.configure do |config|
     Capybara.always_include_port = true
   end
 
-  # Use rack_test driver for specific tests that need response headers
-  config.before(:each, type: :system) do
-    driven_by :rack_test
-    Capybara.app_host = nil
-  end
-
   # Configure Capybara for system tests
-  config.before(:each, type: :system, js: true) do
+  config.before(:each, type: :system) do
     if ENV['SHOW_BROWSER'].present?
       driven_by :selenium_chrome
     else
