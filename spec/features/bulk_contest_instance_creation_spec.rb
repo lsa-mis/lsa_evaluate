@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "Bulk Contest Instance Creation", type: :feature do
+RSpec.describe "Bulk Contest Instance Creation", type: :system do
   describe "bulk creation workflow" do
     before do
       @container = create(:container)
