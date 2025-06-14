@@ -121,7 +121,6 @@ RSpec.configure do |config|
     Capybara.javascript_driver = :selenium_chrome_headless
     Capybara.server_host = "0.0.0.0"
     Capybara.server_port = "3000"
-    Capybara.app_host = "http://saturn_test_app:3000"
     Capybara.always_include_port = true
   end
 
@@ -132,6 +131,8 @@ RSpec.configure do |config|
     else
       driven_by :selenium_chrome_headless
     end
+
+    Capybara.app_host = "http://saturn_test_app:3000"
     Capybara.default_max_wait_time = 5
   end
 
