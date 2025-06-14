@@ -125,7 +125,7 @@ RSpec.configure do |config|
   end
 
   # Configure Capybara for system tests
-  config.before(:each) do
+  config.before(:each, type: :system) do
     if ENV['SHOW_BROWSER'].present?
       driven_by :selenium_chrome
     else
