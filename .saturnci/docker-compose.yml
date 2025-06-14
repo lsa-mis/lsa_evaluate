@@ -18,7 +18,7 @@ services:
       - .env
     environment:
       DOCKER_ENV: "true"
-      DATABASE_USERNAME: saturn
+      DATABASE_USERNAME: root
       DATABASE_PASSWORD: ""
       DATABASE_HOST: mysql
       DATABASE_PORT: 3306
@@ -32,7 +32,6 @@ services:
     ports:
       - "127.0.0.1:3306:3306"
     environment:
-      MYSQL_USER: saturn
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_ROOT_PASSWORD: ""
     restart: on-failure
