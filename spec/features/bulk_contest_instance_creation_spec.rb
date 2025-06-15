@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe "Bulk Contest Instance Creation", type: :system do
   describe "bulk creation workflow" do
     before do
+      driven_by(:rack_test)
+      Capybara.app_host = nil
+
       @container = create(:container)
       @admin_role = create(:role, kind: 'Collection Administrator')
       @admin = create(:user)
