@@ -18,6 +18,8 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
     create(:category, kind: 'Fiction')
     create(:class_level, name: 'Undergraduate')
 
+    Capybara.current_session.driver.browser.file_detector = nil
+
     sign_in user
   end
 
