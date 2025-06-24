@@ -16,7 +16,7 @@ module ContainersHelper
 
   def render_eligibility_rules(description)
     eligibility_plain = description.eligibility_rules.to_plain_text
-    if eligibility_plain.length > 100
+    if eligibility_plain.length > 60
       content_tag(:div) do
         truncate(eligibility_plain, length: 60, omission: '') +
         link_to(' ...more', '#',

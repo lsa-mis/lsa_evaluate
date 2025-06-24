@@ -48,8 +48,8 @@ RSpec.describe ContainersHelper, type: :helper do
   end
 
   describe "#render_eligibility_rules" do
-    context "when eligibility rules are longer than 100 characters" do
-      let(:long_text) { "These are very long eligibility rules that will definitely exceed the 100 character limit and therefore trigger the modal functionality." }
+    context "when eligibility rules are longer than 60 characters" do
+      let(:long_text) { "These are very long eligibility rules that will definitely exceed the 60 character limit and therefore trigger the modal functionality." }
       let(:rich_text) { instance_double(ActionText::RichText, to_plain_text: long_text) }
 
       before do
@@ -66,10 +66,10 @@ RSpec.describe ContainersHelper, type: :helper do
         expect(link['data-action']).to eq('click->modal#open')
         expect(link['data-modal-title']).to eq('Eligibility Rules')
         expect(link['href']).to eq('#')
-        expect(link.text).to eq('...more')
+        expect(link.text).to eq(' ...more')
 
         # Check truncated text
-        expect(parsed_result.text).to include(long_text[0..99])
+        expect(parsed_result.text).to include(long_text[0..59])
       end
     end
 
