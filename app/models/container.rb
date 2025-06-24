@@ -39,10 +39,10 @@ class Container < ApplicationRecord
   accepts_nested_attributes_for :contest_descriptions, allow_destroy: true
 
   validates :name, presence: true, uniqueness: true
-  validates :department_id, presence: { message: 'You must select a department' }
-  validates :visibility_id, presence: { message: 'You must select a visibility option' }
-  validates :contact_email, presence: { message: 'You must enter a contact email' }
-  validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP, message: 'You must enter a valid email address' }
+  validates :department_id, presence: { message: 'selection required' }
+  validates :visibility_id, presence: { message: 'option required' }
+  validates :contact_email, presence: { message: 'must be present' }
+  validates :contact_email, format: { with: URI::MailTo::EMAIL_REGEXP, message: 'must be a valid email address' }
 
   scope :visible, -> { joins(:visibility).where(visibilities: { kind: 'Public' }) } # Only show containers with 'Public' visibility
 
