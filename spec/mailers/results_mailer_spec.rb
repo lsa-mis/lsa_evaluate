@@ -32,7 +32,14 @@ RSpec.describe ResultsMailer, type: :mailer do
     it 'renders the headers' do
       expect(mail.subject).to eq("Evaluation Results for \"Test Entry\" - Test Contest")
       expect(mail.to).to eq([ 'applicant@example.com' ])
-      expect(mail.from).to eq([ Rails.application.credentials.dig(:devise, :mailer_sender) || 'from@example.com' ])
+
+      expected_from = if Rails.application.credentials.dig(:mailer, :default_contact_email).present?
+                        [Rails.application.credentials.dig(:mailer, :default_contact_email)]
+                      else
+                        'University of Michigan - LSA Evaluate <>'
+                      end
+
+      expect(mail.from).to eq(expected_from)
     end
 
     it 'renders the entry details in the body' do

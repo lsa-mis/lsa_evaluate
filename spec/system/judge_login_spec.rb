@@ -5,6 +5,7 @@ RSpec.describe 'Judge login', type: :system do
 
   before do
     driven_by(:rack_test)
+    Capybara.app_host = nil
     OmniAuth.config.test_mode = true
   end
 
