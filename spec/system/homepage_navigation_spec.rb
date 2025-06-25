@@ -4,6 +4,7 @@ require 'rails_helper'
 RSpec.describe 'Homepage Navigation', type: :system do
   before do
     driven_by(:rack_test)
+    Capybara.app_host = nil
   end
 
   context 'when user is not signed in' do
