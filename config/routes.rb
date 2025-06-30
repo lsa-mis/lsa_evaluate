@@ -120,6 +120,22 @@ Rails.application.routes.draw do
 
   resources :users_dashboard, only: %i[ index show ]
 
+  # For generic user lookup (autocomplete for assignment form)
+  get 'users/lookup', to: 'users#lookup', as: :user_lookup
+
+  # For judge lookup (autocomplete for judging pool, nested under contest instance)
+  resources :containers do
+    resources :contest_descriptions do
+      resources :contest_instances do
+        resources :judging_assignments do
+          collection do
+            get :judge_lookup
+          end
+        end
+      end
+    end
+  end
+
   # Place this at the very end of the file to catch all undefined routes
   match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|
     req.path.exclude?('/rails/active_storage') &&
