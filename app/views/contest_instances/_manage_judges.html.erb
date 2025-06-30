@@ -37,8 +37,10 @@
                     <em class="text-muted">No judges assigned to this round</em>
                   <% end %>
                 </div>
-                <div class="btn btn-sm btn-outline-success mb-1"><i class="bi bi-envelope me-1"></i>Send judging instructions
-                </div>
+                <% if round.judges.any? %>
+                  <div class="btn btn-sm btn-outline-success mb-1"><i class="bi bi-envelope me-1"></i>Send judging instructions
+                  </div>
+                <% end %>
             </div>
           </div>
 
