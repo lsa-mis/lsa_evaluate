@@ -36,14 +36,20 @@
     <div class="card-body">
       <p>Start typing the name or email address of a judge to search for them system-wide. If you don't find the judge you're looking for, you can create a new judge using the "Create a new judge ..." form below.</p>
       <%= form_with(model: [@container, @contest_description, @contest_instance, JudgingAssignment.new], local: true) do |f| %>
-        <div class="form-group">
-          <%= f.label :user_id, "Select Judge" %>
-          <%= f.select :user_id,
-              @available_judges.map { |u| ["#{u.first_name} #{u.last_name} (#{display_email(u.email)})", u.id] },
-              { prompt: "Select a judge" },
-              class: "form-control" %>
+        <div data-controller="uid-lookup">
+          <div class="mb-3">
+            <%= label_tag :uid_display, 'Judge' %>
+            <%= text_field_tag :uid_display, nil,
+              class: 'form-control',
+              data: {
+                uid_lookup_target: 'displayInput',
+                action: 'input->uid-lookup#lookup'
+              } %>
+            <%= hidden_field_tag 'judging_assignment[user_id]', nil, data: { uid_lookup_target: 'uidInput' } %>
+            <div data-uid-lookup-target="results" class="autocomplete-results"></div>
+          </div>
+          <%= f.submit "Assign Judge", class: "btn btn-primary mt-3" %>
         </div>
-        <%= f.submit "Assign Judge", class: "btn btn-primary mt-3" %>
       <% end %>
     </div>
   </div>
