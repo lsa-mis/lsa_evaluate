@@ -1,6 +1,6 @@
 class JudgingRoundsController < ApplicationController
   before_action :set_contest_instance
-  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete, :update_rankings, :finalize_rankings ]
+  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete, :update_rankings, :finalize_rankings, :send_instructions ]
   before_action :authorize_contest_instance
   before_action :check_edit_warning, only: [ :edit, :update ]
 
@@ -97,6 +97,38 @@ class JudgingRoundsController < ApplicationController
         @container, @contest_description, @contest_instance
       ), alert: @judging_round.errors.full_messages
     end
+  end
+
+  def send_instructions
+    if @judging_round.judges.empty?
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'No judges assigned to this round.'
+      return
+    end
+
+    sent_count = 0
+    failed_emails = []
+
+    @judging_round.round_judge_assignments.active.includes(:user).each do |assignment|
+      begin
+        JudgingInstructionsMailer.send_instructions(assignment).deliver_later
+        sent_count += 1
+      rescue => e
+        failed_emails << assignment.user.email
+        Rails.logger.error "Failed to send judging instructions to #{assignment.user.email}: #{e.message}"
+      end
+    end
+
+    if failed_emails.empty?
+      notice_message = "Judging instructions sent successfully to #{sent_count} judge(s)."
+    else
+      notice_message = "Sent instructions to #{sent_count} judge(s). Failed to send to: #{failed_emails.join(', ')}"
+    end
+
+    redirect_to container_contest_description_contest_instance_judging_assignments_path(
+      @container, @contest_description, @contest_instance
+    ), notice: notice_message
   end
 
   def update_rankings
