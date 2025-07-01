@@ -54,6 +54,7 @@ Rails.application.routes.draw do
             patch :deactivate
             patch :complete
             patch :uncomplete
+            post :send_instructions
           end
           post 'update_rankings', on: :member
           post 'finalize_rankings', on: :member
