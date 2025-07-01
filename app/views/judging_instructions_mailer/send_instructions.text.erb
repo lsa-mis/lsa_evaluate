@@ -1,0 +1,53 @@
+JUDGING INSTRUCTIONS FOR <%= @contest_description.name.upcase %>
+================================================================================
+
+Dear <%= @judge.display_name_or_first_name_last_name %>,
+
+You have been assigned as a judge for Round <%= @judging_round.round_number %> of the <%= @contest_description.name %> contest.
+
+JUDGING PERIOD
+--------------
+Start Date: <%= I18n.l(@judging_round.start_date, format: :long) %>
+End Date: <%= I18n.l(@judging_round.end_date, format: :long) %>
+
+<% if @judging_round.required_entries_count > 0 %>
+REQUIREMENTS
+------------
+Minimum entries to evaluate: <%= @judging_round.required_entries_count %>
+<% if @judging_round.require_internal_comments %>
+Internal comments: Required (minimum <%= @judging_round.min_internal_comment_words %> words)
+<% end %>
+<% if @judging_round.require_external_comments %>
+External comments: Required (minimum <%= @judging_round.min_external_comment_words %> words)
+Note: External comments will be shared with applicants
+<% end %>
+
+<% end %>
+<% if @special_instructions.present? %>
+SPECIAL INSTRUCTIONS
+-------------------
+<%= @special_instructions %>
+
+<% end %>
+TO ACCESS THE JUDGING DASHBOARD:
+-------------------------------
+Please visit: <%= judge_dashboard_index_url %>
+
+IMPORTANT: EMAIL ACCOUNT ACCESS
+-------------------------------
+Only the email account <%= @judge_email %> has access to the judging system.
+
+If you need to use a different email account, please contact us to adjust your access.
+<% unless @judge_email.end_with?('@umich.edu') %>
+
+For non-@umich.edu accounts: You'll need to set up a Friend account at
+https://friend.weblogin.umich.edu/friend/
+<% end %>
+
+If you have any questions about the judging process, please contact us at <%= @contact_email %>.
+
+Thank you for your time and commitment to this contest.
+
+--------------------------------------------------------------------------------
+This email was sent from LSA Evaluate.
+University of Michigan

@@ -135,6 +135,23 @@ class JudgingAssignmentsController < ApplicationController
     end
   end
 
+  def judge_lookup
+    @container = Container.find(params[:container_id])
+    @contest_description = ContestDescription.find(params[:contest_description_id])
+    @contest_instance = ContestInstance.find(params[:contest_instance_id])
+
+    assigned_ids = @contest_instance.judging_assignments.pluck(:user_id)
+    query = params[:q].to_s.strip
+
+    available_judges = User.joins(:roles)
+      .where(roles: { kind: 'Judge' })
+      .where.not(id: assigned_ids)
+      .where('users.first_name LIKE :q OR users.last_name LIKE :q OR users.email LIKE :q', q: "%#{query}%")
+      .limit(10)
+
+    render json: available_judges.map { |u| { id: u.id, name: "#{u.first_name} #{u.last_name} (#{u.email})" } }
+  end
+
   private
 
   def set_contest_instance

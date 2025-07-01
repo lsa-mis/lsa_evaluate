@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["displayInput", "uidInput", "results"]
+  static values = { url: String }
 
   connect() {
     this.timeout = null
@@ -13,7 +14,8 @@ export default class extends Controller {
     this.timeout = setTimeout(() => {
       const query = this.displayInputTarget.value.trim()
       if (query.length > 0) {
-        fetch(`/containers/lookup_user?uid=${encodeURIComponent(query)}`)
+        const url = this.hasUrlValue ? this.urlValue : '/containers/lookup_user'
+        fetch(`${url}?${url.includes('lookup_user') ? 'uid' : 'q'}=${encodeURIComponent(query)}`)
           .then(response => response.json())
           .then(data => {
             this.showSuggestions(data)
@@ -28,11 +30,11 @@ export default class extends Controller {
     this.clearSuggestions()
     users.forEach(user => {
       const option = document.createElement('div')
-      option.textContent = user.display_name_and_uid
+      option.textContent = user.display_name_and_uid || user.name || `${user.first_name} ${user.last_name} (${user.email})`
       option.classList.add('suggestion')
       option.addEventListener('click', () => {
-        this.displayInputTarget.value = user.display_name_and_uid
-        this.uidInputTarget.value = user.uid
+        this.displayInputTarget.value = user.display_name_and_uid || user.name || `${user.first_name} ${user.last_name} (${user.email})`
+        this.uidInputTarget.value = user.uid || user.id
         this.clearSuggestions()
       })
       this.resultsTarget.appendChild(option)

@@ -6,6 +6,18 @@
       <div class="card mb-3 border-<%= round.active ? 'success' : (round.completed ? 'secondary' : 'warning') %>">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Round <%= round.round_number %></h5>
+          <% if round.judges.any? %>
+            <%= button_to send_instructions_container_contest_description_contest_instance_judging_round_path(
+                  @container, @contest_description, contest_instance, round
+                ),
+                method: :post,
+                class: "btn btn-sm btn-outline-success",
+                data: {
+                  turbo_confirm: "Send judging instructions to #{pluralize(round.judges.count, 'judge')}?"
+                } do %>
+              <i class="bi bi-envelope me-1"></i>Send judging instructions
+            <% end %>
+          <% end %>
           <span class="badge bg-<%= round.active ? 'success' : (round.completed ? 'secondary' : 'warning') %>">
             <%= round.active ? 'Active' : (round.completed ? 'Completed' : 'Pending') %>
           </span>
@@ -22,6 +34,7 @@
             <div class="col">
               <div class="d-flex align-items-center">
                 <strong class="me-3"><i class="bi bi-people me-1"></i> Judges Assigned:</strong>
+              </div>
                 <div class="d-flex flex-wrap">
                   <% if round.judges.any? %>
                     <% round.judges.each do |judge| %>
@@ -36,7 +49,6 @@
                     <em class="text-muted">No judges assigned to this round</em>
                   <% end %>
                 </div>
-              </div>
             </div>
           </div>
 

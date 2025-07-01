@@ -107,6 +107,16 @@ class User < ApplicationRecord
     (display_name.presence || "#{first_name} #{last_name}")
   end
 
+  def normalize_email
+    if email.end_with?('@umich.edu') && email.include?('+')
+      local_part, _domain = email.split('@')
+      username, original_domain = local_part.split('+')
+      "#{username}@#{original_domain}"
+    else
+      email
+    end
+  end
+
   def display_initials_or_uid
     if display_name.present?
       display_name.split.map { |name| name[0].upcase }.join
