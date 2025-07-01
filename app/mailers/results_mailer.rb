@@ -9,10 +9,7 @@ class ResultsMailer < ApplicationMailer
     @container = @contest_description.container
 
     # Get the contact email from the container, with fallbacks if not present
-    @contact_email = @container.contact_email.presence ||
-                    Rails.application.credentials.dig(:mailer, :default_contact_email) ||
-                    Rails.application.credentials.dig(:devise, :mailer_sender) ||
-                    'contests@example.com'
+    @contact_email = @container.contact_email.presence || 'LSA Evaluate Support <lsa-evaluate-support@umich.edu>'
 
     # Get all rankings for this entry in this round
     @rankings = EntryRanking.where(entry: @entry, judging_round: @round)

@@ -18,16 +18,18 @@
     </div>
   <% end %>
 
-  <div class="mb-3">
-    <%= f.label :uid_display, 'User' %>
-    <%= text_field_tag :uid_display, nil,
-      class: 'form-control',
-      data: {
-        uid_lookup_target: 'displayInput',
-        action: 'input->uid-lookup#lookup'
-      } %>
-    <%= f.hidden_field :uid, data: { uid_lookup_target: 'uidInput' } %>
-    <div data-uid-lookup-target="results" class="autocomplete-results"></div>
+  <div data-controller="uid-lookup" data-uid-lookup-url-value="<%= user_lookup_path %>">
+    <div class="mb-3">
+      <%= label_tag :uid_display, 'User' %>
+      <%= text_field_tag :uid_display, nil,
+        class: 'form-control',
+        data: {
+          uid_lookup_target: 'displayInput',
+          action: 'input->uid-lookup#lookup'
+        } %>
+      <%= hidden_field_tag 'assignment[uid]', nil, data: { uid_lookup_target: 'uidInput' } %>
+      <div data-uid-lookup-target="results" class="autocomplete-results"></div>
+    </div>
   </div>
 
   <div class="mb-3">
@@ -45,4 +47,3 @@
   <%= f.submit 'Add User', class: "btn btn-primary my-2" %>
   <%= link_to "Cancel", container_path(container), class: "text-danger link_to", data: { turbo: false, method: :get } %>
 <% end %>
-

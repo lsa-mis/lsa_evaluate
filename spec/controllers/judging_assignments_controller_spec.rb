@@ -112,4 +112,53 @@ RSpec.describe JudgingAssignmentsController, type: :controller do
       end
     end
   end
+
+  describe '#judge_lookup' do
+    let!(:available_judge) { create(:user, first_name: 'Alice', last_name: 'Smith', email: 'alice@example.com') }
+    let!(:other_judge) { create(:user, first_name: 'Bob', last_name: 'Jones', email: 'bob@example.com') }
+    let!(:non_judge) { create(:user, first_name: 'Carol', last_name: 'Brown', email: 'carol@example.com') }
+
+    before do
+      available_judge.roles << judge_role
+      other_judge.roles << judge_role
+      # Assign other_judge to this contest_instance (should be excluded)
+      create(:judging_assignment, user: other_judge, contest_instance: contest_instance)
+    end
+
+    it 'returns only available judges not already assigned' do
+      get :judge_lookup, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        contest_instance_id: contest_instance.id,
+        q: ''
+      }, format: :json
+      ids = JSON.parse(response.body).map { |u| u['id'] }
+      expect(ids).to include(available_judge.id)
+      expect(ids).not_to include(other_judge.id)
+      expect(ids).not_to include(non_judge.id)
+    end
+
+    it 'filters judges by query' do
+      get :judge_lookup, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        contest_instance_id: contest_instance.id,
+        q: 'Alice'
+      }, format: :json
+      results = JSON.parse(response.body)
+      expect(results.length).to eq(1)
+      expect(results.first['name']).to include('Alice')
+    end
+
+    it 'returns JSON with id and name' do
+      get :judge_lookup, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        contest_instance_id: contest_instance.id,
+        q: 'Alice'
+      }, format: :json
+      result = JSON.parse(response.body).first
+      expect(result.keys).to include('id', 'name')
+    end
+  end
 end
