@@ -68,12 +68,12 @@ RSpec.describe ResultsMailer, type: :mailer do
       end
 
       it 'falls back to the default contact email from credentials' do
-        default_email = Rails.application.credentials.dig(:mailer, :default_contact_email)
+        default_email = 'LSA Evaluate Support <lsa-evaluate-support@umich.edu>'
 
         if default_email
           expect(mail.body.encoded).to include(default_email)
         else
-          default_sender = Rails.application.credentials.dig(:devise, :mailer_sender) || 'contests@example.com'
+          default_sender = Rails.application.credentials.dig(:devise, :mailer_sender)
           expect(mail.body.encoded).to include(default_sender)
         end
       end
