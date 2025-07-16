@@ -101,6 +101,29 @@ RSpec.configure do |config|
     }
   end
 
+  if ENV["SATURNCI_ENV"].present?
+    Capybara.register_driver :selenium_chrome_headless do |app|
+      options = Selenium::WebDriver::Chrome::Options.new
+      options.add_argument("--headless")
+      options.add_argument("--no-sandbox")
+      options.add_argument("--disable-dev-shm-usage")
+      options.add_argument("--window-size=1400,900")
+
+      Capybara::Selenium::Driver.new(
+        app,
+        browser: :remote,
+        url: "http://chrome:4444/",
+        options: options,
+      )
+    end
+
+    Capybara.default_driver = :selenium_chrome_headless
+    Capybara.javascript_driver = :selenium_chrome_headless
+    Capybara.server_host = "0.0.0.0"
+    Capybara.server_port = "3000"
+    Capybara.always_include_port = true
+  end
+
   # Configure Capybara for system tests
   config.before(:each, type: :system) do
     if ENV['SHOW_BROWSER'].present?
@@ -108,11 +131,8 @@ RSpec.configure do |config|
     else
       driven_by :selenium_chrome_headless
     end
-    Capybara.default_max_wait_time = 5
-  end
 
-  # Use rack_test driver for specific tests that need response headers
-  config.before(:each, type: :system, js: false) do
-    driven_by :rack_test
+    Capybara.app_host = "http://saturn_test_app:3000"
+    Capybara.default_max_wait_time = 5
   end
 end
