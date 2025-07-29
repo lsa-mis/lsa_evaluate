@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
-# Get the current branch name
-current_branch=$(git symbolic-ref --short HEAD)
+# Configurable variables
+PROTECTED_BRANCHES=("staging" "main")
+ADMIN_FILE=".git-hooks/admins.txt"
+LOG_FILE=".git-hooks/pre-push.log"
+TEST_CMD="${TEST_CMD:-bundle exec rspec}"
+
+CODE_EXTENSIONS="rb|js|py|go|java|ts|cpp|c|cs|php|swift|kt|rs|scala|pl|sh"
 
 # Colors for output
 RED='\033[0;31m'
@@ -9,90 +14,110 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+function log_failure {
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
+current_branch=$(git symbolic-ref --short HEAD)
 echo -e "${YELLOW}Running pre-push hook on branch ${current_branch}${NC}"
 
-# --- Admins list (add more usernames or emails as needed) ---
-ADMINS=("rsmoke")
+# Load admin list from file if it exists
+if [[ -f "$ADMIN_FILE" ]]; then
+    mapfile -t ADMINS < "$ADMIN_FILE"
+else
+    # fallback to hardcoded
+    ADMINS=("rsmoke")
+fi
+
 GIT_USER=$(git config user.name)
 GIT_EMAIL=$(git config user.email)
-
 is_admin=false
 for admin in "${ADMINS[@]}"; do
     if [[ "$GIT_USER" == "$admin" || "$GIT_EMAIL" == "$admin" ]]; then
         is_admin=true
         break
     fi
+    # Partial match for email domain
+    if [[ "$admin" == *"@"* ]] && [[ "$GIT_EMAIL" == *"${admin#*@}" ]]; then
+        is_admin=true
+        break
+    fi
 done
 
-# Check if we're pushing to staging or main
-protected_branches="^(staging|main)$"
-if [[ "$current_branch" =~ $protected_branches ]]; then
-    # Allow admins to push directly
+protected_regex="^($(IFS='|'; echo "${PROTECTED_BRANCHES[*]}"))$"
+
+# DRY RUN or HELP
+if [[ "$1" == "--dry-run" || "$1" == "--help" ]]; then
+    echo -e "${GREEN}Pre-push hook dry-run/help mode${NC}"
+    echo "Admins: ${ADMINS[*]}"
+    echo "Protected branches: ${PROTECTED_BRANCHES[*]}"
+    echo "Test command: $TEST_CMD"
+    exit 0
+fi
+
+# Print hook configuration summary
+echo -e "${YELLOW}Admins: ${ADMINS[*]}"
+Protected branches: ${PROTECTED_BRANCHES[*]}
+Test command: $TEST_CMD${NC}"
+
+# Main branch check
+if [[ "$current_branch" =~ $protected_regex ]]; then
     if [[ "$is_admin" == "true" ]]; then
         echo -e "${GREEN}Admin detected ($GIT_USER). Direct push allowed.${NC}"
         exit 0
     fi
-
-    # Check if this is a git hooks setup commit
     if git diff --name-only HEAD~1 HEAD | grep -q "^\.git-hooks/"; then
         echo -e "${YELLOW}Detected git hooks setup changes - allowing direct push${NC}"
         exit 0
     fi
-
     echo -e "${RED}Direct pushes to $current_branch are not allowed. Please create a pull request.${NC}"
+    log_failure "Direct push blocked for $GIT_USER to $current_branch"
     exit 1
 fi
 
-# Get the target branch
 while read local_ref local_sha remote_ref remote_sha
 do
     target_branch=${remote_ref##refs/heads/}
-    if [[ "$target_branch" =~ $protected_branches ]]; then
-        # Allow admins to push directly
+    if [[ "$target_branch" =~ $protected_regex ]]; then
         if [[ "$is_admin" == "true" ]]; then
             echo -e "${GREEN}Admin detected ($GIT_USER). Direct push allowed.${NC}"
             exit 0
         fi
-
-        # Check if this is a git hooks setup commit
         if git diff --name-only HEAD~1 HEAD | grep -q "^\.git-hooks/"; then
             echo -e "${YELLOW}Detected git hooks setup changes - allowing push without tests${NC}"
             exit 0
         fi
 
-        echo -e "${YELLOW}Pushing to $target_branch - running full test suite...${NC}"
-
-        # Stash any uncommitted changes
-        if ! git diff --quiet HEAD; then
-            echo "Stashing uncommitted changes..."
-            git stash push -u
-            STASHED=1
-        fi
-
-        # Run the test suite
-        if bundle exec rspec; then
-            echo -e "${GREEN}All tests passed!${NC}"
-
-            # Pop stashed changes if we stashed them
-            if [ "$STASHED" = "1" ]; then
-                echo "Popping stashed changes..."
-                git stash pop
+        # Only run tests if code files changed
+        if git diff --name-only origin/$target_branch | grep -E "\.($CODE_EXTENSIONS)$" > /dev/null; then
+            # Stash any uncommitted changes
+            if ! git diff --quiet HEAD; then
+                echo "Stashing uncommitted changes..."
+                git stash push -u
+                STASHED=1
             fi
 
-            exit 0
+            if [[ -z "$SKIP_TESTS" ]]; then
+                if $TEST_CMD; then
+                    echo -e "${GREEN}All tests passed!${NC}"
+                    [ "$STASHED" = "1" ] && git stash pop
+                    exit 0
+                else
+                    echo -e "${RED}Tests failed. Push aborted.${NC}"
+                    [ "$STASHED" = "1" ] && git stash pop
+                    log_failure "Tests failed for $GIT_USER on $target_branch"
+                    exit 1
+                fi
+            else
+                echo -e "${YELLOW}SKIP_TESTS set, skipping test run.${NC}"
+                [ "$STASHED" = "1" ] && git stash pop
+                exit 0
+            fi
         else
-            echo -e "${RED}Tests failed. Push aborted.${NC}"
-
-            # Pop stashed changes if we stashed them
-            if [ "$STASHED" = "1" ]; then
-                echo "Popping stashed changes..."
-                git stash pop
-            fi
-
-            exit 1
+            echo -e "${YELLOW}No code changes detected, skipping tests.${NC}"
+            exit 0
         fi
     fi
 done
 
-# If we're not pushing to a protected branch, allow the push without running tests
 exit 0
