@@ -11,9 +11,28 @@ NC='\033[0m' # No Color
 
 echo -e "${YELLOW}Running pre-push hook on branch ${current_branch}${NC}"
 
+# --- Admins list (add more usernames or emails as needed) ---
+ADMINS=("rsmoke")
+GIT_USER=$(git config user.name)
+GIT_EMAIL=$(git config user.email)
+
+is_admin=false
+for admin in "${ADMINS[@]}"; do
+    if [[ "$GIT_USER" == "$admin" || "$GIT_EMAIL" == "$admin" ]]; then
+        is_admin=true
+        break
+    fi
+done
+
 # Check if we're pushing to staging or main
 protected_branches="^(staging|main)$"
 if [[ "$current_branch" =~ $protected_branches ]]; then
+    # Allow admins to push directly
+    if [[ "$is_admin" == "true" ]]; then
+        echo -e "${GREEN}Admin detected ($GIT_USER). Direct push allowed.${NC}"
+        exit 0
+    fi
+
     # Check if this is a git hooks setup commit
     if git diff --name-only HEAD~1 HEAD | grep -q "^\.git-hooks/"; then
         echo -e "${YELLOW}Detected git hooks setup changes - allowing direct push${NC}"
@@ -29,6 +48,12 @@ while read local_ref local_sha remote_ref remote_sha
 do
     target_branch=${remote_ref##refs/heads/}
     if [[ "$target_branch" =~ $protected_branches ]]; then
+        # Allow admins to push directly
+        if [[ "$is_admin" == "true" ]]; then
+            echo -e "${GREEN}Admin detected ($GIT_USER). Direct push allowed.${NC}"
+            exit 0
+        fi
+
         # Check if this is a git hooks setup commit
         if git diff --name-only HEAD~1 HEAD | grep -q "^\.git-hooks/"; then
             echo -e "${YELLOW}Detected git hooks setup changes - allowing push without tests${NC}"
