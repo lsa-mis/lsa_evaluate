@@ -52,3 +52,5 @@ uploads/
 
 # Ignore Brakeman reports
 /tmp/brakeman-report.*
+
+/.git-hooks/pre-push.log
