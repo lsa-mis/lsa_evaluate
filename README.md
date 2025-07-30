@@ -63,4 +63,16 @@ This application uses SendGrid for email delivery in the production environment.
 
 Emails are automatically configured to be sent asynchronously through Sidekiq background jobs.
 
+## Protected Branches and Pre-Push Hook
+
+This repository uses [branch protection rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/branch-protection-rules) for `staging` and `main` branches.
+Direct pushes are restricted and enforced by a pre-push hook.
+
+**Summary:**
+
+- Non-admins: Must open a Pull Request to contribute to protected branches.
+- Admins: Can push directly if listed in `.git-hooks/admins.txt`.
+- All pushes to protected branches run tests automatically, unless skipped.
+- For details on hook installation, admin setup, and troubleshooting, see [.git-hooks/README.md](.git-hooks/README.md).
+
 ## This project is licensed under the [MIT License](https://github.com/your-repo/lsa-evaluate/blob/main/LICENSE)
