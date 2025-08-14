@@ -9,6 +9,6 @@ local:
 
 google_production:
   service: GCS
-  project: <%= Rails.application.credentials.dig(:google_cloud, :project_id) %>
-  credentials: <%= Rails.root.join(Rails.application.credentials.dig(:google_cloud, :credentials_file_path)) %>
-  bucket: <%= Rails.application.credentials.dig(:google_cloud, :bucket) %>
+  project: <%= Rails.application.credentials.dig(:google_cloud, :project_id) || "dummy-project" %>
+  credentials: <%= Rails.root.join(Rails.application.credentials.dig(:google_cloud, :credentials_file_path) || "dummy-credentials.json") %>
+  bucket: <%= Rails.application.credentials.dig(:google_cloud, :bucket) || "dummy-bucket" %>
