@@ -25,6 +25,7 @@ jobs:
           bundler-cache: true
 
       - name: Run Brakeman
+        working-directory: ${{ github.workspace }}
         run: bundle exec brakeman -A -q -o --no-exit-on-warn tmp/brakeman-report.json
 
       - name: Upload Brakeman report
