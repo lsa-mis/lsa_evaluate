@@ -4,6 +4,8 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pagy::Backend
   before_action :authenticate_user!
+  before_action :set_sentry_context
+
 
   # Custom flash logging (optional)
   def flash
@@ -63,5 +65,14 @@ class ApplicationController < ActionController::Base
   def log_exception(exception)
     logger.error("!!!!!!! StandardError: #{exception.class} - #{exception.message}")
     logger.error(exception.backtrace.join("\n"))
+  end
+
+  def set_sentry_context
+    Sentry.set_user(id: current_user.id, email: current_user.email) if current_user
+    Sentry.set_context('request', {
+      controller: controller_name,
+      action: action_name,
+      params: params.except(:controller, :action)
+    })
   end
 end
