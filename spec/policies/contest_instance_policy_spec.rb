@@ -22,6 +22,7 @@ RSpec.describe ContestInstancePolicy do
     it { is_expected.to permit_action(:update) }
     it { is_expected.to permit_action(:destroy) }
     it { is_expected.to permit_action(:manage_judges) }
+    it { is_expected.to permit_action(:send_instructions) }
 
     describe 'view_judging_results?' do
       it 'permits viewing results' do
@@ -43,6 +44,7 @@ RSpec.describe ContestInstancePolicy do
     it { is_expected.to permit_action(:update) }
     it { is_expected.to permit_action(:destroy) }
     it { is_expected.to permit_action(:manage_judges) }
+    it { is_expected.to permit_action(:send_instructions) }
 
     describe 'view_judging_results?' do
       it 'permits viewing results' do
@@ -64,6 +66,7 @@ RSpec.describe ContestInstancePolicy do
     it { is_expected.not_to permit_action(:update) }
     it { is_expected.not_to permit_action(:destroy) }
     it { is_expected.not_to permit_action(:manage_judges) }
+    it { is_expected.not_to permit_action(:send_instructions) }
 
     describe 'view_judging_results?' do
       context 'when judge evaluations are complete' do
@@ -97,6 +100,7 @@ RSpec.describe ContestInstancePolicy do
     it { is_expected.not_to permit_action(:update) }
     it { is_expected.not_to permit_action(:destroy) }
     it { is_expected.not_to permit_action(:manage_judges) }
+    it { is_expected.not_to permit_action(:send_instructions) }
 
     describe 'view_judging_results?' do
       it 'does not permit viewing results' do
@@ -114,6 +118,7 @@ RSpec.describe ContestInstancePolicy do
     it { is_expected.not_to permit_action(:update) }
     it { is_expected.not_to permit_action(:destroy) }
     it { is_expected.not_to permit_action(:manage_judges) }
+    it { is_expected.not_to permit_action(:send_instructions) }
 
     describe 'view_judging_results?' do
       it 'does not permit viewing results' do

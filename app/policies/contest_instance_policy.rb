@@ -88,4 +88,8 @@ class ContestInstancePolicy < ApplicationPolicy
   def export_entries?
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end
+
+  def send_instructions?
+    user&.has_container_role?(record.contest_description.container) || axis_mundi?
+  end
 end
