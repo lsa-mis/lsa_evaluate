@@ -97,11 +97,22 @@ class ContestDescriptionsController < ApplicationController
   end
 
   def set_container
-    @container = policy_scope(Container).find(params[:container_id])
+    # For eligibility_rules action, allow all users to access any container
+    if action_name == 'eligibility_rules'
+      @container = Container.find(params[:container_id])
+    else
+      @container = policy_scope(Container).find(params[:container_id])
+    end
   end
 
   def set_contest_description
-    @contest_description = policy_scope(ContestDescription).find(params[:id])
+    # For eligibility_rules action, allow all users to access any contest description
+    if action_name == 'eligibility_rules'
+      @contest_description = ContestDescription.find(params[:id])
+    else
+      # For other actions, use policy scope to restrict access
+      @contest_description = policy_scope(ContestDescription).find(params[:id])
+    end
   end
 
   def contest_description_params
