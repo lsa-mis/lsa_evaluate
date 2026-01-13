@@ -112,5 +112,38 @@ RSpec.describe JudgingInstructionsMailer, type: :mailer do
         expect(mail.body.encoded).not_to include('External comments:')
       end
     end
+
+    context 'when CC emails are provided' do
+      let(:cc_emails) { ['admin1@umich.edu', 'admin2@umich.edu'] }
+
+      it 'includes CC recipients in the email' do
+        mail_with_cc = described_class.send_instructions(round_judge_assignment, cc_emails: cc_emails)
+        expect(mail_with_cc.cc).to match_array(cc_emails)
+      end
+
+      it 'still sends the primary email to the judge' do
+        mail_with_cc = described_class.send_instructions(round_judge_assignment, cc_emails: cc_emails)
+        expect(mail_with_cc.to).to eq(['judge@umich.edu'])
+      end
+
+      it 'maintains all other email properties' do
+        mail_with_cc = described_class.send_instructions(round_judge_assignment, cc_emails: cc_emails)
+        expect(mail_with_cc.subject).to eq("Judging Instructions for Test Contest - Round 2")
+        expect(mail_with_cc.reply_to).to eq([ 'contest_admin@umich.edu' ])
+      end
+    end
+
+    context 'when no CC emails are provided' do
+      it 'does not include CC field' do
+        expect(mail.cc).to be_nil
+      end
+    end
+
+    context 'when empty CC emails array is provided' do
+      it 'does not include CC field' do
+        mail_with_empty_cc = described_class.send_instructions(round_judge_assignment, cc_emails: [])
+        expect(mail_with_empty_cc.cc).to be_nil
+      end
+    end
   end
 end
