@@ -154,6 +154,23 @@
                     </div>
                   <% end %>
                 </div>
+                <hr class="my-3">
+                <div class="form-check">
+                  <%= check_box_tag "send_copy_to_admin",
+                       "1",
+                       false,
+                       id: "send_copy_to_admin_#{round.id}",
+                       class: "form-check-input" %>
+                  <%= label_tag "send_copy_to_admin_#{round.id}",
+                       "Send a copy to Collection Administrator(s)",
+                       class: "form-check-label" %>
+                  <% admin_emails = @container.assignments.container_administrators.includes(:user).map { |a| a.user.email } %>
+                  <% if admin_emails.any? %>
+                    <small class="form-text text-muted d-block">
+                      Copy will be sent to: <%= admin_emails.join(', ') %>
+                    </small>
+                  <% end %>
+                </div>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

@@ -124,12 +124,19 @@ class JudgingRoundsController < ApplicationController
       return
     end
 
+    # Get collection administrator emails if copy requested
+    admin_emails = []
+    if params[:send_copy_to_admin] == '1'
+      admin_emails = @container.assignments.container_administrators.includes(:user).map { |a| a.user.normalize_email }
+    end
+
     sent_count = 0
     failed_emails = []
 
     assignments.each do |assignment|
       begin
-        JudgingInstructionsMailer.send_instructions(assignment).deliver_later
+        mail = JudgingInstructionsMailer.send_instructions(assignment, cc_emails: admin_emails)
+        mail.deliver_later
         assignment.update_column(:instructions_sent_at, Time.current)
         sent_count += 1
       rescue => e
