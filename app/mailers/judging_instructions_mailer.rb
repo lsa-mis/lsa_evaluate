@@ -1,5 +1,5 @@
 class JudgingInstructionsMailer < ApplicationMailer
-  def send_instructions(round_judge_assignment)
+  def send_instructions(round_judge_assignment, cc_emails: [])
     @round_judge_assignment = round_judge_assignment
     @judge = @round_judge_assignment.user
     @judging_round = @round_judge_assignment.judging_round
@@ -22,6 +22,9 @@ class JudgingInstructionsMailer < ApplicationMailer
       to: @judge_email,
       subject: subject
     }
+
+    # Add CC to collection administrators if provided
+    mail_options[:cc] = cc_emails if cc_emails.any?
 
     # Override reply_to with container's contact_email if present
     # If not present, the default reply-to from ApplicationMailer will be used

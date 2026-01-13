@@ -107,12 +107,37 @@ class JudgingRoundsController < ApplicationController
       return
     end
 
+    # Get selected judge assignment IDs, or use all if none selected
+    selected_assignment_ids = params[:judge_assignment_ids]&.compact_blank || []
+
+    if selected_assignment_ids.any?
+      assignments = @judging_round.round_judge_assignments.active.includes(:user).where(id: selected_assignment_ids)
+    else
+      # If no selection, send to all (backward compatibility)
+      assignments = @judging_round.round_judge_assignments.active.includes(:user)
+    end
+
+    if assignments.empty?
+      redirect_to container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      ), alert: 'No judges selected.'
+      return
+    end
+
+    # Get collection administrator emails if copy requested
+    admin_emails = []
+    if params[:send_copy_to_admin] == '1'
+      admin_emails = @container.assignments.container_administrators.includes(:user).map { |a| a.user.normalize_email }
+    end
+
     sent_count = 0
     failed_emails = []
 
-    @judging_round.round_judge_assignments.active.includes(:user).each do |assignment|
+    assignments.each do |assignment|
       begin
-        JudgingInstructionsMailer.send_instructions(assignment).deliver_later
+        mail = JudgingInstructionsMailer.send_instructions(assignment, cc_emails: admin_emails)
+        mail.deliver_later
+        assignment.update_column(:instructions_sent_at, Time.current)
         sent_count += 1
       rescue => e
         failed_emails << assignment.user.email

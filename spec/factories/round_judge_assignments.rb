@@ -2,12 +2,13 @@
 #
 # Table name: round_judge_assignments
 #
-#  id               :bigint           not null, primary key
-#  active           :boolean          default(TRUE)
-#  created_at       :datetime         not null
-#  updated_at       :datetime         not null
-#  judging_round_id :bigint           not null
-#  user_id          :bigint           not null
+#  id                   :bigint           not null, primary key
+#  active               :boolean          default(TRUE)
+#  instructions_sent_at :datetime
+#  created_at           :datetime         not null
+#  updated_at           :datetime         not null
+#  judging_round_id     :bigint           not null
+#  user_id              :bigint           not null
 #
 # Indexes
 #
