@@ -60,7 +60,6 @@ Rails.application.configure do
 
 # Enable mailer previews (protected by authorization in config/initializers/mailer_previews.rb)
   config.action_mailer.show_previews = true
-  config.action_mailer.preview_path = "#{Rails.root}/test/mailers/previews"
 
   # I18n
   config.i18n.fallbacks = true
