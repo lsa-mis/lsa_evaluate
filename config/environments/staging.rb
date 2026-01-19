@@ -58,6 +58,9 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :letter_opener_web
   config.action_mailer.perform_deliveries = true
 
+# Enable mailer previews (protected by authorization in config/initializers/mailer_previews.rb)
+  config.action_mailer.show_previews = true
+
   # I18n
   config.i18n.fallbacks = true
 
