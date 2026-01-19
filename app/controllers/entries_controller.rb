@@ -1,6 +1,7 @@
 class EntriesController < ApplicationController
   include AvailableContestsConcern
-  before_action :set_entry, only: %i[ show edit update destroy soft_delete toggle_disqualified modal_details ]
+  before_action :set_entry, only: %i[ show edit update destroy soft_delete modal_details ]
+  before_action :set_entry_for_toggle_disqualified, only: %i[ toggle_disqualified ]
   before_action :set_entry_for_profile, only: %i[ applicant_profile ]
   before_action :authorize_entry, only: %i[show edit update destroy]
   before_action :authorize_index, only: [ :index ]
@@ -111,7 +112,7 @@ class EntriesController < ApplicationController
   end
 
   def toggle_disqualified
-    authorize @entry
+    authorize @entry, :toggle_disqualified?
     @entry.toggle!(:disqualified)
     redirect_to request.referer || root_path, notice: 'Entry disqualification status has been updated.'
   end
@@ -141,6 +142,12 @@ class EntriesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_entry
       @entry = policy_scope(Entry).find(params[:id])
+    end
+
+    # For toggle_disqualified, find the entry directly and let authorization handle access control
+    # This ensures container admins can toggle entries even if the scope doesn't include them
+    def set_entry_for_toggle_disqualified
+      @entry = Entry.find(params[:id])
     end
 
     # For applicant_profile, we want to find the entry first, then authorize it
