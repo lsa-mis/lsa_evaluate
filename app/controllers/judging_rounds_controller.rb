@@ -188,19 +188,25 @@ class JudgingRoundsController < ApplicationController
               user: current_user
             )
 
-            entry_ranking.rank = ranking_data['rank'].presence || ranking_data[:rank].presence
+            # Convert rank to integer to ensure proper type
+            rank_value = ranking_data['rank'].presence || ranking_data[:rank].presence
+            entry_ranking.rank = rank_value.to_i if rank_value.present?
             entry_ranking.internal_comments = ranking_data['internal_comments'].presence || ranking_data[:internal_comments].presence || entry_ranking.internal_comments
             entry_ranking.external_comments = ranking_data['external_comments'].presence || ranking_data[:external_comments].presence || entry_ranking.external_comments
 
-            # Skip validations for partial saves
-            entry_ranking.save(validate: false)
+            # Check if save succeeded, raise error if it failed
+            unless entry_ranking.save(validate: false)
+              error_msg = "Failed to save ranking for entry #{entry_id}: #{entry_ranking.errors.full_messages.join(', ')}"
+              Rails.logger.error(error_msg)
+              raise ActiveRecord::RecordInvalid.new(entry_ranking)
+            end
           end
         else
-          # This is a single entry update (comment update)
+          # This is a single entry update (comment update or new ranking)
           ranking_data = rankings.first
           entry_id = ranking_data['entry_id'].presence || ranking_data[:entry_id].presence
 
-          if entry_id && ranking_data['rank'].present?
+          if entry_id
             entry = Entry.find(entry_id)
             entry_ranking = EntryRanking.find_or_initialize_by(
               entry: entry,
@@ -208,10 +214,18 @@ class JudgingRoundsController < ApplicationController
               user: current_user
             )
 
-            entry_ranking.rank = ranking_data['rank'].presence || ranking_data[:rank].presence
+            # Convert rank to integer if present
+            rank_value = ranking_data['rank'].presence || ranking_data[:rank].presence
+            entry_ranking.rank = rank_value.to_i if rank_value.present?
             entry_ranking.internal_comments = ranking_data['internal_comments'].presence || ranking_data[:internal_comments].presence || entry_ranking.internal_comments
             entry_ranking.external_comments = ranking_data['external_comments'].presence || ranking_data[:external_comments].presence || entry_ranking.external_comments
-            entry_ranking.save(validate: false)
+
+            # Check if save succeeded, raise error if it failed
+            unless entry_ranking.save(validate: false)
+              error_msg = "Failed to save ranking for entry #{entry_id}: #{entry_ranking.errors.full_messages.join(', ')}"
+              Rails.logger.error(error_msg)
+              raise ActiveRecord::RecordInvalid.new(entry_ranking)
+            end
           end
         end
 
@@ -242,6 +256,7 @@ class JudgingRoundsController < ApplicationController
         end
       end
     rescue => e
+      Rails.logger.error("Error updating rankings: #{e.message}\n#{e.backtrace.join("\n")}")
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.update('flash',
