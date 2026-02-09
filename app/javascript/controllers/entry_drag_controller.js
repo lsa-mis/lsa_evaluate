@@ -62,6 +62,15 @@ export default class extends Controller {
           font-weight: 500;
         }
 
+        .entry-loading-overlay.success {
+          background: rgba(220, 255, 220, 0.95);
+        }
+
+        .entry-loading-overlay .success-text {
+          color: #198754;
+          font-weight: 500;
+        }
+
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
@@ -279,11 +288,13 @@ export default class extends Controller {
         throw new Error(data.error || 'Failed to update rankings')
       }
 
-      // Remove loading overlay before refresh
-      this.removeLoadingOverlay(event.item)
+      // Show success state so judges see "Ranking recorded" before refresh
+      this.showSuccessOverlay(event.item)
 
-      // Refresh both sections using Turbo
-      Turbo.visit(window.location.href, { action: "replace" })
+      setTimeout(() => {
+        this.removeLoadingOverlay(event.item)
+        Turbo.visit(window.location.href, { action: "replace" })
+      }, 2500)
     } catch (error) {
       console.error('Error updating rankings:', error)
       // If there's an error, revert the UI update and show error in overlay
@@ -474,9 +485,33 @@ export default class extends Controller {
           </span>
           <br>
           Still working...
+          <br>
+          <small>Please wait for "Ranking recorded" before closing or navigating away.</small>
         `
       }
     }, 5000) // Show warning after 5 seconds
+  }
+
+  // Helper method to show success state on the overlay before removing it
+  showSuccessOverlay(element) {
+    if (!element) return
+
+    const overlay = element.querySelector('.entry-loading-overlay')
+    if (!overlay) return
+
+    if (this.slowConnectionTimeout) {
+      clearTimeout(this.slowConnectionTimeout)
+      this.slowConnectionTimeout = null
+    }
+
+    overlay.classList.add('success')
+    const spinnerContainer = overlay.querySelector('.spinner-container')
+    if (spinnerContainer) {
+      spinnerContainer.innerHTML = `
+        <i class="bi bi-check-circle-fill text-success" style="font-size: 2rem;" aria-hidden="true"></i>
+        <div class="status-text success-text">Ranking recorded</div>
+      `
+    }
   }
 
   // Helper method to remove loading overlay
