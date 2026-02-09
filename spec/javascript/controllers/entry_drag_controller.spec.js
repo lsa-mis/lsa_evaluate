@@ -128,6 +128,32 @@ describe("EntryDragController", () => {
     })
   })
 
+  describe("showSuccessOverlay", () => {
+    it("replaces overlay content with success state and 'Ranking recorded' text", () => {
+      const card = document.createElement('div')
+      card.setAttribute('data-entry-id', '42')
+      card.style.position = 'relative'
+      card.innerHTML = `
+        <div class="entry-loading-overlay show">
+          <div class="spinner-container">
+            <div class="spinner-border"></div>
+            <div class="status-text">Updating...</div>
+          </div>
+        </div>
+      `
+      document.body.appendChild(card)
+
+      controller.showSuccessOverlay(card)
+
+      const overlay = card.querySelector('.entry-loading-overlay')
+      expect(overlay.classList.contains('success')).toBe(true)
+      expect(overlay.textContent).toMatch(/Ranking recorded/)
+      expect(overlay.querySelector('.bi-check-circle-fill')).not.toBeNull()
+
+      document.body.removeChild(card)
+    })
+  })
+
   describe("UI updates", () => {
     it("updates counter and rank badges correctly", () => {
       // Add one entry to rated entries
