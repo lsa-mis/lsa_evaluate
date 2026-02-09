@@ -1,5 +1,5 @@
 # config valid for current version and patch releases of Capistrano
-lock '~> 3.19.1'
+lock '~> 3.20.0'
 
 set :default_env, {
   'NODE_OPTIONS' => '--openssl-legacy-provider',
@@ -22,7 +22,7 @@ set :branch, 'main'
 set :pty,             true
 set :stage,           :production
 set :deploy_to,       "/home/#{fetch(:user)}/apps/#{fetch(:application)}"
-set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_ed25519.pub] }
+set :ssh_options,     { forward_agent: true, user: fetch(:user), keys: %w[~/.ssh/id_ed25519] }
 set :tmp_dir, '/home/deployer/tmp'
 set :keep_releases, 3
 
