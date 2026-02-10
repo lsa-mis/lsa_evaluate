@@ -71,6 +71,14 @@ export default class extends Controller {
           font-weight: 500;
         }
 
+        .card.entry-card-loading {
+          overflow: visible;
+        }
+
+        .card.entry-card-loading .entry-loading-overlay {
+          z-index: 9999;
+        }
+
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
@@ -423,18 +431,23 @@ export default class extends Controller {
   async addToRanked(event) {
     if (this.finalizedValue) return
 
-    const entryCard = event.target.closest('[data-entry-id]')
+    const entryCard = event.target.closest('.card[data-entry-id]')
     if (!entryCard) return
 
-    // Move the card to rated entries
+    // Show loading overlay just like drag-and-drop (before moving so overlay moves with card)
+    this.addLoadingOverlay(entryCard)
+
+    // Move the card to rated entries (card may be inside a turbo-frame; we move the card node)
     this.ratedEntriesTarget.appendChild(entryCard)
+    entryCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+
     await this.handleSortEnd({ from: this.availableEntriesTarget, to: this.ratedEntriesTarget, item: entryCard })
   }
 
   async removeFromRanked(event) {
     if (this.finalizedValue) return
 
-    const entryCard = event.target.closest('[data-entry-id]')
+    const entryCard = event.target.closest('.card[data-entry-id]')
     if (!entryCard) return
 
     // Show confirmation dialog
@@ -442,8 +455,13 @@ export default class extends Controller {
       return
     }
 
+    // Show loading overlay just like drag-and-drop (before moving so overlay moves with card)
+    this.addLoadingOverlay(entryCard)
+
     // Move the card back to available entries
     this.availableEntriesTarget.appendChild(entryCard)
+    entryCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+
     await this.handleSortEnd({ from: this.ratedEntriesTarget, to: this.availableEntriesTarget, item: entryCard })
   }
 
@@ -465,14 +483,13 @@ export default class extends Controller {
       </div>
     `
 
-    // Ensure the card has position relative for absolute positioning of overlay
+    // Ensure the card has position relative and won't clip the overlay
     element.style.position = 'relative'
+    element.classList.add('entry-card-loading')
     element.appendChild(overlay)
 
-    // Add show class after a small delay to trigger fade-in
-    requestAnimationFrame(() => {
-      overlay.classList.add('show')
-    })
+    // Show overlay immediately so it's visible for button clicks (card is about to move)
+    overlay.classList.add('show')
 
     // Set up slow connection warning
     this.slowConnectionTimeout = setTimeout(() => {
@@ -520,6 +537,8 @@ export default class extends Controller {
 
     const overlay = element.querySelector('.entry-loading-overlay')
     if (!overlay) return
+
+    element.classList.remove('entry-card-loading')
 
     // Clear slow connection timeout
     if (this.slowConnectionTimeout) {
