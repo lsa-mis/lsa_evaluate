@@ -1,0 +1,30 @@
+<div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+  <h1 style="color: #003366; font-size: 24px; margin-bottom: 20px;">
+    Judge completed evaluations
+  </h1>
+
+  <p style="font-size: 16px; line-height: 1.6; color: #333;">
+    A judge has completed their evaluations for the following contest and round.
+  </p>
+
+  <div style="background-color: #f0f7ff; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h2 style="color: #003366; font-size: 18px; margin-bottom: 10px;">Judge</h2>
+    <p style="font-size: 16px; line-height: 1.6; color: #333; margin: 5px 0;">
+      <strong>Name:</strong> <%= @judge.display_name_or_first_name_last_name %><br>
+      <strong>Email:</strong> <%= mail_to @judge_email, @judge_email %>
+    </p>
+  </div>
+
+  <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0; border: 1px solid #ddd;">
+    <h2 style="color: #003366; font-size: 18px; margin-bottom: 10px;">Contest and round</h2>
+    <p style="font-size: 16px; line-height: 1.6; color: #333; margin: 5px 0;">
+      <strong>Contest:</strong> <%= @contest_description.name %><br>
+      <strong>Contest instance:</strong> <%= @contest_instance.id %> (date open: <%= @contest_instance.date_open&.strftime('%Y-%m-%d') %>)<br>
+      <strong>Round:</strong> <%= @judging_round.round_number %>
+    </p>
+  </div>
+
+  <p style="font-size: 14px; line-height: 1.6; color: #666;">
+    You can reply directly to this message to contact the judge.
+  </p>
+</div>
