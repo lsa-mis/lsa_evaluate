@@ -96,6 +96,7 @@ export default class extends Controller {
 
     this.contestGroupName = `entries-${accordionSection.id}`
     this.accordionSection = accordionSection
+    this.slowConnectionTimeouts = new WeakMap()
 
     this.initializeSortable()
     this.initializeCommentListeners()
@@ -491,8 +492,8 @@ export default class extends Controller {
     // Show overlay immediately so it's visible for button clicks (card is about to move)
     overlay.classList.add('show')
 
-    // Set up slow connection warning
-    this.slowConnectionTimeout = setTimeout(() => {
+    // Set up slow connection warning (per-element so multiple overlays clean up correctly)
+    const timeoutId = setTimeout(() => {
       const statusText = overlay.querySelector('.status-text')
       if (statusText) {
         statusText.innerHTML = `
@@ -507,6 +508,7 @@ export default class extends Controller {
         `
       }
     }, 5000) // Show warning after 5 seconds
+    this.slowConnectionTimeouts.set(element, timeoutId)
   }
 
   // Helper method to show success state on the overlay before removing it
@@ -516,9 +518,10 @@ export default class extends Controller {
     const overlay = element.querySelector('.entry-loading-overlay')
     if (!overlay) return
 
-    if (this.slowConnectionTimeout) {
-      clearTimeout(this.slowConnectionTimeout)
-      this.slowConnectionTimeout = null
+    const timeoutId = this.slowConnectionTimeouts.get(element)
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      this.slowConnectionTimeouts.delete(element)
     }
 
     overlay.classList.add('success')
@@ -540,9 +543,11 @@ export default class extends Controller {
 
     element.classList.remove('entry-card-loading')
 
-    // Clear slow connection timeout
-    if (this.slowConnectionTimeout) {
-      clearTimeout(this.slowConnectionTimeout)
+    // Clear slow connection timeout for this element
+    const timeoutId = this.slowConnectionTimeouts.get(element)
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      this.slowConnectionTimeouts.delete(element)
     }
 
     if (error) {
