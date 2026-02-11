@@ -335,8 +335,10 @@ class JudgingRoundsController < ApplicationController
       user: current_user
     )
 
-    if entry_rankings.count < @judging_round.required_entries_count
-      message = "Please rank at least #{@judging_round.required_entries_count} entries before notifying. You have #{entry_rankings.count} ranked."
+    ranked_count = entry_rankings.count
+
+    if ranked_count < @judging_round.required_entries_count
+      message = "Please rank at least #{@judging_round.required_entries_count} entries before notifying. You have #{ranked_count} ranked."
       respond_to do |format|
         format.html { redirect_to judge_dashboard_path, alert: message }
         format.turbo_stream do
