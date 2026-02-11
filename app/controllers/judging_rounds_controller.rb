@@ -1,6 +1,6 @@
 class JudgingRoundsController < ApplicationController
   before_action :set_contest_instance
-  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete, :update_rankings, :finalize_rankings, :send_instructions ]
+  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete, :update_rankings, :finalize_rankings, :send_instructions, :notify_completed ]
   before_action :authorize_contest_instance
   before_action :check_edit_warning, only: [ :edit, :update ]
 
@@ -323,6 +323,58 @@ class JudgingRoundsController < ApplicationController
           )
         end
         format.html { redirect_to judge_dashboard_path, alert: e.message }
+      end
+    end
+  end
+
+  def notify_completed
+    authorize @contest_instance, :notify_completed?
+
+    entry_rankings = EntryRanking.where(
+      judging_round: @judging_round,
+      user: current_user
+    )
+
+    ranked_count = entry_rankings.count
+
+    if ranked_count < @judging_round.required_entries_count
+      message = "Please rank at least #{@judging_round.required_entries_count} entries before notifying. You have #{ranked_count} ranked."
+      respond_to do |format|
+        format.html { redirect_to judge_dashboard_path, alert: message }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update('flash',
+            partial: 'shared/flash',
+            locals: { message: message, type: 'danger' }
+          )
+        end
+      end
+      return
+    end
+
+    if @container.contact_email.blank?
+      message = 'No contact email is set for this contest. Please contact an administrator.'
+      respond_to do |format|
+        format.html { redirect_to judge_dashboard_path, alert: message }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.update('flash',
+            partial: 'shared/flash',
+            locals: { message: message, type: 'danger' }
+          )
+        end
+      end
+      return
+    end
+
+    JudgeCompletedEvaluationsMailer.notify_contact(current_user, @judging_round).deliver_later
+
+    message = 'The contest contact has been notified that you have completed your evaluations.'
+    respond_to do |format|
+      format.html { redirect_to judge_dashboard_path, notice: message }
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.update('flash',
+          partial: 'shared/flash',
+          locals: { message: message, type: 'success' }
+        )
       end
     end
   end

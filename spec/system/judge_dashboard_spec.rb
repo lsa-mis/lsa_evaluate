@@ -302,5 +302,59 @@ RSpec.describe 'Judge Dashboard', type: :system do
         expect(page).to have_css('[data-entry-drag-target="counter"]', text: '1/7')
       end
     end
+
+    it 'shows I\'ve completed my evaluations button disabled when required count not met', :js do
+      visit judge_dashboard_path
+      find('.accordion-button').click
+      sleep 0.5
+
+      within('.accordion-collapse.show') do
+        expect(page).to have_button("I've completed my evaluations", disabled: true)
+      end
+    end
+
+    it 'shows I\'ve completed my evaluations button enabled when required count is met', :js do
+      # Create exactly required_entries_count (7) rankings for this judge and round
+      entries_to_rank = contest_instance.current_round_entries.limit(judging_round.required_entries_count)
+      entries_to_rank.each_with_index do |entry_to_rank, index|
+        create(:entry_ranking,
+          entry: entry_to_rank,
+          user: judge,
+          judging_round: judging_round,
+          rank: index + 1)
+      end
+
+      visit judge_dashboard_path
+      find('.accordion-button').click
+      sleep 0.5
+
+      within('.accordion-collapse.show') do
+        expect(page).to have_button("I've completed my evaluations", disabled: false)
+      end
+    end
+
+    it 'notifies contact when judge clicks I\'ve completed my evaluations and confirms', :js do
+      entries_to_rank = contest_instance.current_round_entries.limit(judging_round.required_entries_count)
+      entries_to_rank.each_with_index do |entry_to_rank, index|
+        create(:entry_ranking,
+          entry: entry_to_rank,
+          user: judge,
+          judging_round: judging_round,
+          rank: index + 1)
+      end
+
+      visit judge_dashboard_path
+      find('.accordion-button').click
+      sleep 0.5
+
+      within('.accordion-collapse.show') do
+        accept_confirm do
+          click_button "I've completed my evaluations"
+        end
+      end
+
+      expect(page).to have_current_path(judge_dashboard_path)
+      expect(page).to have_content('The contest contact has been notified that you have completed your evaluations.')
+    end
   end
 end

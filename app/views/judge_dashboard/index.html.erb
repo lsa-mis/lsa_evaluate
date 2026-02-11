@@ -93,6 +93,25 @@
               <% if assignment.contest_instance.judging_open?(current_user) %>
                 <% assigned_round = @assigned_rounds.find_by(contest_instance_id: assignment.contest_instance.id, active: true) %>
                 <% if assigned_round %>
+                  <% ranked_count = @ranked_counts_by_round[assigned_round.id].to_i %>
+                  <% can_notify = ranked_count >= assigned_round.required_entries_count %>
+                  <div class="row mb-3">
+                    <div class="col-md-6"></div>
+                    <div class="col-md-6 d-flex justify-content-end align-items-center">
+                      <%= button_to 'I\'ve completed my evaluations',
+                          notify_completed_container_contest_description_contest_instance_judging_round_path(
+                            assignment.contest_instance.contest_description.container,
+                            assignment.contest_instance.contest_description,
+                            assignment.contest_instance,
+                            assigned_round
+                          ),
+                          method: :post,
+                          class: "btn btn-success",
+                          disabled: !can_notify,
+                          title: can_notify ? 'Notify the contest contact that you have finished' : "Rank at least #{assigned_round.required_entries_count} entries to enable this button",
+                          data: { turbo_confirm: "Notify the contest contact that you have completed your evaluations for this round? They will receive an email with your contact information." } %>
+                    </div>
+                  </div>
                   <div class="row" data-controller="entry-drag"
                        data-entry-drag-url-value="<%= update_rankings_container_contest_description_contest_instance_judging_round_path(
                          assignment.contest_instance.contest_description.container,
@@ -101,10 +120,7 @@
                          assigned_round
                        ) %>"
                        data-entry-drag-required-count-value="<%= assigned_round.required_entries_count %>"
-                       data-entry-drag-finalized-value="<%= EntryRanking.where(
-                         judging_round: assigned_round,
-                         user: current_user
-                       ).any?(&:finalized?) %>">
+                       data-entry-drag-finalized-value="<%= @finalized_by_round[assigned_round.id].present? %>">
 
                     <div class="col-md-6">
                       <%= render partial: 'judge_dashboard/available_entries',

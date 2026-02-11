@@ -10,7 +10,7 @@ namespace :test do
   task all: :environment do
     rspec_success = run_test('RSpec Tests', 'bundle exec rspec')
     jest_success = run_test('Jest Tests', 'yarn test')
-    brakeman_success = run_test('Brakeman Security Scan', 'bundle exec brakeman')
+    brakeman_success = run_test('Brakeman Security Scan', 'bundle exec rake brakeman:run')
 
     puts "\n================================================"
     puts rspec_success ? "\n✅ RSpec Tests passed!" : "\n❌ RSpec Tests failed!"
@@ -33,7 +33,7 @@ namespace :test do
 
   desc 'Run only Brakeman security scan'
   task brakeman: :environment do
-    run_test('Brakeman Security Scan', 'bundle exec brakeman') || exit(1)
+    run_test('Brakeman Security Scan', 'bundle exec rake brakeman:run') || exit(1)
   end
 end
 

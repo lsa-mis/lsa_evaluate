@@ -1,0 +1,10 @@
+A judge has completed their evaluations for the following contest and round.
+
+Judge: <%= @judge.display_name_or_first_name_last_name %>
+Judge email: <%= @judge_email %>
+
+Contest: <%= @contest_description.name %>
+Contest instance: <%= @contest_instance.id %> (date open: <%= @contest_instance.date_open&.strftime('%Y-%m-%d') %>)
+Round: <%= @judging_round.round_number %>
+
+You can reply directly to this message to contact the judge.
