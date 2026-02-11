@@ -196,11 +196,11 @@ class JudgingRoundsController < ApplicationController
             entry_ranking.save(validate: false)
           end
         else
-          # This is a single entry update (comment update)
+          # This is a single entry update (comment update or unrank)
           ranking_data = rankings.first
           entry_id = ranking_data['entry_id'].presence || ranking_data[:entry_id].presence
 
-          if entry_id && ranking_data['rank'].present?
+          if entry_id && (ranking_data['rank'].present? || ranking_data[:rank].present?)
             entry = Entry.find(entry_id)
             entry_ranking = EntryRanking.find_or_initialize_by(
               entry: entry,
@@ -212,6 +212,17 @@ class JudgingRoundsController < ApplicationController
             entry_ranking.internal_comments = ranking_data['internal_comments'].presence || ranking_data[:internal_comments].presence || entry_ranking.internal_comments
             entry_ranking.external_comments = ranking_data['external_comments'].presence || ranking_data[:external_comments].presence || entry_ranking.external_comments
             entry_ranking.save(validate: false)
+          elsif entry_id && (ranking_data.key?('rank') || ranking_data.key?(:rank)) && ranking_data['rank'].blank? && ranking_data[:rank].blank?
+            # Unranking: only when rank was explicitly sent and is blank (not when key omitted)
+            current_rankings.where(entry_id: entry_id).destroy_all
+          elsif entry_id && !(ranking_data.key?('rank') || ranking_data.key?(:rank))
+            # Comment-only update: rank key omitted; update comments on existing ranking only
+            entry_ranking = current_rankings.find_by(entry_id: entry_id)
+            if entry_ranking
+              entry_ranking.internal_comments = ranking_data['internal_comments'].presence || ranking_data[:internal_comments].presence || entry_ranking.internal_comments
+              entry_ranking.external_comments = ranking_data['external_comments'].presence || ranking_data[:external_comments].presence || entry_ranking.external_comments
+              entry_ranking.save(validate: false)
+            end
           end
         end
 
