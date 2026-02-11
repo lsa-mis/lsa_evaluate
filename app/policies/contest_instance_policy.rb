@@ -55,13 +55,13 @@ class ContestInstancePolicy < ApplicationPolicy
 
   def update_rankings?
     return false unless user && record
-    return false unless record.judging_open?
+    return false unless record.judging_open?(user)
     record.judges.include?(user)
   end
 
   def finalize_rankings?
     return false unless user && record
-    return false unless record.judging_open?
+    return false unless record.judging_open?(user)
     record.judges.include?(user)
   end
 
@@ -95,7 +95,7 @@ class ContestInstancePolicy < ApplicationPolicy
 
   def notify_completed?
     return false unless user && record
-    return false unless record.judging_open?
+    return false unless record.judging_open?(user)
     record.judges.include?(user)
   end
 end
