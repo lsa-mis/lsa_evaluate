@@ -39,5 +39,20 @@ class JudgeDashboardController < ApplicationController
                                  .where(user: current_user)
                                  .joins(judging_round: :contest_instance)
                                  .where(judging_rounds: { id: @assigned_rounds.pluck(:id) })
+
+    # Precompute ranked entry counts per judging_round for this user to avoid N+1 queries
+    @ranked_counts_by_round = EntryRanking.where(
+      user: current_user,
+      judging_round_id: @assigned_rounds.pluck(:id)
+    ).group(:judging_round_id).count
+
+    # Precompute finalized status per judging_round to avoid N+1 queries
+    # Check if any EntryRankings are finalized for each round
+    finalized_round_ids = EntryRanking.where(
+      user: current_user,
+      judging_round_id: @assigned_rounds.pluck(:id),
+      finalized: true
+    ).select(:judging_round_id).distinct.pluck(:judging_round_id)
+    @finalized_by_round = finalized_round_ids.index_with { true }
   end
 end

@@ -93,7 +93,7 @@
               <% if assignment.contest_instance.judging_open?(current_user) %>
                 <% assigned_round = @assigned_rounds.find_by(contest_instance_id: assignment.contest_instance.id, active: true) %>
                 <% if assigned_round %>
-                  <% ranked_count = EntryRanking.where(judging_round: assigned_round, user: current_user).count %>
+                  <% ranked_count = @ranked_counts_by_round[assigned_round.id].to_i %>
                   <% can_notify = ranked_count >= assigned_round.required_entries_count %>
                   <div class="row mb-3">
                     <div class="col-md-6"></div>
@@ -120,10 +120,7 @@
                          assigned_round
                        ) %>"
                        data-entry-drag-required-count-value="<%= assigned_round.required_entries_count %>"
-                       data-entry-drag-finalized-value="<%= EntryRanking.where(
-                         judging_round: assigned_round,
-                         user: current_user
-                       ).any?(&:finalized?) %>">
+                       data-entry-drag-finalized-value="<%= @finalized_by_round[assigned_round.id].present? %>">
 
                     <div class="col-md-6">
                       <%= render partial: 'judge_dashboard/available_entries',
