@@ -509,6 +509,53 @@ RSpec.describe JudgingRoundsController, type: :controller do
     end
   end
 
+  describe 'POST #update_rankings' do
+    let(:contest_instance) do
+      create(:contest_instance,
+        contest_description: contest_description,
+        date_open: 2.months.ago,
+        date_closed: 1.month.ago,
+        active: true)
+    end
+    let(:judging_round) do
+      create(:judging_round,
+        contest_instance: contest_instance,
+        round_number: 1,
+        active: true,
+        start_date: 1.day.ago,
+        end_date: 1.day.from_now,
+        required_entries_count: 3)
+    end
+    let(:judge_user) { create(:user, :with_judge_role) }
+    let!(:judging_assignment) { create(:judging_assignment, user: judge_user, contest_instance: contest_instance, active: true) }
+    let!(:round_judge_assignment) { create(:round_judge_assignment, user: judge_user, judging_round: judging_round, active: true) }
+    let!(:entry) { create(:entry, contest_instance: contest_instance, deleted: false) }
+
+    before { sign_in judge_user }
+
+    context 'with only one ranked entry' do
+      before do
+        create(:entry_ranking, entry: entry, judging_round: judging_round, user: judge_user, rank: 1)
+      end
+
+      it 'unranks the entry when a single ranking with rank null is sent' do
+        expect {
+          post :update_rankings, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            contest_instance_id: contest_instance.id,
+            id: judging_round.id,
+            rankings: [{ entry_id: entry.id.to_s, rank: nil, internal_comments: nil, external_comments: nil }]
+          }, format: :json
+        }.to change(EntryRanking, :count).by(-1)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body['success']).to eq(true)
+        expect(EntryRanking.find_by(entry: entry, judging_round: judging_round, user: judge_user)).to be_nil
+      end
+    end
+  end
+
   describe 'POST #notify_completed' do
     let(:container_with_contact) { create(:container, contact_email: 'contest_contact@umich.edu') }
     let(:contest_description) { create(:contest_description, :active, container: container_with_contact, name: 'Test Contest') }
