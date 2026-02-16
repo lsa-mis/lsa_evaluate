@@ -10,7 +10,9 @@ class JudgeCompletedEvaluationsMailer < ApplicationMailer
     @judge_email = judge.normalize_email
 
     to_email = @container.contact_email.presence
-    return unless to_email
+    unless to_email
+      raise ArgumentError, "contact_email is required for JudgeCompletedEvaluationsMailer.notify_contact"
+    end
 
     subject = "Judge completed evaluations: #{@contest_description.name} - Round #{@judging_round.round_number}"
 
