@@ -208,6 +208,7 @@ describe("EntryDragController", () => {
 
   describe("removeLoadingOverlay", () => {
     it("removes overlay and entry-card-loading class", () => {
+      jest.useFakeTimers()
       const card = document.createElement('div')
       card.setAttribute('data-entry-id', '1')
       document.body.appendChild(card)
@@ -216,7 +217,6 @@ describe("EntryDragController", () => {
       expect(card.querySelector('.entry-loading-overlay')).not.toBeNull()
       expect(card.classList.contains('entry-card-loading')).toBe(true)
 
-      jest.useFakeTimers()
       controller.removeLoadingOverlay(card)
       jest.advanceTimersByTime(400) // Wait for transition + remove
 
@@ -247,6 +247,7 @@ describe("EntryDragController", () => {
     })
 
     it("shows error state when error is true", () => {
+      jest.useFakeTimers()
       const card = document.createElement('div')
       card.setAttribute('data-entry-id', '1')
       document.body.appendChild(card)
@@ -258,7 +259,6 @@ describe("EntryDragController", () => {
       expect(overlay.classList.contains('error')).toBe(true)
       expect(overlay.textContent).toMatch(/Error updating entry/)
 
-      jest.useFakeTimers()
       jest.advanceTimersByTime(2500) // Error overlay removes after 2s
       jest.useRealTimers()
       document.body.removeChild(card)
