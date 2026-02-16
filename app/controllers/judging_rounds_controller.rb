@@ -339,8 +339,6 @@ class JudgingRoundsController < ApplicationController
   end
 
   def notify_completed
-    authorize @contest_instance, :notify_completed?
-
     entry_rankings = EntryRanking.where(
       judging_round: @judging_round,
       user: current_user
