@@ -13,7 +13,7 @@
       Please select and rank <%= assignment.contest_instance.current_judging_round.required_entries_count %> entries
     </div>
     <div class="rated-entries" data-entry-drag-target="ratedEntries">
-      <% EntryRanking.includes(:entry)
+      <% EntryRanking.includes(entry: [ :category, { entry_file_attachment: :blob } ])
           .where(judging_round: assignment.contest_instance.current_judging_round, user: current_user)
           .order(:rank)
           .each do |ranking| %>
