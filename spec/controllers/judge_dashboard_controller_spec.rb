@@ -61,6 +61,28 @@ RSpec.describe JudgeDashboardController, type: :controller do
       end
     end
 
+    context 'when judge is assigned and index renders entries with attachments' do
+      before do
+        create(:judging_assignment, user: judge, contest_instance: contest_instance, active: true)
+        create(:round_judge_assignment, user: judge, judging_round: round_1, active: true)
+        create_list(:entry, 3, contest_instance: contest_instance, deleted: false)
+      end
+
+      it 'eager loads entry_file attachments to avoid N+1 queries' do
+        attachment_queries = 0
+        counter = ActiveSupport::Notifications.subscribe('sql.active_record') do |_name, _start, _finish, _id, payload|
+          attachment_queries += 1 if payload[:sql] =~ /active_storage_attachments/
+        end
+
+        get :index
+
+        ActiveSupport::Notifications.unsubscribe(counter)
+
+        # With eager loading we should have at most 2 queries (attachments + blobs), not one per entry
+        expect(attachment_queries).to be <= 2
+      end
+    end
+
     context 'when judge is assigned to contest but no rounds' do
       before do
         create(:judging_assignment, user: judge, contest_instance: contest_instance, active: true)

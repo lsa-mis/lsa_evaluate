@@ -18,7 +18,7 @@ class JudgeDashboardController < ApplicationController
       .includes(contest_instance: [
         contest_description: [ :container ],
         judging_rounds: [ :round_judge_assignments ],
-        entries: [ :entry_rankings ]
+        entries: [ :entry_rankings, :category, { entry_file_attachment: :blob } ]
       ])
       .where(judging_assignments: { active: true })
       .where(contest_instances: { active: true, id: contest_instances_with_incomplete_assigned_rounds })

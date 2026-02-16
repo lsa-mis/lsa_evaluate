@@ -10,6 +10,8 @@
       ).pluck(:entry_id) %>
 
       <% assignment.contest_instance.current_round_entries
+          .with_attached_entry_file
+          .includes(:category)
           .where.not(id: ranked_entry_ids)
           .each do |entry| %>
         <%= turbo_frame_tag dom_id(entry) do %>
