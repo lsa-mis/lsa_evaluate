@@ -541,13 +541,18 @@ export default class extends Controller {
     const overlay = element.querySelector('.entry-loading-overlay')
     if (!overlay) return
 
-    element.classList.remove('entry-card-loading')
-
     // Clear slow connection timeout for this element
     const timeoutId = this.slowConnectionTimeouts.get(element)
     if (timeoutId) {
       clearTimeout(timeoutId)
       this.slowConnectionTimeouts.delete(element)
+    }
+
+    // Remove entry-card-loading only when the overlay is removed, so the overlay
+    // keeps overflow/z-index styling until it's gone (avoids clipping during transition/error).
+    const removeOverlayAndClass = () => {
+      element.classList.remove('entry-card-loading')
+      overlay.remove()
     }
 
     if (error) {
@@ -566,12 +571,12 @@ export default class extends Controller {
       // Remove error overlay after 2 seconds
       setTimeout(() => {
         overlay.classList.remove('show')
-        setTimeout(() => overlay.remove(), 300)
+        setTimeout(removeOverlayAndClass, 300)
       }, 2000)
     } else {
       overlay.classList.remove('show')
       // Remove overlay after transition completes
-      setTimeout(() => overlay.remove(), 300)
+      setTimeout(removeOverlayAndClass, 300)
     }
   }
 }
