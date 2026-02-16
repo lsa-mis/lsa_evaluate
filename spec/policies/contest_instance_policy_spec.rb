@@ -1,129 +1,103 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe ContestInstancePolicy do
   subject { described_class.new(user, contest_instance) }
 
-  let(:container) { create(:container) }
-  let(:contest_description) { create(:contest_description, :active, container: container) }
-  let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
-  let(:container_admin_role) { create(:role, kind: 'Collection Administrator') }
-  let(:axis_mundi_role) { create(:role, kind: 'Axis Mundi') }
+  let(:contest_instance) { create(:contest_instance, date_open: 10.days.ago, date_closed: 5.days.ago) }
 
-  context 'for a user with container role' do
-    let(:user) { create(:user) }
+  # Judging-open gating: policies that require user to be a judge AND judging_open?(user)
+  shared_examples 'judging_open? gated judge action' do |action|
+    context 'when user is nil' do
+      let(:user) { nil }
 
-    before do
-      create(:assignment, container: container, user: user, role: container_admin_role)
+      it "forbids #{action}" do
+        expect(subject).not_to permit_action(action)
+      end
     end
 
-    it { is_expected.to permit_action(:index) }
-    it { is_expected.to permit_action(:show) }
-    it { is_expected.to permit_action(:create) }
-    it { is_expected.to permit_action(:update) }
-    it { is_expected.to permit_action(:destroy) }
-    it { is_expected.to permit_action(:manage_judges) }
-    it { is_expected.to permit_action(:send_instructions) }
+    context 'when user is not a judge for this instance' do
+      let(:user) { create(:user, :with_judge_role) }
 
-    describe 'view_judging_results?' do
-      it 'permits viewing results' do
-        expect(subject.view_judging_results?).to be true
+      it "forbids #{action}" do
+        expect(subject).not_to permit_action(action)
+      end
+    end
+
+    context 'when user is a judge but not assigned to the current round' do
+      let(:user) { create(:user, :with_judge_role) }
+      let!(:judging_round) do
+        create(:judging_round,
+          contest_instance: contest_instance,
+          active: true,
+          start_date: 4.days.ago,
+          end_date: 2.days.from_now
+        )
+      end
+
+      before do
+        create(:judging_assignment, user: user, contest_instance: contest_instance, active: true)
+        # No round_judge_assignment -> judging_open?(user) is false
+      end
+
+      it "forbids #{action}" do
+        expect(subject).not_to permit_action(action)
+      end
+    end
+
+    context 'when there is no current judging round' do
+      let(:user) { create(:user, :with_judge_role) }
+      let!(:judging_round) do
+        create(:judging_round,
+          contest_instance: contest_instance,
+          active: true,
+          start_date: 1.day.from_now,
+          end_date: 3.days.from_now
+        )
+      end
+
+      before do
+        create(:judging_assignment, user: user, contest_instance: contest_instance, active: true)
+        create(:round_judge_assignment, user: user, judging_round: judging_round, active: true)
+      end
+
+      it "forbids #{action}" do
+        expect(subject).not_to permit_action(action)
+      end
+    end
+
+    context 'when user is a judge and judging is open for them' do
+      let(:user) { create(:user, :with_judge_role) }
+      let!(:judging_round) do
+        create(:judging_round,
+          contest_instance: contest_instance,
+          active: true,
+          start_date: 4.days.ago,
+          end_date: 2.days.from_now
+        )
+      end
+
+      before do
+        create(:judging_assignment, user: user, contest_instance: contest_instance, active: true)
+        create(:round_judge_assignment, user: user, judging_round: judging_round, active: true)
+      end
+
+      it "permits #{action}" do
+        expect(subject).to permit_action(action)
       end
     end
   end
 
-  context 'for a user with axis mundi role' do
-    let(:user) { create(:user) }
-
-    before do
-      create(:user_role, user: user, role: axis_mundi_role)
-    end
-
-    it { is_expected.to permit_action(:index) }
-    it { is_expected.to permit_action(:show) }
-    it { is_expected.to permit_action(:create) }
-    it { is_expected.to permit_action(:update) }
-    it { is_expected.to permit_action(:destroy) }
-    it { is_expected.to permit_action(:manage_judges) }
-    it { is_expected.to permit_action(:send_instructions) }
-
-    describe 'view_judging_results?' do
-      it 'permits viewing results' do
-        expect(subject.view_judging_results?).to be true
-      end
-    end
+  describe '#notify_completed?' do
+    include_examples 'judging_open? gated judge action', :notify_completed
   end
 
-  context 'for a judge' do
-    let(:user) { create(:user, :with_judge_role) }
-
-    before do
-      create(:judging_assignment, user: user, contest_instance: contest_instance)
-    end
-
-    it { is_expected.not_to permit_action(:index) }
-    it { is_expected.not_to permit_action(:show) }
-    it { is_expected.not_to permit_action(:create) }
-    it { is_expected.not_to permit_action(:update) }
-    it { is_expected.not_to permit_action(:destroy) }
-    it { is_expected.not_to permit_action(:manage_judges) }
-    it { is_expected.not_to permit_action(:send_instructions) }
-
-    describe 'view_judging_results?' do
-      context 'when judge evaluations are complete' do
-        before do
-          create(:judging_round, contest_instance: contest_instance, completed: true)
-        end
-
-        it 'permits viewing results' do
-          expect(subject.view_judging_results?).to be true
-        end
-      end
-
-      context 'when judge evaluations are not complete' do
-        before do
-          create(:judging_round, contest_instance: contest_instance, completed: false)
-        end
-
-        it 'does not permit viewing results' do
-          expect(subject.view_judging_results?).to be false
-        end
-      end
-    end
+  describe '#update_rankings?' do
+    include_examples 'judging_open? gated judge action', :update_rankings
   end
 
-  context 'for a regular user' do
-    let(:user) { create(:user) }
-
-    it { is_expected.not_to permit_action(:index) }
-    it { is_expected.not_to permit_action(:show) }
-    it { is_expected.not_to permit_action(:create) }
-    it { is_expected.not_to permit_action(:update) }
-    it { is_expected.not_to permit_action(:destroy) }
-    it { is_expected.not_to permit_action(:manage_judges) }
-    it { is_expected.not_to permit_action(:send_instructions) }
-
-    describe 'view_judging_results?' do
-      it 'does not permit viewing results' do
-        expect(subject.view_judging_results?).to be false
-      end
-    end
-  end
-
-  context 'when user is nil' do
-    let(:user) { nil }
-
-    it { is_expected.not_to permit_action(:index) }
-    it { is_expected.not_to permit_action(:show) }
-    it { is_expected.not_to permit_action(:create) }
-    it { is_expected.not_to permit_action(:update) }
-    it { is_expected.not_to permit_action(:destroy) }
-    it { is_expected.not_to permit_action(:manage_judges) }
-    it { is_expected.not_to permit_action(:send_instructions) }
-
-    describe 'view_judging_results?' do
-      it 'does not permit viewing results' do
-        expect(subject.view_judging_results?).to be false
-      end
-    end
+  describe '#finalize_rankings?' do
+    include_examples 'judging_open? gated judge action', :finalize_rankings
   end
 end

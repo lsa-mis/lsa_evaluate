@@ -432,6 +432,40 @@ RSpec.describe JudgingRoundsController, type: :controller do
       end
     end
 
+    context 'when user is not authorized' do
+      before { sign_in judge }
+
+      it 'redirects to root path' do
+        post :send_instructions, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          id: judging_round.id
+        }
+        expect(response).to redirect_to(root_path)
+      end
+    end
+
+    context 'when inactive assignments exist' do
+      let(:inactive_judge) { create(:user, :with_judge_role, email: 'inactive_judge@umich.edu') }
+      let!(:inactive_judging_assignment) { create(:judging_assignment, user: inactive_judge, contest_instance: contest_instance) }
+      let!(:inactive_assignment) do
+        create(:round_judge_assignment, :inactive, user: inactive_judge, judging_round: judging_round)
+      end
+
+      it 'only sends to active assignments' do
+        expect(JudgingInstructionsMailer).to receive(:send_instructions).exactly(3).times
+        expect(JudgingInstructionsMailer).not_to receive(:send_instructions).with(inactive_assignment, anything)
+
+        post :send_instructions, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          id: judging_round.id
+        }
+      end
+    end
+
     context 'when email delivery fails' do
       before do
         allow(JudgingInstructionsMailer).to receive(:send_instructions).and_call_original
@@ -473,38 +507,250 @@ RSpec.describe JudgingRoundsController, type: :controller do
         expect(round_assignment1.reload.instructions_sent_at).to be_nil
       end
     end
+  end
 
-    context 'when user is not authorized' do
-      before { sign_in judge }
+  describe 'POST #update_rankings' do
+    let(:contest_instance) do
+      create(:contest_instance,
+        contest_description: contest_description,
+        date_open: 2.months.ago,
+        date_closed: 1.month.ago,
+        active: true)
+    end
+    let(:judging_round) do
+      create(:judging_round,
+        contest_instance: contest_instance,
+        round_number: 1,
+        active: true,
+        start_date: 1.day.ago,
+        end_date: 1.day.from_now,
+        required_entries_count: 3)
+    end
+    let(:judge_user) { create(:user, :with_judge_role) }
+    let!(:judging_assignment) { create(:judging_assignment, user: judge_user, contest_instance: contest_instance, active: true) }
+    let!(:round_judge_assignment) { create(:round_judge_assignment, user: judge_user, judging_round: judging_round, active: true) }
+    let!(:entry) { create(:entry, contest_instance: contest_instance, deleted: false) }
 
-      it 'redirects to root path' do
-        post :send_instructions, params: {
-          container_id: container.id,
-          contest_description_id: contest_description.id,
-          contest_instance_id: contest_instance.id,
-          id: judging_round.id
-        }
-        expect(response).to redirect_to(root_path)
+    before { sign_in judge_user }
+
+    context 'with only one ranked entry' do
+      before do
+        create(:entry_ranking, entry: entry, judging_round: judging_round, user: judge_user, rank: 1)
+      end
+
+      it 'unranks the entry when a single ranking with rank null is sent' do
+        expect {
+          post :update_rankings, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            contest_instance_id: contest_instance.id,
+            id: judging_round.id,
+            rankings: [{ entry_id: entry.id.to_s, rank: nil, internal_comments: nil, external_comments: nil }]
+          }, format: :json
+        }.to change(EntryRanking, :count).by(-1)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body['success']).to eq(true)
+        expect(EntryRanking.find_by(entry: entry, judging_round: judging_round, user: judge_user)).to be_nil
+      end
+    end
+  end
+
+  describe 'POST #notify_completed' do
+    let(:container_with_contact) { create(:container, contact_email: 'contest_contact@umich.edu') }
+    let(:contest_description) { create(:contest_description, :active, container: container_with_contact, name: 'Test Contest') }
+    let(:contest_instance) do
+      create(:contest_instance,
+        contest_description: contest_description,
+        date_open: 2.months.ago,
+        date_closed: 1.month.ago,
+        active: true)
+    end
+    let(:judging_round) do
+      create(:judging_round,
+        contest_instance: contest_instance,
+        round_number: 1,
+        active: true,
+        start_date: 1.day.ago,
+        end_date: 1.day.from_now,
+        required_entries_count: 3)
+    end
+    let(:judge_user) { create(:user, :with_judge_role, email: 'judge@umich.edu', first_name: 'Jane', last_name: 'Doe') }
+    let!(:judging_assignment) { create(:judging_assignment, user: judge_user, contest_instance: contest_instance, active: true) }
+    let!(:round_judge_assignment) { create(:round_judge_assignment, user: judge_user, judging_round: judging_round, active: true) }
+    let!(:entry1) { create(:entry, contest_instance: contest_instance, deleted: false) }
+    let!(:entry2) { create(:entry, contest_instance: contest_instance, deleted: false) }
+    let!(:entry3) { create(:entry, contest_instance: contest_instance, deleted: false) }
+
+    before do
+      sign_in judge_user
+      ActiveJob::Base.queue_adapter = :test
+    end
+
+    def notify_completed_params
+      {
+        container_id: container_with_contact.id,
+        contest_description_id: contest_description.id,
+        contest_instance_id: contest_instance.id,
+        id: judging_round.id
+      }
+    end
+
+    context 'when judge has ranked exactly the required number of entries' do
+      before do
+        create(:entry_ranking, entry: entry1, judging_round: judging_round, user: judge_user, rank: 1)
+        create(:entry_ranking, entry: entry2, judging_round: judging_round, user: judge_user, rank: 2)
+        create(:entry_ranking, entry: entry3, judging_round: judging_round, user: judge_user, rank: 3)
+      end
+
+      it 'enqueues the notification email' do
+        expect {
+          post :notify_completed, params: notify_completed_params
+        }.to have_enqueued_job(ActionMailer::MailDeliveryJob).once
+      end
+
+      it 'redirects to judge dashboard with success notice' do
+        post :notify_completed, params: notify_completed_params
+
+        expect(response).to redirect_to(judge_dashboard_path)
+        expect(flash[:notice]).to eq('The contest contact has been notified that you have completed your evaluations.')
+      end
+
+      it 'sends to the container contact email' do
+        captured_mail = nil
+        allow(JudgeCompletedEvaluationsMailer).to receive(:notify_contact).and_wrap_original do |method, *args|
+          captured_mail = method.call(*args)
+        end
+
+        post :notify_completed, params: notify_completed_params
+
+        expect(captured_mail).to be_a(ActionMailer::MessageDelivery)
+        mail = captured_mail.message
+        expect(mail.to).to eq([ 'contest_contact@umich.edu' ])
+        expect(mail.reply_to).to eq([ 'judge@umich.edu' ])
       end
     end
 
-    context 'when inactive assignments exist' do
-      let(:inactive_judge) { create(:user, :with_judge_role, email: 'inactive_judge@umich.edu') }
-      let!(:inactive_judging_assignment) { create(:judging_assignment, user: inactive_judge, contest_instance: contest_instance) }
-      let!(:inactive_assignment) do
-        create(:round_judge_assignment, :inactive, user: inactive_judge, judging_round: judging_round)
+    context 'when judge has ranked fewer than the required number of entries' do
+      before do
+        create(:entry_ranking, entry: entry1, judging_round: judging_round, user: judge_user, rank: 1)
+        create(:entry_ranking, entry: entry2, judging_round: judging_round, user: judge_user, rank: 2)
+        # Only 2 ranked, need 3
       end
 
-      it 'only sends to active assignments' do
-        expect(JudgingInstructionsMailer).to receive(:send_instructions).exactly(3).times
-        expect(JudgingInstructionsMailer).not_to receive(:send_instructions).with(inactive_assignment, anything)
+      it 'does not enqueue the notification email' do
+        expect {
+          post :notify_completed, params: notify_completed_params
+        }.not_to have_enqueued_job(ActionMailer::MailDeliveryJob)
+      end
 
-        post :send_instructions, params: {
-          container_id: container.id,
-          contest_description_id: contest_description.id,
-          contest_instance_id: contest_instance.id,
-          id: judging_round.id
+      it 'redirects to judge dashboard with alert about needing more rankings' do
+        post :notify_completed, params: notify_completed_params
+
+        expect(response).to redirect_to(judge_dashboard_path)
+        expect(flash[:alert]).to include('Please rank at least 3 entries before notifying')
+        expect(flash[:alert]).to include('You have 2 ranked')
+      end
+    end
+
+    context 'when judge has ranked more than the required number' do
+      let!(:entry4) { create(:entry, contest_instance: contest_instance, deleted: false) }
+
+      before do
+        create(:entry_ranking, entry: entry1, judging_round: judging_round, user: judge_user, rank: 1)
+        create(:entry_ranking, entry: entry2, judging_round: judging_round, user: judge_user, rank: 2)
+        create(:entry_ranking, entry: entry3, judging_round: judging_round, user: judge_user, rank: 3)
+        create(:entry_ranking, entry: entry4, judging_round: judging_round, user: judge_user, rank: 4)
+      end
+
+      it 'enqueues the notification email' do
+        expect {
+          post :notify_completed, params: notify_completed_params
+        }.to have_enqueued_job(ActionMailer::MailDeliveryJob).once
+      end
+
+      it 'redirects to judge dashboard with success notice' do
+        post :notify_completed, params: notify_completed_params
+
+        expect(response).to redirect_to(judge_dashboard_path)
+        expect(flash[:notice]).to eq('The contest contact has been notified that you have completed your evaluations.')
+      end
+    end
+
+    context 'when container has no contact email' do
+      let(:container_no_email) { create(:container) }
+      let(:contest_description_no_email) { create(:contest_description, :active, container: container_no_email) }
+      let(:contest_instance_no_email) do
+        create(:contest_instance,
+          contest_description: contest_description_no_email,
+          date_open: 2.months.ago,
+          date_closed: 1.month.ago,
+          active: true)
+      end
+      let(:judging_round_no_email) do
+        create(:judging_round,
+          contest_instance: contest_instance_no_email,
+          round_number: 1,
+          active: true,
+          start_date: 1.day.ago,
+          end_date: 1.day.from_now,
+          required_entries_count: 2)
+      end
+      let!(:judging_assignment_no_email) { create(:judging_assignment, user: judge_user, contest_instance: contest_instance_no_email, active: true) }
+      let!(:round_judge_assignment_no_email) { create(:round_judge_assignment, user: judge_user, judging_round: judging_round_no_email, active: true) }
+      let!(:entry_a) { create(:entry, contest_instance: contest_instance_no_email, deleted: false) }
+      let!(:entry_b) { create(:entry, contest_instance: contest_instance_no_email, deleted: false) }
+
+      before do
+        container_no_email.update_column(:contact_email, nil)
+        create(:entry_ranking, entry: entry_a, judging_round: judging_round_no_email, user: judge_user, rank: 1)
+        create(:entry_ranking, entry: entry_b, judging_round: judging_round_no_email, user: judge_user, rank: 2)
+      end
+
+      it 'does not enqueue the notification email' do
+        expect {
+          post :notify_completed, params: {
+            container_id: container_no_email.id,
+            contest_description_id: contest_description_no_email.id,
+            contest_instance_id: contest_instance_no_email.id,
+            id: judging_round_no_email.id
+          }
+        }.not_to have_enqueued_job(ActionMailer::MailDeliveryJob)
+      end
+
+      it 'redirects with alert about missing contact email' do
+        post :notify_completed, params: {
+          container_id: container_no_email.id,
+          contest_description_id: contest_description_no_email.id,
+          contest_instance_id: contest_instance_no_email.id,
+          id: judging_round_no_email.id
         }
+
+        expect(response).to redirect_to(judge_dashboard_path)
+        expect(flash[:alert]).to eq('No contact email is set for this contest. Please contact an administrator.')
+      end
+    end
+
+    context 'when user is not the assigned judge' do
+      let(:other_user) { create(:user, :with_judge_role) }
+
+      before do
+        sign_in other_user
+        create(:entry_ranking, entry: entry1, judging_round: judging_round, user: judge_user, rank: 1)
+        create(:entry_ranking, entry: entry2, judging_round: judging_round, user: judge_user, rank: 2)
+        create(:entry_ranking, entry: entry3, judging_round: judging_round, user: judge_user, rank: 3)
+      end
+
+      it 'redirects to root (unauthorized)' do
+        post :notify_completed, params: notify_completed_params
+
+        expect(response).to redirect_to(root_path)
+      end
+
+      it 'does not enqueue the notification email' do
+        expect {
+          post :notify_completed, params: notify_completed_params
+        }.not_to have_enqueued_job(ActionMailer::MailDeliveryJob)
       end
     end
   end
