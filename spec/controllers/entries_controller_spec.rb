@@ -21,6 +21,43 @@ RSpec.describe EntriesController, type: :controller do
       end
     end
 
+    context "when user is a Container Administrator for the entry's container" do
+      let(:container) { contest_instance.contest_description.container }
+      let(:admin_user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: admin_user, container: container, role: admin_role)
+        sign_in admin_user
+        get :modal_details, params: { id: entry.id }
+      end
+
+      it "returns a successful response" do
+        expect(response).to be_successful
+      end
+
+      it "renders the details partial" do
+        expect(response).to render_template('entries/modal_details')
+      end
+    end
+
+    context "when user is a Collection Administrator for a different container" do
+      let(:other_container) { create(:container) }
+      let(:other_admin_user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: other_admin_user, container: other_container, role: admin_role)
+        sign_in other_admin_user
+        get :modal_details, params: { id: entry.id }
+      end
+
+      it "redirects with unauthorized message" do
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq("!!! Not authorized !!!")
+      end
+    end
+
     context "when user is not authorized" do
       let(:other_user) { create(:user) }
 
