@@ -21,6 +21,26 @@ RSpec.describe EntriesController, type: :controller do
       end
     end
 
+    context "when user is a Container Administrator for the entry's container" do
+      let(:container) { contest_instance.contest_description.container }
+      let(:admin_user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: admin_user, container: container, role: admin_role)
+        sign_in admin_user
+        get :modal_details, params: { id: entry.id }
+      end
+
+      it "returns a successful response" do
+        expect(response).to be_successful
+      end
+
+      it "renders the details partial" do
+        expect(response).to render_template('entries/modal_details')
+      end
+    end
+
     context "when user is not authorized" do
       let(:other_user) { create(:user) }
 

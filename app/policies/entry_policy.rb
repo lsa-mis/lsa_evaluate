@@ -36,19 +36,16 @@ class EntryPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       base_scope = scope.where(deleted: false) # Only show non-deleted entries by default
+      admin_role_ids = Role.where(kind: ['Collection Administrator', 'Collection Manager']).pluck(:id)
+      admin_container_ids = user.present? ? user.assignments.where(role_id: admin_role_ids).pluck(:container_id).uniq : []
 
       if user.nil?
         scope.none
       elsif user.axis_mundi?
         # Axis mundi can see all entries
         base_scope
-      elsif user.administrator? || user.manager?
-        # Collection administrators and managers can see entries from their containers
-        admin_role_ids = Role.where(kind: ['Collection Administrator', 'Collection Manager']).pluck(:id)
-        admin_container_ids = user.assignments
-                                  .where(role_id: admin_role_ids)
-                                  .pluck(:container_id)
-
+      elsif admin_container_ids.any?
+        # Collection administrators and managers (by container assignment) can see entries from their containers
         base_scope.joins(contest_instance: { contest_description: :container })
                  .where(containers: { id: admin_container_ids })
       elsif user.judge?
