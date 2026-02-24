@@ -18,10 +18,10 @@ module ContainersHelper
     eligibility_plain = description.eligibility_rules.to_plain_text.to_s.squish
     preview_words = eligibility_plain.split
 
-    if preview_words.length > 6
-      preview_text = preview_words.first(6).join(' ')
+    if preview_words.length > 8
+      preview_text = preview_words.first(8).join(' ')
 
-      content_tag(:div, class: 'd-inline-flex align-items-center gap-1 border rounded px-1 py-0 bg-light small') do
+      content_tag(:div, class: 'd-inline-flex align-items-start gap-1 border rounded px-1 py-0 bg-light small') do
         safe_join([
           content_tag(:span, 'Rules:', class: 'fw-semibold text-muted'),
           content_tag(:span, preview_text, class: 'text-muted'),
