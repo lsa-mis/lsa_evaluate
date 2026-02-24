@@ -15,17 +15,25 @@ module ContainersHelper
   end
 
   def render_eligibility_rules(description)
-    eligibility_plain = description.eligibility_rules.to_plain_text
-    if eligibility_plain.length > 60
-      content_tag(:div) do
-        truncate(eligibility_plain, length: 60, omission: '') +
-        link_to(' ...more', '#',
-          data: {
-            action: 'click->modal#open',
-            url: eligibility_rules_container_contest_description_path(description.container, description),
-            modal_title: 'Eligibility Rules'
-          }
-        )
+    eligibility_plain = description.eligibility_rules.to_plain_text.to_s.squish
+    preview_words = eligibility_plain.split
+
+    if preview_words.length > 8
+      preview_text = preview_words.first(8).join(' ')
+
+      content_tag(:div, class: 'd-inline-flex align-items-start gap-1 border rounded px-1 py-0 bg-light small') do
+        safe_join([
+          content_tag(:span, 'Rules:', class: 'fw-semibold text-muted'),
+          content_tag(:span, preview_text, class: 'text-muted'),
+          link_to('...more', '#',
+            data: {
+              action: 'click->modal#open',
+              url: eligibility_rules_container_contest_description_path(description.container, description),
+              modal_title: 'Eligibility Rules'
+            },
+            aria: { label: 'View full eligibility rules' }
+          )
+        ])
       end
     else
       description.eligibility_rules
