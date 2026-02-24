@@ -48,8 +48,8 @@ RSpec.describe ContainersHelper, type: :helper do
   end
 
   describe "#render_eligibility_rules" do
-    context "when eligibility rules are longer than 60 characters" do
-      let(:long_text) { "These are very long eligibility rules that will definitely exceed the 60 character limit and therefore trigger the modal functionality." }
+    context "when eligibility rules have more than 6 words" do
+      let(:long_text) { "These rules are intentionally long so they trigger modal preview behavior." }
       let(:rich_text) { instance_double(ActionText::RichText, to_plain_text: long_text) }
 
       before do
@@ -61,19 +61,21 @@ RSpec.describe ContainersHelper, type: :helper do
         result = helper.render_eligibility_rules(description)
         parsed_result = Nokogiri::HTML.fragment(result.to_s)
         link = parsed_result.at_css('a')
+        preview_chip = parsed_result.at_css('div')
 
         # Check link attributes
         expect(link['data-action']).to eq('click->modal#open')
         expect(link['data-modal-title']).to eq('Eligibility Rules')
         expect(link['href']).to eq('#')
-        expect(link.text).to eq(' ...more')
+        expect(link.text).to eq('...more')
 
-        # Check truncated text
-        expect(parsed_result.text).to include(long_text[0..59])
+        # Check word-based truncation and visual treatment
+        expect(parsed_result.text).to match(/Rules:\s*These rules are intentionally long so/)
+        expect(preview_chip['class']).to include('border')
       end
     end
 
-    context "when eligibility rules are shorter than 100 characters" do
+    context "when eligibility rules have 6 or fewer words" do
       let(:short_text) { "Short rules" }
       let(:rich_text) { instance_double(ActionText::RichText, to_plain_text: short_text) }
 
