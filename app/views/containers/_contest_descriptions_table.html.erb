@@ -1,7 +1,7 @@
 <%# app/views/containers/_contest_descriptions_table.html.erb - Card list for scannability and full names %>
 <% descriptions.each do |description| %>
   <div class="card mb-2" data-status="<%= description.active %>" data-filter-target="filterRow">
-    <div class="card-body py-2 px-3">
+    <div class="card-body py-1 px-2">
       <div class="d-flex justify-content-between align-items-start gap-3">
         <div class="flex-grow-1 min-w-0">
           <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
@@ -16,35 +16,36 @@
               </div>
             <% end %>
           </div>
-          <div class="small text-muted d-flex flex-wrap align-items-start gap-2">
-            <div class="d-flex flex-column">
+          <div class="small text-muted d-flex align-items-center gap-2">
+            <div class="d-flex flex-column flex-shrink-0">
               <span class="text-nowrap">Short name: <%= description.short_name %></span>
               <span class="text-nowrap"><%= pluralize(description.contest_instances.count, 'instance') %></span>
             </div>
-            <div class="min-w-0"><%= render_eligibility_rules(description) %></div>
+            <div class="flex-grow-1 d-flex justify-content-center min-w-0"><%= render_eligibility_rules(description) %></div>
           </div>
         </div>
         <div class="d-flex flex-column align-items-end flex-shrink-0">
-          <% if description.notes.present? %>
-            <%= link_to "View notes",
-                        container_contest_description_contest_instances_path(container, description),
-                        class: "btn btn-link btn-sm p-0",
-                        title: "View notes",
-                        aria: { label: "View notes for #{description.name}" } %>
-          <% end %>
           <span class="small mt-1">Active: <%= boolean_to_yes_no(description.active) %></span>
-          <div class="d-flex align-items-center gap-1 mt-1">
+          <div class="d-flex align-items-center justify-content-between mt-1" style="min-width: 3.75rem;">
             <% contest_description_action_links(container, description).each do |_action, config| %>
               <%= link_to config[:path],
-                          class: 'btn btn-link btn-sm p-0',
+                          class: 'btn btn-link btn-sm p-0 d-inline-flex align-items-center justify-content-center',
+                          style: 'width: 1.5rem; height: 1.5rem;',
                           data: config[:data]&.merge('bs-toggle': 'tooltip'),
                           title: config[:title],
                           aria: { label: config[:title] } do %>
-                <i class="bi bi-<%= config[:icon] %> text-um-blue" aria-hidden="true"></i>
+                <i class="bi bi-<%= config[:icon] %> fs-5 text-um-blue" aria-hidden="true"></i>
                 <span class="visually-hidden"><%= config[:title] %></span>
               <% end %>
             <% end %>
           </div>
+          <% if description.notes.to_plain_text.squish.present? %>
+            <%= link_to "View notes",
+              container_contest_description_path(container, description),
+              class: "btn btn-link btn-sm p-0",
+              title: "View notes",
+              aria: { label: "View notes for #{description.name}" } %>
+          <% end %>
         </div>
       </div>
     </div>
