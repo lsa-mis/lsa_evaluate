@@ -17,8 +17,10 @@ class ContainersController < ApplicationController
       @container.assignments.container_managers
     ).includes(:user, :role)
     @assignment = @container.assignments.build
-    @container_contest_descriptions = @container.contest_descriptions.reorder('contest_descriptions.name ASC')
-    @active_contest_descriptions = @container.contest_descriptions.active.reorder('contest_descriptions.name ASC')
+    @container_contest_descriptions = @container.contest_descriptions
+                                                .includes(contest_instances: :entries)
+                                                .reorder('contest_descriptions.name ASC')
+    @active_contest_descriptions = @container_contest_descriptions.select(&:active?)
   end
 
   def new
