@@ -19,7 +19,7 @@
           <div class="small text-muted d-flex align-items-center gap-2">
             <div class="d-flex flex-column flex-shrink-0">
               <span class="text-nowrap">Short name: <%= description.short_name %></span>
-              <span class="text-nowrap"><%= pluralize(description.contest_instances.count, 'instance') %></span>
+              <span class="text-nowrap"><%= pluralize(description.contest_instances.size, 'instance') %></span>
             </div>
             <div class="flex-grow-1 d-flex justify-content-center min-w-0"><%= render_eligibility_rules(description) %></div>
           </div>
