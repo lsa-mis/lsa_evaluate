@@ -7,6 +7,7 @@ gem 'rails', '~> 7.2'
 ruby '3.3.4'
 
 gem 'actiontext'
+gem 'appsignal'
 gem 'bootsnap', require: false
 gem 'country_select'
 gem 'cssbundling-rails'

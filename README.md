@@ -75,4 +75,19 @@ Direct pushes are restricted and enforced by a pre-push hook.
 - All pushes to protected branches run tests automatically, unless skipped.
 - For details on hook installation, admin setup, and troubleshooting, see [.git-hooks/README.md](.git-hooks/README.md).
 
+## AppSignal
+
+AppSignal is currently enabled only for the staging environment on Hatchbox.
+
+Required Hatchbox environment variables:
+
+```sh
+APPSIGNAL_PUSH_API_KEY
+APPSIGNAL_APP_NAME=LSAEvaluate
+APPSIGNAL_APP_ENV=staging
+APPSIGNAL_ACTIVE=true
+```
+
+Production on MiServer does not currently have AppSignal enabled.
+
 ## This project is licensed under the [MIT License](https://github.com/your-repo/lsa-evaluate/blob/main/LICENSE)
