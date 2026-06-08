@@ -213,6 +213,10 @@ GEM
       os (>= 0.9, < 2.0)
       signet (>= 0.16, < 2.a)
     hashie (5.0.0)
+    httparty (0.24.2)
+      csv
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     httpclient (2.8.3)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
@@ -246,6 +250,10 @@ GEM
     loofah (2.23.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
+    lsa_tdx_feedback (1.0.3)
+      httparty (~> 0.22)
+      rails (>= 6.0)
+      redis (>= 4.0)
     mail (2.8.1)
       mini_mime (>= 0.1.1)
       net-imap
@@ -259,6 +267,8 @@ GEM
     minitest (5.25.5)
     msgpack (1.7.2)
     multi_json (1.15.0)
+    multi_xml (0.8.1)
+      bigdecimal (>= 3.1, < 5)
     mutex_m (0.2.0)
     mysql2 (0.5.6)
     net-http (0.4.1)
@@ -581,6 +591,7 @@ DEPENDENCIES
   jbuilder
   jsbundling-rails
   letter_opener_web
+  lsa_tdx_feedback
   mysql2 (~> 0.5.3)
   omniauth-rails_csrf_protection (~> 1.0)
   omniauth-saml (~> 2.1)
