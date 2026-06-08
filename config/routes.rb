@@ -138,6 +138,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Mount the feedback gem engine
+  mount LsaTdxFeedback::Engine => '/lsa_tdx_feedback', as: 'lsa_tdx_feedback'
+
   # Place this at the very end of the file to catch all undefined routes
   match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|
     req.path.exclude?('/rails/active_storage') &&
