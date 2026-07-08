@@ -43,6 +43,8 @@ class JudgingRound < ApplicationRecord
   validates :start_date, :end_date, presence: true
   validates :required_entries_count, presence: true,
             numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validates :min_internal_comment_words, :min_external_comment_words, presence: true,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :dates_are_valid
   validate :start_date_after_previous_round
   validate :only_one_active_round_per_contest
