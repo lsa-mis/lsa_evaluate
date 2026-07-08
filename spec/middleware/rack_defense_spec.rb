@@ -71,22 +71,42 @@ RSpec.describe Rack::Defense do
 
     it 'preserves the POST body for downstream handlers' do
       captured_body = nil
+      original_input = nil
       inspecting_app = lambda do |env|
         captured_body = env['rack.input'].read
         [200, {}, ['OK']]
       end
 
-      status, = described_class.new(inspecting_app).call(
-        Rack::MockRequest.env_for(
-          '/entries',
-          method: 'POST',
-          input: 'name=test&value=1',
-          'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
-        )
+      env = Rack::MockRequest.env_for(
+        '/entries',
+        method: 'POST',
+        input: 'name=test&value=1',
+        'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
       )
+      original_input = env['rack.input']
+
+      status, = described_class.new(inspecting_app).call(env)
 
       expect(status).to eq(200)
       expect(captured_body).to eq('name=test&value=1')
+      expect(env['rack.input']).to equal(original_input)
+    end
+
+    it 'does not desync Rack POST cache from rack.input' do
+      inspecting_app = ->(_env) { [200, {}, ['OK']] }
+      env = Rack::MockRequest.env_for(
+        '/entries',
+        method: 'POST',
+        input: 'name=test&value=1',
+        'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
+      )
+
+      status, = described_class.new(inspecting_app).call(env)
+
+      expect(status).to eq(200)
+      request = Rack::Request.new(env)
+      expect(request.POST).to eq('name' => 'test', 'value' => '1')
+      expect(env[Rack::RACK_REQUEST_FORM_INPUT]).to equal(env['rack.input'])
     end
   end
 
