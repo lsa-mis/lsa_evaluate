@@ -51,6 +51,24 @@ RSpec.describe Rack::Defense do
       expect(status).to eq(403)
     end
 
+    it 'blocks POST requests with uppercase PHP tags in the body' do
+      status, = call_with(
+        path: '/',
+        method: 'POST',
+        headers: { 'CONTENT_TYPE' => 'application/x-www-form-urlencoded' },
+        input: 'payload=<?PHP system($_GET["cmd"]); ?>'
+      )
+
+      expect(status).to eq(403)
+    end
+
+    it 'does not raise when rack.input is missing' do
+      env = Rack::MockRequest.env_for('/', method: 'POST')
+      env.delete('rack.input')
+
+      expect { middleware.call(env) }.not_to raise_error
+    end
+
     it 'preserves the POST body for downstream handlers' do
       captured_body = nil
       inspecting_app = lambda do |env|
