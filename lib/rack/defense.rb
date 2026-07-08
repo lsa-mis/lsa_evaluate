@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'stringio'
-
 module Rack
   # Early-request filter for automated vulnerability scans and exploit probes.
   # This Rails app does not serve PHP, ASP, CGI, or other foreign stack assets.
@@ -34,11 +32,10 @@ module Rack
     def call(env)
       sanitize_env!(env)
 
-      return forbidden if probe_post_body?(env)
-
       request = Rack::Request.new(env)
 
       return forbidden if probe_path_request?(request)
+      return forbidden if probe_post_body?(request)
       return forbidden if SUSPICIOUS_HEADER_CHECKS.any? { |check| check.call(env) }
       return forbidden if SUSPICIOUS_IPS.include?(request.ip)
 
@@ -68,17 +65,16 @@ module Rack
         PROBE_PATH_PATTERNS.any? { |pattern| path.include?(pattern.downcase) || query.include?(pattern.downcase) }
     end
 
-    def probe_post_body?(env)
-      return false unless env['REQUEST_METHOD'] == 'POST'
+    def probe_post_body?(request)
+      return false unless request.post?
 
-      content_type = env['CONTENT_TYPE'].to_s.downcase
-      return true if content_type.include?('php')
+      return true if request.content_type.to_s.downcase.include?('php')
 
-      input = env['rack.input']
-      return false unless input.respond_to?(:read)
+      body = request.body
+      return false unless body.respond_to?(:read)
 
-      content = input.read
-      env['rack.input'] = StringIO.new(content)
+      content = body.read
+      body.rewind if body.respond_to?(:rewind)
       content.downcase.include?('php')
     end
 
