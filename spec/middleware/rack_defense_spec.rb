@@ -50,6 +50,26 @@ RSpec.describe Rack::Defense do
 
       expect(status).to eq(403)
     end
+
+    it 'preserves the POST body for downstream handlers' do
+      captured_body = nil
+      inspecting_app = lambda do |env|
+        captured_body = env['rack.input'].read
+        [200, {}, ['OK']]
+      end
+
+      status, = described_class.new(inspecting_app).call(
+        Rack::MockRequest.env_for(
+          '/entries',
+          method: 'POST',
+          input: 'name=test&value=1',
+          'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
+        )
+      )
+
+      expect(status).to eq(200)
+      expect(captured_body).to eq('name=test&value=1')
+    end
   end
 
   describe 'invalid UTF-8 handling' do

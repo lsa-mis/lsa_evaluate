@@ -32,9 +32,11 @@ module Rack
     def call(env)
       sanitize_env!(env)
 
+      return forbidden if probe_post_body?(env)
+
       request = Rack::Request.new(env)
 
-      return forbidden if probe_request?(request)
+      return forbidden if probe_path_request?(request)
       return forbidden if SUSPICIOUS_HEADER_CHECKS.any? { |check| check.call(env) }
       return forbidden if SUSPICIOUS_IPS.include?(request.ip)
 
@@ -55,11 +57,8 @@ module Rack
       end
     end
 
-    def probe_request?(request)
-      path = request.path.downcase
-      query = request.query_string.downcase
-
-      probe_path?(path, query) || probe_post_body?(request)
+    def probe_path_request?(request)
+      probe_path?(request.path.downcase, request.query_string.downcase)
     end
 
     def probe_path?(path, query)
@@ -67,10 +66,15 @@ module Rack
         PROBE_PATH_PATTERNS.any? { |pattern| path.include?(pattern.downcase) || query.include?(pattern.downcase) }
     end
 
-    def probe_post_body?(request)
-      return false unless request.post?
+    def probe_post_body?(env)
+      return false unless env['REQUEST_METHOD'] == 'POST'
+      return true if env['CONTENT_TYPE'].to_s.include?('php')
 
-      request.content_type.to_s.include?('php') || request.body.read.to_s.include?('php')
+      input = env['rack.input']
+      content = input.read
+      input.rewind if input.respond_to?(:rewind)
+
+      content.include?('php')
     end
 
     def forbidden
