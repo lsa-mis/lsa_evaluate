@@ -27,15 +27,20 @@ class Rack::Defense
   end
 
   def call(env)
+    # Sanitize all string values in the Rack env to valid UTF-8 to prevent
+    # ArgumentError from invalid byte sequences in downstream middleware.
+    env.each do |key, value|
+      next unless value.is_a?(String)
+
+      env[key] = value.encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
+    end
+
     request = Rack::Request.new(env)
 
-    # Block requests with PHP-related content
-    if request.post? && (
-      request.path.include?('.php') ||
-      request.query_string.include?('php') ||
-      request.content_type.to_s.include?('php') ||
-      request.body.read.to_s.include?('php')
-    )
+    # Block requests with PHP/exe-related paths or content (all HTTP methods)
+    php_patterns = ['.php', '.exe', 'php-cgi', 'xampp', 'wp-admin', 'wp-login']
+    if php_patterns.any? { |p| request.path.include?(p) || request.query_string.include?(p) } ||
+       (request.post? && (request.content_type.to_s.include?('php') || request.body.read.to_s.include?('php')))
       return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
     end
 
@@ -52,6 +57,10 @@ class Rack::Defense
     end
 
     @app.call(env)
+  rescue ArgumentError => e
+    raise unless e.message.include?('invalid byte sequence')
+
+    [400, { 'Content-Type' => 'text/plain' }, ['Bad Request']]
   end
 end
 
