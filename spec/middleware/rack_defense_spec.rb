@@ -13,18 +13,31 @@ RSpec.describe Rack::Defense do
     middleware.call(env)
   end
 
-  describe 'PHP / probe path blocking' do
-    it 'blocks GET requests to php-cgi probe paths' do
-      status, _headers, body = call_with(path: '/xampp/php-cgi.exe')
+  describe 'probe path blocking' do
+    [
+      '/xampp/php-cgi.exe',
+      '/php-cgi/php-cgi.exe',
+      '/home.cgi',
+      '/start.shtml',
+      '/login.aspx',
+      '/main.cfm',
+      '/menu.jsa',
+      '/kubepi/fav.png',
+      '/officescan/console/html/localization.js',
+      '/administrator/manifests/files/joomla.xml',
+      '/WebApp/js/UI_String.js',
+      '/ext-js/app/common/zld_product_spec.js',
+      '/css/eonweb.css',
+      '/images/logo.gif',
+      '/phoenix/favicon.ico',
+      '/CHANGELOG.txt'
+    ].each do |probe_path|
+      it "blocks GET requests to #{probe_path}" do
+        status, _headers, body = call_with(path: probe_path)
 
-      expect(status).to eq(403)
-      expect(body).to eq(['Forbidden'])
-    end
-
-    it 'blocks GET requests to /php-cgi/php-cgi.exe' do
-      status, = call_with(path: '/php-cgi/php-cgi.exe')
-
-      expect(status).to eq(403)
+        expect(status).to eq(403)
+        expect(body).to eq(['Forbidden'])
+      end
     end
 
     it 'blocks POST requests with php content in the body' do
@@ -36,6 +49,64 @@ RSpec.describe Rack::Defense do
       )
 
       expect(status).to eq(403)
+    end
+
+    it 'blocks POST requests with uppercase PHP tags in the body' do
+      status, = call_with(
+        path: '/',
+        method: 'POST',
+        headers: { 'CONTENT_TYPE' => 'application/x-www-form-urlencoded' },
+        input: 'payload=<?PHP system($_GET["cmd"]); ?>'
+      )
+
+      expect(status).to eq(403)
+    end
+
+    it 'does not raise when rack.input is missing' do
+      env = Rack::MockRequest.env_for('/', method: 'POST')
+      env.delete('rack.input')
+
+      expect { middleware.call(env) }.not_to raise_error
+    end
+
+    it 'preserves the POST body for downstream handlers' do
+      captured_body = nil
+      original_input = nil
+      inspecting_app = lambda do |env|
+        captured_body = env['rack.input'].read
+        [200, {}, ['OK']]
+      end
+
+      env = Rack::MockRequest.env_for(
+        '/entries',
+        method: 'POST',
+        input: 'name=test&value=1',
+        'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
+      )
+      original_input = env['rack.input']
+
+      status, = described_class.new(inspecting_app).call(env)
+
+      expect(status).to eq(200)
+      expect(captured_body).to eq('name=test&value=1')
+      expect(env['rack.input']).to equal(original_input)
+    end
+
+    it 'does not desync Rack POST cache from rack.input' do
+      inspecting_app = ->(_env) { [200, {}, ['OK']] }
+      env = Rack::MockRequest.env_for(
+        '/entries',
+        method: 'POST',
+        input: 'name=test&value=1',
+        'CONTENT_TYPE' => 'application/x-www-form-urlencoded'
+      )
+
+      status, = described_class.new(inspecting_app).call(env)
+
+      expect(status).to eq(200)
+      request = Rack::Request.new(env)
+      expect(request.POST).to eq('name' => 'test', 'value' => '1')
+      expect(env[Rack::RACK_REQUEST_FORM_INPUT]).to equal(env['rack.input'])
     end
   end
 
