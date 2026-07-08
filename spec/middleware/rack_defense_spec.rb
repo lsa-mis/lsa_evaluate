@@ -13,18 +13,31 @@ RSpec.describe Rack::Defense do
     middleware.call(env)
   end
 
-  describe 'PHP / probe path blocking' do
-    it 'blocks GET requests to php-cgi probe paths' do
-      status, _headers, body = call_with(path: '/xampp/php-cgi.exe')
+  describe 'probe path blocking' do
+    [
+      '/xampp/php-cgi.exe',
+      '/php-cgi/php-cgi.exe',
+      '/home.cgi',
+      '/start.shtml',
+      '/login.aspx',
+      '/main.cfm',
+      '/menu.jsa',
+      '/kubepi/fav.png',
+      '/officescan/console/html/localization.js',
+      '/administrator/manifests/files/joomla.xml',
+      '/WebApp/js/UI_String.js',
+      '/ext-js/app/common/zld_product_spec.js',
+      '/css/eonweb.css',
+      '/images/logo.gif',
+      '/phoenix/favicon.ico',
+      '/CHANGELOG.txt'
+    ].each do |probe_path|
+      it "blocks GET requests to #{probe_path}" do
+        status, _headers, body = call_with(path: probe_path)
 
-      expect(status).to eq(403)
-      expect(body).to eq(['Forbidden'])
-    end
-
-    it 'blocks GET requests to /php-cgi/php-cgi.exe' do
-      status, = call_with(path: '/php-cgi/php-cgi.exe')
-
-      expect(status).to eq(403)
+        expect(status).to eq(403)
+        expect(body).to eq(['Forbidden'])
+      end
     end
 
     it 'blocks POST requests with php content in the body' do
