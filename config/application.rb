@@ -20,49 +20,7 @@ require 'action_cable/engine'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-# Custom middleware to block PHP-related requests
-class Rack::Defense
-  def initialize(app)
-    @app = app
-  end
-
-  def call(env)
-    # Sanitize all string values in the Rack env to valid UTF-8 to prevent
-    # ArgumentError from invalid byte sequences in downstream middleware.
-    env.each do |key, value|
-      next unless value.is_a?(String)
-
-      env[key] = value.encode('UTF-8', invalid: :replace, undef: :replace, replace: '')
-    end
-
-    request = Rack::Request.new(env)
-
-    # Block requests with PHP/exe-related paths or content (all HTTP methods)
-    php_patterns = ['.php', '.exe', 'php-cgi', 'xampp', 'wp-admin', 'wp-login']
-    if php_patterns.any? { |p| request.path.include?(p) || request.query_string.include?(p) } ||
-       (request.post? && (request.content_type.to_s.include?('php') || request.body.read.to_s.include?('php')))
-      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
-    end
-
-    # Block requests with suspicious headers
-    if request.env['HTTP_USER_AGENT'].to_s.include?('Custom-AsyncHttpClient') ||
-       request.env['HTTP_X_REQUEST_ID'].to_s.include?('cve_2024_4577')
-      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
-    end
-
-    # Block known malicious IPs
-    suspicious_ips = ['91.99.22.81'] # Add more IPs as needed
-    if suspicious_ips.include?(request.ip)
-      return [403, { 'Content-Type' => 'text/plain' }, ['Forbidden']]
-    end
-
-    @app.call(env)
-  rescue ArgumentError => e
-    raise unless e.message.include?('invalid byte sequence')
-
-    [400, { 'Content-Type' => 'text/plain' }, ['Bad Request']]
-  end
-end
+require_relative '../lib/rack/defense'
 
 module LsaEvaluate
   class Application < Rails::Application # rubocop:disable Style/Documentation
