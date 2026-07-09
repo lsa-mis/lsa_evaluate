@@ -30,7 +30,8 @@ RSpec.describe Rack::Defense do
       '/css/eonweb.css',
       '/images/logo.gif',
       '/phoenix/favicon.ico',
-      '/CHANGELOG.txt'
+      '/CHANGELOG.txt',
+      '/plugins/editors/jce/jce.xml'
     ].each do |probe_path|
       it "blocks GET requests to #{probe_path}" do
         status, _headers, body = call_with(path: probe_path)
