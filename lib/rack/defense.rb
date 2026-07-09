@@ -15,7 +15,8 @@ module Rack
       'php-cgi', 'xampp', 'wp-admin', 'wp-login',
       'officescan', 'kubepi', 'administrator/manifests',
       'ext-js', 'WebApp/', 'eonweb', 'phoenix/favicon',
-      '/CHANGELOG.txt', '/images/logo'
+      '/CHANGELOG.txt', '/images/logo',
+      '/plugins/editors/jce/jce.xml'
     ].freeze
 
     SUSPICIOUS_HEADER_CHECKS = [
