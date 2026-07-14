@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 gem 'rails', '~> 8.1'
-ruby '4.0.1'
+ruby '4.0.6'
 
 gem 'actiontext'
 gem 'appsignal'

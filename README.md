@@ -1,7 +1,7 @@
 # LSA Evaluate
 
 [![Ruby on Rails](https://img.shields.io/badge/Ruby%20on%20Rails-8.1-red)](https://rubyonrails.org/)
-[![Ruby](https://img.shields.io/badge/Ruby-4.0.1-blue)](https://www.ruby-lang.org/en/)
+[![Ruby](https://img.shields.io/badge/Ruby-4.0.6-blue)](https://www.ruby-lang.org/en/)
 [![MySQL](https://img.shields.io/badge/Database-MySQL%208-green)](https://www.mysql.com/)
 
 LSA Evaluate is a Ruby on Rails application designed to facilitate a comprehensive submission and evaluation process. The application allows entrants to complete a profile, submit a body of work electronically, and have that work evaluated. Key features include the maintenance of entry forms, management of evaluations, and visual cues to entrants regarding the status of their submissions.
@@ -15,7 +15,7 @@ In its initial implementation, LSA Evaluate will serve the University of Michiga
 ## Technical Specifications
 
 - **Ruby on Rails:** 8.1
-- **Ruby Version:** 4.0.1
+- **Ruby Version:** 4.0.6
 - **Database:** MySQL 8 (primary + Solid Queue / Cache / Cable databases)
 - **Assets:** Propshaft + cssbundling-rails / jsbundling-rails (esbuild + Dart Sass)
 - **Jobs:** Solid Queue (via Puma plugin in production/staging)
@@ -72,7 +72,7 @@ This application uses SendGrid for email delivery in the production environment.
 
 Before deploying:
 
-1. Install Ruby 4.0.1 via asdf on the host.
+1. Install Ruby 4.0.6 via asdf on the host.
 2. Create MySQL databases: `evaluate_db_prod_queue`, `evaluate_db_prod_cache`, `evaluate_db_prod_cable` (and staging equivalents / `QUEUE_DATABASE_URL`, `CACHE_DATABASE_URL`, `CABLE_DATABASE_URL` if separate).
 3. Run `rails db:prepare` (or load `db/queue_schema.rb`, `db/cache_schema.rb`, `db/cable_schema.rb`) on those databases.
 4. Stop and remove Sidekiq/Redis once in-flight Sidekiq jobs are drained.
