@@ -2,7 +2,7 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include ApplicationHelper
-  include Pagy::Backend
+  include Pagy::Method
   before_action :authenticate_user!
   before_action :set_sentry_context
 
