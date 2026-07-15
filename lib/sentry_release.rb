@@ -6,6 +6,7 @@ module SentryRelease
 
   def current
     ENV['SENTRY_RELEASE'].presence ||
+      ENV['HATCHBOX_REVISION'].presence ||
       revision_file.presence ||
       git_sha.presence
   end
