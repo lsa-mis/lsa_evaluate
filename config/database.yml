@@ -1,4 +1,3 @@
-
 default: &default
   adapter: mysql2
   encoding: utf8mb4
@@ -9,26 +8,102 @@ default: &default
   port: 3306
 
 development:
-  <<: *default
-  database: lsa_evaluate_development
+  primary:
+    <<: *default
+    database: lsa_evaluate_development
+  queue:
+    <<: *default
+    database: lsa_evaluate_development_queue
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *default
+    database: lsa_evaluate_development_cache
+    migrations_paths: db/cache_migrate
+  cable:
+    <<: *default
+    database: lsa_evaluate_development_cable
+    migrations_paths: db/cable_migrate
 
 development_feature:
-  <<: *default
-  database: lsa_evaluate_development_feature
+  primary:
+    <<: *default
+    database: lsa_evaluate_development_feature
+  queue:
+    <<: *default
+    database: lsa_evaluate_development_feature_queue
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *default
+    database: lsa_evaluate_development_feature_cache
+    migrations_paths: db/cache_migrate
+  cable:
+    <<: *default
+    database: lsa_evaluate_development_feature_cable
+    migrations_paths: db/cable_migrate
 
 test:
-  <<: *default
-  database: lsa_evaluate_test
+  primary:
+    <<: *default
+    database: lsa_evaluate_test
+  queue:
+    <<: *default
+    database: lsa_evaluate_test_queue
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *default
+    database: lsa_evaluate_test_cache
+    migrations_paths: db/cache_migrate
+  cable:
+    <<: *default
+    database: lsa_evaluate_test_cable
+    migrations_paths: db/cable_migrate
 
 staging:
-  <<: *default
-  url: <%= ENV["DATABASE_URL"] %>
+  primary:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+  queue:
+    <<: *default
+    url: <%= ENV.fetch("QUEUE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *default
+    url: <%= ENV.fetch("CACHE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
+    migrations_paths: db/cache_migrate
+  cable:
+    <<: *default
+    url: <%= ENV.fetch("CABLE_DATABASE_URL") { ENV["DATABASE_URL"] } %>
+    migrations_paths: db/cable_migrate
 
 production:
-  <<: *default
-  # url: <%= ENV["DATABASE_URL"] %>
-  database: evaluate_db_prod
-  username: <%= Rails.application.credentials.mysql[:prod_user] %>
-  password: <%= Rails.application.credentials.mysql[:prod_password] %>
-  host: <%= Rails.application.credentials.mysql[:prod_servername] %>
-  sslca: <%= Rails.application.credentials.mysql[:prod_sslca] %>
+  primary:
+    <<: *default
+    database: evaluate_db_prod
+    username: <%= Rails.application.credentials.dig(:mysql, :prod_user) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :prod_password) %>
+    host: <%= Rails.application.credentials.dig(:mysql, :prod_servername) %>
+    sslca: <%= Rails.application.credentials.dig(:mysql, :prod_sslca) %>
+  queue:
+    <<: *default
+    database: evaluate_db_prod_queue
+    username: <%= Rails.application.credentials.dig(:mysql, :prod_user) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :prod_password) %>
+    host: <%= Rails.application.credentials.dig(:mysql, :prod_servername) %>
+    sslca: <%= Rails.application.credentials.dig(:mysql, :prod_sslca) %>
+    migrations_paths: db/queue_migrate
+  cache:
+    <<: *default
+    database: evaluate_db_prod_cache
+    username: <%= Rails.application.credentials.dig(:mysql, :prod_user) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :prod_password) %>
+    host: <%= Rails.application.credentials.dig(:mysql, :prod_servername) %>
+    sslca: <%= Rails.application.credentials.dig(:mysql, :prod_sslca) %>
+    migrations_paths: db/cache_migrate
+  cable:
+    <<: *default
+    database: evaluate_db_prod_cable
+    username: <%= Rails.application.credentials.dig(:mysql, :prod_user) %>
+    password: <%= Rails.application.credentials.dig(:mysql, :prod_password) %>
+    host: <%= Rails.application.credentials.dig(:mysql, :prod_servername) %>
+    sslca: <%= Rails.application.credentials.dig(:mysql, :prod_sslca) %>
+    migrations_paths: db/cable_migrate

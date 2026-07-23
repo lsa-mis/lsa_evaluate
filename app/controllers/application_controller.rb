@@ -2,7 +2,7 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include ApplicationHelper
-  include Pagy::Backend
+  include Pagy::Method
   before_action :authenticate_user!
   before_action :set_sentry_context
 
@@ -68,11 +68,14 @@ class ApplicationController < ActionController::Base
   end
 
   def set_sentry_context
-    Sentry.set_user(id: current_user.id, email: current_user.email) if current_user
+    if current_user
+      Sentry.set_user(id: current_user.id, email: current_user.email)
+    end
+
     Sentry.set_context('request', {
       controller: controller_name,
       action: action_name,
-      params: params.except(:controller, :action)
+      params: request.filtered_parameters.except('controller', 'action')
     })
   end
 end

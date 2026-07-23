@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 module UsersDashboardHelper
-  include Pagy::Frontend
-
   def sort_link(column, title = nil)
     title ||= column.titleize
 

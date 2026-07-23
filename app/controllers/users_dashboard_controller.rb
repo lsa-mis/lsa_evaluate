@@ -16,12 +16,17 @@ class UsersDashboardController < ApplicationController
     end
 
     @pagy, @users = pagy(
+      :offset,
       users.order(sort_column => sort_direction),
-      items: 20,  # Explicitly set number of items per page
-      params: {
-        principal_name_filter: params[:principal_name_filter],
-        email_filter: params[:email_filter]
-      }.compact # Pass filters to pagination links
+      limit: 20,
+      querify: lambda { |p|
+        p.merge!(
+          {
+            'principal_name_filter' => params[:principal_name_filter],
+            'email_filter' => params[:email_filter]
+          }.compact
+        )
+      }
     )
   end
 

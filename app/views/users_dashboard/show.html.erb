@@ -28,6 +28,17 @@
 
             <dt class="col-sm-4">Uniqname</dt>
             <dd class="col-sm-8"><%= @user.uniqname %></dd>
+
+            <dt class="col-sm-4">Affiliations</dt>
+            <dd class="col-sm-8">
+              <% if @user.affiliations.any? %>
+                <% @user.affiliations.each do |affiliation| %>
+                  <span class="badge bg-info me-1"><%= affiliation.name %></span>
+                <% end %>
+              <% else %>
+                <span class="text-muted">None</span>
+              <% end %>
+            </dd>
           </dl>
         </div>
 
