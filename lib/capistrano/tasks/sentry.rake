@@ -14,7 +14,7 @@ namespace :sentry do
     auth_token = ENV['SENTRY_AUTH_TOKEN']
     org = ENV['SENTRY_ORG']
     project = ENV['SENTRY_PROJECT']
-    next unless auth_token.present? && org.present? && project.present?
+    next if [auth_token, org, project].any? { |value| value.nil? || value.empty? }
 
     revision = fetch(:current_revision)
     environment = fetch(:rails_env, 'production')
