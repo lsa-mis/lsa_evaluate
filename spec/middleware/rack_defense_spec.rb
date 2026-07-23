@@ -93,7 +93,7 @@ RSpec.describe Rack::Defense do
       expect(env['rack.input']).to equal(original_input)
     end
 
-    it 'does not desync Rack POST cache from rack.input' do
+    it 'does not prevent Rack from parsing POST params after body inspection' do
       inspecting_app = ->(_env) { [200, {}, ['OK']] }
       env = Rack::MockRequest.env_for(
         '/entries',
@@ -107,7 +107,7 @@ RSpec.describe Rack::Defense do
       expect(status).to eq(200)
       request = Rack::Request.new(env)
       expect(request.POST).to eq('name' => 'test', 'value' => '1')
-      expect(env[Rack::RACK_REQUEST_FORM_INPUT]).to equal(env['rack.input'])
+      expect(env[Rack::RACK_REQUEST_FORM_HASH]).to eq('name' => 'test', 'value' => '1')
     end
   end
 

@@ -43,3 +43,7 @@ pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
+
+# Run Solid Queue inside Puma for single-host Capistrano deploys.
+# Avoid ActiveSupport (e.g. present?) here — Puma loads this file before Rails boots.
+plugin :solid_queue if ENV['SOLID_QUEUE_IN_PUMA'] || %w[production staging].include?(ENV.fetch('RAILS_ENV', 'development'))

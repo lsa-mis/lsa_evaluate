@@ -1,7 +1,7 @@
 # LSA Evaluate
 
-[![Ruby on Rails](https://img.shields.io/badge/Ruby%20on%20Rails-7.2-red)](https://rubyonrails.org/)
-[![Ruby](https://img.shields.io/badge/Ruby-3.3.4-blue)](https://www.ruby-lang.org/en/)
+[![Ruby on Rails](https://img.shields.io/badge/Ruby%20on%20Rails-8.1-red)](https://rubyonrails.org/)
+[![Ruby](https://img.shields.io/badge/Ruby-4.0.6-blue)](https://www.ruby-lang.org/en/)
 [![MySQL](https://img.shields.io/badge/Database-MySQL%208-green)](https://www.mysql.com/)
 
 LSA Evaluate is a Ruby on Rails application designed to facilitate a comprehensive submission and evaluation process. The application allows entrants to complete a profile, submit a body of work electronically, and have that work evaluated. Key features include the maintenance of entry forms, management of evaluations, and visual cues to entrants regarding the status of their submissions.
@@ -14,9 +14,14 @@ In its initial implementation, LSA Evaluate will serve the University of Michiga
 
 ## Technical Specifications
 
-- **Ruby on Rails:** 7.2
-- **Ruby Version:** 3.3.4
-- **Database:** MySQL 8
+- **Ruby on Rails:** 8.1
+- **Ruby Version:** 4.0.6
+- **Database:** MySQL 8 (primary + Solid Queue / Cache / Cable databases)
+- **Assets:** Propshaft + cssbundling-rails / jsbundling-rails (esbuild + Dart Sass)
+- **Jobs:** Solid Queue (via Puma plugin in production/staging)
+- **Cache / Cable:** Solid Cache and Solid Cable (no Redis)
+
+> Note: `lsa_tdx_feedback` still declares a Redis gem dependency, so `redis` may appear transitively in `Gemfile.lock`, but the application no longer uses Redis for jobs, cache, or Action Cable.
 
 ## Installation
 
@@ -37,14 +42,16 @@ In its initial implementation, LSA Evaluate will serve the University of Michiga
 3. **Set up the database:**
 
   ```bash
-   rails db:create db:migrate
-
+   rails db:create db:prepare
   ```
 
-4. **Run the server:**
+  This creates the primary database plus queue, cache, and cable databases and loads their schemas.
+
+4. **Build assets and run the server:**
 
   ```bash
-   rails server
+   yarn build && yarn build:css
+   bin/dev
   ```
 
 ## Email Configuration with SendGrid
@@ -59,9 +66,17 @@ This application uses SendGrid for email delivery in the production environment.
    SENDGRID_API_KEY=your_sendgrid_api_key_here
    DOMAIN_NAME=yourdomain.com
    ```
-4. Ensure Sidekiq is set up and running to process emails asynchronously
+4. Solid Queue runs inside Puma in production/staging and processes `deliver_later` mailers asynchronously. Monitor jobs at `/jobs` (axis_mundi users).
 
-Emails are automatically configured to be sent asynchronously through Sidekiq background jobs.
+## Production / Staging Ops Notes
+
+Before deploying:
+
+1. Install Ruby 4.0.6 via asdf on the host.
+2. Create MySQL databases: `evaluate_db_prod_queue`, `evaluate_db_prod_cache`, `evaluate_db_prod_cable` (and staging equivalents / `QUEUE_DATABASE_URL`, `CACHE_DATABASE_URL`, `CABLE_DATABASE_URL` if separate).
+3. Run `rails db:prepare` (or load `db/queue_schema.rb`, `db/cache_schema.rb`, `db/cable_schema.rb`) on those databases.
+4. Stop and remove Sidekiq/Redis once in-flight Sidekiq jobs are drained.
+5. Restart Puma after deploy — Solid Queue is enabled via the Puma plugin.
 
 ## Protected Branches and Pre-Push Hook
 

@@ -25,9 +25,11 @@ require_relative '../lib/rack/defense'
 module LsaEvaluate
   class Application < Rails::Application # rubocop:disable Style/Documentation
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
-    # Add lib to the eager load paths
-    config.eager_load_paths << Rails.root.join('lib')
+    config.load_defaults 8.1
+
+    # Autoload lib/ (ignore non-Ruby dirs). Rack::Defense is also required above for boot.
+    config.autoload_lib(ignore: %w[assets tasks capistrano])
+
     config.time_zone = 'Eastern Time (US & Canada)'
     config.active_record.default_timezone = :utc
     config.exceptions_app = self.routes
@@ -40,21 +42,9 @@ module LsaEvaluate
     #
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
-    # Don't generate system test files.
     config.generators.system_tests = nil
 
     # Add security middleware
     config.middleware.use Rack::Defense
-
-    # Configure rate limiting
-    config.action_dispatch.rate_limiter = {
-      limit: 300,
-      period: 5.minutes,
-      store: :redis,
-      key: ->(request) { request.ip }
-    }
   end
 end

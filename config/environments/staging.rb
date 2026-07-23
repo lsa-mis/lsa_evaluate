@@ -6,7 +6,7 @@ Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
-  config.cache_classes = true
+  config.enable_reloading = false
 
   # Eager load code on boot.
   config.eager_load = true
@@ -26,7 +26,7 @@ Rails.application.configure do
   # config.assets.css_compressor = :sass
 
   # Do not fallback to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
+  # config.assets.compile = false
 
   # Store uploaded files on the local file system.
   config.active_storage.service = :local
@@ -47,9 +47,6 @@ Rails.application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = Logger::Formatter.new
 
-  # Caching
-  # config.cache_store = :mem_cache_store
-
   # Action Mailer
   host = 'https://evaluate-staging.lsa.umich.edu/'
   config.action_mailer.default_url_options = { host: host }
@@ -58,7 +55,7 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :letter_opener_web
   config.action_mailer.perform_deliveries = true
 
-# Enable mailer previews (protected by authorization in config/initializers/mailer_previews.rb)
+  # Enable mailer previews (protected by authorization in config/initializers/mailer_previews.rb)
   config.action_mailer.show_previews = true
 
   # I18n
@@ -67,8 +64,10 @@ Rails.application.configure do
   # Deprecations
   config.active_support.report_deprecations = false
 
-  # Active Job
-  config.active_job.queue_adapter = :sidekiq
+  # Use Solid Cache and Solid Queue (no Redis / Sidekiq)
+  config.cache_store = :solid_cache_store
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
   config.active_job.queue_name_prefix = 'lsa_evaluate_staging'
 
   # Do not dump schema after migrations.

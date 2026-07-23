@@ -10,36 +10,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_13_165213) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_13_165213) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "name", null: false
     t.text "body", size: :long
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.datetime "updated_at", null: false
     t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
   end
 
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.string "service_name", null: false
     t.bigint "byte_size", null: false
     t.string "checksum"
+    t.string "content_type"
     t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -50,19 +50,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_165213) do
   end
 
   create_table "affiliations", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "name"
-    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_affiliations_on_user_id"
   end
 
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "user_id", null: false
     t.bigint "container_id", null: false
-    t.bigint "role_id", null: false
     t.datetime "created_at", null: false
+    t.bigint "role_id", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["container_id"], name: "index_assignments_on_container_id"
     t.index ["role_id", "user_id", "container_id"], name: "index_assignments_on_role_user_container", unique: true
     t.index ["role_id"], name: "index_assignments_on_role_id"
@@ -71,8 +71,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_165213) do
   end
 
   create_table "campuses", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "campus_descr", null: false
     t.integer "campus_cd", null: false
+    t.string "campus_descr", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["campus_cd"], name: "campus_cd_unq_idx", unique: true
@@ -82,9 +82,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_165213) do
   end
 
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "kind"
-    t.text "description"
     t.datetime "created_at", null: false
+    t.text "description"
+    t.string "kind"
     t.datetime "updated_at", null: false
     t.index ["kind"], name: "index_categories_on_kind", unique: true
   end
@@ -100,8 +100,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_165213) do
   end
 
   create_table "class_level_requirements", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "contest_instance_id", null: false
     t.bigint "class_level_id", null: false
+    t.bigint "contest_instance_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["class_level_id"], name: "index_class_level_requirements_on_class_level_id"
@@ -110,89 +110,89 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_165213) do
   end
 
   create_table "class_levels", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.text "description", null: false
     t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.string "name", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "containers", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "contact_email"
+    t.datetime "created_at", null: false
+    t.bigint "department_id", null: false
     t.string "name"
     t.text "notes"
-    t.bigint "department_id", null: false
-    t.bigint "visibility_id", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "contact_email"
+    t.bigint "visibility_id", null: false
     t.index ["department_id"], name: "index_containers_on_department_id"
     t.index ["visibility_id"], name: "index_containers_on_visibility_id"
   end
 
   create_table "contest_descriptions", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "container_id", null: false
-    t.string "name", null: false
-    t.string "short_name"
-    t.string "created_by", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.boolean "active", default: false, null: false
     t.boolean "archived", default: false, null: false
+    t.bigint "container_id", null: false
+    t.datetime "created_at", null: false
+    t.string "created_by", null: false
+    t.string "name", null: false
+    t.string "short_name"
+    t.datetime "updated_at", null: false
     t.index ["container_id"], name: "index_contest_descriptions_on_container_id"
   end
 
   create_table "contest_instances", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "contest_description_id", null: false
-    t.datetime "date_open", null: false
-    t.datetime "date_closed", null: false
-    t.text "notes"
-    t.boolean "has_course_requirement", default: false, null: false
-    t.text "course_requirement_description"
-    t.boolean "recletter_required", default: false, null: false
-    t.boolean "transcript_required", default: false, null: false
-    t.integer "maximum_number_entries_per_applicant", default: 1, null: false
-    t.string "created_by"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.boolean "active", default: false, null: false
     t.boolean "archived", default: false, null: false
-    t.boolean "require_pen_name", default: false, null: false
-    t.boolean "require_finaid_info", default: false, null: false
+    t.bigint "contest_description_id", null: false
+    t.text "course_requirement_description"
+    t.datetime "created_at", null: false
+    t.string "created_by"
+    t.datetime "date_closed", null: false
+    t.datetime "date_open", null: false
+    t.boolean "has_course_requirement", default: false, null: false
+    t.integer "maximum_number_entries_per_applicant", default: 1, null: false
+    t.text "notes"
+    t.boolean "recletter_required", default: false, null: false
     t.boolean "require_campus_employment_info", default: false, null: false
+    t.boolean "require_finaid_info", default: false, null: false
+    t.boolean "require_pen_name", default: false, null: false
+    t.boolean "transcript_required", default: false, null: false
+    t.datetime "updated_at", null: false
     t.index ["contest_description_id"], name: "contest_description_id_idx"
     t.index ["contest_description_id"], name: "index_contest_instances_on_contest_description_id"
     t.index ["id"], name: "id_unq_idx", unique: true
   end
 
   create_table "departments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.integer "dept_id", null: false
-    t.text "dept_description"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.text "dept_description"
+    t.integer "dept_id", null: false
     t.string "name"
+    t.datetime "updated_at", null: false
   end
 
   create_table "editable_contents", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.string "page", null: false
     t.string "section", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["page", "section"], name: "index_editable_contents_on_page_and_section", unique: true
   end
 
   create_table "entries", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "title", null: false
-    t.bigint "contest_instance_id", null: false
-    t.bigint "profile_id", null: false
-    t.bigint "category_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "disqualified", default: false, null: false
-    t.boolean "deleted", default: false, null: false
-    t.string "pen_name"
-    t.boolean "campus_employee", default: false, null: false
     t.boolean "accepted_financial_aid_notice", default: false, null: false
-    t.boolean "receiving_financial_aid", default: false, null: false
+    t.boolean "campus_employee", default: false, null: false
+    t.bigint "category_id", null: false
+    t.bigint "contest_instance_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "deleted", default: false, null: false
+    t.boolean "disqualified", default: false, null: false
     t.text "financial_aid_description"
+    t.string "pen_name"
+    t.bigint "profile_id", null: false
+    t.boolean "receiving_financial_aid", default: false, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
     t.index ["category_id"], name: "category_id_idx"
     t.index ["category_id"], name: "index_entries_on_category_id"
     t.index ["contest_instance_id"], name: "contest_instance_id_idx"
@@ -203,17 +203,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_165213) do
   end
 
   create_table "entry_rankings", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "entry_id", null: false
-    t.bigint "judging_round_id", null: false
-    t.bigint "user_id", null: false
-    t.integer "rank"
-    t.text "notes"
-    t.boolean "selected_for_next_round", default: false, null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.text "internal_comments"
+    t.bigint "entry_id", null: false
     t.text "external_comments"
     t.boolean "finalized", default: false, null: false
+    t.text "internal_comments"
+    t.bigint "judging_round_id", null: false
+    t.text "notes"
+    t.integer "rank"
+    t.boolean "selected_for_next_round", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["entry_id", "judging_round_id", "user_id"], name: "index_entry_rankings_uniqueness", unique: true
     t.index ["entry_id"], name: "index_entry_rankings_on_entry_id"
     t.index ["judging_round_id"], name: "index_entry_rankings_on_judging_round_id"
@@ -221,58 +221,58 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_165213) do
   end
 
   create_table "judging_assignments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "contest_instance_id", null: false
     t.boolean "active", default: true, null: false
+    t.bigint "contest_instance_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["contest_instance_id"], name: "index_judging_assignments_on_contest_instance_id"
     t.index ["user_id", "contest_instance_id"], name: "index_judging_assignments_on_user_id_and_contest_instance_id", unique: true
     t.index ["user_id"], name: "index_judging_assignments_on_user_id"
   end
 
   create_table "judging_rounds", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "contest_instance_id", null: false
-    t.integer "round_number", null: false
-    t.datetime "start_date"
-    t.datetime "end_date"
     t.boolean "active", default: false, null: false
     t.boolean "completed", default: false, null: false
+    t.bigint "contest_instance_id", null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "require_internal_comments", default: false, null: false
-    t.boolean "require_external_comments", default: false, null: false
-    t.integer "min_internal_comment_words", default: 0, null: false
-    t.integer "min_external_comment_words", default: 0, null: false
-    t.text "special_instructions"
-    t.integer "required_entries_count", default: 0, null: false
     t.integer "emails_sent_count", default: 0, null: false
-    t.boolean "include_average_ranking", default: false
+    t.datetime "end_date"
     t.boolean "include_advancement_status", default: false
+    t.boolean "include_average_ranking", default: false
+    t.integer "min_external_comment_words", default: 0, null: false
+    t.integer "min_internal_comment_words", default: 0, null: false
+    t.boolean "require_external_comments", default: false, null: false
+    t.boolean "require_internal_comments", default: false, null: false
+    t.integer "required_entries_count", default: 0, null: false
+    t.integer "round_number", null: false
+    t.text "special_instructions"
+    t.datetime "start_date"
+    t.datetime "updated_at", null: false
     t.index ["contest_instance_id", "round_number"], name: "index_judging_rounds_on_contest_instance_id_and_round_number", unique: true
     t.index ["contest_instance_id"], name: "index_judging_rounds_on_contest_instance_id"
   end
 
   create_table "profiles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.boolean "accepted_financial_aid_notice", default: false, null: false
+    t.boolean "campus_employee", default: false, null: false
+    t.bigint "campus_id"
+    t.bigint "class_level_id"
+    t.datetime "created_at", null: false
+    t.string "degree", null: false
+    t.string "department"
+    t.text "financial_aid_description"
+    t.date "grad_date", null: false
+    t.string "hometown_publication"
+    t.string "major"
+    t.string "pen_name"
     t.string "preferred_first_name", default: "", null: false
     t.string "preferred_last_name", default: "", null: false
-    t.bigint "class_level_id"
-    t.bigint "school_id"
-    t.bigint "campus_id"
-    t.string "major"
-    t.date "grad_date", null: false
-    t.string "degree", null: false
     t.boolean "receiving_financial_aid", default: false, null: false
-    t.boolean "accepted_financial_aid_notice", default: false, null: false
-    t.text "financial_aid_description"
-    t.string "hometown_publication"
-    t.string "pen_name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "campus_employee", default: false, null: false
-    t.string "department"
+    t.bigint "school_id"
     t.string "umid"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["campus_id"], name: "campus_id_idx"
     t.index ["campus_id"], name: "index_profiles_on_campus_id"
     t.index ["class_level_id"], name: "class_level_id_idx"
@@ -286,73 +286,73 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_13_165213) do
   end
 
   create_table "roles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "kind"
-    t.text "description"
     t.datetime "created_at", null: false
+    t.text "description"
+    t.string "kind"
     t.datetime "updated_at", null: false
   end
 
   create_table "round_judge_assignments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "judging_round_id", null: false
-    t.bigint "user_id", null: false
     t.boolean "active", default: true
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.datetime "instructions_sent_at"
+    t.bigint "judging_round_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["judging_round_id", "user_id"], name: "index_round_judge_assignments_on_judging_round_id_and_user_id", unique: true
     t.index ["judging_round_id"], name: "index_round_judge_assignments_on_judging_round_id"
     t.index ["user_id"], name: "index_round_judge_assignments_on_user_id"
   end
 
   create_table "schools", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "name"
     t.datetime "created_at", null: false
+    t.string "name"
     t.datetime "updated_at", null: false
     t.index ["id"], name: "id_unq_idx", unique: true
   end
 
   create_table "user_roles", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "role_id", null: false
     t.datetime "created_at", null: false
+    t.bigint "role_id", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["role_id"], name: "index_user_roles_on_role_id"
     t.index ["user_id", "role_id"], name: "index_user_roles_on_user_id_and_role_id", unique: true
     t.index ["user_id"], name: "index_user_roles_on_user_id"
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "current_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "display_name"
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at"
-    t.datetime "remember_created_at"
-    t.integer "sign_in_count", default: 0, null: false
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string "current_sign_in_ip"
-    t.string "last_sign_in_ip"
     t.integer "failed_attempts", default: 0, null: false
-    t.string "unlock_token"
-    t.datetime "locked_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "uniqname"
-    t.string "provider"
-    t.string "uid"
-    t.string "principal_name"
-    t.string "display_name"
     t.string "first_name", default: "", null: false
     t.string "last_name", default: "", null: false
+    t.datetime "last_sign_in_at"
+    t.string "last_sign_in_ip"
+    t.datetime "locked_at"
+    t.string "principal_name"
+    t.string "provider"
+    t.datetime "remember_created_at"
+    t.datetime "reset_password_sent_at"
+    t.string "reset_password_token"
+    t.integer "sign_in_count", default: 0, null: false
+    t.string "uid"
+    t.string "uniqname"
+    t.string "unlock_token"
+    t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
   create_table "visibilities", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "kind", null: false
-    t.text "description"
     t.datetime "created_at", null: false
+    t.text "description"
+    t.string "kind", null: false
     t.datetime "updated_at", null: false
   end
 

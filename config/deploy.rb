@@ -2,7 +2,6 @@
 lock '~> 3.20.0'
 
 set :default_env, {
-  'NODE_OPTIONS' => '--openssl-legacy-provider',
   'PATH' => '$HOME/.asdf/shims:$HOME/.asdf/bin:$PATH',
   'SKIP_ECHO_ENV' => 'true',
   'SKIP_SEEDS' => 'true'
@@ -48,7 +47,7 @@ namespace :puma do
   desc 'Start the PUMA service'
   task :start do
     on roles(:app) do
-      puts 'You must intially start the puma service using sudo on the server'
+      puts 'You must initially start the puma service using sudo on the server'
     end
   end
 end
@@ -78,7 +77,6 @@ namespace :deploy do
   before 'bundler:install', 'debug:print_ruby_version'
   before :starting,     :check_revision
   after  :finishing,    'puma:restart'
-  after  :finishing,    'sidekiq:manual_restart'
 end
 
 namespace :debug do
@@ -95,32 +93,17 @@ namespace :debug do
     on roles(:app) do
       within current_path do
         with rails_env: fetch(:rails_env) do
-          # Capture the output of each command
           ruby_version = capture(:ruby, '-v')
           which_ruby = capture(:which, 'ruby')
           asdf_ruby_list = capture(:asdf, 'list ruby')
           rails_version = capture(:bundle, 'exec rails -v')
 
-          # Log the captured outputs
           info "Ruby Version: #{ruby_version.strip}"
           info "Ruby Path: #{which_ruby.strip}"
           info "asdf Ruby Versions: #{asdf_ruby_list.strip}"
           info "Rails Version: #{rails_version.strip}"
         end
       end
-    end
-  end
-end
-
-namespace :sidekiq do
-  desc 'Manually restart Sidekiq service'
-  task :manual_restart do
-    on roles(:app) do
-      puts "\n\n=========================================================="
-      puts "IMPORTANT: Sidekiq needs to be restarted manually!"
-      puts "Please run the following command on the server as a user with sudo privileges:"
-      puts "sudo systemctl restart sidekiq"
-      puts "==========================================================\n\n"
     end
   end
 end

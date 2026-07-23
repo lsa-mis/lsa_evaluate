@@ -6,10 +6,9 @@ Rails.application.routes.draw do
   get 'bulk_contest_instances/create'
   root 'static_pages#home'
 
-  # Sidekiq Web UI
-  require 'sidekiq/web'
+  # Mission Control Jobs UI (Solid Queue)
   authenticate :user, ->(user) { user.axis_mundi? } do
-    mount Sidekiq::Web => '/sidekiq'
+    mount MissionControl::Jobs::Engine, at: '/jobs'
   end
 
   resources :entries do
