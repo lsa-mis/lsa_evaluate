@@ -48,9 +48,11 @@ group :development do
   gem 'better_errors', '>= 2.10'
   gem 'binding_of_caller', '>= 2.0'
   gem 'brakeman'
+  gem 'bcrypt_pbkdf', '>= 1.0', '< 2.0' # net-ssh ed25519 support
   gem 'capistrano', '~> 3.17', require: false
   gem 'capistrano-rails', '~> 1.6', '>= 1.6.1', require: false
   gem 'capistrano-asdf', require: false
+  gem 'ed25519', '>= 1.2', '< 2.0' # net-ssh ed25519 support
   gem 'web-console'
 end
 
