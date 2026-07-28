@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_13_165213) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_28_162720) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.text "body", size: :long
     t.datetime "created_at", null: false
@@ -141,6 +141,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_13_165213) do
   end
 
   create_table "contest_instances", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.string "access_mode", default: "capability_url", null: false
+    t.string "access_token", null: false
     t.boolean "active", default: false, null: false
     t.boolean "archived", default: false, null: false
     t.bigint "contest_description_id", null: false
@@ -158,9 +160,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_13_165213) do
     t.boolean "require_pen_name", default: false, null: false
     t.boolean "transcript_required", default: false, null: false
     t.datetime "updated_at", null: false
+    t.index ["access_token"], name: "index_contest_instances_on_access_token", unique: true
     t.index ["contest_description_id"], name: "contest_description_id_idx"
     t.index ["contest_description_id"], name: "index_contest_instances_on_contest_description_id"
     t.index ["id"], name: "id_unq_idx", unique: true
+  end
+
+  create_table "contest_invitations", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "contest_instance_id", null: false
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.bigint "invited_by_id"
+    t.datetime "updated_at", null: false
+    t.index ["contest_instance_id", "email"], name: "index_contest_invitations_on_instance_and_email", unique: true
+    t.index ["contest_instance_id"], name: "index_contest_invitations_on_contest_instance_id"
+    t.index ["invited_by_id"], name: "index_contest_invitations_on_invited_by_id"
   end
 
   create_table "departments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -370,6 +384,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_13_165213) do
   add_foreign_key "containers", "visibilities"
   add_foreign_key "contest_descriptions", "containers"
   add_foreign_key "contest_instances", "contest_descriptions"
+  add_foreign_key "contest_invitations", "contest_instances"
+  add_foreign_key "contest_invitations", "users", column: "invited_by_id"
   add_foreign_key "entries", "categories"
   add_foreign_key "entries", "contest_instances"
   add_foreign_key "entries", "profiles"

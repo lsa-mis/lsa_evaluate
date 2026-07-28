@@ -7,8 +7,14 @@ import { application } from "./application"
 import CharacterCounterController from "./character_counter_controller"
 application.register("character-counter", CharacterCounterController)
 
+import AccessModeController from "./access_mode_controller"
+application.register("access-mode", AccessModeController)
+
 import CheckboxselectController from "./checkboxselect_controller"
 application.register("checkboxselect", CheckboxselectController)
+
+import ClipboardController from "./clipboard_controller"
+application.register("clipboard", ClipboardController)
 
 import CommentsCounterController from "./comments_counter_controller"
 application.register("comments-counter", CommentsCounterController)

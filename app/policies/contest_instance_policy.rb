@@ -98,4 +98,12 @@ class ContestInstancePolicy < ApplicationPolicy
     return false unless record.judging_open?(user)
     record.judges.include?(user)
   end
+
+  def manage_invitations?
+    user&.has_container_role?(record.contest_description.container) || axis_mundi?
+  end
+
+  def regenerate_access_token?
+    manage_invitations?
+  end
 end

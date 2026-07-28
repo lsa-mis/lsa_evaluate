@@ -1,5 +1,7 @@
 <div id="<%= dom_id contest_instance %>">
   <div class="container" style="max-width: 100%;" class="mx-auto">
+    <%= render 'contest_instances/private_access', contest_instance: contest_instance %>
+
     <%# Status Section %>
     <div class="border-bottom pb-3 mb-4 mt-2">
       <div class="row align-items-center">
@@ -13,6 +15,12 @@
         </div>
         <div class="col-md-3">
           <div class="d-flex align-items-center">
+            <% if contest_instance.private_visibility? %>
+              <strong class="me-2">Access:</strong>
+              <span class="badge bg-secondary">
+                <%= contest_instance.capability_url? ? 'Link' : 'Invite list' %>
+              </span>
+            <% end %>
           </div>
         </div>
         <div class="col-md-6">

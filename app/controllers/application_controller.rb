@@ -3,6 +3,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include ApplicationHelper
   include Pagy::Method
+  include ContestInviteSession
   before_action :authenticate_user!
   before_action :set_sentry_context
 
