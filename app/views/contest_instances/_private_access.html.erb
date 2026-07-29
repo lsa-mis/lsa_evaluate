@@ -1,0 +1,136 @@
+<%# Private collection share / invite access controls for a contest instance %>
+<% if contest_instance.private_visibility? && policy(contest_instance).manage_invitations? %>
+  <div class="border rounded p-3 mb-4 bg-light"
+       data-controller="access-mode clipboard"
+       data-access-mode-invite-list-mode-value="invite_list">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+      <div>
+        <h5 class="mb-1">Private Contest Access</h5>
+        <p class="text-muted small mb-0">
+          This collection is Private. Applicants will not see it on the dashboard.
+          Share the invite link below so invited applicants can submit.
+        </p>
+      </div>
+      <span class="badge bg-secondary">Private</span>
+    </div>
+
+    <%= simple_form_for([@container, @contest_description, contest_instance], html: { class: 'mb-3' }) do |f| %>
+      <%= f.input :access_mode,
+                  as: :radio_buttons,
+                  collection: [
+                    ['Anyone with the link', 'capability_url'],
+                    ['Invite list only', 'invite_list']
+                  ],
+                  label: 'Who can submit?',
+                  wrapper: :vertical_collection_inline,
+                  input_html: {
+                    data: {
+                      action: 'change->access-mode#toggle'
+                    }
+                  } %>
+      <%= f.button :submit, 'Update access mode', class: 'btn btn-sm btn-outline-primary' %>
+    <% end %>
+
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Invite link</label>
+      <div class="input-group">
+        <input type="text"
+               class="form-control font-monospace"
+               readonly
+               value="<%= contest_invite_url(token: contest_instance.access_token) %>"
+               data-clipboard-target="source"
+               aria-label="Contest invite URL">
+        <button type="button"
+                class="btn btn-outline-secondary"
+                data-action="clipboard#copy">
+          <i class="bi bi-clipboard me-1"></i> Copy
+        </button>
+      </div>
+      <div class="form-text d-none text-success" data-clipboard-target="feedback"></div>
+      <div class="form-text">
+        Link works only while this instance is active and open. Regenerating revokes previous links.
+      </div>
+      <%= button_to 'Regenerate link',
+                    regenerate_access_token_container_contest_description_contest_instance_path(
+                      @container, @contest_description, contest_instance
+                    ),
+                    method: :post,
+                    class: 'btn btn-sm btn-outline-danger mt-2',
+                    data: {
+                      turbo_confirm: 'Regenerate the invite link? Previous links will stop working.'
+                    } %>
+    </div>
+
+    <div data-access-mode-target="inviteListSection"
+         class="<%= 'd-none' unless contest_instance.invite_list? %>">
+      <hr>
+      <h6 class="mb-2">
+        Invite list
+        <span class="badge bg-info"><%= contest_instance.contest_invitations.count %></span>
+      </h6>
+      <p class="small text-muted">
+        Only people with these email addresses (matching their sign-in email) can submit,
+        and they still need the invite link. Newly added invitees are emailed the link automatically.
+      </p>
+
+      <%= form_with url: container_contest_description_contest_instance_contest_invitations_path(
+            @container, @contest_description, contest_instance
+          ), method: :post, local: true, class: 'mb-3' do |f| %>
+        <div class="mb-2">
+          <%= f.label :emails, 'Add emails (one per line or comma-separated)', class: 'form-label' %>
+          <%= text_area_tag :emails, nil, class: 'form-control', rows: 3,
+                            placeholder: "applicant1@umich.edu\napplicant2@umich.edu" %>
+        </div>
+        <%= f.submit 'Add invitees', class: 'btn btn-sm btn-primary' %>
+      <% end %>
+
+      <% if contest_instance.contest_invitations.any? %>
+        <div class="mb-3">
+          <%= button_to 'Email all invitees',
+                        email_all_container_contest_description_contest_instance_contest_invitations_path(
+                          @container, @contest_description, contest_instance
+                        ),
+                        method: :post,
+                        class: 'btn btn-sm btn-outline-primary',
+                        data: {
+                          turbo_confirm: "Send the invite link to all #{contest_instance.contest_invitations.count} invitee#{'s' unless contest_instance.contest_invitations.count == 1}?"
+                        } %>
+          <div class="form-text">
+            New invitees are emailed automatically when added. Use this to resend to everyone on the list.
+          </div>
+        </div>
+
+        <div class="table-responsive" style="max-height: 220px; overflow-y: auto;">
+          <table class="table table-sm table-striped mb-0">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Added</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% contest_instance.contest_invitations.order(:email).each do |invitation| %>
+                <tr>
+                  <td><%= invitation.email %></td>
+                  <td class="small text-muted"><%= invitation.created_at.strftime('%b %d, %Y') %></td>
+                  <td class="text-end">
+                    <%= button_to 'Remove',
+                                  container_contest_description_contest_instance_contest_invitation_path(
+                                    @container, @contest_description, contest_instance, invitation
+                                  ),
+                                  method: :delete,
+                                  class: 'btn btn-sm btn-link text-danger p-0',
+                                  data: { turbo_confirm: 'Remove this invitee?' } %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <em class="text-muted small">No invitees yet. Newly added invitees will receive an email with the invite link.</em>
+      <% end %>
+    </div>
+  </div>
+<% end %>

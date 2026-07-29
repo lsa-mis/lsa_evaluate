@@ -55,8 +55,10 @@ class BulkContestInstancesController < ApplicationController
         last_instance = description.contest_instances.order(created_at: :desc).first
 
         if last_instance
-          # Create from existing instance
+          # Create from existing instance. Assign a fresh access_token —
+          # dup copies the unique token, and has_secure_token only runs on initialize.
           new_instance = last_instance.dup
+          new_instance.access_token = ContestInstance.generate_unique_secure_token
         else
           # Create new instance with default values
           new_instance = description.contest_instances.new(

@@ -1,7 +1,7 @@
 class ContestInstancesController < ApplicationController
   before_action :set_container
   before_action :set_contest_description
-  before_action :set_contest_instance, only: %i[show edit update destroy send_round_results deactivate]
+  before_action :set_contest_instance, only: %i[show edit update destroy send_round_results deactivate regenerate_access_token]
   before_action :authorize_container_access
 
   # GET /contest_instances
@@ -228,6 +228,13 @@ class ContestInstancesController < ApplicationController
     end
   end
 
+  def regenerate_access_token
+    authorize @contest_instance, :regenerate_access_token?
+    @contest_instance.regenerate_access_token
+    redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                notice: 'Invite link regenerated. Previous links no longer work.'
+  end
+
   private
 
   def authorize_container_access
@@ -261,6 +268,7 @@ class ContestInstancesController < ApplicationController
       :recletter_required, :transcript_required,
       :require_internal_comments, :require_external_comments,
       :min_internal_comment_words, :min_external_comment_words,
+      :access_mode,
       category_ids: [], class_level_ids: []
     )
   end
