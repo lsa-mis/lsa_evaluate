@@ -74,6 +74,7 @@ RSpec.describe ContestInvitesController, type: :controller do
         get :show, params: { token: contest_instance.access_token }
 
         expect(response).to redirect_to(new_profile_path)
+        expect(session[:pending_contest_invite_token]).to eq(contest_instance.access_token)
       end
     end
   end

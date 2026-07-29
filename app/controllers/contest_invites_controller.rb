@@ -4,13 +4,14 @@ class ContestInvitesController < ApplicationController
   def show
     @contest_instance = ContestInstance.find_by!(access_token: params[:token])
 
-    unless current_user.profile
-      redirect_to new_profile_path, alert: 'Please create your profile before accessing this contest.'
+    if @contest_instance.private_visibility? && @contest_instance.invite_list? && !@contest_instance.invited?(current_user)
+      redirect_to applicant_dashboard_path, alert: 'You are not invited to submit to this contest.'
       return
     end
 
-    if @contest_instance.private_visibility? && @contest_instance.invite_list? && !@contest_instance.invited?(current_user)
-      redirect_to applicant_dashboard_path, alert: 'You are not invited to submit to this contest.'
+    unless current_user.profile
+      remember_pending_contest_invite!(@contest_instance)
+      redirect_to new_profile_path, alert: 'Please create your profile before accessing this contest.'
       return
     end
 

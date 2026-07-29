@@ -25,11 +25,11 @@ class ApplicationController < ActionController::Base
   protected
 
   def after_sign_in_path_for(resource)
-    if resource.judge?
-      judge_dashboard_path
-    else
-      root_path
-    end
+    stored_location_for(resource) || default_sign_in_path_for(resource)
+  end
+
+  def default_sign_in_path_for(resource)
+    resource.judge? ? judge_dashboard_path : root_path
   end
 
   def after_sign_out_path_for(resource_or_scope)
