@@ -1,0 +1,24 @@
+INVITATION TO SUBMIT: <%= @contest_description.name.upcase %>
+================================================================================
+
+You have been invited to submit an entry to <%= @contest_description.name %>
+(<%= @container.name %>).
+
+SUBMISSION WINDOW
+-----------------
+Opens: <%= I18n.l(@date_open, format: :long) %>
+Closes: <%= I18n.l(@date_closed, format: :long) %>
+
+This contest is private and will not appear on the applicant dashboard.
+Use the invite link below to sign in and submit. You must sign in with
+<%= @invitation.email %> (or an account that uses that email).
+
+OPEN CONTEST INVITE:
+--------------------
+<%= @invite_url %>
+
+Questions? Contact <%= @contact_email %>.
+
+--------------------------------------------------------------------------------
+This email was sent from LSA Evaluate.
+University of Michigan

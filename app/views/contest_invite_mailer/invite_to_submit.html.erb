@@ -1,0 +1,47 @@
+<div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+  <h1 style="color: #003366; font-size: 24px; margin-bottom: 20px;">
+    Invitation to Submit: <%= @contest_description.name %>
+  </h1>
+
+  <p style="font-size: 16px; line-height: 1.6; color: #333;">
+    You have been invited to submit an entry to
+    <strong><%= @contest_description.name %></strong>
+    (<%= @container.name %>).
+  </p>
+
+  <div style="background-color: #f0f7ff; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h2 style="color: #003366; font-size: 18px; margin-bottom: 10px;">Submission Window</h2>
+    <p style="font-size: 16px; line-height: 1.6; color: #333; margin: 5px 0;">
+      <strong>Opens:</strong> <%= I18n.l(@date_open, format: :long) %><br>
+      <strong>Closes:</strong> <%= I18n.l(@date_closed, format: :long) %>
+    </p>
+  </div>
+
+  <p style="font-size: 16px; line-height: 1.6; color: #333;">
+    This contest is private and will not appear on the applicant dashboard.
+    Use the invite link below to sign in and submit. You must sign in with
+    <strong><%= @invitation.email %></strong> (or an account that uses that email).
+  </p>
+
+  <div style="text-align: center; margin: 30px 0;">
+    <%= link_to 'Open contest invite', @invite_url,
+        style: 'display: inline-block; padding: 12px 30px; background-color: #00274C; color: white; text-decoration: none; border-radius: 5px; font-size: 16px;' %>
+  </div>
+
+  <p style="font-size: 14px; line-height: 1.6; color: #666;">
+    If the button does not work, copy and paste this link into your browser:<br>
+    <a href="<%= @invite_url %>" style="color: #0066cc; word-break: break-all;"><%= @invite_url %></a>
+  </p>
+
+  <p style="font-size: 16px; line-height: 1.6; color: #333;">
+    Questions? Contact
+    <a href="mailto:<%= @contact_email %>" style="color: #0066cc;"><%= @contact_email %></a>.
+  </p>
+
+  <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+
+  <p style="font-size: 14px; color: #666; text-align: center;">
+    This email was sent from LSA Evaluate.<br>
+    University of Michigan
+  </p>
+</div>

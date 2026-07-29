@@ -106,4 +106,8 @@ class ContestInstancePolicy < ApplicationPolicy
   def regenerate_access_token?
     manage_invitations?
   end
+
+  def send_invite_emails?
+    manage_invitations?
+  end
 end

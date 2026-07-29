@@ -70,7 +70,7 @@
       </h6>
       <p class="small text-muted">
         Only people with these email addresses (matching their sign-in email) can submit,
-        and they still need the invite link.
+        and they still need the invite link. Newly added invitees are emailed the link automatically.
       </p>
 
       <%= form_with url: container_contest_description_contest_instance_contest_invitations_path(
@@ -85,6 +85,21 @@
       <% end %>
 
       <% if contest_instance.contest_invitations.any? %>
+        <div class="mb-3">
+          <%= button_to 'Email all invitees',
+                        email_all_container_contest_description_contest_instance_contest_invitations_path(
+                          @container, @contest_description, contest_instance
+                        ),
+                        method: :post,
+                        class: 'btn btn-sm btn-outline-primary',
+                        data: {
+                          turbo_confirm: "Send the invite link to all #{contest_instance.contest_invitations.count} invitee#{'s' unless contest_instance.contest_invitations.count == 1}?"
+                        } %>
+          <div class="form-text">
+            New invitees are emailed automatically when added. Use this to resend to everyone on the list.
+          </div>
+        </div>
+
         <div class="table-responsive" style="max-height: 220px; overflow-y: auto;">
           <table class="table table-sm table-striped mb-0">
             <thead>
@@ -114,7 +129,7 @@
           </table>
         </div>
       <% else %>
-        <em class="text-muted small">No invitees yet.</em>
+        <em class="text-muted small">No invitees yet. Newly added invitees will receive an email with the invite link.</em>
       <% end %>
     </div>
   </div>

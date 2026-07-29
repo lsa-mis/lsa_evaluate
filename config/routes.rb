@@ -51,7 +51,11 @@ Rails.application.routes.draw do
           patch :deactivate
           post :regenerate_access_token
         end
-        resources :contest_invitations, only: [ :create, :destroy ]
+        resources :contest_invitations, only: [ :create, :destroy ] do
+          collection do
+            post :email_all
+          end
+        end
         resources :judging_rounds do
           member do
             patch :activate

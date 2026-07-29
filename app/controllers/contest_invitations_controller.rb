@@ -8,7 +8,7 @@ class ContestInvitationsController < ApplicationController
 
   def create
     emails = parse_emails(params[:emails].presence || params.dig(:contest_invitation, :email))
-    created = 0
+    created_invitations = []
     skipped = []
 
     emails.each do |email|
@@ -16,7 +16,7 @@ class ContestInvitationsController < ApplicationController
       if invitation.new_record?
         invitation.invited_by = current_user
         if invitation.save
-          created += 1
+          created_invitations << invitation
         else
           skipped << email
         end
@@ -25,8 +25,15 @@ class ContestInvitationsController < ApplicationController
       end
     end
 
+    created_invitations.each do |invitation|
+      ContestInviteMailer.invite_to_submit(invitation).deliver_later
+    end
+
     notice_parts = []
-    notice_parts << "Added #{created} invite#{'s' unless created == 1}." if created.positive?
+    if created_invitations.any?
+      notice_parts << "Added #{created_invitations.size} invite#{'s' unless created_invitations.size == 1}."
+      notice_parts << "Invite email#{'s' unless created_invitations.size == 1} queued for #{created_invitations.size} new invitee#{'s' unless created_invitations.size == 1}."
+    end
     notice_parts << "Skipped #{skipped.size} duplicate or invalid email#{'s' unless skipped.size == 1}." if skipped.any?
 
     redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
@@ -38,6 +45,24 @@ class ContestInvitationsController < ApplicationController
     invitation.destroy
     redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
                 notice: 'Invitee removed.'
+  end
+
+  def email_all
+    authorize @contest_instance, :send_invite_emails?
+
+    invitations = @contest_instance.contest_invitations
+    if invitations.none?
+      redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                  alert: 'There are no invitees to email.'
+      return
+    end
+
+    invitations.find_each do |invitation|
+      ContestInviteMailer.invite_to_submit(invitation).deliver_later
+    end
+
+    redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                notice: "Queued invite emails for #{invitations.count} invitee#{'s' unless invitations.count == 1}."
   end
 
   private
