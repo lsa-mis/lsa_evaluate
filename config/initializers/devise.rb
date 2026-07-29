@@ -308,6 +308,9 @@ Devise.setup do |config|
                                           person_affiliation: [ 'urn:oid:1.3.6.1.4.1.5923.1.1.1.1' ],
                                           principal_name: [ 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6' ] },
                   request_attributes: {},
+                  # Carry post-login destination through the IdP via SAML RelayState.
+                  # Session-based Devise return paths are often lost on the ACS POST.
+                  idp_sso_service_url_runtime_params: { origin: :RelayState },
                   idp_cert_fingerprint: idp_fingerprint,
                   idp_cert_fingerprint_algorithm: 'http://www.w3.org/2000/09/xmldsig#sha256',
                   allowed_clock_drift: 10,

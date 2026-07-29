@@ -64,6 +64,20 @@ RSpec.describe ContestInvitesController, type: :controller do
       end
     end
 
+    context 'when the user is not signed in' do
+      let(:contest_instance) { create(:contest_instance) }
+
+      before { sign_out user }
+
+      it 'stores the invite path and redirects to login' do
+        get :show, params: { token: contest_instance.access_token }
+
+        expect(response).to redirect_to(root_path)
+        expect(session['user_return_to']).to eq(contest_invite_path(token: contest_instance.access_token))
+        expect(flash[:alert]).to match(/log in/i)
+      end
+    end
+
     context 'when the user has no profile' do
       let(:user_without_profile) { create(:user) }
       let(:contest_instance) { create(:contest_instance) }

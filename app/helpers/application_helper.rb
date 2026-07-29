@@ -30,6 +30,12 @@ module ApplicationHelper
     redirect_to(session.delete(:return_to) || default, anchor: 'top')
   end
 
+  # Origin passed to SAML so RelayState can restore private-contest (and other) deep links.
+  def saml_authorize_params
+    origin = session['user_return_to'].presence
+    origin ? { origin: origin } : {}
+  end
+
   def boolean_to_yes_no(value)
     if value
       content_tag(:span, 'Yes', class: 'text-success fw-bold')
