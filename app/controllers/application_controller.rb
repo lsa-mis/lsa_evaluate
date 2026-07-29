@@ -25,11 +25,42 @@ class ApplicationController < ActionController::Base
   protected
 
   def after_sign_in_path_for(resource)
-    if resource.judge?
-      judge_dashboard_path
-    else
-      root_path
+    # SAML POSTs from the IdP often arrive without the Rails session cookie
+    # (SameSite). Prefer RelayState / omniauth.origin, which survive that round-trip.
+    saml_preserved_return_path ||
+      safe_internal_redirect_path(stored_location_for(resource)) ||
+      default_sign_in_path_for(resource)
+  end
+
+  def default_sign_in_path_for(resource)
+    resource.judge? ? judge_dashboard_path : root_path
+  end
+
+  def saml_preserved_return_path
+    safe_internal_redirect_path(request.params['RelayState']) ||
+      safe_internal_redirect_path(request.env['omniauth.origin'])
+  end
+
+  def safe_internal_redirect_path(path)
+    return if path.blank?
+
+    uri = URI.parse(path)
+    if uri.host.present?
+      return unless uri.host == request.host
+
+      path = [ uri.path, uri.query ].compact.join('?')
     end
+
+    return unless path.start_with?('/') && !path.start_with?('//')
+
+    # Homepage / login origins are not meaningful return destinations; fall
+    # through to role-based defaults (e.g. judges → judge dashboard).
+    path_only = path.split('?', 2).first
+    return if path_only.blank? || path_only == '/' || path_only == root_path
+
+    path
+  rescue URI::InvalidURIError
+    nil
   end
 
   def after_sign_out_path_for(resource_or_scope)

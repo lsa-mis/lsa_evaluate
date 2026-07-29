@@ -41,7 +41,7 @@ class ProfilesController < ApplicationController
 
     respond_to do |format|
       if @profile.save
-        format.html { redirect_to applicant_dashboard_path, notice: 'Profile was successfully created.' }
+        format.html { redirect_to profile_created_redirect_path, notice: 'Profile was successfully created.' }
       else
         format.html { render :new, status: :unprocessable_entity }
       end
@@ -78,6 +78,12 @@ class ProfilesController < ApplicationController
   def authorize_profile
     authorize @profile
   end
+
+  def profile_created_redirect_path
+    token = consume_pending_contest_invite_token
+    token.present? ? contest_invite_path(token: token) : applicant_dashboard_path
+  end
+
   # Only allow a list of trusted parameters through.
   def profile_params
     params.require(:profile).permit(:user_id, :umid, :preferred_first_name, :preferred_last_name, :class_level_id, :school_id, :campus_id,
