@@ -27,6 +27,27 @@ RSpec.describe ContestInvitesController, type: :controller do
           .to eq(contest_instance.access_token)
         expect(response).to redirect_to(new_entry_path(contest_instance_id: contest_instance.id))
       end
+
+      it 'does not redeem when the contest is closed' do
+        contest_instance.update!(date_closed: 1.day.ago)
+
+        get :show, params: { token: contest_instance.access_token }
+
+        expect(session[:redeemed_contest_instances]).to be_blank
+        expect(response).to redirect_to(applicant_dashboard_path)
+        expect(flash[:alert]).to match(/not currently open/i)
+      end
+
+      it 'does not redeem when the profile is ineligible' do
+        other_level = create(:class_level)
+        profile.update!(class_level: other_level)
+
+        get :show, params: { token: contest_instance.access_token }
+
+        expect(session[:redeemed_contest_instances]).to be_blank
+        expect(response).to redirect_to(applicant_dashboard_path)
+        expect(flash[:alert]).to match(/not eligible/i)
+      end
     end
 
     context 'with a private invite_list contest' do

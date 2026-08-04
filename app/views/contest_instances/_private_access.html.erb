@@ -2,7 +2,8 @@
 <% if contest_instance.private_visibility? && policy(contest_instance).manage_invitations? %>
   <div class="border rounded p-3 mb-4 bg-light"
        data-controller="access-mode clipboard"
-       data-access-mode-invite-list-mode-value="invite_list">
+       data-access-mode-invite-list-mode-value="invite_list"
+       data-access-mode-initially-invite-list-value="<%= contest_instance.invite_list? %>">
     <div class="d-flex justify-content-between align-items-start mb-3">
       <div>
         <h5 class="mb-1">Private Contest Access</h5>
@@ -28,6 +29,9 @@
                       action: 'change->access-mode#toggle'
                     }
                   } %>
+      <div class="form-text text-warning d-none mb-2" data-access-mode-target="saveHint">
+        Click <strong>Update access mode</strong> to enable invite-list management.
+      </div>
       <%= f.button :submit, 'Update access mode', class: 'btn btn-sm btn-outline-primary' %>
     <% end %>
 

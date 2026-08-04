@@ -4,6 +4,7 @@ class ApplicationController < ActionController::Base
   include ApplicationHelper
   include Pagy::Method
   include ContestInviteSession
+  include SamlReturnState
   before_action :authenticate_user!
   before_action :set_sentry_context
 
@@ -37,8 +38,15 @@ class ApplicationController < ActionController::Base
   end
 
   def saml_preserved_return_path
-    safe_internal_redirect_path(request.params['RelayState']) ||
-      safe_internal_redirect_path(request.env['omniauth.origin'])
+    relay_state = request.params['RelayState']
+    omniauth_origin = request.env['omniauth.origin']
+
+    # Opaque keys are resolved from cache (path never left our app in cleartext).
+    # Fall back to a direct internal path for non-opaque values.
+    safe_internal_redirect_path(resolve_saml_return_state(relay_state)) ||
+      safe_internal_redirect_path(resolve_saml_return_state(omniauth_origin)) ||
+      safe_internal_redirect_path(relay_state) ||
+      safe_internal_redirect_path(omniauth_origin)
   end
 
   def safe_internal_redirect_path(path)

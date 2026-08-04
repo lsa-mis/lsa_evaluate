@@ -5,6 +5,7 @@ class ContestInvitationsController < ApplicationController
   before_action :set_contest_description
   before_action :set_contest_instance
   before_action :authorize_contest_instance
+  before_action :require_invite_list_mode
 
   def create
     emails = parse_emails(params[:emails].presence || params.dig(:contest_invitation, :email))
@@ -81,6 +82,13 @@ class ContestInvitationsController < ApplicationController
 
   def authorize_contest_instance
     authorize @contest_instance, :manage_invitations?
+  end
+
+  def require_invite_list_mode
+    return if @contest_instance.invite_list?
+
+    redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                alert: 'Switch access mode to "Invite list only" and save before managing invitees.'
   end
 
   def parse_emails(raw)

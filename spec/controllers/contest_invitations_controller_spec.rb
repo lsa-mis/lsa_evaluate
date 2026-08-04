@@ -61,6 +61,26 @@ RSpec.describe ContestInvitationsController, type: :controller do
 
       expect(contest_instance.contest_invitations.count).to eq(2)
     end
+
+    context 'when access mode is capability_url' do
+      let(:contest_instance) { create(:contest_instance, :capability_url, contest_description: description) }
+
+      it 'rejects creating invitees until invite_list mode is saved' do
+        expect {
+          post :create, params: {
+            container_id: container.id,
+            contest_description_id: description.id,
+            contest_instance_id: contest_instance.id,
+            emails: 'someone@umich.edu'
+          }
+        }.not_to change(ContestInvitation, :count)
+
+        expect(response).to redirect_to(
+          container_contest_description_contest_instance_path(container, description, contest_instance)
+        )
+        expect(flash[:alert]).to match(/invite list only/i)
+      end
+    end
   end
 
   describe 'DELETE #destroy' do
@@ -75,6 +95,27 @@ RSpec.describe ContestInvitationsController, type: :controller do
           id: invitation.id
         }
       }.to change(ContestInvitation, :count).by(-1)
+    end
+
+    context 'when access mode is capability_url' do
+      let(:contest_instance) { create(:contest_instance, :capability_url, contest_description: description) }
+      let!(:invitation) do
+        # Bypass mode guard to seed a leftover invitee from a prior mode.
+        ContestInvitation.create!(contest_instance: contest_instance, email: 'leftover@umich.edu')
+      end
+
+      it 'rejects removing invitees' do
+        expect {
+          delete :destroy, params: {
+            container_id: container.id,
+            contest_description_id: description.id,
+            contest_instance_id: contest_instance.id,
+            id: invitation.id
+          }
+        }.not_to change(ContestInvitation, :count)
+
+        expect(flash[:alert]).to match(/invite list only/i)
+      end
     end
   end
 
@@ -114,6 +155,28 @@ RSpec.describe ContestInvitationsController, type: :controller do
       }
 
       expect(flash[:alert]).to match(/no invitees/i)
+    end
+
+    context 'when access mode is capability_url' do
+      let(:contest_instance) { create(:contest_instance, :capability_url, contest_description: description) }
+      let!(:invitation_one) do
+        ContestInvitation.create!(contest_instance: contest_instance, email: 'one@umich.edu')
+      end
+      let!(:invitation_two) do
+        ContestInvitation.create!(contest_instance: contest_instance, email: 'two@umich.edu')
+      end
+
+      it 'rejects emailing invitees' do
+        expect(ContestInviteMailer).not_to receive(:invite_to_submit)
+
+        post :email_all, params: {
+          container_id: container.id,
+          contest_description_id: description.id,
+          contest_instance_id: contest_instance.id
+        }
+
+        expect(flash[:alert]).to match(/invite list only/i)
+      end
     end
 
     context 'when the user is not authorized' do

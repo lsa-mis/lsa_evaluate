@@ -23,8 +23,6 @@ class ContestInvitesController < ApplicationController
       return
     end
 
-    redeem_contest_instance!(@contest_instance)
-
     unless @contest_instance.open?
       redirect_to applicant_dashboard_path, alert: 'This contest is not currently open for submissions.'
       return
@@ -35,6 +33,10 @@ class ContestInvitesController < ApplicationController
                   alert: 'You are not eligible to submit to this contest (class level or entry limit).'
       return
     end
+
+    # Redeem only after open/eligibility checks so a closed or ineligible visit
+    # does not bind the capability to the session for later use.
+    redeem_contest_instance!(@contest_instance)
 
     redirect_to new_entry_path(contest_instance_id: @contest_instance.id),
                 notice: "Welcome to #{@contest_instance.contest_description.name}."
