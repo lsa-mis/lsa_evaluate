@@ -3,6 +3,8 @@
 # Table name: contest_instances
 #
 #  id                                   :bigint           not null, primary key
+#  access_mode                          :string(255)      default("capability_url"), not null
+#  access_token                         :string(255)      not null
 #  active                               :boolean          default(FALSE), not null
 #  archived                             :boolean          default(FALSE), not null
 #  course_requirement_description       :text(65535)
@@ -25,6 +27,7 @@
 #
 #  contest_description_id_idx                         (contest_description_id)
 #  id_unq_idx                                         (id) UNIQUE
+#  index_contest_instances_on_access_token            (access_token) UNIQUE
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
 #
 # Foreign Keys
@@ -32,6 +35,13 @@
 #  fk_rails_...  (contest_description_id => contest_descriptions.id)
 #
 class ContestInstance < ApplicationRecord
+  ACCESS_MODES = {
+    capability_url: 'capability_url',
+    invite_list: 'invite_list'
+  }.freeze
+
+  has_secure_token :access_token
+
   # Associations
   belongs_to :contest_description
   has_many :class_level_requirements, dependent: :destroy
@@ -42,6 +52,9 @@ class ContestInstance < ApplicationRecord
   has_many :judging_assignments, dependent: :restrict_with_error
   has_many :judges, through: :judging_assignments, source: :user
   has_many :judging_rounds, dependent: :restrict_with_error
+  has_many :contest_invitations, dependent: :destroy
+
+  enum :access_mode, ACCESS_MODES, default: :capability_url
 
   # Validations
   validates :date_open, presence: true
@@ -52,6 +65,7 @@ class ContestInstance < ApplicationRecord
   validates :has_course_requirement, inclusion: { in: [ true, false ] }
   validates :recletter_required, inclusion: { in: [ true, false ] }
   validates :transcript_required, inclusion: { in: [ true, false ] }
+  validates :access_mode, presence: true, inclusion: { in: ACCESS_MODES.values }
   validate :must_have_at_least_one_class_level_requirement
   validate :must_have_at_least_one_category
   validate :only_one_active_per_contest_description
@@ -99,6 +113,44 @@ class ContestInstance < ApplicationRecord
 
   def open?
     active && Time.current.between?(date_open, date_closed)
+  end
+
+  def container
+    contest_description.container
+  end
+
+  def private_visibility?
+    container.visibility.kind == 'Private'
+  end
+
+  def public_visibility?
+    !private_visibility?
+  end
+
+  def invited?(user)
+    return false if user&.email.blank?
+
+    contest_invitations.for_email(user.email).exists?
+  end
+
+  def available_for_profile?(profile)
+    return false if profile.blank?
+    return false unless class_levels.exists?(id: profile.class_level_id)
+
+    entries.active.where(profile: profile).count < maximum_number_entries_per_applicant
+  end
+
+  def eligible_for_submission?(profile)
+    open? && available_for_profile?(profile)
+  end
+
+  def access_granted_for?(user, redeemed_token: nil)
+    return true if public_visibility?
+    return false if redeemed_token.blank? || redeemed_token != access_token
+    return true if capability_url?
+    return invited?(user) if invite_list?
+
+    false
   end
 
   def judging_open?(user = nil)

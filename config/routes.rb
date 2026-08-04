@@ -20,6 +20,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Unguessable applicant invite URL for private contest instances
+  get '/c/:token', to: 'contest_invites#show', as: :contest_invite
+
   devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }
 
   devise_scope :user do
@@ -46,6 +49,12 @@ Rails.application.routes.draw do
           get :export_entries
           get :export_round_results
           patch :deactivate
+          post :regenerate_access_token
+        end
+        resources :contest_invitations, only: [ :create, :destroy ] do
+          collection do
+            post :email_all
+          end
         end
         resources :judging_rounds do
           member do

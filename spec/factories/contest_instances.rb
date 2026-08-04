@@ -3,6 +3,8 @@
 # Table name: contest_instances
 #
 #  id                                   :bigint           not null, primary key
+#  access_mode                          :string(255)      default("capability_url"), not null
+#  access_token                         :string(255)      not null
 #  active                               :boolean          default(FALSE), not null
 #  archived                             :boolean          default(FALSE), not null
 #  course_requirement_description       :text(65535)
@@ -25,6 +27,7 @@
 #
 #  contest_description_id_idx                         (contest_description_id)
 #  id_unq_idx                                         (id) UNIQUE
+#  index_contest_instances_on_access_token            (access_token) UNIQUE
 #  index_contest_instances_on_contest_description_id  (contest_description_id)
 #
 # Foreign Keys
@@ -76,6 +79,14 @@ FactoryBot.define do
 
     trait :inactive do
       active { false }
+    end
+
+    trait :invite_list do
+      access_mode { 'invite_list' }
+    end
+
+    trait :capability_url do
+      access_mode { 'capability_url' }
     end
 
     # For testing validation failures

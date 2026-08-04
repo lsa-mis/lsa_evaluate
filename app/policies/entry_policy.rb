@@ -1,6 +1,10 @@
 class EntryPolicy < ApplicationPolicy
   def create?
-    (record.profile.user == user && record.contest_instance.open?) || axis_mundi?
+    return true if axis_mundi?
+    return false unless record.profile&.user == user
+    return false unless record.contest_instance.eligible_for_submission?(record.profile)
+
+    private_access_allowed?
   end
 
   def soft_delete?
@@ -60,5 +64,15 @@ class EntryPolicy < ApplicationPolicy
         scope.none
       end
     end
+  end
+
+  private
+
+  def private_access_allowed?
+    contest_instance = record.contest_instance
+    return true if contest_instance.public_visibility?
+
+    redeemed_token = Current.redeemed_contest_instances&.dig(contest_instance.id.to_s)
+    contest_instance.access_granted_for?(user, redeemed_token: redeemed_token)
   end
 end

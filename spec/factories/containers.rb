@@ -29,5 +29,13 @@ FactoryBot.define do
     visibility
     notes { "Notes for #{name}" }
     contact_email { "contact@example.com" }
+
+    trait :private do
+      association :visibility, :private
+    end
+
+    trait :public do
+      association :visibility, :public
+    end
   end
 end
