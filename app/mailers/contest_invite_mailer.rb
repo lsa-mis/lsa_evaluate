@@ -7,7 +7,7 @@ class ContestInviteMailer < ApplicationMailer
     @contest_description = @contest_instance.contest_description
     @container = @contest_description.container
     @invite_url = contest_invite_url(token: @contest_instance.access_token)
-    @contact_email = @container.contact_email.presence || 'LSA Evaluate Support <lsa-evaluate-support@umich.edu>'
+    @contact_email = @container.contact_email.presence || 'lsa-evaluate-support@umich.edu'
     @date_open = @contest_instance.date_open
     @date_closed = @contest_instance.date_closed
 
