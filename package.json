@@ -7,6 +7,7 @@
     "@popperjs/core": "^2.11.8",
     "@rails/actiontext": "^8.0.200",
     "@sentry/browser": "^10.65.0",
+    "@sentry/esbuild-plugin": "^4.9.1",
     "autoprefixer": "^10.4.17",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
@@ -20,7 +21,7 @@
     "trix": "^2.1.18"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
+    "build": "node esbuild.config.mjs",
     "build:css:compile": "sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
     "build:css:prefix": "postcss ./app/assets/builds/application.css --use=autoprefixer --output=./app/assets/builds/application.css",
     "build:css:copy-fonts": "mkdir -p app/assets/builds/fonts && cp -f node_modules/bootstrap-icons/font/fonts/* app/assets/builds/fonts/",

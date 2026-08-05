@@ -5,6 +5,7 @@
 #   require './lib/sentry_test_helper'
 #   SentryTestHelper.verify_config
 #   SentryTestHelper.test_message
+#   SentryTestHelper.test_log
 #   SentryTestHelper.test_exception
 #   SentryTestHelper.full_test
 module SentryTestHelper
@@ -18,6 +19,7 @@ module SentryTestHelper
       puts "DSN configured: #{Sentry.configuration.dsn.present?}"
       puts "DSN (masked): #{mask_dsn(Sentry.configuration.dsn)}" if Sentry.configuration.dsn
       puts "Error sample rate: #{Sentry.configuration.sample_rate}"
+      puts "Logs enabled: #{Sentry.configuration.enable_logs.inspect}"
       puts "Traces sampler configured: #{!Sentry.configuration.traces_sampler.nil?}"
       puts "Profiles sample rate: #{Sentry.configuration.profiles_sample_rate}"
       puts "Release: #{Sentry.configuration.release}"
@@ -36,6 +38,23 @@ module SentryTestHelper
       puts "Note: Check Sentry dashboard in a few moments"
       puts "===========================\n"
       event_id
+    end
+
+    # Send a structured log (Sentry Logs — requires enable_logs: true)
+    def test_log(message = "Sentry log test from %{env} at %{time}")
+      puts "\n=== Testing Sentry Log ==="
+      puts "enable_logs: #{Sentry.configuration.enable_logs.inspect}"
+
+      Sentry.logger.info(
+        message,
+        env: Rails.env,
+        time: Time.current.iso8601,
+        source: 'SentryTestHelper'
+      )
+      Sentry.get_current_client&.flush
+      puts "Log queued (flush called)"
+      puts "===========================\n"
+      true
     end
 
     # Send a test exception
@@ -60,6 +79,8 @@ module SentryTestHelper
       verify_config
       sleep 1
       test_message
+      sleep 1
+      test_log
       sleep 1
       test_exception
       puts "\n✅ Testing complete! Check your Sentry dashboard."
