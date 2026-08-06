@@ -47,5 +47,17 @@ RSpec.describe ContestInviteMailer, type: :mailer do
       mail_without_contact = described_class.invite_to_submit(invitation)
       expect(mail_without_contact.reply_to).to eq([ 'lsa-evaluate-support@umich.edu' ])
     end
+
+    it 'uses a plain email address in the mailto fallback when contact email is blank' do
+      container.contact_email = ''
+      container.save(validate: false)
+
+      mail_without_contact = described_class.invite_to_submit(invitation)
+      body = mail_without_contact.body.encoded
+
+      expect(body).to include('mailto:lsa-evaluate-support@umich.edu')
+      expect(body).not_to include('LSA Evaluate Support <')
+      expect(body).not_to include('mailto:LSA Evaluate Support')
+    end
   end
 end
