@@ -20,6 +20,14 @@ Sentry.init do |config|
   # Capture all errors — sample only performance data (high-traffic apps still need full error coverage)
   config.sample_rate = 1.0
 
+  # Structured logs (Sentry Logs) — correlated with errors/traces; requires sentry-ruby >= 5.27
+  config.enable_logs = true
+  config.before_send_log = lambda do |log|
+    return nil if log.level == :debug || log.level == :trace
+
+    log
+  end
+
   config.max_breadcrumbs = 50
 
   # Dynamic trace sampling (takes precedence over traces_sample_rate)

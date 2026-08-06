@@ -4,8 +4,13 @@ lock '~> 3.20.0'
 set :default_env, {
   'PATH' => '$HOME/.asdf/shims:$HOME/.asdf/bin:$PATH',
   'SKIP_ECHO_ENV' => 'true',
-  'SKIP_SEEDS' => 'true'
-}
+  'SKIP_SEEDS' => 'true',
+  # Forwarded so yarn build (esbuild.config.mjs) can upload JS source maps during assets:precompile
+  'SENTRY_AUTH_TOKEN' => ENV['SENTRY_AUTH_TOKEN'],
+  'SENTRY_ORG' => ENV.fetch('SENTRY_ORG', 'wads-rails-lsa-um'),
+  'SENTRY_PROJECT' => ENV.fetch('SENTRY_PROJECT', 'evaluate'),
+  'SENTRY_RELEASE' => ENV['SENTRY_RELEASE']
+}.compact
 
 SSHKit.config.command_map[:bundle] = '/home/deployer/.asdf/shims/bundle'
 SSHKit.config.command_map[:ruby] = '/home/deployer/.asdf/shims/ruby'

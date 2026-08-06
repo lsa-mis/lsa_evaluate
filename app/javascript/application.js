@@ -20,9 +20,20 @@ if (sentryDsn) {
     dsn: sentryDsn,
     environment,
     release: release || undefined,
-    integrations: [Sentry.browserTracingIntegration()],
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.replayIntegration({
+        // Defaults mask text/inputs and block media — keep PII out of replays
+        maskAllText: true,
+        maskAllInputs: true,
+        blockAllMedia: true
+      })
+    ],
     // Match server-side sampling; keep all browser errors
     tracesSampleRate: isProduction ? 0.1 : 1.0,
+    // Session Replay: always capture sessions with errors; sample a fraction of all sessions
+    replaysSessionSampleRate: isProduction ? 0.1 : 1.0,
+    replaysOnErrorSampleRate: 1.0,
     // Ignore common extension / noise errors
     ignoreErrors: [
       "ResizeObserver loop limit exceeded",

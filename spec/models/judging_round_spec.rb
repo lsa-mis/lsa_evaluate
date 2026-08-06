@@ -79,6 +79,40 @@ RSpec.describe JudgingRound, type: :model do
         expect(second_round).to be_valid
       end
     end
+
+    context 'comment word count validations' do
+      it 'is invalid when min_internal_comment_words is negative' do
+        judging_round.min_internal_comment_words = -1
+        expect(judging_round).not_to be_valid
+        expect(judging_round.errors[:min_internal_comment_words]).to be_present
+      end
+
+      it 'is invalid when min_external_comment_words is negative' do
+        judging_round.min_external_comment_words = -1
+        expect(judging_round).not_to be_valid
+        expect(judging_round.errors[:min_external_comment_words]).to be_present
+      end
+
+      it 'is invalid when min_internal_comment_words is not an integer' do
+        judging_round.min_internal_comment_words = 1.5
+        expect(judging_round).not_to be_valid
+        expect(judging_round.errors[:min_internal_comment_words]).to be_present
+      end
+
+      it 'is invalid when min comment word counts are nil' do
+        judging_round.min_internal_comment_words = nil
+        judging_round.min_external_comment_words = nil
+        expect(judging_round).not_to be_valid
+        expect(judging_round.errors[:min_internal_comment_words]).to be_present
+        expect(judging_round.errors[:min_external_comment_words]).to be_present
+      end
+
+      it 'is valid when comment word counts are zero' do
+        judging_round.min_internal_comment_words = 0
+        judging_round.min_external_comment_words = 0
+        expect(judging_round).to be_valid
+      end
+    end
   end
 
   describe 'automatic activation' do
