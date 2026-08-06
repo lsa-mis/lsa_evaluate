@@ -7,7 +7,6 @@ gem 'rails', '~> 8.1'
 ruby '4.0.6'
 
 gem 'actiontext'
-gem 'appsignal'
 gem 'bootsnap', require: false
 gem 'benchmark'
 gem 'cgi'
