@@ -40,7 +40,8 @@ module SamlReturnState
 
     payload = state.delete_prefix(OPAQUE_PREFIX)
     data = saml_return_encryptor.decrypt_and_verify(payload, purpose: STATE_PURPOSE)
-    data['path']
+    # Expired payloads decrypt to nil (no exception); treat like an invalid RelayState.
+    data&.fetch('path', nil)
   rescue ActiveSupport::MessageEncryptor::InvalidMessage, ActiveSupport::MessageVerifier::InvalidSignature
     nil
   end
