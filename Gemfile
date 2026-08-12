@@ -19,7 +19,7 @@ gem 'devise', '~> 5.0'
 gem 'google-cloud-storage', '~> 1.52'
 gem 'image_processing', '~> 1.2'
 gem 'jbuilder'
-gem 'jsbundling-rails'bd
+gem 'jsbundling-rails'
 gem 'lsa_tdx_feedback', '~> 2.0.2'
 gem 'mysql2', '~> 0.5.3'
 gem 'net-imap', '>= 0.5'
