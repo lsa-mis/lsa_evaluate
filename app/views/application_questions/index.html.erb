@@ -1,0 +1,56 @@
+<h2 class="mt-4">Application Questions</h2>
+<p class="text-muted">
+  Manage the question library for this collection. Set default required/optional/off status here.
+  Contests and contest instances can override these defaults.
+</p>
+
+<div class="mb-3">
+  <%= link_to 'Add custom question', new_container_application_question_path(@container), class: 'btn btn-sm btn-primary' %>
+</div>
+
+<%= form_with url: update_requirements_container_application_questions_path(@container), method: :patch do %>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Type</th>
+          <th>System</th>
+          <th>Default status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @application_questions.each do |question| %>
+          <% requirement = @container_requirements[question.id] %>
+          <tr class="<%= 'table-secondary' unless question.active? %>">
+            <td>
+              <strong><%= question.label %></strong>
+              <% if question.help_text.present? %>
+                <div class="small text-muted"><%= question.help_text %></div>
+              <% end %>
+              <div class="small text-muted">key: <%= question.key %></div>
+            </td>
+            <td><%= question.field_type %></td>
+            <td><%= question.system_key.presence || '—' %></td>
+            <td>
+              <%= select_tag "requirements[#{question.id}][status]",
+                             options_for_select(question_status_options, requirement&.status || 'off'),
+                             class: 'form-select form-select-sm' %>
+            </td>
+            <td class="text-nowrap">
+              <%= link_to 'Edit', edit_container_application_question_path(@container, question), class: 'link_to' %>
+              <% unless question.system? %>
+                <%= button_to 'Delete', container_application_question_path(@container, question),
+                              method: :delete,
+                              class: 'btn btn-link btn-sm text-danger p-0 ms-2',
+                              form: { data: { turbo_confirm: 'Delete this question?' } } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%= submit_tag 'Save default requirements', class: 'btn btn-primary' %>
+<% end %>

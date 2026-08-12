@@ -1,4 +1,6 @@
 class ContestDescriptionsController < ApplicationController
+  include ApplicationQuestionRequirementsSync
+
   before_action :set_container
   before_action :set_contest_description, only: %i[show edit update destroy eligibility_rules]
   before_action :authorize_contest_description, except: [ :index, :new, :create, :eligibility_rules ]
@@ -22,7 +24,12 @@ class ContestDescriptionsController < ApplicationController
   def create
     @contest_description = @container.contest_descriptions.new(contest_description_params)
     authorize @contest_description
-    handle_save(@contest_description.save, 'created')
+    success = false
+    ActiveRecord::Base.transaction do
+      success = @contest_description.save
+      sync_application_question_requirements!(@contest_description, params[:requirements]) if success
+    end
+    handle_save(success, 'created')
   end
 
   def update
@@ -40,7 +47,12 @@ class ContestDescriptionsController < ApplicationController
         format.html { render :edit, status: :unprocessable_entity }
       end
     else
-      handle_save(@contest_description.update(contest_description_params), 'updated')
+      success = false
+      ActiveRecord::Base.transaction do
+        success = @contest_description.update(contest_description_params)
+        sync_application_question_requirements!(@contest_description, params[:requirements]) if success
+      end
+      handle_save(success, 'updated')
     end
   end
 

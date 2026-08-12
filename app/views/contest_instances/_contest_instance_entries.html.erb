@@ -1,4 +1,5 @@
 <% if @contest_instance_entries.any? %>
+  <% effective_questions = effective_question_headers(@contest_instance) %>
   <div class="d-flex align-items-center justify-content-between mb-3">
     <h2 class="text-muted mb-0"><%= pluralize(@contest_instance_entries.count, 'Entry') %></h2>
     <%= link_to export_entries_container_contest_description_contest_instance_path(
@@ -7,7 +8,7 @@
                   @contest_instance,
                   format: :csv
                 ),
-                class: "btn btn-sm btn-outline-primary",
+                class: 'btn btn-sm btn-outline-primary',
                 data: { turbo: false } do %>
       <i class="fas fa-file-download me-1"></i> Export to CSV
     <% end %>
@@ -19,24 +20,20 @@
         <th class="text-center">File</th>
         <th><%= sortable 'title', 'Title', @container, @contest_description, @contest_instance %></th>
         <th><%= sortable 'category_kind', 'Category', @container, @contest_description, @contest_instance %></th>
-        <% if @contest_instance&.require_pen_name %>
-          <th><%= sortable 'pen_name', 'Pen Name', @container, @contest_description, @contest_instance %></th>
-        <% end %>
-        <% if @contest_instance&.require_campus_employment_info %>
-          <th><%= sortable 'profile_campus_employee', 'Campus Employee', @container, @contest_description, @contest_instance %></th>
+        <% effective_questions.first(4).each do |question| %>
+          <th><%= question.label %></th>
         <% end %>
         <th><%= sortable 'profile_display_name', 'Applicant Name', @container, @contest_description, @contest_instance %></th>
         <th><%= sortable 'profile_user_uniqname', 'Username', @container, @contest_description, @contest_instance %></th>
         <th><%= sortable 'profile_class_level_name', 'Class Level', @container, @contest_description, @contest_instance %></th>
-        <th><%= sortable 'profile_campus_description', 'Campus', @container, @contest_description, @contest_instance %></th>
         <th><%= sortable 'created_at', 'Created At', @container, @contest_description, @contest_instance %></th>
-        <th class=text-center"><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
+        <th class="text-center"><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
         <th class="text-center">Actions</th>
       </tr>
     </thead>
     <tbody>
       <% @contest_instance_entries.each do |ci_entry| %>
-        <%= render partial: 'contest_instances/entry', locals: { entry: ci_entry } %>
+        <%= render partial: 'contest_instances/entry', locals: { entry: ci_entry, effective_questions: effective_questions } %>
       <% end %>
     </tbody>
   </table>

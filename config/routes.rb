@@ -41,6 +41,11 @@ Rails.application.routes.draw do
   end
 
   resources :containers do
+    resources :application_questions, except: [ :show ] do
+      collection do
+        patch :update_requirements
+      end
+    end
     resources :contest_descriptions do
       resources :contest_instances do
         member do

@@ -1,0 +1,34 @@
+<h2><%= @application_question.new_record? ? 'New' : 'Edit' %> Application Question</h2>
+
+<%= simple_form_for([@container, @application_question]) do |f| %>
+  <%= f.error_notification %>
+
+  <% if @application_question.system? %>
+    <%= f.input :key, disabled: true %>
+    <%= f.input :system_key, disabled: true %>
+    <%= f.input :field_type, disabled: true %>
+  <% else %>
+    <%= f.input :key, hint: 'Stable slug used within this collection' %>
+    <%= f.input :field_type, collection: ApplicationQuestion::FIELD_TYPES, include_blank: false,
+                disabled: @application_question.persisted? %>
+  <% end %>
+
+  <%= f.input :label %>
+  <%= f.input :help_text %>
+  <%= f.input :position %>
+  <%= f.input :active %>
+
+  <% if %w[select select_with_other].include?(@application_question.field_type) || @application_question.new_record? %>
+    <div class="mb-3">
+      <label class="form-label">Select choices (one per line)</label>
+      <%= text_area_tag 'application_question[options][choices]',
+                        Array(@application_question.options&.dig('choices')).join("\n"),
+                        class: 'form-control', rows: 5 %>
+    </div>
+  <% end %>
+
+  <div class="form-actions">
+    <%= f.button :submit, class: 'btn btn-primary' %>
+    <%= link_to 'Cancel', container_application_questions_path(@container), class: 'text-danger link_to' %>
+  </div>
+<% end %>

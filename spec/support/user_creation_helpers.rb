@@ -23,14 +23,12 @@ module UserCreationHelpers
 
     create(:profile,
       user: user,
+      legal_first_name: user.first_name,
+      legal_last_name: user.last_name,
       preferred_first_name: user.first_name,
       preferred_last_name: user.last_name,
       class_level: class_level,
-      school: create(:school),
-      campus: create(:campus),
-      grad_date: Date.today + 1.year,
-      degree: "Bachelor's",
-      umid: format('%08d', rand(10000000..99999999))
+      umid: format('%08d', rand(10_000_000..99_999_999))
     )
 
     user
@@ -55,14 +53,13 @@ module UserCreationHelpers
 
     create(:profile,
       user: user,
+      legal_first_name: user.first_name,
+      legal_last_name: user.last_name,
       preferred_first_name: user.first_name,
       preferred_last_name: user.last_name,
       campus_employee: true,
-      school: create(:school),
-      campus: create(:campus),
-      grad_date: Date.today + 1.year,
-      degree: "Master's",
-      umid: format('%08d', rand(10000000..99999999))
+      class_level: ClassLevel.find_or_create_by!(name: class_level_name, description: "#{class_level_name} student"),
+      umid: format('%08d', rand(10_000_000..99_999_999))
     )
 
     user

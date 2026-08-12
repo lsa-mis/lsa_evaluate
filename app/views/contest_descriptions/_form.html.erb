@@ -19,6 +19,13 @@
       <%= f.input :active,
           hint: "Toggle this checkbox to make the contest active. When active, administrators will be able to manage the submitted entries. Judges, during their assigned judging period, will be able to view the entries and provide feedback. Note that the contest's instances availabilty for submissions will follow the visibility settings based on specific dates configured in each contest instance. If this checkbox is unchecked, the contest and its instances will remain inactive and hidden from evaluation workflows.",
           input_html: { data: { contest_activation_target: "activeCheckbox" } } %>
+
+      <% unless @contest_description.new_record? %>
+        <%= render 'application_questions/requirements_matrix',
+                   container: @container,
+                   requireable: @contest_description,
+                   param_key: 'requirements' %>
+      <% end %>
     </div>
 
     <div class="form-actions">
