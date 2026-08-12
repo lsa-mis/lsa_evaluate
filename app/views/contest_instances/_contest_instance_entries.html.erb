@@ -13,30 +13,37 @@
       <i class="fas fa-file-download me-1"></i> Export to CSV
     <% end %>
   </div>
-  <table class="table table-striped w-100">
-    <thead>
-      <tr>
-        <th><small><%= sortable 'id', 'Entry_ID', @container, @contest_description, @contest_instance %></small></th>
-        <th class="text-center">File</th>
-        <th><%= sortable 'title', 'Title', @container, @contest_description, @contest_instance %></th>
-        <th><%= sortable 'category_kind', 'Category', @container, @contest_description, @contest_instance %></th>
-        <% effective_questions.first(4).each do |question| %>
-          <th><%= question.label %></th>
+  <% if effective_questions.any? %>
+    <p class="small text-muted">
+      Application answers appear as columns below. Scroll horizontally if needed, or open an entry to see the full list.
+    </p>
+  <% end %>
+  <div class="table-responsive">
+    <table class="table table-striped w-100">
+      <thead>
+        <tr>
+          <th><small><%= sortable 'id', 'Entry_ID', @container, @contest_description, @contest_instance %></small></th>
+          <th class="text-center">File</th>
+          <th><%= sortable 'title', 'Title', @container, @contest_description, @contest_instance %></th>
+          <th><%= sortable 'category_kind', 'Category', @container, @contest_description, @contest_instance %></th>
+          <% effective_questions.each do |question| %>
+            <th class="text-nowrap" title="<%= question.label %>"><%= truncate(question.label, length: 28) %></th>
+          <% end %>
+          <th><%= sortable 'profile_display_name', 'Applicant Name', @container, @contest_description, @contest_instance %></th>
+          <th><%= sortable 'profile_user_uniqname', 'Username', @container, @contest_description, @contest_instance %></th>
+          <th><%= sortable 'profile_class_level_name', 'Class Level', @container, @contest_description, @contest_instance %></th>
+          <th><%= sortable 'created_at', 'Created At', @container, @contest_description, @contest_instance %></th>
+          <th class="text-center"><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @contest_instance_entries.each do |ci_entry| %>
+          <%= render partial: 'contest_instances/entry', locals: { entry: ci_entry, effective_questions: effective_questions } %>
         <% end %>
-        <th><%= sortable 'profile_display_name', 'Applicant Name', @container, @contest_description, @contest_instance %></th>
-        <th><%= sortable 'profile_user_uniqname', 'Username', @container, @contest_description, @contest_instance %></th>
-        <th><%= sortable 'profile_class_level_name', 'Class Level', @container, @contest_description, @contest_instance %></th>
-        <th><%= sortable 'created_at', 'Created At', @container, @contest_description, @contest_instance %></th>
-        <th class="text-center"><%= sortable 'disqualified', 'Disqualified', @container, @contest_description, @contest_instance %></th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @contest_instance_entries.each do |ci_entry| %>
-        <%= render partial: 'contest_instances/entry', locals: { entry: ci_entry, effective_questions: effective_questions } %>
-      <% end %>
-    </tbody>
-  </table>
+      </tbody>
+    </table>
+  </div>
 <% else %>
   <h2 class="text-center">There are no entries for this instance.</h2>
 <% end %>

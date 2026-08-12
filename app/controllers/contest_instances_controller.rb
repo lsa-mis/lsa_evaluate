@@ -14,8 +14,8 @@ class ContestInstancesController < ApplicationController
   def show
     @contest_instance_entries = @contest_instance.entries.active.includes(
       :category,
-      :entry_answers,
-      profile: :user,
+      { entry_answers: :application_question },
+      { profile: [ :user, :class_level ] },
       contest_instance: { contest_description: :container }
     )
 

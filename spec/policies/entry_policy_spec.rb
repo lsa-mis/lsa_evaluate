@@ -140,4 +140,67 @@ RSpec.describe EntryPolicy do
       it { is_expected.to forbid_action(:toggle_disqualified) }
     end
   end
+
+  describe "#view_application_answers?" do
+    let(:container) { contest_instance.contest_description.container }
+
+    context "for a visitor" do
+      let(:user) { nil }
+      it { is_expected.to forbid_action(:view_application_answers) }
+    end
+
+    context "for a Container Administrator in the same container" do
+      let(:user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: user, container: container, role: admin_role)
+      end
+
+      it { is_expected.to permit_action(:view_application_answers) }
+    end
+
+    context "for a Collection Manager in the same container" do
+      let(:user) { create(:user) }
+      let(:manager_role) { create(:role, kind: 'Collection Manager') }
+
+      before do
+        create(:assignment, user: user, container: container, role: manager_role)
+      end
+
+      it { is_expected.to permit_action(:view_application_answers) }
+    end
+
+    context "for Axis Mundi" do
+      let(:user) { create(:user, :axis_mundi) }
+      it { is_expected.to permit_action(:view_application_answers) }
+    end
+
+    context "for a Container Administrator in a different container" do
+      let(:other_container) { create(:container) }
+      let(:user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: user, container: other_container, role: admin_role)
+      end
+
+      it { is_expected.to forbid_action(:view_application_answers) }
+    end
+
+    context "for the entry owner" do
+      let(:user) { profile.user }
+      it { is_expected.to forbid_action(:view_application_answers) }
+    end
+
+    context "for a judge assigned to the contest instance" do
+      let(:user) { create(:user, :with_judge_role) }
+
+      before do
+        create(:judging_assignment, user: user, contest_instance: contest_instance)
+      end
+
+      it { is_expected.to forbid_action(:view_application_answers) }
+    end
+  end
 end

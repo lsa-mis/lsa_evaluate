@@ -18,8 +18,9 @@
   </td>
   <td><%= entry.title %></td>
   <td><%= entry.category.kind %></td>
-  <% effective_questions.first(4).each do |question| %>
-    <td><%= entry_answer_display(entry, question) %></td>
+  <% effective_questions.each do |question| %>
+    <% answer_text = entry_answer_display(entry, question) %>
+    <td class="text-truncate" style="max-width: 12rem;" title="<%= answer_text %>"><%= answer_text %></td>
   <% end %>
   <td>
     <% if policy(entry).view_applicant_profile? %>
@@ -33,12 +34,24 @@
   <td><%= entry.profile.class_level&.name %></td>
   <td class="text-xs"><%= format_datetime(entry.created_at) %></td>
   <td class="text-center"><%= boolean_to_yes_no(entry.disqualified) %></td>
-  <td class="text-center">
+  <td class="text-center text-nowrap">
+    <% if policy(entry).view_application_answers? %>
+      <button type="button"
+              class="badge badge bg-primary text-white btn btn-sm p-0 me-1"
+              data-action="click->modal#open"
+              data-url="<%= modal_details_entry_path(entry) %>"
+              data-modal-title="Entry <%= entry.id %> answers"
+              title="View application answers"
+              aria-label="View application answers">
+        <i class="bi bi-card-text" style="font-size: 1.5rem;" aria-hidden="true"></i>
+        <span class="visually-hidden">View application answers</span>
+      </button>
+    <% end %>
     <% if policy(entry).toggle_disqualified? %>
       <%= button_to toggle_disqualified_entry_path(entry),
                     method: :patch,
                     data: { turbo_confirm: 'Are you sure you want to toggle the disqualification status?' },
-                    form: { data: { turbo_frame: '_top' } },
+                    form: { data: { turbo_frame: '_top' }, class: 'd-inline' },
                     class: 'badge badge bg-warning text-black btn btn-sm p-0',
                     title: 'Toggle Disqualification',
                     aria: { label: 'Toggle Disqualification' } do %>

@@ -18,6 +18,7 @@ class EntriesController < ApplicationController
 
   def modal_details
     authorize @entry, :show?
+    @effective_questions = EffectiveApplicationQuestions.for(@entry.contest_instance).map(&:question)
     render layout: false
   end
 

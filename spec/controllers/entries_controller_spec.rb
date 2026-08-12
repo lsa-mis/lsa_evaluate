@@ -22,11 +22,22 @@ RSpec.describe EntriesController, type: :controller do
     end
 
     context "when user is a Container Administrator for the entry's container" do
+      render_views
+
       let(:container) { contest_instance.contest_description.container }
       let(:admin_user) { create(:user) }
       let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+      let(:custom_question) do
+        create(:application_question, container: container, label: 'Favorite form', key: 'favorite_form', position: 200)
+      end
 
       before do
+        ApplicationQuestionRequirement.create!(
+          application_question: custom_question,
+          requireable: contest_instance,
+          status: 'required'
+        )
+        EntryAnswer.create!(entry: entry, application_question: custom_question, value: 'Sonnet')
         create(:assignment, user: admin_user, container: container, role: admin_role)
         sign_in admin_user
         get :modal_details, params: { id: entry.id }
@@ -38,6 +49,43 @@ RSpec.describe EntriesController, type: :controller do
 
       it "renders the details partial" do
         expect(response).to render_template('entries/modal_details')
+      end
+
+      it "includes the applicant's application answers" do
+        expect(response.body).to include('Application answers')
+        expect(response.body).to include('Favorite form')
+        expect(response.body).to include('Sonnet')
+      end
+    end
+
+    context "when user is a judge assigned to the contest instance" do
+      render_views
+
+      let(:judge_user) { create(:user, :with_judge_role) }
+      let(:container) { contest_instance.contest_description.container }
+      let(:custom_question) do
+        create(:application_question, container: container, label: 'Favorite form', key: 'favorite_form', position: 200)
+      end
+
+      before do
+        ApplicationQuestionRequirement.create!(
+          application_question: custom_question,
+          requireable: contest_instance,
+          status: 'required'
+        )
+        EntryAnswer.create!(entry: entry, application_question: custom_question, value: 'Sonnet')
+        create(:judging_assignment, user: judge_user, contest_instance: contest_instance)
+        sign_in judge_user
+        get :modal_details, params: { id: entry.id }
+      end
+
+      it "returns a successful response" do
+        expect(response).to be_successful
+      end
+
+      it "does not include application answers" do
+        expect(response.body).not_to include('Application answers')
+        expect(response.body).not_to include('Sonnet')
       end
     end
 
