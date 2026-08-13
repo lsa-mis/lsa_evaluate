@@ -37,11 +37,22 @@ class ApplicationQuestion < ApplicationRecord
       label: 'I agree to the submission acknowledgement', field_type: 'boolean' }
   ].freeze
 
+  KEY_MAX_LENGTH = 64
+  KEY_FORMAT = /\A[a-z][a-z0-9]*(_[a-z0-9]+)*\z/
+  RESERVED_KEYS = SYSTEM_QUESTION_DEFINITIONS.map { |definition| definition[:key] }.freeze
+
   belongs_to :container
   has_many :application_question_requirements, dependent: :destroy
   has_many :entry_answers, dependent: :restrict_with_error
 
-  validates :key, presence: true, uniqueness: { scope: :container_id }
+  validates :key, presence: true
+  validates :key, uniqueness: { scope: :container_id }, unless: -> { custom? && RESERVED_KEYS.include?(key) }
+  validates :key, length: { maximum: KEY_MAX_LENGTH }, allow_blank: true
+  validates :key, format: {
+    with: KEY_FORMAT,
+    message: 'must start with a letter and use lowercase letters, numbers, and single underscores (e.g. workshop_title)'
+  }, allow_blank: true
+  validate :custom_key_not_reserved
   validates :label, presence: true
   validates :field_type, presence: true, inclusion: { in: FIELD_TYPES }
   validates :system_key, uniqueness: { scope: :container_id }, allow_nil: true
@@ -90,6 +101,14 @@ class ApplicationQuestion < ApplicationRecord
 
   def normalize_key
     self.key = key.to_s.parameterize(separator: '_') if key.present?
+  end
+
+  def custom_key_not_reserved
+    return unless custom?
+    return if key.blank?
+    return unless RESERVED_KEYS.include?(key)
+
+    errors.add(:key, 'is reserved for a built-in system question')
   end
 
   def field_type_immutable_after_create

@@ -8,7 +8,31 @@
     <%= f.input :system_key, disabled: true %>
     <%= f.input :field_type, disabled: true %>
   <% else %>
-    <%= f.input :key, hint: 'Stable slug used within this collection' %>
+    <% if @application_question.new_record? %>
+      <div class="border rounded p-3 bg-light mb-3">
+        <p class="mb-2">
+          The <strong>key</strong> is a stable internal name for this question — like a database column name,
+          not the wording applicants see. It is unique in this collection and used to prefill earlier answers,
+          so choose it carefully and avoid changing it later.
+        </p>
+        <ul class="mb-0 small">
+          <li>Use a short lowercase slug: letters, numbers, and underscores only, starting with a letter.</li>
+          <li>Name the data being collected, not the prompt —
+            <code>preferred_genre</code> is better than <code>what_genre_do_you_prefer</code>.</li>
+          <li>Spaces and punctuation are converted automatically (<code>Workshop Title</code> becomes
+            <code>workshop_title</code>).</li>
+          <li>Do not reuse a built-in system key already in this collection, such as
+            <code>degree</code> or <code>pen_name</code>.</li>
+        </ul>
+      </div>
+    <% end %>
+    <%= f.input :key,
+                label: 'Internal key',
+                placeholder: ('workshop_title' if @application_question.new_record?),
+                hint: (@application_question.new_record? ?
+                         'Example of a good key: workshop_title'
+                         : 'Changing this key can prevent prefilling previous answers for this question.'),
+                input_html: { maxlength: ApplicationQuestion::KEY_MAX_LENGTH, autocomplete: 'off' } %>
     <%= f.input :field_type, collection: ApplicationQuestion::FIELD_TYPES, include_blank: false,
                 disabled: @application_question.persisted? %>
   <% end %>
