@@ -31,6 +31,21 @@ RSpec.describe ApplicationController, type: :controller do
       expect(controller.send(:after_sign_in_path_for, judge)).to eq(judge_dashboard_path)
     end
 
+    it 'ignores an expired opaque RelayState' do
+      opaque = nil
+      travel_to(Time.zone.local(2026, 8, 1, 12, 0, 0)) do
+        opaque = controller.send(:stash_saml_return_path!, '/c/private-contest-token')
+      end
+
+      travel_to(Time.zone.local(2026, 8, 1, 12, 31, 0)) do
+        allow(controller.request).to receive(:params).and_return(
+          ActionController::Parameters.new('RelayState' => opaque)
+        )
+
+        expect(controller.send(:after_sign_in_path_for, judge)).to eq(judge_dashboard_path)
+      end
+    end
+
     it 'uses a direct omniauth.origin path when RelayState is absent' do
       request.env['omniauth.origin'] = '/entries/new'
 
