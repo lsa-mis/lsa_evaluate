@@ -381,6 +381,31 @@ RSpec.describe ContestInstancesController, type: :controller do
           expect(disqualified_row).not_to be_nil
           expect(disqualified_row[10]).to eq('Yes')
         end
+
+        it 'neutralizes applicant answers that look like spreadsheet formulas' do
+          formula_entry = create(:entry,
+                                 contest_instance: contest_instance,
+                                 profile: create(:profile),
+                                 title: 'Formula Entry')
+          EntryAnswer.create!(
+            entry: formula_entry,
+            application_question: pen_name_question,
+            value: '=HYPERLINK("http://evil.example")'
+          )
+
+          get :export_entries, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+          entry_row = csv.find { |row| row[0] == 'Formula Entry' }
+
+          expect(entry_row).not_to be_nil
+          expect(entry_row[11]).to eq("'=HYPERLINK(\"http://evil.example\")")
+        end
       end
 
       context 'contest instance without entries' do
@@ -571,6 +596,34 @@ RSpec.describe ContestInstancesController, type: :controller do
           expect(csv.to_s).to include('Entry Two')
           expect(csv.to_s).to include('Great work!')
           expect(csv.to_s).to include('Good effort')
+        end
+
+        it 'neutralizes applicant answers that look like spreadsheet formulas' do
+          pen_name_question = contest_instance.contest_description.container.application_questions.find_by!(system_key: 'pen_name')
+          ApplicationQuestionRequirement.create!(
+            application_question: pen_name_question,
+            requireable: contest_instance,
+            status: 'required'
+          )
+          EntryAnswer.create!(
+            entry: entry1,
+            application_question: pen_name_question,
+            value: '=cmd|"/c calc"!A0'
+          )
+
+          get :export_round_results, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            round_id: judging_round.id,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+          entry_row = csv.find { |row| row[0] == 'Entry One' }
+
+          expect(entry_row).not_to be_nil
+          expect(entry_row.last).to eq("'=cmd|\"/c calc\"!A0")
         end
       end
 

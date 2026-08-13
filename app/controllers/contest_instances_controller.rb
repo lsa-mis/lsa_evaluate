@@ -312,7 +312,7 @@ class ContestInstancesController < ApplicationController
           entry.created_at.strftime('%m/%d/%Y %I:%M %p'),
           entry.disqualified? ? 'Yes' : 'No'
         ] + questions.map { |question|
-          answers_by_question_id[question.id]&.display_value
+          csv_safe_cell(answers_by_question_id[question.id]&.display_value)
         }
       end
     end
@@ -339,7 +339,9 @@ class ContestInstancesController < ApplicationController
         rankings = entry.entry_rankings.where(judging_round: judging_round)
         selected = rankings.exists?(selected_for_next_round: true)
         answers_by_question_id = entry.entry_answers.index_by(&:application_question_id)
-        question_values = questions.map { |question| answers_by_question_id[question.id]&.display_value }
+        question_values = questions.map { |question|
+          csv_safe_cell(answers_by_question_id[question.id]&.display_value)
+        }
 
         base_data = [
           entry.title,
@@ -368,5 +370,14 @@ class ContestInstancesController < ApplicationController
         end
       end
     end
+  end
+
+  # Neutralize applicant-controlled values so spreadsheet apps treat them as text
+  # rather than formulas when staff open the CSV (CSV injection).
+  def csv_safe_cell(value)
+    text = value.to_s
+    return text if text.empty?
+
+    text.start_with?('=', '+', '-', '@', "\t", "\r") ? "'#{text}" : text
   end
 end
