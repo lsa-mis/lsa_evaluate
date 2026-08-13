@@ -22,6 +22,10 @@ class EntryPolicy < ApplicationPolicy
     axis_mundi?
   end
 
+  def view_application_answers?
+    user&.has_container_role?(record.contest_instance.contest_description.container) || axis_mundi?
+  end
+
   def show?
     # Allow users to see their own entries
     return true if record.profile.user == user

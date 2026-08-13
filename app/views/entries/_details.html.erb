@@ -9,9 +9,6 @@
     <strong>Category:</strong> <%= entry.category&.kind || 'N/A' %>
   </div>
   <div class="mb-3">
-    <strong>Pen Name:</strong> <%= entry.pen_name.presence || 'Not provided' %>
-  </div>
-  <div class="mb-3">
     <strong>Applicant Name:</strong> <%= entry.profile&.display_name || 'N/A' %>
   </div>
   <div class="mb-3">
@@ -26,6 +23,12 @@
   <div class="mb-3">
     <strong>Date Created:</strong> <%= entry.created_at.strftime('%B %d, %Y %I:%M %p') %>
   </div>
+
+  <% if policy(entry).view_application_answers? %>
+    <%= render 'entries/application_answers',
+               entry: entry,
+               effective_questions: local_assigns[:effective_questions] %>
+  <% end %>
 
   <div class="mt-4 d-flex justify-content-end">
     <% if entry.entry_file.attached? %>

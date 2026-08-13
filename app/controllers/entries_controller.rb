@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EntriesController < ApplicationController
   include AvailableContestsConcern
   before_action :set_entry, only: %i[ show edit update destroy soft_delete modal_details ]
@@ -6,24 +8,20 @@ class EntriesController < ApplicationController
   before_action :authorize_entry, only: %i[show edit update destroy]
   before_action :authorize_index, only: [ :index ]
 
-  # GET /entries or /entries.json
   def index
-    # @entries = Entry.all
     @entries = policy_scope(Entry)
   end
 
-  # GET /entries/1 or /entries/1.json
   def show
     authorize @entry
   end
 
-  # GET /entries/1/modal_details
   def modal_details
     authorize @entry, :show?
+    @effective_questions = EffectiveApplicationQuestions.for(@entry.contest_instance).map(&:question)
     render layout: false
   end
 
-  # GET /entries/new
   def new
     contest_instance_id = params[:contest_instance_id]
     @entry = Entry.new(
@@ -31,35 +29,49 @@ class EntriesController < ApplicationController
       profile: current_user.profile
     )
     authorize @entry
+    prepare_application_questions
   end
 
-  # GET /entries/1/edit
   def edit
-    # @entry = Entry.find(params[:id])
     authorize @entry
+    prepare_application_questions
   end
 
   def create
     @entry = current_user.profile.entries.build(entry_params)
     authorize @entry
-    if @entry.save
-      # Simulate a delay (remove in production)
-      # sleep(3)
+    prepare_application_questions
 
-      save_pen_name = ActiveModel::Type::Boolean.new.cast(@entry.save_pen_name_to_profile)
-      if save_pen_name && current_user.profile.pen_name.blank?
-        current_user.profile.update(pen_name: @entry.pen_name)
+    saved = false
+    ActiveRecord::Base.transaction do
+      update_confirmed_class_level!
+      validator = EntryAnswersValidator.new(
+        entry: @entry,
+        effective_questions: @effective_questions,
+        answers_params: params[:entry_answers]
+      )
+      valid_answers = validator.call
+
+      raise ActiveRecord::Rollback unless valid_answers && @entry.save
+
+      validator.built_answers.each do |answer|
+        answer.entry = @entry
+        answer.save!
       end
+      saved = true
+    end
 
+    if saved
       redirect_to applicant_dashboard_path, notice: 'Entry was successfully created.'
     else
+      prepare_application_questions
       render :new, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /entries/1 or /entries/1.json
   def update
     authorize @entry
+    prepare_application_questions
     respond_to do |format|
       if @entry.update(entry_params)
         format.html { redirect_to applicant_dashboard_path, notice: 'Entry was successfully updated.' }
@@ -71,7 +83,6 @@ class EntriesController < ApplicationController
     end
   end
 
-  # DELETE /entries/1 or /entries/1.json
   def destroy
     authorize @entry
     @entry.destroy!
@@ -121,12 +132,10 @@ class EntriesController < ApplicationController
     authorize @entry, :view_applicant_profile?
     @profile = @entry.profile
 
-    # If user is the profile owner or axis mundi, show all entries
     if @profile.user == current_user || current_user.axis_mundi?
       @entries = Entry.active.where(profile: @profile)
     else
-      # For container administrators and managers, only show entries from their containers
-      admin_role_ids = Role.where(kind: ['Collection Administrator', 'Collection Manager']).pluck(:id)
+      admin_role_ids = Role.where(kind: [ 'Collection Administrator', 'Collection Manager' ]).pluck(:id)
       admin_container_ids = current_user.assignments
                                       .where(role_id: admin_role_ids)
                                       .pluck(:container_id)
@@ -139,34 +148,53 @@ class EntriesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_entry
-      @entry = policy_scope(Entry).find(params[:id])
+
+  def set_entry
+    @entry = policy_scope(Entry).find(params[:id])
+  end
+
+  def set_entry_for_toggle_disqualified
+    @entry = Entry.find(params[:id])
+  end
+
+  def set_entry_for_profile
+    @entry = policy_scope(Entry).find(params[:id])
+  end
+
+  def authorize_entry
+    authorize @entry
+  end
+
+  def authorize_index
+    authorize Entry
+  end
+
+  def entry_params
+    params.require(:entry).permit(
+      :title, :disqualified, :deleted, :contest_instance_id,
+      :profile_id, :category_id, :entry_file, :confirmed_class_level_id
+    )
+  end
+
+  def prepare_application_questions
+    return unless @entry&.contest_instance
+
+    @effective_questions = EffectiveApplicationQuestions.for(@entry.contest_instance)
+    @prefill_values = ApplicationQuestionPrefill.for(
+      profile: current_user.profile,
+      questions: @effective_questions.map(&:question)
+    )
+    @confirmed_class_level_id = params.dig(:entry, :confirmed_class_level_id).presence ||
+                                current_user.profile.class_level_id
+  end
+
+  def update_confirmed_class_level!
+    class_level_id = params.dig(:entry, :confirmed_class_level_id).presence
+    if class_level_id.blank?
+      @entry.errors.add(:base, 'Class level must be confirmed')
+      raise ActiveRecord::Rollback
     end
 
-    # For toggle_disqualified, find the entry directly and let authorization handle access control
-    # This ensures container admins can toggle entries even if the scope doesn't include them
-    def set_entry_for_toggle_disqualified
-      @entry = Entry.find(params[:id])
-    end
-
-    # For applicant_profile, we want to find the entry first, then authorize it
-    def set_entry_for_profile
-      @entry = policy_scope(Entry).find(params[:id])
-    end
-
-    def authorize_entry
-      authorize @entry
-    end
-
-    def authorize_index
-      authorize Entry
-    end
-    # Only allow a list of trusted parameters through.
-    def entry_params
-      params.require(:entry).permit(:title, :disqualified, :deleted, :contest_instance_id,
-                                    :profile_id, :category_id, :entry_file, :pen_name,
-                                    :save_pen_name_to_profile, :campus_employee, :accepted_financial_aid_notice,
-                                    :receiving_financial_aid, :financial_aid_description)
-    end
+    current_user.profile.update!(class_level_id: class_level_id)
+  end
 end

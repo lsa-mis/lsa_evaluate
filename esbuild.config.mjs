@@ -36,7 +36,9 @@ if (process.env.SENTRY_AUTH_TOKEN) {
   )
 }
 
-await esbuild.build({
+const watch = process.argv.includes('--watch')
+
+const buildOptions = {
   entryPoints,
   bundle: true,
   sourcemap: true,
@@ -44,4 +46,12 @@ await esbuild.build({
   outdir: 'app/assets/builds',
   publicPath: '/assets',
   plugins
-})
+}
+
+if (watch) {
+  const ctx = await esbuild.context(buildOptions)
+  await ctx.watch()
+  console.log('esbuild watching for changes...')
+} else {
+  await esbuild.build(buildOptions)
+}

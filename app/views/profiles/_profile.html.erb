@@ -1,94 +1,23 @@
 <div id="<%= dom_id profile %>">
-
-  <h1 class="mb-0"><%= profile.preferred_first_name %> <%= profile.preferred_last_name %></h1>
+  <h1 class="mb-0"><%= profile.display_name %></h1>
   <div class="ms-2">
-    <span class="text-body-tertiary"><small><em>Last updated: <%= profile.updated_at.strftime("%B %d, %Y") %></em></small></span><br>
+    <span class="text-body-tertiary"><small><em>Last updated: <%= profile.updated_at.strftime('%B %d, %Y') %></em></small></span><br>
     <span class="fw-light">UMID: <%= profile.umid %></span>
   </div>
 
   <div class="card mt-5">
     <div class="header card-header">
-      <h2>Contact Information</h2>
+      <h2>Identity</h2>
     </div>
     <div class="card-body">
       <div class="ps-2">
-        Email: <%= simple_format(profile.user.email, {class:"fw-light"}) %>
-      </div>
-      <div class="justify-content-start">
-        <div class="d-flex justify-content-start ps-2 gap-5">
-          <% if profile.pen_name.present? %>
-            <div class="ps-2"><p class="m-0">Default pen name: <%= simple_format(profile.pen_name, {class:"fw-light"}) %></p></div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card mt-5">
-    <div class="header card-header">
-      <h2>Academic Information</h2>
-    </div>
-    <div class="card-body">
-      <div class="ps-2">
-        <div class="d-flex justify-content-start gap-5">
-          <div class="">
-            <p class="m-0">Class Level: <%= simple_format(profile.class_level.name, {class:"fw-light"}) %></p>
-            <p class="m-0">School or College: <%= simple_format(profile.school.name, {class:"fw-light"}) %></p>
-            <p class="m-0">Primary Campus Class Location: <%= simple_format(profile.campus.campus_descr, {class:"fw-light"}) %></p>
-            <% if profile.major.present? %>
-              <p class="m-0">Major: <%= simple_format(profile.major, {class:"fw-light"}) %></p>
-            <% end %>
-            <% if profile.department.present? %>
-              <p class="m-0">Department: <%= simple_format(profile.department, {class:"fw-light"}) %></p>
-            <% end %>
-            <p class="m-0">Expected Graduation Date: <%= simple_format(profile.grad_date.strftime("%B %Y"), {class:"fw-light"}) %></p>
-            <p class="m-0">Degree: <%= simple_format(profile.degree, {class:"fw-light"}) %></p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card mt-5">
-    <div class="header card-header">
-      <h2>Publicity</h2>
-    </div>
-    <div class="card-body">
-      <div class="ps-2">
-        <div class="d-flex justify-content-start">
-          <div class=" text-start ms-4">
-            Entrant's name as it will appear in publicity:<br>
-            <small><em class="fw-light">(This is the name you entered as your preferred name.)</em></small>
-            <%= simple_format(profile.display_name, {class:"fw-light"}) %>
-          </div>
-        </div>
-        <% if profile.hometown_publication.present? %>
-          <div class="d-flex justify-content-start">
-            <div class=" text-start ms-4">
-              Hometown newspaper or preferred media outlet:<br>
-              <%= simple_format(profile.hometown_publication, {class:"fw-light"}) %>
-            </div>
-          </div>
+        <p class="m-0">Email: <%= simple_format(profile.user.email, { class: 'fw-light' }) %></p>
+        <p class="m-0">Legal name: <%= simple_format("#{profile.legal_first_name} #{profile.legal_last_name}", { class: 'fw-light' }) %></p>
+        <% if profile.preferred_first_name.present? || profile.preferred_last_name.present? %>
+          <p class="m-0">Preferred name: <%= simple_format([profile.preferred_first_name, profile.preferred_last_name].compact.join(' '), { class: 'fw-light' }) %></p>
         <% end %>
-      </div>
-    </div>
-  </div>
-
-  <div class="card mt-5">
-    <div class="header card-header">
-      <h2>Financial Aid</h2>
-    </div>
-    <div class="card-body">
-      <div class="ps-2">
-        <div class="d-flex justify-content-start">
-          <div class=" text-start ms-4">
-            Receiving financial aid: <%= simple_format(profile.receiving_financial_aid ? "Yes" : "No", {class:"fw-light"}) %>
-            <% if profile.receiving_financial_aid && profile.financial_aid_description.present? %>
-              <br>
-              Description: <%= simple_format(profile.financial_aid_description, {class:"fw-light"}) %>
-            <% end %>
-          </div>
-        </div>
+        <p class="m-0">Display name: <%= simple_format(profile.display_name, { class: 'fw-light' }) %></p>
+        <p class="m-0">Class Level: <%= simple_format(profile.class_level&.name, { class: 'fw-light' }) %></p>
       </div>
     </div>
   </div>

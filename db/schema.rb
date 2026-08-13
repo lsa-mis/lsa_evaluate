@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_28_162720) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_12_141130) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.text "body", size: :long
     t.datetime "created_at", null: false
@@ -55,6 +55,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_162720) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_affiliations_on_user_id"
+  end
+
+  create_table "application_question_requirements", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "application_question_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "position"
+    t.bigint "requireable_id", null: false
+    t.string "requireable_type", null: false
+    t.string "status", null: false
+    t.datetime "updated_at", null: false
+    t.index ["application_question_id"], name: "idx_on_application_question_id_4b446b2791"
+    t.index ["requireable_type", "requireable_id", "application_question_id"], name: "index_aq_requirements_on_requireable_and_question", unique: true
+    t.index ["requireable_type", "requireable_id"], name: "index_application_question_requirements_on_requireable"
+  end
+
+  create_table "application_questions", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.bigint "container_id", null: false
+    t.datetime "created_at", null: false
+    t.string "field_type", null: false
+    t.text "help_text"
+    t.string "key", null: false
+    t.string "label", null: false
+    t.json "options"
+    t.integer "position", default: 0, null: false
+    t.string "system_key"
+    t.datetime "updated_at", null: false
+    t.index ["container_id", "key"], name: "index_application_questions_on_container_id_and_key", unique: true
+    t.index ["container_id", "system_key"], name: "index_application_questions_on_container_and_system_key"
+    t.index ["container_id"], name: "index_application_questions_on_container_id"
   end
 
   create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -216,6 +246,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_162720) do
     t.index ["profile_id"], name: "profile_id_idx"
   end
 
+  create_table "entry_answers", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "application_question_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "entry_id", null: false
+    t.datetime "updated_at", null: false
+    t.json "value"
+    t.index ["application_question_id"], name: "index_entry_answers_on_application_question_id"
+    t.index ["entry_id", "application_question_id"], name: "index_entry_answers_on_entry_id_and_application_question_id", unique: true
+    t.index ["entry_id"], name: "index_entry_answers_on_entry_id"
+  end
+
   create_table "entry_rankings", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "entry_id", null: false
@@ -273,15 +314,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_162720) do
     t.bigint "campus_id"
     t.bigint "class_level_id"
     t.datetime "created_at", null: false
-    t.string "degree", null: false
+    t.string "degree"
     t.string "department"
     t.text "financial_aid_description"
-    t.date "grad_date", null: false
+    t.date "grad_date"
     t.string "hometown_publication"
+    t.string "legal_first_name", null: false
+    t.string "legal_last_name", null: false
     t.string "major"
     t.string "pen_name"
-    t.string "preferred_first_name", default: "", null: false
-    t.string "preferred_last_name", default: "", null: false
+    t.string "preferred_first_name"
+    t.string "preferred_last_name"
     t.boolean "receiving_financial_aid", default: false, null: false
     t.bigint "school_id"
     t.string "umid"
@@ -373,6 +416,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_162720) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "affiliations", "users"
+  add_foreign_key "application_question_requirements", "application_questions"
+  add_foreign_key "application_questions", "containers"
   add_foreign_key "assignments", "containers"
   add_foreign_key "assignments", "roles"
   add_foreign_key "assignments", "users"
@@ -389,6 +434,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_28_162720) do
   add_foreign_key "entries", "categories"
   add_foreign_key "entries", "contest_instances"
   add_foreign_key "entries", "profiles"
+  add_foreign_key "entry_answers", "application_questions"
+  add_foreign_key "entry_answers", "entries"
   add_foreign_key "entry_rankings", "entries"
   add_foreign_key "entry_rankings", "judging_rounds"
   add_foreign_key "entry_rankings", "users"

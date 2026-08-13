@@ -2,8 +2,8 @@
   <%= simple_form_for(@entry, html: {
         'data-turbo' => false,
         data: {
-          controller: "form-submission",
-          action: "submit->form-submission#showLoading"
+          controller: 'form-submission',
+          action: 'submit->form-submission#showLoading'
         }
       }) do |f| %>
     <%= f.error_notification %>
@@ -12,25 +12,25 @@
     <div class="form-inputs">
       <%= f.input :title,
                   hint: safe_join([
-                    "The title of your entry can not be longer than 250 characters.",
+                    'The title of your entry can not be longer than 250 characters.',
                     tag(:br),
                     content_tag(:small, class: 'text-muted') do
                       safe_join([
-                        "Characters: ",
-                        content_tag(:span, "0", data: { character_counter_target: "counter" }),
-                        " / 250"
+                        'Characters: ',
+                        content_tag(:span, '0', data: { character_counter_target: 'counter' }),
+                        ' / 250'
                       ])
                     end
                   ]),
                   input_html: {
                     data: {
-                      character_counter_target: "input",
-                      action: "input->character-counter#updateCounter"
+                      character_counter_target: 'input',
+                      action: 'input->character-counter#updateCounter'
                     }
                   },
                   wrapper_html: {
                     data: {
-                      controller: "character-counter",
+                      controller: 'character-counter',
                       character_counter_maximum_value: 250
                     }
                   } %>
@@ -43,63 +43,68 @@
       <%= f.input :entry_file,
                   as: :file,
                   required: true,
-                  hint: "Only PDF files under 30 MB are allowed." %>
-      <% if @entry.contest_instance.require_pen_name %>
-        <%= f.input :pen_name,
-                    required: true,
-                    input_html: { value: @entry.pen_name.presence || current_user.profile.pen_name },
-                    label: "Pen Name",
-                    hint: safe_join([
-                      "Enter the pen name you wish to use for this entry.",
-                      tag(:br),
-                      "The same pen name should be used for each submission entered across this year's contests
-                      and must not bear any resemblance to your real name.",
-                      tag(:br),
-                      "Your real name should not appear anywhere in the manuscript or on the title page."
-                    ]) %>
-        <% if current_user.profile.pen_name.blank? %>
-          <%= f.input :save_pen_name_to_profile,
-                      as: :boolean,
-                      label: "Save this pen name to my profile for future entries",
-                      hint: "Selecting this option will set this pen name as your default for future entries." %>
-        <% end %>
-      <% end %>
-      <% if @entry.contest_instance.require_campus_employment_info %>
-        <%= f.input :campus_employee,
-                    as: :boolean,
-                    label: "I have been a campus employee within the past 12 months (including GSI, workstudy, etc.)",
-                    hint: "Winners and finalists who are or have been employed by the university within the past
-                          calendar year can expect to receive their award in the form of additional pay through
-                          the university payroll system. Awards processed through payroll will include a payroll
-                          tax deduction." %>
-      <% end %>
-      <% if @entry.contest_instance.require_finaid_info %>
-        <% if (content = render_editable_content('profiles', 'finaid_information')) %>
-          <strong>Important note for students receiving needs-based financial aid:</strong>
-          <p>
-            <%= content %>
-            <br>
-            <%= link_to "https://finaid.umich.edu", target: "_blank", class: "link_to" do %>
-              Learn more about financial aid terms and conditions on the Office of Financial Aid's website
-              <i class="bi bi-box-arrow-up-right"></i>
+                  hint: 'Only PDF files under 30 MB are allowed.' %>
+
+      <h3 class="mt-4">Confirm Class Level</h3>
+      <p class="small text-muted">
+        Changing class level updates your profile and which contests you see on your dashboard.
+      </p>
+      <%= select_tag 'entry[confirmed_class_level_id]',
+                     options_from_collection_for_select(ClassLevel.all, :id, :name, @confirmed_class_level_id || current_user.profile.class_level_id),
+                     class: 'form-select', required: true %>
+
+      <% if @effective_questions.any? %>
+        <h3 class="mt-4">Additional Questions</h3>
+        <% @effective_questions.each do |effective| %>
+          <% question = effective.question %>
+          <% required = effective.status == 'required' %>
+          <% value = @prefill_values[question.id] %>
+          <div class="mb-3">
+            <% if question.system_key == 'accepted_financial_aid_notice' %>
+              <% if (content = render_editable_content('profiles', 'finaid_information')) %>
+                <strong>Important note for students receiving needs-based financial aid:</strong>
+                <p>
+                  <%= content %>
+                  <br>
+                  <%= link_to 'https://finaid.umich.edu', target: '_blank', class: 'link_to' do %>
+                    Learn more about financial aid terms and conditions on the Office of Financial Aid's website
+                    <i class="bi bi-box-arrow-up-right"></i>
+                  <% end %>
+                </p>
+              <% end %>
             <% end %>
-          </p>
+
+            <%= label_tag dom_id(question, :answer), question.label, class: 'form-label' %>
+            <% if required %><span class="text-danger">*</span><% end %>
+            <% if question.help_text.present? %>
+              <div class="form-text mb-1"><%= question.help_text %></div>
+            <% end %>
+
+            <% if question.field_type == 'boolean' %>
+              <div class="form-check">
+                <%= render_application_question_field(
+                      nil,
+                      question: question,
+                      name: "entry_answers[#{question.id}]",
+                      value: value,
+                      required: required
+                    ) %>
+                <%= label_tag dom_id(question, :answer), question.label, class: 'form-check-label' %>
+              </div>
+            <% else %>
+              <%= render_application_question_field(
+                    nil,
+                    question: question,
+                    name: "entry_answers[#{question.id}]",
+                    value: value,
+                    required: required
+                  ) %>
+            <% end %>
+          </div>
         <% end %>
-        <%= f.input :accepted_financial_aid_notice,
-                    required: true,
-                    as: :boolean,
-                    label: "I have read and understood the above statement about the potential impact of prize money on financial aid."%>
-        <%= f.input :receiving_financial_aid,
-                    as: :boolean,
-                    label: "I currently receive needs-based financial aid.",
-                    hint: "Select this option if you are currently receiving needs-based financial aid." %>
-        <%= f.input :financial_aid_description,
-                    label: "Financial Aid Description",
-                    hint: "Enter a brief description of the financial aid you are receiving." %>
       <% end %>
     </div>
 
-    <!-- Bootstrap 5 spinner -->
     <div class="d-flex justify-content-center mt-3 d-none" data-form-submission-target="loading">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Uploading file, please wait...</span>
@@ -107,8 +112,8 @@
     </div>
 
     <div class="form-actions">
-      <%= f.button :submit, "Submit Entry", class: "btn btn-primary", data: { "form-submission-target" => "submitButton" } %>
-      <%= link_to "Cancel", applicant_dashboard_path, class: "text-danger link_to" %>
+      <%= f.button :submit, 'Submit Entry', class: 'btn btn-primary', data: { 'form-submission-target' => 'submitButton' } %>
+      <%= link_to 'Cancel', applicant_dashboard_path, class: 'text-danger link_to' %>
     </div>
   <% end %>
 </div>

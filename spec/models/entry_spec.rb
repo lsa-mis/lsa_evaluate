@@ -142,42 +142,25 @@ RSpec.describe Entry, type: :model do
     end
   end
 
-  describe 'pen_name validations' do
-    let(:category) { create(:category, kind: "ecat") }
+  describe 'application question answers' do
+    let(:category) { create(:category, kind: 'ecat') }
     let(:contest_instance) { create(:contest_instance) }
     let(:profile) { create(:profile) }
-
-    context 'when contest_instance requires pen name' do
-      before do
-        contest_instance.update(require_pen_name: true)
-      end
-
-      it 'is not valid without a pen_name' do
-        entry = build(:entry, pen_name: nil, category: category, contest_instance: contest_instance, profile: profile)
-        expect(entry).not_to be_valid
-        expect(entry.errors[:pen_name]).to include("can't be blank for this contest")
-      end
-
-      it 'is valid with a pen_name' do
-        entry = build(:entry, pen_name: 'Test Pen Name', category: category, contest_instance: contest_instance, profile: profile)
-        expect(entry).to be_valid
-      end
+    let(:pen_name_question) do
+      contest_instance.contest_description.container.application_questions.find_by!(system_key: 'pen_name')
     end
 
-    context 'when contest_instance does not require pen name' do
-      before do
-        contest_instance.update(require_pen_name: false)
-      end
-
-      it 'is valid without a pen_name' do
-        entry = build(:entry, pen_name: nil, category: category, contest_instance: contest_instance, profile: profile)
-        expect(entry).to be_valid
-      end
-
-      it 'is valid with a pen_name' do
-        entry = build(:entry, pen_name: 'Optional Pen Name', category: category, contest_instance: contest_instance, profile: profile)
-        expect(entry).to be_valid
-      end
+    it 'rejects missing required dynamic answers via EntryAnswersValidator' do
+      ApplicationQuestionRequirement.create!(
+        application_question: pen_name_question,
+        requireable: contest_instance,
+        status: 'required'
+      )
+      entry = build(:entry, pen_name: nil, category: category, contest_instance: contest_instance, profile: profile)
+      effective = EffectiveApplicationQuestions.for(contest_instance)
+      valid = EntryAnswersValidator.new(entry: entry, effective_questions: effective, answers_params: {}).call
+      expect(valid).to be(false)
+      expect(entry.errors[:base].join).to include("can't be blank")
     end
   end
 end

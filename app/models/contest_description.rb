@@ -23,6 +23,7 @@
 class ContestDescription < ApplicationRecord
   belongs_to :container
   has_many :contest_instances, dependent: :restrict_with_error
+  has_many :application_question_requirements, as: :requireable, dependent: :destroy
 
   has_rich_text :eligibility_rules
   has_rich_text :notes

@@ -254,10 +254,11 @@ RSpec.describe ContestInstancesController, type: :controller do
 
       context 'contest instance with entries' do
         let(:contest_instance) do
-          create(:contest_instance,
-                 contest_description: contest_description,
-                 require_pen_name: true,
-                 require_campus_employment_info: true)
+          create(:contest_instance, contest_description: contest_description)
+        end
+
+        let(:pen_name_question) do
+          contest_instance.contest_description.container.application_questions.find_by!(system_key: 'pen_name')
         end
 
         let(:profile1) { create(:profile, class_level: create(:class_level, name: 'Freshman')) }
@@ -268,28 +269,36 @@ RSpec.describe ContestInstancesController, type: :controller do
           create(:entry,
                  contest_instance: contest_instance,
                  profile: profile1,
-                 pen_name: 'Writer One',
-                 campus_employee: false,
-                 title: 'Entry One')
+                 title: 'Entry One').tap do |entry|
+            EntryAnswer.create!(entry: entry, application_question: pen_name_question, value: 'Writer One')
+          end
         end
 
         let!(:entry2) do
           create(:entry,
                  contest_instance: contest_instance,
                  profile: profile2,
-                 pen_name: 'Writer Two',
-                 campus_employee: true,
-                 title: 'Entry Two')
+                 title: 'Entry Two').tap do |entry|
+            EntryAnswer.create!(entry: entry, application_question: pen_name_question, value: 'Writer Two')
+          end
         end
 
         let!(:entry3) do
           create(:entry,
                  contest_instance: contest_instance,
                  profile: profile3,
-                 pen_name: 'Writer Three',
-                 campus_employee: false,
                  disqualified: true,
-                 title: 'Entry Three')
+                 title: 'Entry Three').tap do |entry|
+            EntryAnswer.create!(entry: entry, application_question: pen_name_question, value: 'Writer Three')
+          end
+        end
+
+        before do
+          ApplicationQuestionRequirement.create!(
+            application_question: pen_name_question,
+            requireable: contest_instance,
+            status: 'required'
+          )
         end
 
         it 'returns a CSV file' do
@@ -315,13 +324,11 @@ RSpec.describe ContestInstancesController, type: :controller do
           }
 
           csv = CSV.parse(response.body)
-          # Skip header rows (contest info and empty row)
-          data_rows = csv[3..-1] # Starting from the fourth row (index 3) which has actual entry data
+          # Skip contest info + blank separator + header row
+          data_rows = csv[3..]
 
-          # Should include all active entries
           expect(data_rows.length).to eq(3)
 
-          # Check for specific entry details
           expect(csv.to_s).to include('Entry One')
           expect(csv.to_s).to include('Entry Two')
           expect(csv.to_s).to include('Entry Three')
@@ -329,14 +336,12 @@ RSpec.describe ContestInstancesController, type: :controller do
           expect(csv.to_s).to include('Writer Two')
           expect(csv.to_s).to include('Writer Three')
 
-          # Check for class levels
           expect(csv.to_s).to include('Freshman')
           expect(csv.to_s).to include('Senior')
           expect(csv.to_s).to include('Graduate')
 
-          # Check for disqualified status
-          expect(csv.to_s).to include('Yes') # For disqualified entry
-          expect(csv.to_s).to include('No')  # For non-disqualified entries
+          expect(csv.to_s).to include('Yes')
+          expect(csv.to_s).to include('No')
         end
 
         it 'generates CSV with correct structure and headers' do
@@ -349,39 +354,57 @@ RSpec.describe ContestInstancesController, type: :controller do
 
           csv = CSV.parse(response.body)
 
-          # Row 0: Contest info header
           expect(csv[0][0]).to include(contest_description.name)
-
-          # Row 1: Should be separator row - check it doesn't contain significant content
           expect(csv[1].join.strip).to be_empty
 
-          # Row 2: Column headers (12 columns as per generate_entries_csv method)
           expected_headers = [
-            'Title', 'Category',
-            'Pen Name', 'First Name', 'Last Name', 'UMID', 'Uniqname',
-            'Class Level', 'Campus', 'Entry ID', 'Created At', 'Disqualified'
+            'Title', 'Category', 'First Name', 'Last Name', 'Display Name', 'UMID', 'Uniqname',
+            'Class Level', 'Entry ID', 'Created At', 'Disqualified', 'Pen name'
           ]
           expect(csv[2]).to eq(expected_headers)
 
-          # Check structure of data rows
           entry_row = csv.find { |row| row[0] == 'Entry One' }
           expect(entry_row).not_to be_nil
 
-          # For entry1
-          expect(entry_row[0]).to eq('Entry One')                  # Title
-          expect(entry_row[2]).to eq('Writer One')                 # Pen Name
-          expect(entry_row[3]).to eq(profile1.user.first_name)     # First Name
-          expect(entry_row[4]).to eq(profile1.user.last_name)      # Last Name
-          expect(entry_row[5]).to eq(profile1.umid)                # UMID
-          expect(entry_row[6]).to eq(profile1.user.uniqname)       # Uniqname
-          expect(entry_row[7]).to eq('Freshman')                   # Class Level
-          expect(entry_row[9]).to eq(entry1.id.to_s)               # Entry ID
-          expect(entry_row[11]).to eq('No')                        # Disqualified
+          expect(entry_row[0]).to eq('Entry One')
+          expect(entry_row[2]).to eq(profile1.legal_first_name)
+          expect(entry_row[3]).to eq(profile1.legal_last_name)
+          expect(entry_row[4]).to eq(profile1.display_name)
+          expect(entry_row[5]).to eq(profile1.umid)
+          expect(entry_row[6]).to eq(profile1.user.uniqname)
+          expect(entry_row[7]).to eq('Freshman')
+          expect(entry_row[8]).to eq(entry1.id.to_s)
+          expect(entry_row[10]).to eq('No')
+          expect(entry_row[11]).to eq('Writer One')
 
-          # For disqualified entry
           disqualified_row = csv.find { |row| row[0] == 'Entry Three' }
           expect(disqualified_row).not_to be_nil
-          expect(disqualified_row[11]).to eq('Yes')                # Disqualified
+          expect(disqualified_row[10]).to eq('Yes')
+        end
+
+        it 'neutralizes applicant answers that look like spreadsheet formulas' do
+          formula_entry = create(:entry,
+                                 contest_instance: contest_instance,
+                                 profile: create(:profile),
+                                 title: 'Formula Entry')
+          EntryAnswer.create!(
+            entry: formula_entry,
+            application_question: pen_name_question,
+            value: '=HYPERLINK("http://evil.example")'
+          )
+
+          get :export_entries, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+          entry_row = csv.find { |row| row[0] == 'Formula Entry' }
+
+          expect(entry_row).not_to be_nil
+          expect(entry_row[11]).to eq("'=HYPERLINK(\"http://evil.example\")")
         end
       end
 
@@ -400,18 +423,14 @@ RSpec.describe ContestInstancesController, type: :controller do
           expect(response.content_type).to include('text/csv')
 
           csv = CSV.parse(response.body)
-          # Should have header rows but no data rows
           expect(csv.length).to be >= 3
-          expect(csv[3..-1]).to be_empty if csv.length > 3
+          expect(csv[3..]).to be_empty if csv.length > 3
         end
       end
 
       context 'contest instance with entries but no optional fields' do
         let(:basic_contest_instance) do
-          create(:contest_instance,
-                 contest_description: contest_description,
-                 require_pen_name: false,
-                 require_campus_employment_info: false)
+          create(:contest_instance, contest_description: contest_description)
         end
 
         let(:profile) { create(:profile) }
@@ -420,7 +439,6 @@ RSpec.describe ContestInstancesController, type: :controller do
           create(:entry,
                  contest_instance: basic_contest_instance,
                  profile: profile,
-                 pen_name: nil,
                  title: 'Basic Entry')
         end
 
@@ -435,10 +453,9 @@ RSpec.describe ContestInstancesController, type: :controller do
           expect(response).to be_successful
 
           csv = CSV.parse(response.body)
-          # Check header rows and entry data
           expect(csv.to_s).to include('Basic Entry')
-          expect(csv.to_s).to include(profile.user.first_name)
-          expect(csv.to_s).to include(profile.user.last_name)
+          expect(csv.to_s).to include(profile.legal_first_name)
+          expect(csv.to_s).to include(profile.legal_last_name)
         end
       end
     end
@@ -579,6 +596,34 @@ RSpec.describe ContestInstancesController, type: :controller do
           expect(csv.to_s).to include('Entry Two')
           expect(csv.to_s).to include('Great work!')
           expect(csv.to_s).to include('Good effort')
+        end
+
+        it 'neutralizes applicant answers that look like spreadsheet formulas' do
+          pen_name_question = contest_instance.contest_description.container.application_questions.find_by!(system_key: 'pen_name')
+          ApplicationQuestionRequirement.create!(
+            application_question: pen_name_question,
+            requireable: contest_instance,
+            status: 'required'
+          )
+          EntryAnswer.create!(
+            entry: entry1,
+            application_question: pen_name_question,
+            value: '=cmd|"/c calc"!A0'
+          )
+
+          get :export_round_results, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            round_id: judging_round.id,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+          entry_row = csv.find { |row| row[0] == 'Entry One' }
+
+          expect(entry_row).not_to be_nil
+          expect(entry_row.last).to eq("'=cmd|\"/c calc\"!A0")
         end
       end
 
