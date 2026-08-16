@@ -1,6 +1,81 @@
 require 'rails_helper'
 
 RSpec.describe EntriesController, type: :controller do
+  describe 'POST #create' do
+    let(:class_level) { create(:class_level) }
+    let(:profile) { create(:profile, class_level: class_level) }
+    let(:user) { profile.user }
+    let(:container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) do
+      create(:contest_instance, contest_description: contest_description).tap do |ci|
+        ci.class_levels = [class_level]
+        ci.save!
+      end
+    end
+    let(:category) { contest_instance.categories.first }
+    let(:pen_name_question) { container.application_questions.find_by!(system_key: 'pen_name') }
+    let(:pdf) do
+      fixture_file_upload(
+        Rails.root.join('spec/support/files/sample_test.pdf'),
+        'application/pdf'
+      )
+    end
+
+    before do
+      ApplicationQuestionRequirement.create!(
+        application_question: pen_name_question,
+        requireable: contest_instance,
+        status: 'required'
+      )
+      sign_in user
+    end
+
+    def create_params(answers: { pen_name_question.id => 'A. Poet' }, class_level_id: class_level.id)
+      {
+        entry: {
+          title: 'New Submission',
+          contest_instance_id: contest_instance.id,
+          category_id: category.id,
+          confirmed_class_level_id: class_level_id,
+          entry_file: pdf
+        },
+        entry_answers: answers
+      }
+    end
+
+    it 'creates the entry and persists required application answers' do
+      expect {
+        post :create, params: create_params
+      }.to change(Entry, :count).by(1)
+       .and change(EntryAnswer, :count).by(1)
+
+      entry = Entry.order(:id).last
+      expect(response).to redirect_to(applicant_dashboard_path)
+      expect(entry.title).to eq('New Submission')
+      expect(entry.entry_answers.find_by!(application_question: pen_name_question).value).to eq('A. Poet')
+      expect(profile.reload.class_level_id).to eq(class_level.id)
+    end
+
+    it 'does not create an entry when a required answer is missing' do
+      expect {
+        post :create, params: create_params(answers: {})
+      }.not_to change(Entry, :count)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(EntryAnswer.count).to eq(0)
+    end
+
+    it 'does not create an entry when class level confirmation is missing' do
+      expect {
+        post :create, params: create_params(class_level_id: nil)
+      }.not_to change(Entry, :count)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(assigns(:entry).errors[:base]).to include('Class level must be confirmed')
+    end
+  end
+
   describe "GET #modal_details" do
     let(:profile) { create(:profile) }
     let(:contest_instance) { create(:contest_instance) }
