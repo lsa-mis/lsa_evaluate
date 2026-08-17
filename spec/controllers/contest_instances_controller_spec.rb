@@ -690,4 +690,78 @@ RSpec.describe ContestInstancesController, type: :controller do
       end
     end
   end
+
+  describe 'PATCH #update' do
+    let(:department) { create(:department) }
+    let(:user) { create(:user, :axis_mundi) }
+    let(:container) { create(:container, department: department) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+    let(:question) { container.application_questions.find_by!(system_key: 'pen_name') }
+
+    before { sign_in user }
+
+    it 'syncs application question requirements for the contest instance' do
+      patch :update, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id,
+        contest_instance: { notes: 'Updated notes' },
+        requirements: {
+          question.id.to_s => { status: 'optional', position: '2' }
+        }
+      }
+
+      requirement = ApplicationQuestionRequirement.find_by!(
+        application_question: question,
+        requireable: contest_instance
+      )
+      expect(requirement.status).to eq('optional')
+      expect(requirement.position).to eq(2)
+      expect(response).to redirect_to(
+        container_contest_description_contest_instance_path(container, contest_description, contest_instance)
+      )
+    end
+
+    it 'clears contest instance requirements when status is inherit' do
+      ApplicationQuestionRequirement.create!(
+        application_question: question,
+        requireable: contest_instance,
+        status: 'required'
+      )
+
+      patch :update, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id,
+        contest_instance: { notes: 'Updated notes' },
+        requirements: {
+          question.id.to_s => { status: 'inherit' }
+        }
+      }
+
+      expect(
+        ApplicationQuestionRequirement.where(
+          application_question: question,
+          requireable: contest_instance
+        )
+      ).to be_empty
+    end
+
+    it 'ignores requirements for questions outside the container' do
+      other_question = create(:container).application_questions.find_by!(system_key: 'pen_name')
+
+      expect {
+        patch :update, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          id: contest_instance.id,
+          contest_instance: { notes: 'Updated notes' },
+          requirements: {
+            other_question.id.to_s => { status: 'required' }
+          }
+        }
+      }.not_to change(ApplicationQuestionRequirement, :count)
+    end
+  end
 end
