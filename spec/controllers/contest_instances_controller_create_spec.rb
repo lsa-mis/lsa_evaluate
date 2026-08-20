@@ -106,6 +106,42 @@ RSpec.describe ContestInstancesController, type: :controller do
         created_instance = ContestInstance.last
         expect(created_instance.contest_description).to eq(contest_description)
       end
+
+      it 'syncs application question requirements on create' do
+        question = container.application_questions.find_by!(system_key: 'pen_name')
+
+        post :create, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance: valid_attributes,
+          requirements: {
+            question.id.to_s => { status: 'required', position: '5' }
+          }
+        }
+
+        created_instance = ContestInstance.last
+        requirement = ApplicationQuestionRequirement.find_by!(
+          application_question: question,
+          requireable: created_instance
+        )
+        expect(requirement.status).to eq('required')
+        expect(requirement.position).to eq(5)
+      end
+
+      it 'ignores requirements for questions outside the container on create' do
+        other_question = create(:container).application_questions.find_by!(system_key: 'pen_name')
+
+        expect {
+          post :create, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            contest_instance: valid_attributes,
+            requirements: {
+              other_question.id.to_s => { status: 'optional' }
+            }
+          }
+        }.not_to change(ApplicationQuestionRequirement, :count)
+      end
     end
 
     context 'with invalid parameters' do

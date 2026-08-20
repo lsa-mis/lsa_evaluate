@@ -764,4 +764,50 @@ RSpec.describe ContestInstancesController, type: :controller do
       }.not_to change(ApplicationQuestionRequirement, :count)
     end
   end
+
+  describe 'GET #show sorting' do
+    let(:department) { create(:department) }
+    let(:user) { create(:user, :axis_mundi) }
+    let(:container) { create(:container, department: department) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+
+    before { sign_in user }
+
+    it 'orders entries by preferred last name when sorting by applicant name' do
+      # First names and titles sort opposite of last names, so a regression
+      # that ordered by either of those columns would fail this example.
+      zebra_profile = create(:profile, preferred_first_name: 'Ann', preferred_last_name: 'Zebra')
+      alpha_profile = create(:profile, preferred_first_name: 'Zoe', preferred_last_name: 'Alpha')
+      create(:entry, contest_instance: contest_instance, profile: zebra_profile, title: 'Alpha Entry')
+      create(:entry, contest_instance: contest_instance, profile: alpha_profile, title: 'Zebra Entry')
+
+      get :show, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id,
+        sort_column: 'profile_display_name',
+        sort_direction: 'asc'
+      }
+
+      expect(assigns(:contest_instance_entries).map { |entry| entry.profile.display_name })
+        .to eq([ 'Zoe Alpha', 'Ann Zebra' ])
+    end
+
+    it 'ignores unknown sort columns' do
+      create(:entry, contest_instance: contest_instance, title: 'Only Entry')
+
+      expect {
+        get :show, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          id: contest_instance.id,
+          sort_column: 'not_a_real_column',
+          sort_direction: 'asc'
+        }
+      }.not_to raise_error
+
+      expect(assigns(:contest_instance_entries).map(&:title)).to include('Only Entry')
+    end
+  end
 end
