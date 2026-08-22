@@ -406,6 +406,35 @@ RSpec.describe ContestInstancesController, type: :controller do
           expect(entry_row).not_to be_nil
           expect(entry_row[11]).to eq("'=HYPERLINK(\"http://evil.example\")")
         end
+
+        it 'neutralizes formula-like entry titles and applicant names' do
+          formula_profile = create(
+            :profile,
+            legal_first_name: '=First',
+            legal_last_name: '+Last',
+            preferred_first_name: nil,
+            preferred_last_name: nil
+          )
+          create(:entry,
+                 contest_instance: contest_instance,
+                 profile: formula_profile,
+                 title: '@SUM(A1)')
+
+          get :export_entries, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+          entry_row = csv.find { |row| row[0] == "'@SUM(A1)" }
+
+          expect(entry_row).not_to be_nil
+          expect(entry_row[2]).to eq("'=First")
+          expect(entry_row[3]).to eq("'+Last")
+          expect(entry_row[4]).to eq("'=First +Last")
+        end
       end
 
       context 'contest instance without entries' do
@@ -624,6 +653,31 @@ RSpec.describe ContestInstancesController, type: :controller do
 
           expect(entry_row).not_to be_nil
           expect(entry_row.last).to eq("'=cmd|\"/c calc\"!A0")
+        end
+
+        it 'neutralizes formula-like judge comments' do
+          ranking = EntryRanking.find_by!(entry: entry1, judging_round: judging_round, user: judge)
+          ranking.update!(
+            external_comments: '=HYPERLINK("http://evil.example")',
+            internal_comments: '+1-800-evil'
+          )
+
+          get :export_round_results, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            round_id: judging_round.id,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+          entry_row = csv.find { |row| row[0] == 'Entry One' }
+
+          expect(entry_row).not_to be_nil
+          # Title, Category, First, Last, Display, UMID, Uniqname, Class, Entry ID, Selected,
+          # Judge Name, Score, External, Internal, then question columns
+          expect(entry_row[12]).to eq("'=HYPERLINK(\"http://evil.example\")")
+          expect(entry_row[13]).to eq("'+1-800-evil")
         end
       end
 
