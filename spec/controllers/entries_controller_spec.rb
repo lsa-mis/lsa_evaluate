@@ -364,4 +364,126 @@ RSpec.describe EntriesController, type: :controller do
       end
     end
   end
+
+  describe 'PATCH #soft_delete' do
+    let(:profile) { create(:profile) }
+    let(:user) { profile.user }
+
+    context 'when the contest is open' do
+      let(:contest_instance) { create(:contest_instance, :open) }
+      let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance, deleted: false) }
+
+      before { sign_in user }
+
+      it 'marks the entry as deleted' do
+        expect {
+          patch :soft_delete, params: { id: entry.id }
+        }.to change { entry.reload.deleted }.from(false).to(true)
+        expect(flash[:notice]).to eq('Entry was successfully removed.')
+      end
+    end
+
+    context 'when the contest is closed' do
+      let(:contest_instance) { create(:contest_instance, :closed) }
+      let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance, deleted: false) }
+
+      before { sign_in user }
+
+      it 'forbids the owner via policy when the contest is closed' do
+        expect {
+          patch :soft_delete, params: { id: entry.id }
+        }.not_to change { entry.reload.deleted }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq('!!! Not authorized !!!')
+      end
+    end
+
+    context 'when Axis Mundi attempts soft-delete after the contest closed' do
+      let(:contest_instance) { create(:contest_instance, :closed) }
+      let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance, deleted: false) }
+      let(:axis_mundi_user) { create(:user, :axis_mundi) }
+
+      before { sign_in axis_mundi_user }
+
+      it 'does not delete the entry and alerts that the contest has closed' do
+        expect {
+          patch :soft_delete, params: { id: entry.id }
+        }.not_to change { entry.reload.deleted }
+        expect(flash[:alert]).to eq('Cannot delete entry after contest has closed.')
+      end
+    end
+
+    context 'when a judge is signed in' do
+      let(:contest_instance) { create(:contest_instance, :open) }
+      let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance, deleted: false) }
+      let(:judge_user) { create(:user, :with_judge_role) }
+
+      before do
+        create(:judging_assignment, user: judge_user, contest_instance: contest_instance)
+        sign_in judge_user
+      end
+
+      it 'does not soft-delete and redirects unauthorized' do
+        expect {
+          patch :soft_delete, params: { id: entry.id }
+        }.not_to change { entry.reload.deleted }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq('!!! Not authorized !!!')
+      end
+    end
+  end
+
+  describe 'GET #applicant_profile' do
+    let(:container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+    let(:profile) { create(:profile) }
+    let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance) }
+
+    context 'when the entry owner is signed in' do
+      before { sign_in profile.user }
+
+      it 'renders the applicant profile' do
+        get :applicant_profile, params: { id: entry.id }
+        expect(response).to have_http_status(:success)
+        expect(assigns(:profile)).to eq(profile)
+      end
+    end
+
+    context 'when a Collection Administrator is signed in' do
+      let(:admin_user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+      let(:other_container) { create(:container) }
+      let(:other_description) { create(:contest_description, :active, container: other_container) }
+      let(:other_instance) { create(:contest_instance, contest_description: other_description) }
+      let!(:other_entry) { create(:entry, profile: profile, contest_instance: other_instance) }
+
+      before do
+        create(:assignment, user: admin_user, container: container, role: admin_role)
+        sign_in admin_user
+      end
+
+      it 'scopes visible entries to containers the admin manages' do
+        get :applicant_profile, params: { id: entry.id }
+        expect(response).to have_http_status(:success)
+        expect(assigns(:entries)).to include(entry)
+        expect(assigns(:entries)).not_to include(other_entry)
+      end
+    end
+
+    context 'when an assigned judge is signed in' do
+      let(:judge_user) { create(:user, :with_judge_role) }
+
+      before do
+        create(:judging_assignment, user: judge_user, contest_instance: contest_instance)
+        sign_in judge_user
+      end
+
+      it 'redirects unauthorized even though the judge can show the entry' do
+        get :applicant_profile, params: { id: entry.id }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq('!!! Not authorized !!!')
+      end
+    end
+  end
 end

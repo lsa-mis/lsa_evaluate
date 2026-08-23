@@ -43,4 +43,22 @@ RSpec.describe ApplicationQuestionPrefill do
     values = described_class.for(profile:, questions: [ custom_a ])
     expect(values[custom_a.id]).to eq('Morning')
   end
+
+  it 'ignores answers from soft-deleted entries when prefilling' do
+    deleted_entry = create(:entry, profile:, deleted: true)
+    EntryAnswer.create!(entry: deleted_entry, application_question: question_a, value: 'MFA')
+
+    values = described_class.for(profile:, questions: [ question_b ])
+    expect(values[question_b.id]).to eq('BA')
+  end
+
+  it 'prefills from the newest non-deleted entry when multiple answers exist' do
+    older = create(:entry, profile:, created_at: 2.days.ago)
+    newer = create(:entry, profile:, created_at: 1.day.ago)
+    EntryAnswer.create!(entry: older, application_question: question_a, value: 'BA')
+    EntryAnswer.create!(entry: newer, application_question: question_a, value: 'MFA')
+
+    values = described_class.for(profile:, questions: [ question_b ])
+    expect(values[question_b.id]).to eq('MFA')
+  end
 end
