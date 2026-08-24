@@ -21,6 +21,12 @@
               <%= button_to "Dashboard", applicant_dashboard_path, method: :get, class: 'dropdown-item btn-as-link' %>
               <%= button_to "Profile", profile_path(current_user.profile), method: :get, class: 'dropdown-item btn-as-link' %>
             <% end %>
+            <% if current_user.administrator? || current_user.axis_mundi? %>
+              <hr class='m-0'>
+              <%= button_to containers_path, method: :get, class: 'dropdown-item btn-as-link' do %>
+                <i class="bi bi-shield-check"></i> Admin Dashboard
+              <% end %>
+            <% end %>
             <% if current_user.judge? %>
               <hr class='m-0'>
               <%= button_to judge_dashboard_path, method: :get, class: 'dropdown-item btn-as-link' do %>
