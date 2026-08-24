@@ -55,6 +55,9 @@ Rails.application.routes.draw do
           get :export_round_results
           patch :deactivate
           post :regenerate_access_token
+          get 'setup/questions', action: :setup_questions, as: :setup_questions
+          patch 'setup/questions', action: :update_setup_questions
+          get 'setup/review_process', action: :setup_review_process, as: :setup_review_process
         end
         resources :contest_invitations, only: [ :create, :destroy ] do
           collection do
