@@ -3,7 +3,7 @@ module ContainersHelper
     {
       view: {
         path: container_contest_description_contest_instances_path(container, description),
-        icon: 'eye',
+        icon: 'list-ul',
         title: 'View instances'
       },
       edit: {

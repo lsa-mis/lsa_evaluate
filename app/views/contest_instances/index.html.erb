@@ -31,7 +31,7 @@
   <% end %>
 </div>
 <hr>
-<h2><%= "#{pluralize(@contest_instances.count, "instance")} of this contest" %></h2>
+<h2><%= pluralize(@contest_instances.count, "instance") %> of this contest</h2>
 <!-- Add a checkbox to filter only Active contest instances -->
 <div data-controller="filter">
   <div class="form-check my-3">
@@ -42,7 +42,7 @@
       checked
       data-action="change->filter#toggleFilter"
       data-filter-target="statusFilter"
-    />
+    >
     <label class="form-check-label" for="statusFilter">
       Show only <span class="fw-bolder">Active</span> contest instances
     </label>
