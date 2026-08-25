@@ -21,7 +21,7 @@ class AssignmentsController < ApplicationController
         @assignments = @container.assignments.includes(:user, :role)
         respond_to do |format|
           format.turbo_stream
-          format.html { redirect_to @container, notice: 'Assignment was successfully created.' }
+          format.html { redirect_to edit_container_path(@container), notice: 'Assignment was successfully created.' }
         end
       else
         respond_to do |format|
@@ -38,13 +38,13 @@ class AssignmentsController < ApplicationController
     if @assignment.destroy
       respond_to do |format|
         format.turbo_stream { render turbo_stream: turbo_stream.remove(ActionView::RecordIdentifier.dom_id(@assignment)) }
-        format.html { redirect_to @container, notice: 'Assignment was successfully removed.' }
+        format.html { redirect_to edit_container_path(@container), notice: 'Assignment was successfully removed.' }
       end
     else
       respond_to do |format|
         # Replace the row content with the error message instead of removing it
         format.turbo_stream { render turbo_stream: turbo_stream.replace(ActionView::RecordIdentifier.dom_id(@assignment), partial: 'containers/assignment_row_with_error', locals: { assignment: @assignment, container: @container }) }
-        format.html { redirect_to @container, alert: @assignment.errors.full_messages.to_sentence }
+        format.html { redirect_to edit_container_path(@container), alert: @assignment.errors.full_messages.to_sentence }
       end
     end
   end

@@ -88,6 +88,10 @@ RSpec.describe "Containers", type: :request do
         expect(response.body).to include('Total Entries in all Active Instances of Active Contests:')
         expect(response.body).to include('No active entries found.')
         expect(response.body).not_to include('col-md-4')
+        expect(response.body).to include('Assigned users')
+        expect(response.body).to include('None assigned')
+        expect(response.body).not_to include('User Permissions')
+        expect(response.body).not_to include('Add New Permission')
       end
 
       it "renders create contest choice modal actions" do
@@ -99,6 +103,54 @@ RSpec.describe "Containers", type: :request do
         expect(response.body).to include(new_container_contest_description_path(container))
         expect(response.body).not_to include('Bulk Create Contest Instances')
         expect(response.body).to include('Bulk create becomes available after this collection has at least one contest.')
+      end
+
+      it "summarizes assigned collection staff on the collection page" do
+        admin_user = create(:user, display_name: 'Ada Admin', uid: 'adaadmin')
+        manager_user = create(:user, display_name: 'Moe Manager', uid: 'moemanager')
+        create(:assignment, user: admin_user, container: container, role: create(:role, :collection_admin))
+        create(:assignment, user: manager_user, container: container, role: create(:role, :collection_manager))
+
+        get container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Assigned users')
+        expect(response.body).to include('Ada Admin (adaadmin)')
+        expect(response.body).to include('Collection Administrator')
+        expect(response.body).to include('Moe Manager (moemanager)')
+        expect(response.body).to include('Collection Manager')
+        expect(response.body).not_to include('None assigned')
+      end
+    end
+  end
+
+  describe "GET /containers/:id/edit" do
+    let(:axis_mundi_user) { create(:user, :with_axis_mundi_role) }
+    let(:container) { create(:container) }
+
+    context "as an axis_mundi user" do
+      before { sign_in axis_mundi_user }
+
+      it "renders user permissions management and collapsed instruction accordions" do
+        create(:editable_content, page: 'container', section: 'permissions').tap do |record|
+          record.update!(content: 'The permissions listed are for giving users access to manage this collection.')
+        end
+        create(:editable_content, page: 'container', section: 'form_instructions').tap do |record|
+          record.update!(content: 'Instructions for editing collection settings.')
+        end
+
+        get edit_container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('User Permissions')
+        expect(response.body).to include('Add New Permission')
+        expect(response.body).to include('Add User')
+        expect(response.body).to include('Permission instructions')
+        expect(response.body).to include('id="container-permissions-help"')
+        expect(response.body).to include('Collection settings instructions')
+        expect(response.body).to include('id="container-form-instructions-help"')
+        expect(response.body).to include('The permissions listed are for giving users access to manage this collection.')
+        expect(response.body).to include('Instructions for editing collection settings.')
       end
     end
   end

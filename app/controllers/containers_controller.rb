@@ -13,10 +13,6 @@ class ContainersController < ApplicationController
   end
 
   def show
-    @assignments = @container.assignments.container_administrators.or(
-      @container.assignments.container_managers
-    ).includes(:user, :role)
-    @assignment = @container.assignments.build
     @container_contest_descriptions = @container.contest_descriptions
                                                 .includes(contest_instances: :entries)
                                                 .reorder('contest_descriptions.name ASC')
@@ -27,7 +23,9 @@ class ContainersController < ApplicationController
     @container = Container.new
   end
 
-  def edit; end
+  def edit
+    load_permission_assignments
+  end
 
   def create
     @container = Container.new(container_params)
@@ -59,7 +57,10 @@ class ContainersController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html do
+          load_permission_assignments
+          render :edit, status: :unprocessable_entity
+        end
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace('container_form', partial: 'containers/form', locals: { container: @container }), status: :unprocessable_entity
         }
@@ -171,5 +172,10 @@ class ContainersController < ApplicationController
 
   def authorize_index
     authorize Container
+  end
+
+  def load_permission_assignments
+    @assignments = @container.collection_staff_assignments
+    @assignment = @container.assignments.build
   end
 end

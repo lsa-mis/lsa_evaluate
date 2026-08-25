@@ -62,6 +62,14 @@ class Container < ApplicationRecord
     active_entries.count
   end
 
+  def collection_staff_assignments
+    assignments
+      .joins(:role, :user)
+      .merge(Role.container_roles)
+      .includes(:user, :role)
+      .order('roles.kind ASC', 'users.last_name ASC', 'users.first_name ASC')
+  end
+
   private
 
   def assign_container_administrator

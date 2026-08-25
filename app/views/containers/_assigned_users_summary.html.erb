@@ -1,0 +1,16 @@
+<%# locals: assignments %>
+<div class="mb-0">
+  <div class="text-muted small">Administrative users</div>
+  <% if assignments.any? %>
+    <ul class="list-unstyled mb-0">
+      <% assignments.each do |assignment| %>
+        <li>
+          <span class="fw-bold"><%= assignment.user.display_name_and_uid %></span>
+          <span class="text-muted"> — <%= assignment.role.kind %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="mb-0 fw-bold">None assigned</p>
+  <% end %>
+</div>

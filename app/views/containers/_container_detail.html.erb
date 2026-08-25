@@ -41,6 +41,9 @@
           <div class="text-muted small">Visibility</div>
           <p class="mb-0 fw-bold"><%= container.visibility.kind %></p>
         </div>
+        <div class="mb-3">
+          <%= render 'assigned_users_summary', assignments: container.collection_staff_assignments %>
+        </div>
       </div>
     </div>
 
