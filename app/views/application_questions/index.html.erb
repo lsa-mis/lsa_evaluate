@@ -21,7 +21,6 @@
         <tr>
           <th>Question</th>
           <th>Type</th>
-          <th>System</th>
           <th>Default status</th>
           <th></th>
         </tr>
@@ -38,7 +37,6 @@
               <div class="small text-muted">key: <%= question.key %></div>
             </td>
             <td><%= question.field_type %></td>
-            <td><%= question.system_key.presence || '—' %></td>
             <td>
               <%= select_tag "requirements[#{question.id}][status]",
                              options_for_select(question_status_options, requirement&.status || 'off'),

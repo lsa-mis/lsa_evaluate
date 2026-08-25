@@ -23,6 +23,19 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
     end
   end
 
+  describe 'GET #index' do
+    render_views
+
+    it 'keeps question keys under the Question column and omits a System column' do
+      get :index, params: { container_id: container.id }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include('<th>System</th>')
+      expect(response.body).to include('key: pen_name')
+      expect(response.body).to include('Pen name')
+    end
+  end
+
   describe 'POST #create' do
     it 'parses newline-separated select choices into an options array' do
       expect {
