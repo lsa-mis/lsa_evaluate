@@ -43,6 +43,18 @@ RSpec.describe ApplicationQuestion do
       expect(question.key).to eq('workshop_title')
     end
 
+    it 'prefixes generated keys that would otherwise start with a number' do
+      question = build(:application_question, container:, key: nil, label: '2024 Workshop')
+      expect(question).to be_valid
+      expect(question.key).to eq('q_2024_workshop')
+    end
+
+    it 'falls back to a generic key when the label has no usable characters' do
+      question = build(:application_question, container:, key: nil, label: '!!!')
+      expect(question).to be_valid
+      expect(question.key).to eq('custom_question')
+    end
+
     it 'rejects a key that starts with a number' do
       question = build(:application_question, container:, key: '1workshop')
       expect(question).not_to be_valid

@@ -87,6 +87,31 @@ RSpec.describe ContestInstancesController, type: :controller do
         )
       )
     end
+
+    context 'when the user is unauthorized' do
+      let(:regular_user) { create(:user) }
+
+      before do
+        sign_out user
+        sign_in regular_user
+      end
+
+      it 'does not allow access or write requirements' do
+        expect {
+          patch :update_setup_questions, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            requirements: {
+              question.id.to_s => { status: 'required' }
+            }
+          }
+        }.not_to change(ApplicationQuestionRequirement, :count)
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to match(/not authorized/i)
+      end
+    end
   end
 
   describe 'GET #setup_review_process' do

@@ -34,6 +34,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response.body).not_to include('key: pen_name')
       expect(response.body).to include('Pen name')
       expect(response.body).to include('Short answer (one line)')
+      expect(response.body).to include('btn-primary mb-3')
     end
   end
 
@@ -58,6 +59,22 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response.body).to include('Dropdown with Other')
       expect(response.body).not_to include('>string</option>')
       expect(response.body).not_to include('>select_with_other</option>')
+    end
+  end
+
+  describe 'GET #edit' do
+    render_views
+
+    it 'does not display key fields on a system question and shows the answer type label' do
+      question = container.application_questions.find_by!(system_key: 'degree')
+
+      get :edit, params: { container_id: container.id, id: question.id }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include('Internal key')
+      expect(response.body).not_to include('application_question[key]')
+      expect(response.body).to include('Answer type')
+      expect(response.body).to include('Short answer (one line)')
     end
   end
 

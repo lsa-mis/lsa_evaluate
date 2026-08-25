@@ -1,4 +1,6 @@
 class JudgingRoundsController < ApplicationController
+  helper ContestInstancesHelper
+
   before_action :set_contest_instance
   before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete, :update_rankings, :finalize_rankings, :send_instructions, :notify_completed ]
   before_action :authorize_contest_instance
@@ -28,6 +30,7 @@ class JudgingRoundsController < ApplicationController
     else
       flash.now[:alert] = @judging_round.errors.full_messages
       if from_setup?
+        @round_number = @contest_instance.judging_rounds.count + 1
         render template: 'contest_instances/setup_review_process', status: :unprocessable_entity
       else
         render :new, status: :unprocessable_entity

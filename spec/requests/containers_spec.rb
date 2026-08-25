@@ -63,6 +63,7 @@ RSpec.describe "Containers", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to include('Application Questions')
         expect(response.body).to include('Generate Reports')
+        expect(response.body).to include('Generate - Download Report')
         expect(response.body).to include('Edit Collection Settings')
         expect(response.body).not_to include('Edit Collection</')
         expect(response.body).to include('<h2')

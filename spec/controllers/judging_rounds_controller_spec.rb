@@ -85,6 +85,21 @@ RSpec.describe JudgingRoundsController, type: :controller do
         )
       )
     end
+
+    it 're-renders the setup review process step when created from setup with invalid params' do
+      expect {
+        post :create, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          from_setup: true,
+          judging_round: valid_attributes.merge(start_date: nil)
+        }
+      }.not_to change(JudgingRound, :count)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to render_template('contest_instances/setup_review_process')
+    end
   end
 
   describe 'PATCH #update' do
