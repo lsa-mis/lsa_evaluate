@@ -33,6 +33,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response.body).not_to include('<th>System</th>')
       expect(response.body).not_to include('key: pen_name')
       expect(response.body).to include('Pen name')
+      expect(response.body).to include('Short answer (one line)')
     end
   end
 
@@ -45,6 +46,18 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response).to have_http_status(:ok)
       expect(response.body).not_to include('Internal key')
       expect(response.body).not_to include('application_question[key]')
+    end
+
+    it 'lists answer types in plain language' do
+      get :new, params: { container_id: container.id }
+
+      expect(response.body).to include('Short answer (one line)')
+      expect(response.body).to include('Paragraph')
+      expect(response.body).to include('Yes / no')
+      expect(response.body).to include('Dropdown (choose one)')
+      expect(response.body).to include('Dropdown with Other')
+      expect(response.body).not_to include('>string</option>')
+      expect(response.body).not_to include('>select_with_other</option>')
     end
   end
 

@@ -1,12 +1,25 @@
 <h2><%= @application_question.new_record? ? 'New' : 'Edit' %> Application Question</h2>
 
-<%= simple_form_for([@container, @application_question]) do |f| %>
+<%= simple_form_for([@container, @application_question], html: {
+      data: {
+        controller: 'application-question-form',
+        action: 'change->application-question-form#toggle'
+      }
+    }) do |f| %>
   <%= f.error_notification %>
 
   <% if @application_question.system? %>
-    <%= f.input :field_type, disabled: true %>
+    <%= f.input :field_type,
+                collection: ApplicationQuestion.field_type_options,
+                label: 'Answer type',
+                include_blank: false,
+                disabled: true %>
   <% else %>
-    <%= f.input :field_type, collection: ApplicationQuestion::FIELD_TYPES, include_blank: false,
+    <%= f.input :field_type,
+                collection: ApplicationQuestion.field_type_options,
+                label: 'Answer type',
+                include_blank: false,
+                hint: 'This cannot be changed after the question is created.',
                 disabled: @application_question.persisted? %>
   <% end %>
 
@@ -16,11 +29,12 @@
   <%= f.input :active %>
 
   <% if %w[select select_with_other].include?(@application_question.field_type) || @application_question.new_record? %>
-    <div class="mb-3">
-      <label class="form-label">Select choices (one per line)</label>
+    <div class="mb-3" data-application-question-form-target="choices">
+      <label class="form-label">Dropdown choices (one per line)</label>
       <%= text_area_tag 'application_question[options][choices]',
                         Array(@application_question.options&.dig('choices')).join("\n"),
                         class: 'form-control', rows: 5 %>
+      <div class="form-text">Applicants pick one option from this list.</div>
     </div>
   <% end %>
 

@@ -5,6 +5,17 @@ class ApplicationQuestion < ApplicationRecord
     string text boolean date select select_with_other campus school
   ].freeze
 
+  FIELD_TYPE_LABELS = {
+    'string' => 'Short answer (one line)',
+    'text' => 'Paragraph',
+    'boolean' => 'Yes / no',
+    'date' => 'Date',
+    'select' => 'Dropdown (choose one)',
+    'select_with_other' => 'Dropdown with Other',
+    'campus' => 'Campus list',
+    'school' => 'School or college list'
+  }.freeze
+
   AGREEMENT_SYSTEM_KEYS = %w[
     accepted_financial_aid_notice
     submission_acknowledgement_agreement
@@ -76,6 +87,14 @@ class ApplicationQuestion < ApplicationRecord
 
   def custom?
     !system?
+  end
+
+  def field_type_label
+    FIELD_TYPE_LABELS.fetch(field_type, field_type.to_s.humanize)
+  end
+
+  def self.field_type_options
+    FIELD_TYPES.map { |type| [ FIELD_TYPE_LABELS.fetch(type), type ] }
   end
 
   def agreement?

@@ -65,6 +65,20 @@ RSpec.describe ApplicationQuestion do
     end
   end
 
+  describe 'field type labels' do
+    it 'uses plain-language names for answer types' do
+      question = build(:application_question, container:, field_type: 'select_with_other')
+
+      expect(question.field_type_label).to eq('Dropdown with Other')
+      expect(described_class.field_type_options).to include(
+        [ 'Short answer (one line)', 'string' ],
+        [ 'Paragraph', 'text' ],
+        [ 'Yes / no', 'boolean' ],
+        [ 'Dropdown (choose one)', 'select' ]
+      )
+    end
+  end
+
   describe 'immutability and lifecycle guards' do
     let(:question) { container.application_questions.find_by!(system_key: 'degree') }
     let(:contest_description) { create(:contest_description, :active, container:) }
