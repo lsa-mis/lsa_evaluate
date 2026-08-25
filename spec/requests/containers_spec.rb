@@ -56,6 +56,21 @@ RSpec.describe "Containers", type: :request do
         expect(response.body).not_to include('title="Summary of active entries across all active contests in this collection"')
         expect(response.body).not_to include('title="Summary of contests within this collection"')
       end
+
+      it "renders collection actions and stacked metadata with accessible entries summary" do
+        get container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Application Questions')
+        expect(response.body).to include('Generate Reports')
+        expect(response.body).to include('Edit Collection Settings')
+        expect(response.body).not_to include('Edit Collection</')
+        expect(response.body).to include('<h2')
+        expect(response.body).to include('Entries Summary')
+        expect(response.body).to include('Total Entries in all Active Instances of Active Contests:')
+        expect(response.body).to include('No active entries found.')
+        expect(response.body).not_to include('col-md-4')
+      end
     end
   end
 end

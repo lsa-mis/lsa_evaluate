@@ -2,37 +2,35 @@
 <div class="mb-2">
   <%= render 'section_help_accordion',
              heading: 'Entries Summary',
+             heading_tag: :h2,
              help_text: 'Summary of active entries across all active contests in this collection',
              collapse_id: 'entries-summary-help' %>
-  <div>
-    <div class="row">
-      <div class="col-12">
-        <h5 class="mb-3">Total Entries in all Active Instances of Active Contests: <%= container.total_active_entries %></h5>
 
-        <% if container.entries_summary.any? %>
-          <h6 class="mb-2">Entries by Campus:</h6>
-          <div class="table-responsive">
-            <table class="table table-striped table-sm">
-              <thead>
-                <tr>
-                  <th>Campus</th>
-                  <th class="text-end">Count</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% container.entries_summary.each do |summary| %>
-                  <tr>
-                    <td><%= summary.campus_descr %></td>
-                    <td class="text-end"><%= summary.entry_count %></td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
-        <% else %>
-          <p class="text-muted">No active entries found.</p>
-        <% end %>
-      </div>
+  <p class="mb-1">
+    Total Entries in all Active Instances of Active Contests: <%= container.total_active_entries %>
+  </p>
+
+  <% if container.entries_summary.any? %>
+    <h3 class="h6 mb-2">Entries by Campus:</h3>
+    <div class="table-responsive">
+      <table class="table table-striped table-sm">
+        <thead>
+          <tr>
+            <th>Campus</th>
+            <th class="text-end">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% container.entries_summary.each do |summary| %>
+            <tr>
+              <td><%= summary.campus_descr %></td>
+              <td class="text-end"><%= summary.entry_count %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
-  </div>
+  <% else %>
+    <p class="text-muted mb-0">No active entries found.</p>
+  <% end %>
 </div>
