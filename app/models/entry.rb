@@ -63,7 +63,9 @@ class Entry < ApplicationRecord
       'id' => 'entries.id',
       'title' => 'entries.title',
       'created_at' => 'entries.created_at',
-      'profile_display_name' => 'profiles.preferred_last_name',
+      # Slim profiles may have blank preferred names; fall back to legal last name
+      # so applicant-name sort matches Profile#display_name.
+      'profile_display_name' => "COALESCE(NULLIF(profiles.preferred_last_name, ''), profiles.legal_last_name)",
       'profile_user_uniqname' => 'users.uniqname',
       'pen_name' => 'pen_name',
       'campus_employee' => 'campus_employee',

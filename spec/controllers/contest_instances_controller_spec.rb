@@ -794,6 +794,36 @@ RSpec.describe ContestInstancesController, type: :controller do
         .to eq([ 'Zoe Alpha', 'Ann Zebra' ])
     end
 
+    it 'orders slim profiles by legal last name when preferred names are blank' do
+      zebra_profile = create(
+        :profile,
+        legal_first_name: 'Ann',
+        legal_last_name: 'Zebra',
+        preferred_first_name: nil,
+        preferred_last_name: nil
+      )
+      alpha_profile = create(
+        :profile,
+        legal_first_name: 'Zoe',
+        legal_last_name: 'Alpha',
+        preferred_first_name: nil,
+        preferred_last_name: nil
+      )
+      create(:entry, contest_instance: contest_instance, profile: zebra_profile, title: 'Alpha Entry')
+      create(:entry, contest_instance: contest_instance, profile: alpha_profile, title: 'Zebra Entry')
+
+      get :show, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id,
+        sort_column: 'profile_display_name',
+        sort_direction: 'asc'
+      }
+
+      expect(assigns(:contest_instance_entries).map { |entry| entry.profile.display_name })
+        .to eq([ 'Zoe Alpha', 'Ann Zebra' ])
+    end
+
     it 'ignores unknown sort columns' do
       create(:entry, contest_instance: contest_instance, title: 'Only Entry')
 
