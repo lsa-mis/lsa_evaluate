@@ -51,27 +51,27 @@
                heading: "#{container.name} Contests",
                help_text: 'Summary of contests within this collection',
                collapse_id: 'contests-in-collection-help' %>
-    <div class="contest-actions d-flex justify-content-between mb-4">
-      <%= link_to "Create New Contest",
-                  new_container_contest_description_path(container),
-                  class: "btn btn-sm btn-secondary" %>
-
-      <%= link_to "Bulk Create Contest Instances",
-                  new_container_bulk_contest_instance_path(container),
-                  class: "link_to" if container.contest_descriptions.any? %>
-    </div>
 
     <div data-controller="filter">
-      <div class="form-check mb-3">
-        <input class="form-check-input"
-               type="checkbox"
-               id="statusFilter"
-               checked
-               data-action="change->filter#toggleFilter"
-               data-filter-target="statusFilter">
-        <label class="form-check-label" for="statusFilter">
-          Show only <span class="fw-bolder">Active</span> contest descriptions
-        </label>
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+        <div class="form-check mb-0">
+          <input class="form-check-input"
+                 type="checkbox"
+                 id="statusFilter"
+                 checked
+                 data-action="change->filter#toggleFilter"
+                 data-filter-target="statusFilter">
+          <label class="form-check-label" for="statusFilter">
+            Show only <span class="fw-bolder">Active</span> contest descriptions
+          </label>
+        </div>
+
+        <button type="button"
+                class="btn btn-sm btn-secondary"
+                data-bs-toggle="modal"
+                data-bs-target="#create-contest-choice-modal">
+          Create New Contest
+        </button>
       </div>
 
       <div class="mb-3">
@@ -91,5 +91,6 @@
     </div>
   </div>
 
+  <%= render 'create_contest_choice_modal', container: container %>
   <%= render 'shared/modal' %>
 </div>

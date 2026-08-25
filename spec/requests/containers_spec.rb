@@ -71,6 +71,17 @@ RSpec.describe "Containers", type: :request do
         expect(response.body).to include('No active entries found.')
         expect(response.body).not_to include('col-md-4')
       end
+
+      it "renders create contest choice modal actions" do
+        get container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('data-bs-target="#create-contest-choice-modal"')
+        expect(response.body).to include('Create one contest')
+        expect(response.body).to include(new_container_contest_description_path(container))
+        expect(response.body).not_to include('Bulk Create Contest Instances')
+        expect(response.body).to include('Bulk create becomes available after this collection has at least one contest.')
+      end
     end
   end
 end
