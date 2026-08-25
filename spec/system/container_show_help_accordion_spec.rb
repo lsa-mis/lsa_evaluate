@@ -21,7 +21,7 @@ RSpec.describe 'Container show help accordions', type: :system do
     click_button 'About Entries Summary'
     expect(page).not_to have_css('#entries-summary-help.show')
 
-    click_button 'About Contest within this Collection'
+    click_button "About #{container.name} Contests"
     expect(page).to have_css('#contests-in-collection-help.show')
     expect(page).to have_content('Summary of contests within this collection')
   end
