@@ -36,4 +36,26 @@ RSpec.describe "Containers", type: :request do
       end
     end
   end
+
+  describe "GET /containers/:id" do
+    let(:axis_mundi_user) { create(:user, :with_axis_mundi_role) }
+    let(:container) { create(:container) }
+
+    context "as an axis_mundi user" do
+      before { sign_in axis_mundi_user }
+
+      it "renders section help as accessible accordion dropdowns" do
+        get container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('id="entries-summary-help"')
+        expect(response.body).to include('id="contests-in-collection-help"')
+        expect(response.body).to include('data-bs-toggle="collapse"')
+        expect(response.body).to include('aria-controls="entries-summary-help"')
+        expect(response.body).to include('aria-controls="contests-in-collection-help"')
+        expect(response.body).not_to include('title="Summary of active entries across all active contests in this collection"')
+        expect(response.body).not_to include('title="Summary of contests within this collection"')
+      end
+    end
+  end
 end

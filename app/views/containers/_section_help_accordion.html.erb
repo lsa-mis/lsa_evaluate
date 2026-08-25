@@ -1,0 +1,22 @@
+<%# locals: heading, help_text, collapse_id %>
+<div class="d-flex align-items-center mb-0">
+  <h4 class="mb-0 me-2" id="<%= collapse_id %>-heading"><%= heading %></h4>
+  <button type="button"
+          class="btn btn-link section-help-toggle p-1 text-body text-decoration-none border-0 collapsed"
+          data-bs-toggle="collapse"
+          data-bs-target="#<%= collapse_id %>"
+          aria-expanded="false"
+          aria-controls="<%= collapse_id %>">
+    <i class="bi bi-info-circle" aria-hidden="true"></i>
+    <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+    <span class="visually-hidden">About <%= heading %></span>
+  </button>
+</div>
+<div id="<%= collapse_id %>"
+     class="collapse"
+     role="region"
+     aria-labelledby="<%= collapse_id %>-heading">
+  <div class="small text-muted bg-light border rounded px-3 py-2 mt-2 mb-2">
+    <%= help_text %>
+  </div>
+</div>
