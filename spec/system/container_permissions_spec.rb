@@ -16,7 +16,7 @@ RSpec.describe 'Collection user permissions', type: :system do
   it 'shows assigned users on the collection page and manages them from collection settings' do
     visit container_path(container)
 
-    expect(page).to have_content('Assigned users')
+    expect(page).to have_content('Administrative users')
     expect(page).to have_content('Ada Admin (adaadmin)')
     expect(page).to have_content('Collection Administrator')
     expect(page).not_to have_content('User Permissions')

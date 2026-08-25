@@ -80,7 +80,9 @@ RSpec.describe "Containers", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to include('Application Questions')
         expect(response.body).to include('Generate Reports')
-        expect(response.body).to include('Generate - Download Report')
+        expect(response.body).to include(reports_container_path(container))
+        expect(response.body).not_to include('Generate - Download Report')
+        expect(response.body).not_to include('id="reports"')
         expect(response.body).to include('Edit Collection Settings')
         expect(response.body).not_to include('Edit Collection</')
         expect(response.body).to include('<h2')
@@ -88,7 +90,7 @@ RSpec.describe "Containers", type: :request do
         expect(response.body).to include('Total Entries in all Active Instances of Active Contests:')
         expect(response.body).to include('No active entries found.')
         expect(response.body).not_to include('col-md-4')
-        expect(response.body).to include('Assigned users')
+        expect(response.body).to include('Administrative users')
         expect(response.body).to include('None assigned')
         expect(response.body).not_to include('User Permissions')
         expect(response.body).not_to include('Add New Permission')
@@ -114,7 +116,7 @@ RSpec.describe "Containers", type: :request do
         get container_path(container)
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include('Assigned users')
+        expect(response.body).to include('Administrative users')
         expect(response.body).to include('Ada Admin (adaadmin)')
         expect(response.body).to include('Collection Administrator')
         expect(response.body).to include('Moe Manager (moemanager)')
@@ -151,6 +153,45 @@ RSpec.describe "Containers", type: :request do
         expect(response.body).to include('id="container-form-instructions-help"')
         expect(response.body).to include('The permissions listed are for giving users access to manage this collection.')
         expect(response.body).to include('Instructions for editing collection settings.')
+      end
+    end
+  end
+
+  describe "GET /containers/:id/reports" do
+    let(:axis_mundi_user) { create(:user, :with_axis_mundi_role) }
+    let(:container) { create(:container) }
+
+    context "as an axis_mundi user" do
+      before { sign_in axis_mundi_user }
+
+      it "renders the reports page with the active applicants report" do
+        contest_description = create(:contest_description, :active, container: container, name: 'First contest in the new collection')
+
+        get reports_container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Reports')
+        expect(response.body).to include('Active Applicants Report')
+        expect(response.body).to include('Generate - Download Report')
+        expect(response.body).to include(contest_description.name)
+        expect(response.body).to include('Return to Manage Collection')
+        expect(response.body).to include(container_path(container))
+      end
+
+      it "shows an empty state when there are no active contest descriptions" do
+        get reports_container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('No active contest descriptions are available for this report.')
+        expect(response.body).not_to include('Generate - Download Report')
+      end
+    end
+
+    context "as a guest (unauthenticated user)" do
+      it "redirects to the sign-in page" do
+        get reports_container_path(container)
+
+        expect(response).to redirect_to(new_user_session_path)
       end
     end
   end

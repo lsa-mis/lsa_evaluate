@@ -5,25 +5,29 @@
     </div>
     <div class="card-body">
       <%= form_with url: active_applicants_report_container_path(@container, format: :csv), method: :get, data: { turbo: false } do |f| %>
-        <div class="mb-3">
-          <label class="form-label">Select Contest Descriptions</label>
-          <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
-            <% @active_contest_descriptions.each do |contest_description| %>
-              <div class="form-check">
-                <%= check_box_tag "contest_description_ids[]",
-                    contest_description.id,
-                    false,
-                    class: "form-check-input",
-                    id: "contest_description_#{contest_description.id}" %>
-                <%= label_tag "contest_description_#{contest_description.id}",
-                    contest_description.name,
-                    class: "form-check-label" %>
-              </div>
-            <% end %>
+        <% if @active_contest_descriptions.any? %>
+          <div class="mb-3">
+            <label class="form-label">Select Contest Descriptions</label>
+            <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+              <% @active_contest_descriptions.each do |contest_description| %>
+                <div class="form-check">
+                  <%= check_box_tag "contest_description_ids[]",
+                      contest_description.id,
+                      false,
+                      class: "form-check-input",
+                      id: "contest_description_#{contest_description.id}" %>
+                  <%= label_tag "contest_description_#{contest_description.id}",
+                      contest_description.name,
+                      class: "form-check-label" %>
+                </div>
+              <% end %>
+            </div>
           </div>
-        </div>
 
-        <%= f.submit "Generate - Download Report", class: "btn btn-primary" %>
+          <%= f.submit "Generate - Download Report", class: "btn btn-primary" %>
+        <% else %>
+          <p class="text-muted mb-0">No active contest descriptions are available for this report.</p>
+        <% end %>
       <% end %>
     </div>
   </div>

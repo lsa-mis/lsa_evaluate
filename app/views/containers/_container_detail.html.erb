@@ -13,8 +13,8 @@
             <% end %>
           <% end %>
 
-          <% if policy(@container).active_applicants_report? %>
-            <%= link_to '#reports',
+          <% if policy(@container).reports? %>
+            <%= link_to reports_container_path(@container),
                         class: 'btn btn-sm btn-outline-primary' do %>
               <i class="bi bi-download me-1" aria-hidden="true"></i> Generate Reports
             <% end %>
