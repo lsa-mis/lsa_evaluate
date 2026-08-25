@@ -4,7 +4,10 @@
   </div>
 </div>
 <% if (content = render_editable_content('container', 'information')) %>
-    <%= content %>
+  <%= render 'shared/collapsible_instructions',
+             heading: 'Collection instructions',
+             content: content,
+             collapse_id: 'container-information-help' %>
 <% end %>
 <div>
   <%= render 'container_detail', container: @container, container_contest_descriptions: @container_contest_descriptions %>

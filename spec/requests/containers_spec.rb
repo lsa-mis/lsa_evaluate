@@ -57,6 +57,23 @@ RSpec.describe "Containers", type: :request do
         expect(response.body).not_to include('title="Summary of contests within this collection"')
       end
 
+      it "renders collection instructions as a collapsed accordion when editable content exists" do
+        create(:editable_content, page: 'container', section: 'information').tap do |record|
+          record.update!(content: 'The collection is the container of all the contests you want to run.')
+        end
+
+        get container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Collection instructions')
+        expect(response.body).to include('id="container-information-help"')
+        expect(response.body).to include('aria-controls="container-information-help"')
+        expect(response.body).to include('The collection is the container of all the contests you want to run.')
+        expect(response.body).to include('accordion-button collapsed')
+        expect(response.body).to include('class="accordion-collapse collapse"')
+        expect(response.body).not_to include('class="accordion-collapse collapse show"')
+      end
+
       it "renders collection actions and stacked metadata with accessible entries summary" do
         get container_path(container)
 
