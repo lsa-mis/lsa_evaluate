@@ -323,14 +323,14 @@ class ContestInstancesController < ApplicationController
         answers_by_question_id = entry.entry_answers.index_by(&:application_question_id)
 
         csv << [
-          entry.title,
-          entry.category&.kind,
-          profile&.legal_first_name.presence || profile&.user&.first_name,
-          profile&.legal_last_name.presence || profile&.user&.last_name,
-          profile&.display_name,
-          profile&.umid,
-          profile&.user&.uniqname,
-          profile&.class_level&.name,
+          csv_safe_cell(entry.title),
+          csv_safe_cell(entry.category&.kind),
+          csv_safe_cell(profile&.legal_first_name.presence || profile&.user&.first_name),
+          csv_safe_cell(profile&.legal_last_name.presence || profile&.user&.last_name),
+          csv_safe_cell(profile&.display_name),
+          csv_safe_cell(profile&.umid),
+          csv_safe_cell(profile&.user&.uniqname),
+          csv_safe_cell(profile&.class_level&.name),
           entry.id,
           entry.created_at.strftime('%m/%d/%Y %I:%M %p'),
           entry.disqualified? ? 'Yes' : 'No'
@@ -367,14 +367,14 @@ class ContestInstancesController < ApplicationController
         }
 
         base_data = [
-          entry.title,
-          entry.category&.kind,
-          profile&.legal_first_name.presence || profile&.user&.first_name,
-          profile&.legal_last_name.presence || profile&.user&.last_name,
-          profile&.display_name,
-          profile&.umid,
-          profile&.user&.uniqname,
-          profile&.class_level&.name,
+          csv_safe_cell(entry.title),
+          csv_safe_cell(entry.category&.kind),
+          csv_safe_cell(profile&.legal_first_name.presence || profile&.user&.first_name),
+          csv_safe_cell(profile&.legal_last_name.presence || profile&.user&.last_name),
+          csv_safe_cell(profile&.display_name),
+          csv_safe_cell(profile&.umid),
+          csv_safe_cell(profile&.user&.uniqname),
+          csv_safe_cell(profile&.class_level&.name),
           entry.id,
           selected ? 'Yes' : 'No'
         ]
@@ -382,10 +382,10 @@ class ContestInstancesController < ApplicationController
         if rankings.any?
           rankings.each do |ranking|
             csv << base_data + [
-              "#{ranking.user.display_name_or_first_name_last_name} (#{ranking.user.uid})",
+              csv_safe_cell("#{ranking.user.display_name_or_first_name_last_name} (#{ranking.user.uid})"),
               ranking.rank,
-              ranking.external_comments.presence || 'No comment entered',
-              ranking.internal_comments.presence || 'No comment entered'
+              csv_safe_cell(ranking.external_comments.presence || 'No comment entered'),
+              csv_safe_cell(ranking.internal_comments.presence || 'No comment entered')
             ] + question_values
           end
         else
@@ -395,7 +395,7 @@ class ContestInstancesController < ApplicationController
     end
   end
 
-  # Neutralize applicant-controlled values so spreadsheet apps treat them as text
+  # Neutralize applicant- and judge-controlled values so spreadsheet apps treat them as text
   # rather than formulas when staff open the CSV (CSV injection).
   def csv_safe_cell(value)
     text = value.to_s
