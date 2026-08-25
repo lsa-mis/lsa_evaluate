@@ -44,6 +44,7 @@ Rails.application.routes.draw do
     resources :application_questions, except: [ :show ] do
       collection do
         patch :update_requirements
+        patch :reorder
       end
     end
     resources :contest_descriptions do
