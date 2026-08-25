@@ -71,7 +71,7 @@ class ApplicationQuestionsController < ApplicationController
 
   def application_question_params
     params.require(:application_question).permit(
-      :key, :label, :help_text, :field_type, :position, :active, options: {}
+      :label, :help_text, :field_type, :position, :active, options: {}
     ).tap do |permitted|
       if permitted[:options].is_a?(ActionController::Parameters) || permitted[:options].is_a?(Hash)
         choices = permitted.dig(:options, :choices) || permitted.dig(:options, 'choices')
@@ -83,8 +83,6 @@ class ApplicationQuestionsController < ApplicationController
   end
 
   def application_question_update_params
-    application_question_params.except(:field_type).tap do |permitted|
-      permitted.delete(:key) if @application_question.system?
-    end
+    application_question_params.except(:field_type)
   end
 end

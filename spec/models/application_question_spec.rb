@@ -17,6 +17,32 @@ RSpec.describe ApplicationQuestion do
       expect(question.key).to eq('workshop_title')
     end
 
+    it 'generates a key from the label when none is provided' do
+      question = build(:application_question, container:, key: nil, label: 'Workshop Title')
+      expect(question).to be_valid
+      expect(question.key).to eq('workshop_title')
+    end
+
+    it 'avoids reserved system keys when generating from a label' do
+      question = build(:application_question, container:, key: nil, label: 'Degree')
+      expect(question).to be_valid
+      expect(question.key).to eq('degree_2')
+    end
+
+    it 'suffixes generated keys that already exist in the collection' do
+      create(:application_question, container:, key: 'workshop_title', label: 'Workshop title')
+      question = build(:application_question, container:, key: nil, label: 'Workshop Title')
+      expect(question).to be_valid
+      expect(question.key).to eq('workshop_title_2')
+    end
+
+    it 'does not regenerate an existing key when the label changes' do
+      question = create(:application_question, container:, key: 'workshop_title', label: 'Workshop title')
+      question.label = 'Preferred workshop'
+      expect(question).to be_valid
+      expect(question.key).to eq('workshop_title')
+    end
+
     it 'rejects a key that starts with a number' do
       question = build(:application_question, container:, key: '1workshop')
       expect(question).not_to be_valid

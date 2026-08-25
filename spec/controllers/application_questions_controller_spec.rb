@@ -26,13 +26,25 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
   describe 'GET #index' do
     render_views
 
-    it 'keeps question keys under the Question column and omits a System column' do
+    it 'does not display internal keys on the list' do
       get :index, params: { container_id: container.id }
 
       expect(response).to have_http_status(:ok)
       expect(response.body).not_to include('<th>System</th>')
-      expect(response.body).to include('key: pen_name')
+      expect(response.body).not_to include('key: pen_name')
       expect(response.body).to include('Pen name')
+    end
+  end
+
+  describe 'GET #new' do
+    render_views
+
+    it 'does not display the internal key field' do
+      get :new, params: { container_id: container.id }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include('Internal key')
+      expect(response.body).not_to include('application_question[key]')
     end
   end
 
@@ -42,7 +54,6 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
         post :create, params: {
           container_id: container.id,
           application_question: {
-            key: 'preferred_genre',
             label: 'Preferred genre',
             field_type: 'select',
             position: 250,
@@ -53,7 +64,25 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       }.to change(ApplicationQuestion, :count).by(1)
 
       question = ApplicationQuestion.order(:id).last
+      expect(question.key).to eq('preferred_genre')
       expect(question.options['choices']).to eq(%w[Poetry Fiction Drama])
+      expect(response).to redirect_to(container_application_questions_path(container))
+    end
+
+    it 'ignores a submitted key and generates one from the label' do
+      post :create, params: {
+        container_id: container.id,
+        application_question: {
+          key: 'injected_key',
+          label: 'Workshop title',
+          field_type: 'string',
+          position: 250,
+          active: true
+        }
+      }
+
+      question = ApplicationQuestion.order(:id).last
+      expect(question.key).to eq('workshop_title')
       expect(response).to redirect_to(container_application_questions_path(container))
     end
 
@@ -62,8 +91,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
         post :create, params: {
           container_id: container.id,
           application_question: {
-            key: 'degree',
-            label: 'Reserved key attempt',
+            label: '',
             field_type: 'string',
             position: 250,
             active: true
@@ -88,8 +116,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
         id: custom_question.id,
         application_question: {
           label: 'Updated workshop title',
-          field_type: 'text',
-          key: 'workshop_title'
+          field_type: 'text'
         }
       }
 

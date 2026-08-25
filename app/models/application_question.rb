@@ -66,6 +66,7 @@ class ApplicationQuestion < ApplicationRecord
   scope :system, -> { where.not(system_key: nil) }
   scope :custom, -> { where(system_key: nil) }
 
+  before_validation :assign_generated_key
   before_validation :normalize_key
   before_destroy :prevent_destroy_with_answers
 
@@ -98,6 +99,46 @@ class ApplicationQuestion < ApplicationRecord
   end
 
   private
+
+  def assign_generated_key
+    return if system?
+    return if key.present?
+    return if container.nil?
+
+    self.key = unique_generated_key
+  end
+
+  def unique_generated_key
+    base = generated_key_base
+    existing = existing_keys_for_generation
+    candidate = base
+    suffix = 2
+
+    while existing.include?(candidate)
+      suffix_str = "_#{suffix}"
+      truncated_base = base[0, KEY_MAX_LENGTH - suffix_str.length].to_s.sub(/_+\z/, '')
+      truncated_base = 'custom_question' if truncated_base.blank?
+      candidate = "#{truncated_base}#{suffix_str}"
+      suffix += 1
+    end
+
+    candidate
+  end
+
+  def generated_key_base
+    base = label.to_s.parameterize(separator: '_')
+    base = "q_#{base}" if base.present? && !base.match?(/\A[a-z]/)
+    base = 'custom_question' if base.blank?
+    base = base[0, KEY_MAX_LENGTH].sub(/_+\z/, '')
+    base = 'custom_question' if base.blank? || !base.match?(KEY_FORMAT)
+    base
+  end
+
+  def existing_keys_for_generation
+    scope = container.application_questions
+    scope = scope.where.not(id: id) if persisted?
+    scope.pluck(:key).to_set.merge(RESERVED_KEYS)
+  end
 
   def normalize_key
     self.key = key.to_s.parameterize(separator: '_') if key.present?
