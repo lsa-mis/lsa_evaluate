@@ -13,6 +13,9 @@ application.register("access-mode", AccessModeController)
 import ApplicationQuestionFormController from "./application_question_form_controller"
 application.register("application-question-form", ApplicationQuestionFormController)
 
+import ApplicationQuestionSortController from "./application_question_sort_controller"
+application.register("application-question-sort", ApplicationQuestionSortController)
+
 import CheckboxselectController from "./checkboxselect_controller"
 application.register("checkboxselect", CheckboxselectController)
 

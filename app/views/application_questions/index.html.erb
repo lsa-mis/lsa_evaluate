@@ -8,6 +8,7 @@
 <p class="text-muted">
   Manage the question library for this collection. Set default required/optional/off status here.
   Contests and contest instances can override these defaults.
+  Drag the grip handle to change the question order.
 </p>
 
 <div class="mb-3">
@@ -16,19 +17,31 @@
 
 <%= form_with url: update_requirements_container_application_questions_path(@container), method: :patch do %>
   <div class="table-responsive">
-    <table class="table table-sm align-middle">
+    <table class="table table-sm align-middle application-questions-table">
       <thead>
         <tr>
+          <th class="text-muted" scope="col">
+            <span class="visually-hidden">Reorder</span>
+          </th>
           <th>Question</th>
           <th>Type</th>
           <th>Default status</th>
           <th></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody data-controller="application-question-sort"
+             data-application-question-sort-url-value="<%= reorder_container_application_questions_path(@container) %>">
         <% @application_questions.each do |question| %>
           <% requirement = @container_requirements[question.id] %>
-          <tr class="<%= 'table-secondary' unless question.active? %>">
+          <tr class="<%= 'table-secondary' unless question.active? %>"
+              data-question-id="<%= question.id %>">
+            <td class="align-middle pe-0">
+              <span class="drag-handle"
+                    title="Drag to reorder"
+                    aria-label="Drag to reorder <%= question.label %>">
+                <i class="bi bi-grip-vertical" aria-hidden="true"></i>
+              </span>
+            </td>
             <td>
               <strong><%= question.label %></strong>
               <% if question.help_text.present? %>

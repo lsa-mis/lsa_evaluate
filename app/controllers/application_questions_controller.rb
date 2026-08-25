@@ -55,6 +55,30 @@ class ApplicationQuestionsController < ApplicationController
     redirect_to container_application_questions_path(@container), alert: e.record.errors.full_messages.to_sentence
   end
 
+  def reorder
+    ordered_ids = Array(params[:application_question_ids]).map(&:to_i)
+    current_ids = @container.application_questions.pluck(:id)
+
+    unless ordered_ids.any? && ordered_ids.sort == current_ids.sort
+      respond_to do |format|
+        format.json { head :unprocessable_entity }
+        format.html { redirect_to container_application_questions_path(@container), alert: 'Could not reorder questions.' }
+      end
+      return
+    end
+
+    ApplicationQuestion.transaction do
+      ordered_ids.each_with_index do |id, index|
+        ApplicationQuestion.where(id: id, container_id: @container.id).update_all(position: index)
+      end
+    end
+
+    respond_to do |format|
+      format.json { head :ok }
+      format.html { redirect_to container_application_questions_path(@container), notice: 'Question order was updated.' }
+    end
+  end
+
   private
 
   def set_container
@@ -71,7 +95,7 @@ class ApplicationQuestionsController < ApplicationController
 
   def application_question_params
     params.require(:application_question).permit(
-      :label, :help_text, :field_type, :position, :active, options: {}
+      :label, :help_text, :field_type, :active, options: {}
     ).tap do |permitted|
       if permitted[:options].is_a?(ActionController::Parameters) || permitted[:options].is_a?(Hash)
         choices = permitted.dig(:options, :choices) || permitted.dig(:options, 'choices')

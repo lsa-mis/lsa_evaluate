@@ -4,39 +4,11 @@
   </div>
 </div>
 <% if (content = render_editable_content('container', 'information')) %>
-    <%= content %>
+  <%= render 'shared/collapsible_instructions',
+             heading: 'Collection instructions',
+             content: content,
+             collapse_id: 'container-information-help' %>
 <% end %>
 <div>
   <%= render 'container_detail', container: @container, container_contest_descriptions: @container_contest_descriptions %>
 </div>
-
-<hr>
-
-<section id="application-questions" class="mt-4">
-  <h3>Application Questions</h3>
-  <p>
-    <%= link_to 'Manage question library and defaults', container_application_questions_path(@container), class: 'btn btn-outline-primary btn-sm' %>
-  </p>
-</section>
-
-<hr>
-
-<section id="reports" class="mt-4">
-  <h3>Reports</h3>
-  <%= render 'active_applicants_report_form' %>
-</section>
-
-<hr>
-
-<h3 class="mt-4">User Permissions</h3>
-  <% if (content = render_editable_content('container', 'permissions')) %>
-      <%= content %>
-  <% end %>
-<%= turbo_frame_tag "assignments" do %>
-  <%= render partial: "containers/assignments_table", locals: { container: @container, assignments: @assignments } %>
-<% end %>
-
-<h4 class="mt-4">Add New Permission</h4>
-<%= turbo_frame_tag "new_assignment" do %>
-  <%= render partial: 'containers/assignment_form', locals: { container: @container, assignment: @assignment } %>
-<% end %>

@@ -39,7 +39,7 @@ RSpec.describe 'Containers active applicants report', type: :request do
     get active_applicants_report_container_path(container, format: :csv),
         params: { contest_description_ids: [] }
 
-    expect(response).to redirect_to(container)
+    expect(response).to redirect_to(reports_container_path(container))
     expect(flash[:alert]).to eq('Please select at least one contest description.')
   end
 

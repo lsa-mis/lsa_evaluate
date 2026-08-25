@@ -36,6 +36,15 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response.body).to include('Short answer (one line)')
       expect(response.body).to include('btn-primary mb-3')
     end
+
+    it 'renders drag handles for reordering questions' do
+      get :index, params: { container_id: container.id }
+
+      expect(response.body).to include('drag-handle')
+      expect(response.body).to include('Drag to reorder')
+      expect(response.body).to include('application-question-sort')
+      expect(response.body).to include(reorder_container_application_questions_path(container))
+    end
   end
 
   describe 'GET #new' do
@@ -47,6 +56,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response).to have_http_status(:ok)
       expect(response.body).not_to include('Internal key')
       expect(response.body).not_to include('application_question[key]')
+      expect(response.body).not_to include('application_question[position]')
     end
 
     it 'lists answer types in plain language' do
@@ -73,6 +83,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response).to have_http_status(:ok)
       expect(response.body).not_to include('Internal key')
       expect(response.body).not_to include('application_question[key]')
+      expect(response.body).not_to include('application_question[position]')
       expect(response.body).to include('Answer type')
       expect(response.body).to include('Short answer (one line)')
     end
@@ -246,6 +257,37 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       }.not_to change(ApplicationQuestionRequirement, :count)
 
       expect(response).to redirect_to(container_application_questions_path(container))
+    end
+  end
+
+  describe 'PATCH #reorder' do
+    it 'updates question positions to match the submitted order' do
+      first = container.application_questions.find_by!(system_key: 'pen_name')
+      last = container.application_questions.find_by!(system_key: 'submission_acknowledgement_agreement')
+      ordered_ids = container.application_questions.ordered.pluck(:id)
+      reordered_ids = [last.id] + (ordered_ids - [last.id])
+
+      patch :reorder, params: {
+        container_id: container.id,
+        application_question_ids: reordered_ids
+      }, format: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(last.reload.position).to eq(0)
+      expect(first.reload.position).to eq(1)
+    end
+
+    it 'rejects incomplete or foreign question ids' do
+      question = container.application_questions.find_by!(system_key: 'pen_name')
+      other_question = create(:container).application_questions.find_by!(system_key: 'pen_name')
+
+      patch :reorder, params: {
+        container_id: container.id,
+        application_question_ids: [question.id, other_question.id]
+      }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(question.reload.position).to eq(0)
     end
   end
 end

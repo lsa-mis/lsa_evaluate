@@ -5,6 +5,11 @@ require 'rails_helper'
 RSpec.describe 'Container show help accordions', type: :system do
   let(:user) { create(:user, :axis_mundi) }
   let(:container) { create(:container) }
+  let!(:container_information) do
+    create(:editable_content, page: 'container', section: 'information').tap do |record|
+      record.update!(content: 'The collection is the container of all the contests you want to run.')
+    end
+  end
 
   before { sign_in user }
 
@@ -24,5 +29,22 @@ RSpec.describe 'Container show help accordions', type: :system do
     click_button "About #{container.name} Contests"
     expect(page).to have_css('#contests-in-collection-help.show')
     expect(page).to have_content('Summary of contests within this collection')
+  end
+
+  it 'keeps collection instructions collapsed until an admin expands them' do
+    visit container_path(container)
+
+    expect(page).to have_button('Collection instructions')
+    expect(page).not_to have_css('#container-information-help.show')
+    expect(page).not_to have_content('The collection is the container of all the contests you want to run.')
+
+    click_button 'Collection instructions'
+    expect(page).to have_css('#container-information-help.show')
+    expect(page).to have_content('The collection is the container of all the contests you want to run.')
+    expect(page).to have_link('', href: edit_editable_content_path(container_information))
+
+    click_button 'Collection instructions'
+    expect(page).not_to have_css('#container-information-help.show')
+    expect(page).not_to have_content('The collection is the container of all the contests you want to run.')
   end
 end

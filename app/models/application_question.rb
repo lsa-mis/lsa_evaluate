@@ -79,6 +79,7 @@ class ApplicationQuestion < ApplicationRecord
 
   before_validation :assign_generated_key
   before_validation :normalize_key
+  before_validation :assign_default_position, on: :create
   before_destroy :prevent_destroy_with_answers
 
   def system?
@@ -125,6 +126,13 @@ class ApplicationQuestion < ApplicationRecord
     return if container.nil?
 
     self.key = unique_generated_key
+  end
+
+  def assign_default_position
+    return if position.present?
+    return if container.nil?
+
+    self.position = (container.application_questions.maximum(:position) || -1) + 1
   end
 
   def unique_generated_key

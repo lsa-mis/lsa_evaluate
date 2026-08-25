@@ -131,4 +131,13 @@ RSpec.describe ApplicationQuestion do
       expect(described_class.exists?(question.id)).to be(true)
     end
   end
+
+  describe 'default position' do
+    it 'assigns the next position when none is provided' do
+      max_position = container.application_questions.maximum(:position)
+      question = create(:application_question, container:, position: nil, key: 'workshop_title')
+
+      expect(question.position).to eq(max_position + 1)
+    end
+  end
 end

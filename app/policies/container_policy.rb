@@ -52,6 +52,10 @@ class ContainerPolicy < ApplicationPolicy
     owns_container? || axis_mundi?
   end
 
+  def reports?
+    active_applicants_report?
+  end
+
   private
 
   def user_has_containers?

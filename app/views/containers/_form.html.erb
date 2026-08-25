@@ -1,6 +1,9 @@
 <div id="container_form">
   <% if (content = render_editable_content('container', 'form_instructions')) %>
-    <%= content %>
+    <%= render 'shared/collapsible_instructions',
+               heading: 'Collection settings instructions',
+               content: content,
+               collapse_id: 'container-form-instructions-help' %>
   <% end %>
   <%= simple_form_for(@container, html: { id: 'new_container_form' }) do |f| %>
     <%= f.error_notification %>

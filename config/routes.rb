@@ -44,6 +44,7 @@ Rails.application.routes.draw do
     resources :application_questions, except: [ :show ] do
       collection do
         patch :update_requirements
+        patch :reorder
       end
     end
     resources :contest_descriptions do
@@ -106,6 +107,7 @@ Rails.application.routes.draw do
     resources :assignments, only: %i[create destroy]
     member do
       get 'description'
+      get :reports
       get :active_applicants_report
     end
   end

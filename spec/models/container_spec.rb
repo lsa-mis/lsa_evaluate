@@ -201,4 +201,22 @@ RSpec.describe Container do
       expect(container.total_active_entries).to eq(2)
     end
   end
+
+  describe '#collection_staff_assignments' do
+    let(:container) { create(:container) }
+    let(:admin_role) { create(:role, :collection_admin) }
+    let(:manager_role) { create(:role, :collection_manager) }
+    let(:judge_role) { create(:role, :judge) }
+    let(:admin_user) { create(:user, last_name: 'Admin', first_name: 'Ada') }
+    let(:manager_user) { create(:user, last_name: 'Manager', first_name: 'Moe') }
+    let(:judge_user) { create(:user, last_name: 'Judge', first_name: 'Jay') }
+
+    it 'returns collection administrators and managers, excluding judges' do
+      admin_assignment = create(:assignment, user: admin_user, container: container, role: admin_role)
+      manager_assignment = create(:assignment, user: manager_user, container: container, role: manager_role)
+      create(:assignment, user: judge_user, container: container, role: judge_role)
+
+      expect(container.collection_staff_assignments).to eq([admin_assignment, manager_assignment])
+    end
+  end
 end
