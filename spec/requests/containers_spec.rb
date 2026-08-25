@@ -36,4 +36,53 @@ RSpec.describe "Containers", type: :request do
       end
     end
   end
+
+  describe "GET /containers/:id" do
+    let(:axis_mundi_user) { create(:user, :with_axis_mundi_role) }
+    let(:container) { create(:container) }
+
+    context "as an axis_mundi user" do
+      before { sign_in axis_mundi_user }
+
+      it "renders section help as accessible accordion dropdowns" do
+        get container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('id="entries-summary-help"')
+        expect(response.body).to include('id="contests-in-collection-help"')
+        expect(response.body).to include('data-bs-toggle="collapse"')
+        expect(response.body).to include('aria-controls="entries-summary-help"')
+        expect(response.body).to include('aria-controls="contests-in-collection-help"')
+        expect(response.body).not_to include('title="Summary of active entries across all active contests in this collection"')
+        expect(response.body).not_to include('title="Summary of contests within this collection"')
+      end
+
+      it "renders collection actions and stacked metadata with accessible entries summary" do
+        get container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('Application Questions')
+        expect(response.body).to include('Generate Reports')
+        expect(response.body).to include('Generate - Download Report')
+        expect(response.body).to include('Edit Collection Settings')
+        expect(response.body).not_to include('Edit Collection</')
+        expect(response.body).to include('<h2')
+        expect(response.body).to include('Entries Summary')
+        expect(response.body).to include('Total Entries in all Active Instances of Active Contests:')
+        expect(response.body).to include('No active entries found.')
+        expect(response.body).not_to include('col-md-4')
+      end
+
+      it "renders create contest choice modal actions" do
+        get container_path(container)
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include('data-bs-target="#create-contest-choice-modal"')
+        expect(response.body).to include('Create one contest')
+        expect(response.body).to include(new_container_contest_description_path(container))
+        expect(response.body).not_to include('Bulk Create Contest Instances')
+        expect(response.body).to include('Bulk create becomes available after this collection has at least one contest.')
+      end
+    end
+  end
 end

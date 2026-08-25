@@ -1,0 +1,39 @@
+<%# locals: container %>
+<div class="modal fade"
+     id="create-contest-choice-modal"
+     tabindex="-1"
+     aria-labelledby="create-contest-choice-modal-label"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="create-contest-choice-modal-label">Create New Contest</h5>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3">How would you like to proceed?</p>
+        <div class="d-grid gap-2">
+          <%= link_to 'Create one contest',
+                      new_container_contest_description_path(container),
+                      class: 'btn btn-primary' %>
+
+          <% if container.contest_descriptions.any? %>
+            <%= link_to 'Bulk create contest instances',
+                        new_container_bulk_contest_instance_path(container),
+                        class: 'btn btn-outline-primary' %>
+          <% else %>
+            <p class="small text-muted mb-0">
+              Bulk create becomes available after this collection has at least one contest.
+            </p>
+          <% end %>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

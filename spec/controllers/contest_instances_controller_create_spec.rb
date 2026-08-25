@@ -49,7 +49,7 @@ RSpec.describe ContestInstancesController, type: :controller do
         }.to change(ContestInstance, :count).by(1)
       end
 
-      it 'redirects to the contest instance page with success notice' do
+      it 'redirects to the questions setup step with success notice' do
         post :create, params: {
           container_id: container.id,
           contest_description_id: contest_description.id,
@@ -58,9 +58,11 @@ RSpec.describe ContestInstancesController, type: :controller do
 
         created_instance = ContestInstance.last
         expect(response).to redirect_to(
-          container_contest_description_contest_instance_path(container, contest_description, created_instance)
+          setup_questions_container_contest_description_contest_instance_path(
+            container, contest_description, created_instance
+          )
         )
-        expect(flash[:notice]).to be_present
+        expect(flash[:notice]).to eq('Contest instance was successfully created.')
       end
 
       it 'creates active contest instance when active is true' do

@@ -21,7 +21,6 @@
         <tr>
           <th>Question</th>
           <th>Type</th>
-          <th>System</th>
           <th>Default status</th>
           <th></th>
         </tr>
@@ -35,10 +34,8 @@
               <% if question.help_text.present? %>
                 <div class="small text-muted"><%= question.help_text %></div>
               <% end %>
-              <div class="small text-muted">key: <%= question.key %></div>
             </td>
-            <td><%= question.field_type %></td>
-            <td><%= question.system_key.presence || '—' %></td>
+            <td><%= question.field_type_label %></td>
             <td>
               <%= select_tag "requirements[#{question.id}][status]",
                              options_for_select(question_status_options, requirement&.status || 'off'),
@@ -58,5 +55,5 @@
       </tbody>
     </table>
   </div>
-  <%= submit_tag 'Save default requirements', class: 'btn btn-primary' %>
+  <%= submit_tag 'Save default requirements', class: 'btn btn-primary mb-3' %>
 <% end %>

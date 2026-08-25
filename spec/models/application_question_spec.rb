@@ -17,6 +17,44 @@ RSpec.describe ApplicationQuestion do
       expect(question.key).to eq('workshop_title')
     end
 
+    it 'generates a key from the label when none is provided' do
+      question = build(:application_question, container:, key: nil, label: 'Workshop Title')
+      expect(question).to be_valid
+      expect(question.key).to eq('workshop_title')
+    end
+
+    it 'avoids reserved system keys when generating from a label' do
+      question = build(:application_question, container:, key: nil, label: 'Degree')
+      expect(question).to be_valid
+      expect(question.key).to eq('degree_2')
+    end
+
+    it 'suffixes generated keys that already exist in the collection' do
+      create(:application_question, container:, key: 'workshop_title', label: 'Workshop title')
+      question = build(:application_question, container:, key: nil, label: 'Workshop Title')
+      expect(question).to be_valid
+      expect(question.key).to eq('workshop_title_2')
+    end
+
+    it 'does not regenerate an existing key when the label changes' do
+      question = create(:application_question, container:, key: 'workshop_title', label: 'Workshop title')
+      question.label = 'Preferred workshop'
+      expect(question).to be_valid
+      expect(question.key).to eq('workshop_title')
+    end
+
+    it 'prefixes generated keys that would otherwise start with a number' do
+      question = build(:application_question, container:, key: nil, label: '2024 Workshop')
+      expect(question).to be_valid
+      expect(question.key).to eq('q_2024_workshop')
+    end
+
+    it 'falls back to a generic key when the label has no usable characters' do
+      question = build(:application_question, container:, key: nil, label: '!!!')
+      expect(question).to be_valid
+      expect(question.key).to eq('custom_question')
+    end
+
     it 'rejects a key that starts with a number' do
       question = build(:application_question, container:, key: '1workshop')
       expect(question).not_to be_valid
@@ -36,6 +74,20 @@ RSpec.describe ApplicationQuestion do
       duplicate = build(:application_question, container:, key: 'workshop_title')
       expect(duplicate).not_to be_valid
       expect(duplicate.errors[:key]).to include('has already been taken')
+    end
+  end
+
+  describe 'field type labels' do
+    it 'uses plain-language names for answer types' do
+      question = build(:application_question, container:, field_type: 'select_with_other')
+
+      expect(question.field_type_label).to eq('Dropdown with Other')
+      expect(described_class.field_type_options).to include(
+        [ 'Short answer (one line)', 'string' ],
+        [ 'Paragraph', 'text' ],
+        [ 'Yes / no', 'boolean' ],
+        [ 'Dropdown (choose one)', 'select' ]
+      )
     end
   end
 

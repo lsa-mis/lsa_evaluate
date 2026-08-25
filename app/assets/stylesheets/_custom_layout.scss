@@ -223,6 +223,55 @@ p {
   font-weight: 700;
 }
 
+.setup-stepper-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.setup-stepper-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+}
+
+.setup-stepper-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 1px solid #6c757d;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.setup-stepper-item--current {
+  color: $um_blue;
+  font-weight: 600;
+}
+
+.setup-stepper-item--current .setup-stepper-number {
+  background-color: $um_blue;
+  border-color: $um_blue;
+  color: #fff;
+}
+
+.setup-stepper-item--complete {
+  color: $lsa_success;
+}
+
+.setup-stepper-item--complete .setup-stepper-number {
+  background-color: $lsa_success;
+  border-color: $lsa_success;
+  color: #fff;
+}
+
 .text-xs {
   font-size: 0.75rem;
   line-height: 1;
@@ -484,6 +533,22 @@ svg.wh6 {
     &:hover {
       background-color: #f0f0f0;
     }
+  }
+}
+
+.section-help-toggle {
+  line-height: 1;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  .bi-chevron-down {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  &:not(.collapsed) .bi-chevron-down {
+    transform: rotate(180deg);
   }
 }
 

@@ -10,6 +10,9 @@ application.register("character-counter", CharacterCounterController)
 import AccessModeController from "./access_mode_controller"
 application.register("access-mode", AccessModeController)
 
+import ApplicationQuestionFormController from "./application_question_form_controller"
+application.register("application-question-form", ApplicationQuestionFormController)
+
 import CheckboxselectController from "./checkboxselect_controller"
 application.register("checkboxselect", CheckboxselectController)
 

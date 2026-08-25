@@ -171,8 +171,9 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
 
         click_button 'Create Contest instance'
 
-        # Should create an active contest instance
+        # Should create an active contest instance and continue setup
         expect(page).to have_content('Contest instance was successfully created')
+        expect(page).to have_content('Review questions')
 
         created_instance = contest_description.contest_instances.last
         expect(created_instance.active).to be true
@@ -207,9 +208,9 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
 
         click_button 'Create Contest instance'
 
-        # Should create an inactive contest instance - check for the instance details instead of success message
-        expect(page).to have_content('Active:')
-        expect(page).to have_content('No') # Active: No
+        # Should create an inactive contest instance and continue setup
+        expect(page).to have_content('Contest instance was successfully created')
+        expect(page).to have_content('Review questions')
 
         created_instance = contest_description.contest_instances.last
         expect(created_instance.active).to be false
@@ -232,8 +233,9 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
 
         click_button 'Create Contest instance'
 
-        # Should create an active instance without confirmation
+        # Should create an active instance without confirmation and continue setup
         expect(page).to have_content('Contest instance was successfully created')
+        expect(page).to have_content('Review questions')
 
         created_instance = contest_description.contest_instances.last
         expect(created_instance.active).to be true

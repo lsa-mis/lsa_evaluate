@@ -3,7 +3,10 @@ class ContestInstancesController < ApplicationController
 
   before_action :set_container
   before_action :set_contest_description
-  before_action :set_contest_instance, only: %i[show edit update destroy send_round_results deactivate regenerate_access_token]
+  before_action :set_contest_instance, only: %i[
+    show edit update destroy send_round_results deactivate regenerate_access_token
+    setup_questions update_setup_questions setup_review_process
+  ]
   before_action :authorize_container_access
 
   # GET /contest_instances
@@ -56,7 +59,9 @@ class ContestInstancesController < ApplicationController
 
     if @contest_instance.save
       sync_application_question_requirements!(@contest_instance, params[:requirements])
-      redirect_to_contest_instance_path
+      redirect_to setup_questions_container_contest_description_contest_instance_path(
+        @container, @contest_description, @contest_instance
+      ), notice: 'Contest instance was successfully created.'
     else
       render :new, status: :unprocessable_entity
     end
@@ -241,6 +246,24 @@ class ContestInstancesController < ApplicationController
     @contest_instance.regenerate_access_token
     redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
                 notice: 'Invite link regenerated. Previous links no longer work.'
+  end
+
+  def setup_questions
+    authorize @contest_instance, :update?
+  end
+
+  def update_setup_questions
+    authorize @contest_instance, :update?
+    sync_application_question_requirements!(@contest_instance, params[:requirements])
+    redirect_to setup_review_process_container_contest_description_contest_instance_path(
+      @container, @contest_description, @contest_instance
+    ), notice: 'Application question requirements were saved.'
+  end
+
+  def setup_review_process
+    authorize @contest_instance, :update?
+    @judging_round = @contest_instance.judging_rounds.build
+    @round_number = @contest_instance.judging_rounds.count + 1
   end
 
   private
