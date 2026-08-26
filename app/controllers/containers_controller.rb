@@ -135,9 +135,9 @@ class ContainersController < ApplicationController
 
           @profiles.each do |profile|
             csv << [
-              profile.last_name,
-              profile.first_name,
-              profile.user.email
+              csv_safe_cell(profile.last_name),
+              csv_safe_cell(profile.first_name),
+              csv_safe_cell(profile.user.email)
             ]
           end
         end
@@ -151,6 +151,15 @@ class ContainersController < ApplicationController
   end
 
   private
+
+  # Neutralize IdP-controlled name/email values so spreadsheet apps treat them as text
+  # rather than formulas when staff open the CSV (CSV injection).
+  def csv_safe_cell(value)
+    text = value.to_s
+    return text if text.empty?
+
+    text.start_with?('=', '+', '-', '@', "\t", "\r") ? "'#{text}" : text
+  end
 
   def set_container
     @container = policy_scope(Container).find(params[:id])
