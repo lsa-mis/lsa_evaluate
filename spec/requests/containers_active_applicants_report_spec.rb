@@ -35,6 +35,20 @@ RSpec.describe 'Containers active applicants report', type: :request do
     expect(csv[2]).to eq(['Zebra', 'Ann', 'zebra@umich.edu'])
   end
 
+  it 'neutralizes formula-like IdP names and emails in the CSV' do
+    create_report_entry!(last_name: '=1+2', first_name: '+Ann', email: '=formula@umich.edu')
+    create_report_entry!(last_name: '-Doe', first_name: 'Zoe', email: '+tagged@umich.edu')
+
+    get active_applicants_report_container_path(container, format: :csv),
+        params: { contest_description_ids: [contest_description.id] }
+
+    expect(response).to have_http_status(:ok)
+
+    csv = CSV.parse(response.body)
+    expect(csv).to include(["'=1+2", "'+Ann", "'=formula@umich.edu"])
+    expect(csv).to include(["'-Doe", 'Zoe', "'+tagged@umich.edu"])
+  end
+
   it 'redirects with an alert when no contest descriptions are selected' do
     get active_applicants_report_container_path(container, format: :csv),
         params: { contest_description_ids: [] }
