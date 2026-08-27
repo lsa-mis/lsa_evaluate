@@ -43,7 +43,8 @@ class EntryAnswersValidator
       cast.nil? ? false : cast
     when 'select_with_other'
       if raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
-        raw.to_h.slice('choice', 'other', :choice, :other).stringify_keys
+        hash = raw.respond_to?(:to_unsafe_h) ? raw.to_unsafe_h : raw.to_h
+        hash.slice('choice', 'other', :choice, :other).stringify_keys
       else
         { 'choice' => raw }
       end

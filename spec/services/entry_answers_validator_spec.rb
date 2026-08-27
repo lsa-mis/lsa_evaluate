@@ -138,6 +138,24 @@ RSpec.describe EntryAnswersValidator do
       ).to be(false)
       expect(entry.errors[:base].join).to include("can't be blank")
     end
+
+    it 'normalizes unpermitted ActionController::Parameters' do
+      params = ActionController::Parameters.new('choice' => 'Friend', 'other' => '')
+      validator = described_class.new(
+        entry:,
+        effective_questions: EffectiveApplicationQuestions.for(contest_instance),
+        answers_params: { referral_question.id.to_s => params }
+      )
+
+      expect(validator.call).to be(true)
+      expect(validator.built_answers.first.value).to eq('choice' => 'Friend', 'other' => '')
+    end
+
+    it 'rejects blank choice from unpermitted ActionController::Parameters' do
+      params = ActionController::Parameters.new('choice' => '', 'other' => '')
+      expect(validate!(referral_question.id.to_s => params)).to be(false)
+      expect(entry.errors[:base].join).to include("can't be blank")
+    end
   end
 
   describe 'campus and school normalization' do
