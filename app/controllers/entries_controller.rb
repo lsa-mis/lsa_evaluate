@@ -195,6 +195,15 @@ class EntriesController < ApplicationController
       raise ActiveRecord::Rollback
     end
 
-    current_user.profile.update!(class_level_id: class_level_id)
+    # Reload profile so an in-memory built entry is not validated during update.
+    profile = Profile.find(current_user.profile.id)
+    return if profile.class_level_id.to_s == class_level_id.to_s
+
+    unless profile.update(class_level_id: class_level_id)
+      @entry.errors.merge!(profile.errors)
+      raise ActiveRecord::Rollback
+    end
+
+    current_user.profile.class_level_id = profile.class_level_id
   end
 end

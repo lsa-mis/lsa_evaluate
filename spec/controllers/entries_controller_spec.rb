@@ -74,6 +74,20 @@ RSpec.describe EntriesController, type: :controller do
       expect(response).to have_http_status(:unprocessable_entity)
       expect(assigns(:entry).errors[:base]).to include('Class level must be confirmed')
     end
+
+    it 'does not raise when confirming class level before validating the entry file' do
+      png = fixture_file_upload(
+        Rails.root.join('spec/support/files/sample_test.png'),
+        'image/png'
+      )
+
+      expect {
+        post :create, params: create_params.merge(entry: create_params[:entry].merge(entry_file: png))
+      }.not_to change(Entry, :count)
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(assigns(:entry).errors[:entry_file]).to include('must be a PDF')
+    end
   end
 
   describe "GET #modal_details" do
