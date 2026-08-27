@@ -57,7 +57,8 @@
         <h3 class="mt-4">Additional Questions</h3>
         <% @effective_questions.each do |effective| %>
           <% question = effective.question %>
-          <% required = effective.status == 'required' %>
+          <% class_level = ClassLevel.find_by(id: @confirmed_class_level_id) %>
+          <% required = application_question_required_for_class_level?(effective, class_level) %>
           <% value = @prefill_values[question.id] %>
           <div class="mb-3">
             <% if question.system_key == 'accepted_financial_aid_notice' %>

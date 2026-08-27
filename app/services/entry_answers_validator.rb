@@ -19,6 +19,7 @@ class EntryAnswersValidator
       @built_answers << answer
 
       next unless effective.status == 'required'
+      next unless question.applies_to_class_level?(class_level_for_validation)
 
       if question.agreement?
         unless answer.agreement_accepted?
@@ -34,14 +35,18 @@ class EntryAnswersValidator
 
   private
 
-  def normalize_value(question, raw)
-    return nil if raw.nil?
+  def class_level_for_validation
+    @class_level_for_validation ||= ClassLevel.find_by(id: @entry.profile.class_level_id)
+  end
 
+  def normalize_value(question, raw)
     case question.field_type
     when 'boolean'
       cast = ActiveModel::Type::Boolean.new.cast(raw)
       cast.nil? ? false : cast
     when 'select_with_other'
+      return nil if raw.nil?
+
       if raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
         hash = raw.respond_to?(:to_unsafe_h) ? raw.to_unsafe_h : raw.to_h
         hash.slice('choice', 'other', :choice, :other).stringify_keys

@@ -102,6 +102,17 @@ class ApplicationQuestion < ApplicationRecord
     AGREEMENT_SYSTEM_KEYS.include?(system_key)
   end
 
+  def applies_to_class_level?(class_level)
+    case system_key
+    when 'department'
+      class_level&.graduate?
+    when 'major'
+      class_level&.undergraduate?
+    else
+      true
+    end
+  end
+
   def self.seed_system_questions_for!(container)
     SYSTEM_QUESTION_DEFINITIONS.each_with_index do |definition, index|
       question = container.application_questions.find_or_initialize_by(system_key: definition[:system_key])

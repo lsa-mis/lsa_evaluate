@@ -140,4 +140,24 @@ RSpec.describe ApplicationQuestion do
       expect(question.position).to eq(max_position + 1)
     end
   end
+
+  describe '#applies_to_class_level?' do
+    let(:graduate) { build(:class_level, name: 'Graduate') }
+    let(:undergraduate) { build(:class_level, name: 'First year') }
+    let(:department_question) { container.application_questions.find_by!(system_key: 'department') }
+    let(:major_question) { container.application_questions.find_by!(system_key: 'major') }
+    let(:degree_question) { container.application_questions.find_by!(system_key: 'degree') }
+
+    it 'limits department to graduate students and major to undergraduates' do
+      expect(department_question.applies_to_class_level?(graduate)).to be(true)
+      expect(department_question.applies_to_class_level?(undergraduate)).to be(false)
+      expect(major_question.applies_to_class_level?(undergraduate)).to be(true)
+      expect(major_question.applies_to_class_level?(graduate)).to be(false)
+    end
+
+    it 'does not limit other system questions by class level' do
+      expect(degree_question.applies_to_class_level?(graduate)).to be(true)
+      expect(degree_question.applies_to_class_level?(undergraduate)).to be(true)
+    end
+  end
 end

@@ -18,6 +18,12 @@ module ApplicationQuestionsHelper
     end
   end
 
+  def application_question_required_for_class_level?(effective, class_level)
+    return false unless effective.status == 'required'
+
+    effective.question.applies_to_class_level?(class_level)
+  end
+
   def render_application_question_field(form_builder_or_nil, question:, name:, value: nil, required: false)
     field_name = name
     case question.field_type

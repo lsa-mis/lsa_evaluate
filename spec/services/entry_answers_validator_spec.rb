@@ -99,6 +99,13 @@ RSpec.describe EntryAnswersValidator do
       validator.call
       expect(validator.built_answers.first.value).to be(false)
     end
+
+    it 'treats a missing boolean answer as false for required validation' do
+      financial_aid_question = container.application_questions.find_by!(system_key: 'receiving_financial_aid')
+      require_question!(financial_aid_question)
+
+      expect(validate!({})).to be(true)
+    end
   end
 
   describe 'select_with_other normalization' do
@@ -195,6 +202,37 @@ RSpec.describe EntryAnswersValidator do
       values = validator.built_answers.index_by { |a| a.application_question.system_key }
       expect(values['campus'].value).to be_nil
       expect(values['school'].value).to be_nil
+    end
+  end
+
+  describe 'class-level scoped questions' do
+    let!(:department_question) { container.application_questions.find_by!(system_key: 'department') }
+    let!(:major_question) { container.application_questions.find_by!(system_key: 'major') }
+    let(:undergraduate_level) { create(:class_level, name: 'First year') }
+    let(:graduate_level) { create(:class_level, name: 'Graduate') }
+
+    before do
+      require_question!(department_question)
+      require_question!(major_question)
+    end
+
+    it 'does not require department for undergraduates' do
+      entry.profile.class_level = undergraduate_level
+
+      expect(validate!({ major_question.id.to_s => 'English' })).to be(true)
+    end
+
+    it 'does not require major for graduate students' do
+      entry.profile.class_level = graduate_level
+
+      expect(validate!(department_question.id.to_s => 'English')).to be(true)
+    end
+
+    it 'still requires department for graduate students' do
+      entry.profile.class_level = graduate_level
+
+      expect(validate!({})).to be(false)
+      expect(entry.errors[:base].join).to include('Department (if graduate)')
     end
   end
 
