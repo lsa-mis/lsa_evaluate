@@ -61,4 +61,23 @@ RSpec.describe ApplicationQuestionPrefill do
     values = described_class.for(profile:, questions: [ question_b ])
     expect(values[question_b.id]).to eq('MFA')
   end
+
+  it 'prefills false boolean values from the profile' do
+    profile.update!(campus_employee: false, receiving_financial_aid: false)
+    campus_employee = container_a.application_questions.find_by!(system_key: 'campus_employee')
+    receiving_financial_aid = container_a.application_questions.find_by!(system_key: 'receiving_financial_aid')
+
+    values = described_class.for(profile:, questions: [ campus_employee, receiving_financial_aid ])
+
+    expect(values[campus_employee.id]).to be(false)
+    expect(values[receiving_financial_aid.id]).to be(false)
+  end
+
+  it 'prefills true boolean values from the profile' do
+    profile.update!(campus_employee: true, receiving_financial_aid: true)
+    campus_employee = container_a.application_questions.find_by!(system_key: 'campus_employee')
+
+    values = described_class.for(profile:, questions: [ campus_employee ])
+    expect(values[campus_employee.id]).to be(true)
+  end
 end

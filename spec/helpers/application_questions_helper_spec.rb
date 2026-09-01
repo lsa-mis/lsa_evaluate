@@ -131,5 +131,25 @@ RSpec.describe ApplicationQuestionsHelper, type: :helper do
       expect(yes_html).to match(/value="1"[^>]*checked="checked"|checked="checked"[^>]*value="1"/)
       expect(no_html).to match(/value="0"[^>]*checked="checked"|checked="checked"[^>]*value="0"/)
     end
+
+    it 'renders agreement checkboxes for custom booleans with requires_acceptance' do
+      question = create(
+        :application_question,
+        container:,
+        field_type: 'boolean',
+        label: 'I certify this work',
+        key: 'certify_work',
+        options: { 'requires_acceptance' => true }
+      )
+      html = helper.render_application_question_field(
+        nil,
+        question: question,
+        name: 'answers[certify_work]',
+        value: nil
+      ).to_s
+
+      expect(html).to include('type="checkbox"')
+      expect(html).not_to include('type="radio"')
+    end
   end
 end
