@@ -30,6 +30,15 @@
       </div>
     </div>
 
+    <% if (content = render_editable_content('judge_dashboard', 'session_timeout_guidance')) %>
+      <div class="row mx-4 mb-4">
+        <%= render 'shared/collapsible_instructions',
+                   heading: 'Session timeout information',
+                   content: content,
+                   collapse_id: 'judge-dashboard-session-timeout-help' %>
+      </div>
+    <% end %>
+
     <h3>
       Hello <%= "#{current_user.first_name} #{current_user.last_name}!" %>
       <span class="text-muted small"

@@ -4,7 +4,16 @@
   <%#= link_to "Return to Instance", container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), class: "link_to" %>
 </div>
 <% if (content = render_editable_content('judging_assignments', 'instructions')) %>
-    <%= content %>
+  <%= render 'shared/collapsible_instructions',
+             heading: 'Manage Judging instructions',
+             content: content,
+             collapse_id: 'judging-assignments-instructions-help' %>
+<% end %>
+<% if (content = render_editable_content('judging_assignments', 'session_timeout_guidance')) %>
+  <%= render 'shared/collapsible_instructions',
+             heading: 'Judge session timeout guidance',
+             content: content,
+             collapse_id: 'judging-assignments-session-timeout-help' %>
 <% end %>
 
 <nav aria-label="breadcrumb">
