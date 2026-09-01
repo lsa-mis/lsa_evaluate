@@ -141,7 +141,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
         }
       }.not_to change(ApplicationQuestion, :count)
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response).to render_template(:new)
     end
 
@@ -321,7 +321,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
         application_question_ids: [question.id, other_question.id]
       }, format: :json
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(question.reload.position).to eq(0)
     end
   end

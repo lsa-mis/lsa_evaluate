@@ -62,7 +62,7 @@ RSpec.describe EntriesController, type: :controller do
         post :create, params: create_params(answers: {})
       }.not_to change(Entry, :count)
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(EntryAnswer.count).to eq(0)
     end
 
@@ -71,7 +71,7 @@ RSpec.describe EntriesController, type: :controller do
         post :create, params: create_params(class_level_id: nil)
       }.not_to change(Entry, :count)
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(assigns(:entry).errors[:base]).to include('Class level must be confirmed')
     end
 
@@ -85,7 +85,7 @@ RSpec.describe EntriesController, type: :controller do
         post :create, params: create_params.merge(entry: create_params[:entry].merge(entry_file: png))
       }.not_to change(Entry, :count)
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(assigns(:entry).errors[:entry_file]).to include('must be a PDF')
     end
 
@@ -99,7 +99,7 @@ RSpec.describe EntriesController, type: :controller do
         answers: { pen_name_question.id => 'A. Poet' }
       ).merge(entry: create_params[:entry].merge(entry_file: png))
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(assigns(:prefill_values)[pen_name_question.id]).to eq('A. Poet')
     end
 
@@ -114,7 +114,7 @@ RSpec.describe EntriesController, type: :controller do
         answers: { pen_name_question.id => 'A. Poet' }
       ).merge(entry: create_params[:entry].merge(entry_file: png))
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(assigns(:prefill_values)[pen_name_question.id]).to eq('A. Poet')
     end
 
@@ -161,7 +161,7 @@ RSpec.describe EntriesController, type: :controller do
           post :create, params: boolean_create_params(sole_author_question.id => '1')
         }.not_to change(Entry, :count)
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(assigns(:entry).errors[:base].join).to include("can't be blank")
       end
 
@@ -173,7 +173,7 @@ RSpec.describe EntriesController, type: :controller do
           )
         }.not_to change(Entry, :count)
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(assigns(:entry).errors[:base].join).to include('must be accepted')
       end
     end

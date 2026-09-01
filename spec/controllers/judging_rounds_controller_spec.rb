@@ -97,7 +97,7 @@ RSpec.describe JudgingRoundsController, type: :controller do
         }
       }.not_to change(JudgingRound, :count)
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response).to render_template('contest_instances/setup_review_process')
     end
   end
