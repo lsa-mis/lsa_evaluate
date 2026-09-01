@@ -141,6 +141,31 @@ RSpec.describe ApplicationQuestion do
     end
   end
 
+  describe '#requires_acceptance?' do
+    it 'treats system agreement questions as requiring acceptance' do
+      agreement = container.application_questions.find_by!(system_key: 'accepted_financial_aid_notice')
+      sole_author = container.application_questions.find_by!(system_key: 'submission_sole_author')
+      campus_employee = container.application_questions.find_by!(system_key: 'campus_employee')
+
+      expect(agreement).to be_requires_acceptance
+      expect(sole_author).to be_requires_acceptance
+      expect(campus_employee).not_to be_requires_acceptance
+    end
+
+    it 'supports requires_acceptance on custom boolean questions' do
+      question = create(
+        :application_question,
+        container:,
+        field_type: 'boolean',
+        label: 'I certify this work',
+        key: 'certify_work',
+        options: { 'requires_acceptance' => true }
+      )
+
+      expect(question).to be_requires_acceptance
+    end
+  end
+
   describe '#applies_to_class_level?' do
     let(:graduate) { build(:class_level, name: 'Graduate') }
     let(:undergraduate) { build(:class_level, name: 'First year') }

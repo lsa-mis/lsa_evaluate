@@ -81,7 +81,7 @@
               <div class="form-text mb-1"><%= question.help_text %></div>
             <% end %>
 
-            <% if question.field_type == 'boolean' %>
+            <% if question.field_type == 'boolean' && question.requires_acceptance? %>
               <div class="form-check">
                 <%= render_application_question_field(
                       nil,

@@ -37,6 +37,25 @@
     </div>
   <% end %>
 
+  <% if @application_question.custom? %>
+    <div class="mb-3 <%= 'd-none' unless @application_question.field_type == 'boolean' %>"
+         data-application-question-form-target="requiresAcceptance">
+      <div class="form-check">
+        <%= check_box_tag 'application_question[options][requires_acceptance]',
+                          '1',
+                          ActiveModel::Type::Boolean.new.cast(@application_question.options&.dig('requires_acceptance')),
+                          class: 'form-check-input',
+                          id: 'application_question_options_requires_acceptance' %>
+        <%= label_tag 'application_question_options_requires_acceptance',
+                      'Requires explicit acceptance (agreement-style)',
+                      class: 'form-check-label' %>
+      </div>
+      <div class="form-text">
+        When checked, applicants must tick a single checkbox to accept. Otherwise they choose Yes or No.
+      </div>
+    </div>
+  <% end %>
+
   <div class="form-actions">
     <%= f.button :submit, class: 'btn btn-primary' %>
     <%= link_to 'Cancel', container_application_questions_path(@container), class: 'text-danger link_to' %>

@@ -11,19 +11,21 @@ RSpec.describe EntryAnswersValidator do
   let(:entry) { build(:entry, category:, contest_instance:, profile:, pen_name: nil) }
 
   def require_question!(question)
-    ApplicationQuestionRequirement.create!(
+    requirement = ApplicationQuestionRequirement.find_or_initialize_by(
       application_question: question,
-      requireable: contest_instance,
-      status: 'required'
+      requireable: contest_instance
     )
+    requirement.status = 'required'
+    requirement.save!
   end
 
   def optional_question!(question)
-    ApplicationQuestionRequirement.create!(
+    requirement = ApplicationQuestionRequirement.find_or_initialize_by(
       application_question: question,
-      requireable: contest_instance,
-      status: 'optional'
+      requireable: contest_instance
     )
+    requirement.status = 'optional'
+    requirement.save!
   end
 
   def validate!(answers_params)
@@ -100,11 +102,27 @@ RSpec.describe EntryAnswersValidator do
       expect(validator.built_answers.first.value).to be(false)
     end
 
-    it 'treats a missing boolean answer as false for required validation' do
-      financial_aid_question = container.application_questions.find_by!(system_key: 'receiving_financial_aid')
-      require_question!(financial_aid_question)
+    it 'defaults optional missing boolean answers to false' do
+      validator = described_class.new(
+        entry:,
+        effective_questions: EffectiveApplicationQuestions.for(contest_instance),
+        answers_params: {}
+      )
+      validator.call
+      expect(validator.built_answers.find { |a| a.application_question_id == boolean_question.id }.value).to be(false)
+    end
 
-      expect(validate!({})).to be(true)
+    it 'rejects a missing answer for a required non-agreement boolean' do
+      require_question!(boolean_question)
+
+      expect(validate!({})).to be(false)
+      expect(entry.errors[:base].join).to include("can't be blank")
+    end
+
+    it 'accepts an explicit No for a required non-agreement boolean' do
+      require_question!(boolean_question)
+
+      expect(validate!(boolean_question.id.to_s => '0')).to be(true)
     end
   end
 
