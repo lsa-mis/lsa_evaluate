@@ -170,8 +170,7 @@ RSpec.describe 'Judging Rounds', type: :system do
 
       # Find and click the Activate button for the inactive round
       within('.judging-rounds') do
-        # Find the last card (which should be the inactive round)
-        within('.card:last-child') do
+        within('.judging-round-item:last-child') do
           click_button 'Activate'
         end
       end
