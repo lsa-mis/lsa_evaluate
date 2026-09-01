@@ -89,6 +89,35 @@ RSpec.describe EntriesController, type: :controller do
       expect(assigns(:entry).errors[:entry_file]).to include('must be a PDF')
     end
 
+    it 'preserves submitted application answers on failed create' do
+      png = fixture_file_upload(
+        Rails.root.join('spec/support/files/sample_test.png'),
+        'image/png'
+      )
+
+      post :create, params: create_params(
+        answers: { pen_name_question.id => 'A. Poet' }
+      ).merge(entry: create_params[:entry].merge(entry_file: png))
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(assigns(:prefill_values)[pen_name_question.id]).to eq('A. Poet')
+    end
+
+    it 'preserves submitted answers over profile prefill on failed create' do
+      profile.update!(pen_name: 'Ink')
+      png = fixture_file_upload(
+        Rails.root.join('spec/support/files/sample_test.png'),
+        'image/png'
+      )
+
+      post :create, params: create_params(
+        answers: { pen_name_question.id => 'A. Poet' }
+      ).merge(entry: create_params[:entry].merge(entry_file: png))
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(assigns(:prefill_values)[pen_name_question.id]).to eq('A. Poet')
+    end
+
     context 'with required boolean application questions' do
       let(:campus_employee_question) { container.application_questions.find_by!(system_key: 'campus_employee') }
       let(:sole_author_question) { container.application_questions.find_by!(system_key: 'submission_sole_author') }

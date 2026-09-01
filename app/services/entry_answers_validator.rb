@@ -14,7 +14,7 @@ class EntryAnswersValidator
     @effective_questions.each do |effective|
       question = effective.question
       raw = @answers_params[question.id.to_s] || @answers_params[question.id]
-      normalized = normalize_value(question, raw)
+      normalized = EntryAnswerParamNormalizer.normalize(question, raw)
       normalized = false if question.field_type == 'boolean' && normalized.nil? && effective.status != 'required'
       answer = EntryAnswer.new(application_question: question, value: normalized)
       @built_answers << answer
@@ -40,27 +40,4 @@ class EntryAnswersValidator
     @class_level_for_validation ||= ClassLevel.find_by(id: @entry.profile.class_level_id)
   end
 
-  def normalize_value(question, raw)
-    case question.field_type
-    when 'boolean'
-      return nil if raw.nil? || raw == ''
-
-      ActiveModel::Type::Boolean.new.cast(raw)
-    when 'select_with_other'
-      return nil if raw.nil?
-
-      if raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
-        hash = raw.respond_to?(:to_unsafe_h) ? raw.to_unsafe_h : raw.to_h
-        hash.slice('choice', 'other', :choice, :other).stringify_keys
-      else
-        { 'choice' => raw }
-      end
-    when 'campus', 'school'
-      raw.presence&.to_i
-    when 'date'
-      raw.presence
-    else
-      raw.presence
-    end
-  end
 end
