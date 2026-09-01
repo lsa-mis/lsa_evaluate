@@ -64,6 +64,12 @@ application.register("judging-round-form", JudgingRoundFormController)
 import JudgingRoundShowController from "./judging_round_show_controller"
 application.register("judging-round-show", JudgingRoundShowController)
 
+import JudgingWindowCascadeController from "./judging_window_cascade_controller"
+application.register("judging-window-cascade", JudgingWindowCascadeController)
+
+import SessionWarningController from "./session_warning_controller"
+application.register("session-warning", SessionWarningController)
+
 import ModalController from "./modal_controller"
 application.register("modal", ModalController)
 

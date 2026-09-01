@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   end
 
   get 'judge_dashboard', to: 'judge_dashboard#index'
+  get 'session/heartbeat', to: 'users/sessions#heartbeat'
 
   resources :judging_rounds, only: [ :show ] do
     member do
@@ -73,6 +74,7 @@ Rails.application.routes.draw do
             patch :uncomplete
             post :send_instructions
             post :notify_completed
+            post :preview_dates
           end
           post 'update_rankings', on: :member
           post 'finalize_rankings', on: :member
@@ -101,6 +103,11 @@ Rails.application.routes.draw do
       end
     end
     resources :bulk_contest_instances, only: [ :new, :create ]
+    resources :bulk_judging_windows, only: [ :new, :create ] do
+      collection do
+        post :preview
+      end
+    end
     collection do
       get 'lookup_user'
     end

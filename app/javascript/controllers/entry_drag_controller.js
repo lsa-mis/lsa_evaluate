@@ -100,6 +100,19 @@ export default class extends Controller {
 
     this.initializeSortable()
     this.initializeCommentListeners()
+    this.unsavedComments = false
+    this.beforeUnloadHandler = (event) => {
+      if (this.unsavedComments) {
+        event.preventDefault()
+        event.returnValue = ""
+      }
+    }
+    window.addEventListener("beforeunload", this.beforeUnloadHandler)
+    this.element.addEventListener("input", (event) => {
+      if (event.target.matches('textarea[name="internal_comments"], textarea[name="external_comments"]')) {
+        this.unsavedComments = true
+      }
+    })
 
     // Restore accordion state and scroll position if they exist
     const accordionId = accordionSection.id
@@ -289,6 +302,7 @@ export default class extends Controller {
       })
 
       if (!response.ok) {
+        if (this.handleSessionExpired(response)) return
         throw new Error('Network response was not ok')
       }
 
@@ -296,6 +310,8 @@ export default class extends Controller {
       if (!data.success) {
         throw new Error(data.error || 'Failed to update rankings')
       }
+
+      this.unsavedComments = false
 
       // Show success state so judges see "Ranking recorded" before refresh
       this.showSuccessOverlay(event.item)
@@ -409,8 +425,11 @@ export default class extends Controller {
       })
 
       if (!response.ok) {
+        if (this.handleSessionExpired(response)) return
         throw new Error('Network response was not ok')
       }
+
+      this.unsavedComments = false
 
       // Update saving indicator to show success briefly
       savingIndicator.textContent = 'Saved!'
@@ -577,6 +596,19 @@ export default class extends Controller {
       overlay.classList.remove('show')
       // Remove overlay after transition completes
       setTimeout(removeOverlayAndClass, 300)
+    }
+  }
+
+  handleSessionExpired(response) {
+    if (response.status !== 401) return false
+
+    window.location.href = "/users/sign_in"
+    return true
+  }
+
+  disconnect() {
+    if (this.beforeUnloadHandler) {
+      window.removeEventListener("beforeunload", this.beforeUnloadHandler)
     }
   }
 }

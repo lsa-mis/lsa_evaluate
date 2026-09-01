@@ -20,6 +20,13 @@
             <% end %>
           <% end %>
 
+          <% if policy(@container).manage_judging? %>
+            <%= link_to new_container_bulk_judging_window_path(@container),
+                        class: 'btn btn-sm btn-outline-primary' do %>
+              <i class="bi bi-calendar-range me-1" aria-hidden="true"></i> Bulk Update Judging Windows
+            <% end %>
+          <% end %>
+
           <% if policy(@container).update? %>
             <%= link_to edit_container_path(@container),
                         class: 'btn btn-sm btn-outline-primary' do %>

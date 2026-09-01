@@ -23,8 +23,10 @@
         model: [@container, @contest_description, @contest_instance, @judging_round],
         local: true,
         data: {
-          controller: "judging-round-form",
-          "judging-round-form-target": "form"
+          controller: "judging-round-form judging-window-cascade",
+          "judging-round-form-target": "form",
+          "judging-window-cascade-preview-url-value": preview_dates_container_contest_description_contest_instance_judging_round_path(@container, @contest_description, @contest_instance, @judging_round),
+          "judging-window-cascade-single-round-value": "true"
         }
       ) do |f| %>
         <% if @judging_round.errors.any? %>
@@ -52,12 +54,41 @@
 
         <div class="form-group mt-3">
           <%= f.label :start_date %>
-          <%= f.datetime_local_field :start_date, class: 'form-control' %>
+          <%= f.datetime_local_field :start_date, class: 'form-control',
+              data: {
+                judging_window_cascade_target: "startDate",
+                action: "change->judging-window-cascade#schedulePreview input->judging-window-cascade#schedulePreview"
+              } %>
         </div>
 
         <div class="form-group mt-3">
           <%= f.label :end_date %>
-          <%= f.datetime_local_field :end_date, class: 'form-control' %>
+          <%= f.datetime_local_field :end_date, class: 'form-control',
+              data: {
+                judging_window_cascade_target: "endDate",
+                action: "change->judging-window-cascade#schedulePreview input->judging-window-cascade#schedulePreview"
+              } %>
+        </div>
+
+        <div class="card mt-3 mb-3">
+          <div class="card-body">
+            <div class="form-check mb-3">
+              <%= check_box_tag :cascade_following_rounds, '1', true, class: 'form-check-input', id: 'cascade_following_rounds' %>
+              <%= label_tag :cascade_following_rounds, 'Automatically adjust following round dates', class: 'form-check-label' %>
+            </div>
+            <%= label_tag :cascade_mode, 'Cascade mode', class: 'form-label' %>
+            <%= select_tag :cascade_mode,
+                  options_for_select([
+                    ['Minimum bump (next round starts when previous ends)', 'minimum_bump'],
+                    ['Preserve gaps (keep original spacing between rounds)', 'preserve_gaps']
+                  ], 'minimum_bump'),
+                  class: 'form-select',
+                  data: {
+                    judging_window_cascade_target: "cascadeMode",
+                    action: "change->judging-window-cascade#schedulePreview"
+                  } %>
+            <%= render "bulk_judging_windows/cascade_preview" %>
+          </div>
         </div>
 
         <div class="form-group mt-3">

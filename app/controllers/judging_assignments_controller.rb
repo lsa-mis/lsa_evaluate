@@ -5,6 +5,7 @@ class JudgingAssignmentsController < ApplicationController
 
   def index
     @judging_assignments = @contest_instance.judging_assignments.includes(:user)
+    @judging_rounds = @contest_instance.judging_rounds.order(:round_number)
     @available_judges = User.joins(:roles).where(roles: { kind: 'Judge' })
                           .where.not(id: @judging_assignments.pluck(:user_id))
   end
@@ -13,6 +14,7 @@ class JudgingAssignmentsController < ApplicationController
     @judging_assignment = @contest_instance.judging_assignments.build(judging_assignment_params)
 
     if @judging_assignment.save
+      assign_judge_to_rounds(@judging_assignment.user)
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
       ), notice: 'Judge was successfully assigned.'
@@ -125,6 +127,7 @@ class JudgingAssignmentsController < ApplicationController
     end
 
     if success
+      assign_judge_to_rounds(@user)
       redirect_to container_contest_description_contest_instance_judging_assignments_path(
         @container, @contest_description, @contest_instance
       ), notice: 'Judge was successfully created/updated and assigned.'
@@ -170,5 +173,14 @@ class JudgingAssignmentsController < ApplicationController
 
   def judging_assignment_params
     params.require(:judging_assignment).permit(:user_id, :active)
+  end
+
+  def assign_judge_to_rounds(user)
+    round_ids = Array(params[:judging_round_ids]).reject(&:blank?)
+    return if round_ids.empty?
+
+    @contest_instance.judging_rounds.where(id: round_ids).find_each do |round|
+      round.round_judge_assignments.find_or_create_by!(user: user)
+    end
   end
 end
