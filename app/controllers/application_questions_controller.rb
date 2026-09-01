@@ -97,16 +97,31 @@ class ApplicationQuestionsController < ApplicationController
     params.require(:application_question).permit(
       :label, :help_text, :field_type, :active, options: {}
     ).tap do |permitted|
-      if permitted[:options].is_a?(ActionController::Parameters) || permitted[:options].is_a?(Hash)
-        choices = permitted.dig(:options, :choices) || permitted.dig(:options, 'choices')
-        if choices.is_a?(String)
-          permitted[:options] = { 'choices' => choices.split("\n").map(&:strip).reject(&:blank?) }
-        end
-      end
+      normalize_question_options!(permitted)
     end
   end
 
   def application_question_update_params
     application_question_params.except(:field_type)
+  end
+
+  def normalize_question_options!(permitted)
+    return if permitted[:options].blank?
+
+    options = permitted[:options]
+    options = options.to_h.stringify_keys if options.is_a?(ActionController::Parameters)
+    options = options.stringify_keys if options.is_a?(Hash)
+
+    if options['choices'].is_a?(String)
+      options['choices'] = options['choices'].split("\n").map(&:strip).reject(&:blank?)
+    end
+
+    if options.key?('requires_acceptance')
+      options['requires_acceptance'] = options['requires_acceptance'] == '1' || options['requires_acceptance'] == true
+    elsif @application_question&.field_type == 'boolean' && @application_question&.custom?
+      options['requires_acceptance'] = false
+    end
+
+    permitted[:options] = options
   end
 end

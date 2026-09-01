@@ -88,6 +88,66 @@ RSpec.describe EntriesController, type: :controller do
       expect(response).to have_http_status(:unprocessable_entity)
       expect(assigns(:entry).errors[:entry_file]).to include('must be a PDF')
     end
+
+    context 'with required boolean application questions' do
+      let(:campus_employee_question) { container.application_questions.find_by!(system_key: 'campus_employee') }
+      let(:sole_author_question) { container.application_questions.find_by!(system_key: 'submission_sole_author') }
+
+      before do
+        ApplicationQuestionRequirement.create!(
+          application_question: campus_employee_question,
+          requireable: contest_instance,
+          status: 'required'
+        )
+        ApplicationQuestionRequirement.create!(
+          application_question: sole_author_question,
+          requireable: contest_instance,
+          status: 'required'
+        )
+      end
+
+      def boolean_create_params(entry_answers)
+        create_params(answers: {
+          pen_name_question.id => 'A. Poet',
+          **entry_answers
+        })
+      end
+
+      it 'creates the entry when required yes/no and agreement answers are provided' do
+        expect {
+          post :create, params: boolean_create_params(
+            campus_employee_question.id => '0',
+            sole_author_question.id => '1'
+          )
+        }.to change(Entry, :count).by(1)
+         .and change(EntryAnswer, :count).by(3)
+
+        entry = Entry.order(:id).last
+        expect(entry.entry_answers.find_by!(application_question: campus_employee_question).value).to be(false)
+        expect(entry.entry_answers.find_by!(application_question: sole_author_question).value).to be(true)
+      end
+
+      it 'does not create the entry when a required yes/no answer is missing' do
+        expect {
+          post :create, params: boolean_create_params(sole_author_question.id => '1')
+        }.not_to change(Entry, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(assigns(:entry).errors[:base].join).to include("can't be blank")
+      end
+
+      it 'does not create the entry when a required agreement is unchecked' do
+        expect {
+          post :create, params: boolean_create_params(
+            campus_employee_question.id => '1',
+            sole_author_question.id => '0'
+          )
+        }.not_to change(Entry, :count)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(assigns(:entry).errors[:base].join).to include('must be accepted')
+      end
+    end
   end
 
   describe "GET #modal_details" do

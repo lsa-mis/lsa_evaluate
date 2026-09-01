@@ -77,22 +77,79 @@ RSpec.describe ApplicationQuestionsHelper, type: :helper do
     end
 
     it 'casts boolean answers for checkbox checked state' do
-      question = container.application_questions.find_by!(system_key: 'campus_employee')
+      question = container.application_questions.find_by!(system_key: 'accepted_financial_aid_notice')
       checked = helper.render_application_question_field(
         nil,
         question: question,
-        name: 'answers[campus_employee]',
+        name: 'answers[accepted_financial_aid_notice]',
         value: '1'
       ).to_s
       unchecked = helper.render_application_question_field(
         nil,
         question: question,
-        name: 'answers[campus_employee]',
+        name: 'answers[accepted_financial_aid_notice]',
         value: '0'
       ).to_s
 
       expect(checked).to include('checked="checked"')
       expect(unchecked).not_to include('checked="checked"')
+    end
+
+    it 'renders yes/no radio buttons for non-agreement booleans' do
+      question = container.application_questions.find_by!(system_key: 'campus_employee')
+      html = helper.render_application_question_field(
+        nil,
+        question: question,
+        name: 'answers[campus_employee]',
+        value: nil,
+        required: true
+      ).to_s
+
+      expect(html).to include('type="radio"')
+      expect(html).to include('value="1"')
+      expect(html).to include('value="0"')
+      expect(html).to include('>Yes<')
+      expect(html).to include('>No<')
+      expect(html).not_to include('checked="checked"')
+    end
+
+    it 'selects the correct yes/no radio when a value is present' do
+      question = container.application_questions.find_by!(system_key: 'campus_employee')
+      yes_html = helper.render_application_question_field(
+        nil,
+        question: question,
+        name: 'answers[campus_employee]',
+        value: true
+      ).to_s
+      no_html = helper.render_application_question_field(
+        nil,
+        question: question,
+        name: 'answers[campus_employee]',
+        value: false
+      ).to_s
+
+      expect(yes_html).to match(/value="1"[^>]*checked="checked"|checked="checked"[^>]*value="1"/)
+      expect(no_html).to match(/value="0"[^>]*checked="checked"|checked="checked"[^>]*value="0"/)
+    end
+
+    it 'renders agreement checkboxes for custom booleans with requires_acceptance' do
+      question = create(
+        :application_question,
+        container:,
+        field_type: 'boolean',
+        label: 'I certify this work',
+        key: 'certify_work',
+        options: { 'requires_acceptance' => true }
+      )
+      html = helper.render_application_question_field(
+        nil,
+        question: question,
+        name: 'answers[certify_work]',
+        value: nil
+      ).to_s
+
+      expect(html).to include('type="checkbox"')
+      expect(html).not_to include('type="radio"')
     end
   end
 end

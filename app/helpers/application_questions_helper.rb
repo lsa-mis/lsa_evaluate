@@ -28,8 +28,11 @@ module ApplicationQuestionsHelper
     field_name = name
     case question.field_type
     when 'boolean'
-      check_box_tag field_name, '1', ActiveModel::Type::Boolean.new.cast(value),
-                    class: 'form-check-input', id: dom_id(question, :answer), required: false
+      if question.requires_acceptance?
+        render_agreement_checkbox(field_name, question, value)
+      else
+        render_yes_no_radios(field_name, question, value, required:)
+      end
     when 'text'
       text_area_tag field_name, value, class: 'form-control', rows: 3, required: required, id: dom_id(question, :answer)
     when 'date'
@@ -59,5 +62,32 @@ module ApplicationQuestionsHelper
     else
       text_field_tag field_name, value, class: 'form-control', required: required, id: dom_id(question, :answer)
     end
+  end
+
+  private
+
+  def render_agreement_checkbox(field_name, question, value)
+    check_box_tag field_name, '1', ActiveModel::Type::Boolean.new.cast(value),
+                  class: 'form-check-input', id: dom_id(question, :answer), required: false
+  end
+
+  def render_yes_no_radios(field_name, question, value, required:)
+    cast_value = value.nil? ? nil : ActiveModel::Type::Boolean.new.cast(value)
+    safe_join([
+      content_tag(:div, class: 'form-check form-check-inline') do
+        safe_join([
+          radio_button_tag(field_name, '1', cast_value == true,
+                           class: 'form-check-input', id: dom_id(question, :answer_yes), required: required),
+          label_tag(dom_id(question, :answer_yes), 'Yes', class: 'form-check-label')
+        ])
+      end,
+      content_tag(:div, class: 'form-check form-check-inline') do
+        safe_join([
+          radio_button_tag(field_name, '0', cast_value == false,
+                           class: 'form-check-input', id: dom_id(question, :answer_no), required: required),
+          label_tag(dom_id(question, :answer_no), 'No', class: 'form-check-label')
+        ])
+      end
+    ])
   end
 end

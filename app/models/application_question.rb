@@ -18,6 +18,7 @@ class ApplicationQuestion < ApplicationRecord
 
   AGREEMENT_SYSTEM_KEYS = %w[
     accepted_financial_aid_notice
+    submission_sole_author
     submission_acknowledgement_agreement
   ].freeze
 
@@ -99,7 +100,13 @@ class ApplicationQuestion < ApplicationRecord
   end
 
   def agreement?
-    AGREEMENT_SYSTEM_KEYS.include?(system_key)
+    requires_acceptance?
+  end
+
+  def requires_acceptance?
+    return true if system_key.present? && AGREEMENT_SYSTEM_KEYS.include?(system_key)
+
+    field_type == 'boolean' && ActiveModel::Type::Boolean.new.cast(options&.dig('requires_acceptance'))
   end
 
   def applies_to_class_level?(class_level)

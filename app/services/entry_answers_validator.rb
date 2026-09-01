@@ -15,6 +15,7 @@ class EntryAnswersValidator
       question = effective.question
       raw = @answers_params[question.id.to_s] || @answers_params[question.id]
       normalized = normalize_value(question, raw)
+      normalized = false if question.field_type == 'boolean' && normalized.nil? && effective.status != 'required'
       answer = EntryAnswer.new(application_question: question, value: normalized)
       @built_answers << answer
 
@@ -42,8 +43,9 @@ class EntryAnswersValidator
   def normalize_value(question, raw)
     case question.field_type
     when 'boolean'
-      cast = ActiveModel::Type::Boolean.new.cast(raw)
-      cast.nil? ? false : cast
+      return nil if raw.nil? || raw == ''
+
+      ActiveModel::Type::Boolean.new.cast(raw)
     when 'select_with_other'
       return nil if raw.nil?
 
