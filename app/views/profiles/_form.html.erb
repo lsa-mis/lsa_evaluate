@@ -6,58 +6,53 @@
         <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
         <div class="form-inputs">
-          <h2 class="mt-4">Contact Information</h2>
-          <div class= "ms-4">
+          <h2 class="mt-4">Identity</h2>
+          <div class="ms-4">
+            <%= f.input :user_id, as: :hidden, input_html: { value: current_user.id } %>
+
             <div class="row">
-              <%= f.input :user_id, as: :hidden, input_html: { value: current_user.id } %>
-            <div class="row"><small class="fw-light">(Your preferred name will also be used as your name for publication.)</small></div>
-            <div class="col">
-              <%= f.input :preferred_first_name, input_html: { value: @profile.preferred_first_name.presence || current_user.first_name } %>
+              <div class="col">
+                <%= f.input :legal_first_name,
+                            label: 'Legal first name',
+                            input_html: { value: @profile.legal_first_name.presence || current_user.first_name } %>
+              </div>
+              <div class="col">
+                <%= f.input :legal_last_name,
+                            label: 'Legal last name',
+                            input_html: { value: @profile.legal_last_name.presence || current_user.last_name } %>
+              </div>
             </div>
 
-            <div class="col">
-              <%= f.input :preferred_last_name, input_html: { value: @profile.preferred_last_name.presence || current_user.last_name } %>
+            <div class="row">
+              <small class="fw-light">(Preferred name is optional and used for display labels when present.)</small>
             </div>
+            <div class="row">
+              <div class="col">
+                <%= f.input :preferred_first_name, required: false %>
+              </div>
+              <div class="col">
+                <%= f.input :preferred_last_name, required: false %>
+              </div>
             </div>
+
             <div class="row">
               <div class="col">
                 <% if action_name == 'new' || action_name == 'create' %>
-                  <%= f.input :umid, label: "UMID" %>
+                  <%= f.input :umid, label: 'UMID' %>
                 <% end %>
-              </div>
-              <div class="col">
-                <%= f.input :pen_name, label: "Default pen name (optional)", hint: "Set a default pen name to use for future contest entries that require one. You can leave this blank if you prefer to enter a pen name each time. The pen name should bear no resemblance to your real name or any other personal information." %>
               </div>
             </div>
           </div>
 
-          <h2 class="mt-4">Academic Information</h2>
-          <div class= "ms-4">
+          <h2 class="mt-4">Class Level</h2>
+          <div class="ms-4">
             <%= f.input :class_level_id,
                         collection: ClassLevel.all,
                         label_method: :name,
                         value_method: :id,
                         as: :radio_buttons,
-                        label: "Class Level",
+                        label: 'Class Level',
                         wrapper: :vertical_collection_inline %>
-            <%= f.input :school_id, collection: School.all, label_method: :name, value_method: :id, label: "School or College" %>
-            <%= f.input :campus_id, collection: Campus.all, label_method: :campus_descr, value_method: :id, label: "Primary Campus Class Location" %>
-            <%= f.input :major, label: "Major (if undergraduate)" %>
-            <%= f.input :department, label: "Department (if graduate)" %>
-            <%= f.input :grad_date, as: :date, start_year: Date.today.year,
-                                      end_year: Date.today.year + 12, discard_day: true,
-                                      order: [:month, :year],
-                                      label: "Expected Graduation Date" %>
-            <%= f.input :degree %>
-          </div>
-
-          <h2 class="mt-4">Publicity</h2>
-          <div class= "ms-4">
-            <div class="row">
-              <div class="col">
-                <%= f.input :hometown_publication, label: "Name of your hometown newspaper or preferred media outlet:", hint: "For some contests, if your manuscript earns an award, the award's committee will forward a press release to your local newspaper or media outlet." %>
-              </div>
-            </div>
           </div>
         </div>
         <div class="shadow p-3 mb-3 bg-body rounded" >
@@ -66,8 +61,8 @@
           <% end %>
         </div>
         <div class="form-actions pb-1">
-          <%= f.button :submit, class: "btn btn-primary" %>
-          <%= link_to "Cancel", applicant_dashboard_path, class: "text-danger link_to" %>
+          <%= f.button :submit, class: 'btn btn-primary' %>
+          <%= link_to 'Cancel', applicant_dashboard_path, class: 'text-danger link_to' %>
         </div>
       <% end %>
     </div>

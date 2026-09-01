@@ -1,0 +1,14 @@
+<div class="d-flex justify-content-end">
+  <div>
+    <%= link_to 'Return to Manage Collection', container_path(@container), class: 'link_to text-nowrap' %>
+  </div>
+</div>
+
+<h1 class="mt-4">Reports for <%= @container.name %></h1>
+<p class="text-muted">
+  Generate reports for <%= @container.name %>.
+</p>
+
+<section id="reports">
+  <%= render 'active_applicants_report_form' %>
+</section>

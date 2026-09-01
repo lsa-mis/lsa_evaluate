@@ -140,4 +140,185 @@ RSpec.describe EntryPolicy do
       it { is_expected.to forbid_action(:toggle_disqualified) }
     end
   end
+
+  describe "#view_application_answers?" do
+    let(:container) { contest_instance.contest_description.container }
+
+    context "for a visitor" do
+      let(:user) { nil }
+      it { is_expected.to forbid_action(:view_application_answers) }
+    end
+
+    context "for a Container Administrator in the same container" do
+      let(:user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: user, container: container, role: admin_role)
+      end
+
+      it { is_expected.to permit_action(:view_application_answers) }
+    end
+
+    context "for a Collection Manager in the same container" do
+      let(:user) { create(:user) }
+      let(:manager_role) { create(:role, kind: 'Collection Manager') }
+
+      before do
+        create(:assignment, user: user, container: container, role: manager_role)
+      end
+
+      it { is_expected.to permit_action(:view_application_answers) }
+    end
+
+    context "for Axis Mundi" do
+      let(:user) { create(:user, :axis_mundi) }
+      it { is_expected.to permit_action(:view_application_answers) }
+    end
+
+    context "for a Container Administrator in a different container" do
+      let(:other_container) { create(:container) }
+      let(:user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: user, container: other_container, role: admin_role)
+      end
+
+      it { is_expected.to forbid_action(:view_application_answers) }
+    end
+
+    context "for the entry owner" do
+      let(:user) { profile.user }
+      it { is_expected.to forbid_action(:view_application_answers) }
+    end
+
+    context "for a judge assigned to the contest instance" do
+      let(:user) { create(:user, :with_judge_role) }
+
+      before do
+        create(:judging_assignment, user: user, contest_instance: contest_instance)
+      end
+
+      it { is_expected.to forbid_action(:view_application_answers) }
+    end
+  end
+
+  # Owner may view their own applicant profile; judges who can :show may not.
+  # Only Collection Administrator / Manager (or axis mundi) may view others'.
+  describe '#view_applicant_profile?' do
+    let(:container) { contest_instance.contest_description.container }
+
+    context 'for a visitor' do
+      let(:user) { nil }
+      it { is_expected.to forbid_action(:view_applicant_profile) }
+    end
+
+    context 'for the entry owner' do
+      let(:user) { profile.user }
+      it { is_expected.to permit_action(:view_applicant_profile) }
+    end
+
+    context 'for a Collection Administrator in the same container' do
+      let(:user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: user, container: container, role: admin_role)
+      end
+
+      it { is_expected.to permit_action(:view_applicant_profile) }
+    end
+
+    context 'for a Collection Manager in the same container' do
+      let(:user) { create(:user) }
+      let(:manager_role) { create(:role, kind: 'Collection Manager') }
+
+      before do
+        create(:assignment, user: user, container: container, role: manager_role)
+      end
+
+      it { is_expected.to permit_action(:view_applicant_profile) }
+    end
+
+    context 'for Axis Mundi' do
+      let(:user) { create(:user, :axis_mundi) }
+      it { is_expected.to permit_action(:view_applicant_profile) }
+    end
+
+    context 'for a Collection Administrator in a different container' do
+      let(:other_container) { create(:container) }
+      let(:user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: user, container: other_container, role: admin_role)
+      end
+
+      it { is_expected.to forbid_action(:view_applicant_profile) }
+    end
+
+    context 'for a judge assigned to the contest instance' do
+      let(:user) { create(:user, :with_judge_role) }
+
+      before do
+        create(:judging_assignment, user: user, contest_instance: contest_instance)
+      end
+
+      it { is_expected.to forbid_action(:view_applicant_profile) }
+    end
+
+    context 'for an unrelated user' do
+      let(:user) { create(:user) }
+      it { is_expected.to forbid_action(:view_applicant_profile) }
+    end
+  end
+
+  # Applicants may soft-delete only while the contest is open; axis mundi always may.
+  describe '#soft_delete?' do
+    context 'for the entry owner while the contest is open' do
+      let(:user) { profile.user }
+      let(:contest_instance) { create(:contest_instance, :open) }
+
+      it { is_expected.to permit_action(:soft_delete) }
+    end
+
+    context 'for the entry owner after the contest has closed' do
+      let(:user) { profile.user }
+      let(:contest_instance) { create(:contest_instance, :closed) }
+
+      it { is_expected.to forbid_action(:soft_delete) }
+    end
+
+    context 'for Axis Mundi when the contest is closed' do
+      let(:user) { create(:user, :axis_mundi) }
+      let(:contest_instance) { create(:contest_instance, :closed) }
+
+      it { is_expected.to permit_action(:soft_delete) }
+    end
+
+    context 'for an unrelated user while the contest is open' do
+      let(:user) { create(:user) }
+      let(:contest_instance) { create(:contest_instance, :open) }
+
+      it { is_expected.to forbid_action(:soft_delete) }
+    end
+
+    context 'for a Collection Administrator while the contest is open' do
+      let(:user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+      let(:contest_instance) { create(:contest_instance, :open) }
+
+      before do
+        create(
+          :assignment,
+          user: user,
+          container: contest_instance.contest_description.container,
+          role: admin_role
+        )
+      end
+
+      it { is_expected.to forbid_action(:soft_delete) }
+    end
+  end
 end

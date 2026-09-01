@@ -31,7 +31,7 @@
   <% end %>
 </div>
 <hr>
-<h2><%= "#{pluralize(@contest_instances.count, "instance")} of this contest" %></h2>
+<h2><%= pluralize(@contest_instances.count, "instance") %> of this contest</h2>
 <!-- Add a checkbox to filter only Active contest instances -->
 <div data-controller="filter">
   <div class="form-check my-3">
@@ -42,7 +42,7 @@
       checked
       data-action="change->filter#toggleFilter"
       data-filter-target="statusFilter"
-    />
+    >
     <label class="form-check-label" for="statusFilter">
       Show only <span class="fw-bolder">Active</span> contest instances
     </label>
@@ -67,9 +67,7 @@
 
       <th style="font-size: .75rem;" rowspan="2">Category</th>
       <th style="font-size: .75rem;" rowspan="2">Class Level</th>
-      <th style="font-size: .75rem;" rowspan="2">Pen Name Rqd</th>
-      <th style="font-size: .75rem;" rowspan="2">Campus Employment Info Rqd</th>
-      <th style="font-size: .75rem;" rowspan="2">Finaid Info Rqd</th>
+      <th style="font-size: .75rem;" rowspan="2">Required Questions</th>
       <th style="font-size: .75rem;" rowspan="2">Actions</th>
     </tr>
 
@@ -108,9 +106,7 @@
                   <% end %>
                 </ul>
               </td>
-              <td><%= contest_instance.require_pen_name %></td>
-              <td><%= contest_instance.require_campus_employment_info %></td>
-              <td><%= contest_instance.require_finaid_info %></td>
+              <td><%= EffectiveApplicationQuestions.for(contest_instance).count { |eq| eq.status == 'required' } %></td>
               <td class="text-center">
                 <div class="d-flex flex-row">
                   <%= link_to container_contest_description_contest_instance_path(@container, @contest_description, contest_instance),

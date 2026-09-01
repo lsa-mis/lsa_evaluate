@@ -1,0 +1,65 @@
+<h2><%= @application_question.new_record? ? 'New' : 'Edit' %> Application Question</h2>
+
+<%= simple_form_for([@container, @application_question], html: {
+      data: {
+        controller: 'application-question-form',
+        action: 'change->application-question-form#toggle'
+      }
+    }) do |f| %>
+  <%= f.error_notification %>
+
+  <% if @application_question.system? %>
+    <%= f.input :field_type,
+                collection: ApplicationQuestion.field_type_options,
+                label: 'Answer type',
+                include_blank: false,
+                disabled: true %>
+  <% else %>
+    <%= f.input :field_type,
+                collection: ApplicationQuestion.field_type_options,
+                label: 'Answer type',
+                include_blank: false,
+                hint: 'This cannot be changed after the question is created.',
+                disabled: @application_question.persisted? %>
+  <% end %>
+
+  <%= f.input :label %>
+  <%= f.input :help_text %>
+  <%= f.input :active %>
+
+  <% if %w[select select_with_other].include?(@application_question.field_type) || @application_question.new_record? %>
+    <div class="mb-3" data-application-question-form-target="choices">
+      <label class="form-label">Dropdown choices (one per line)</label>
+      <%= text_area_tag 'application_question[options][choices]',
+                        Array(@application_question.options&.dig('choices')).join("\n"),
+                        class: 'form-control', rows: 5 %>
+      <div class="form-text">Applicants pick one option from this list.</div>
+    </div>
+  <% end %>
+
+  <% if @application_question.custom? %>
+    <div class="mb-3 <%= 'd-none' unless @application_question.field_type == 'boolean' %>"
+         data-application-question-form-target="requiresAcceptance">
+      <div class="form-check">
+        <%= check_box_tag 'application_question[options][requires_acceptance]',
+                          '1',
+                          ActiveModel::Type::Boolean.new.cast(@application_question.options&.dig('requires_acceptance')),
+                          class: 'form-check-input',
+                          id: 'application_question_options_requires_acceptance' %>
+        <%= label_tag 'application_question_options_requires_acceptance',
+                      'Requires explicit acceptance (agreement-style)',
+                      class: 'form-check-label' %>
+      </div>
+      <div class="form-text">
+        When checked, applicants must tick a single checkbox to accept. Otherwise they choose Yes or No.
+      </div>
+    </div>
+
+    <%= render 'default_value_fields', question: @application_question %>
+  <% end %>
+
+  <div class="form-actions">
+    <%= f.button :submit, class: 'btn btn-primary' %>
+    <%= link_to 'Cancel', container_application_questions_path(@container), class: 'text-danger link_to' %>
+  </div>
+<% end %>

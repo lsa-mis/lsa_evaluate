@@ -53,6 +53,7 @@ class ContestInstance < ApplicationRecord
   has_many :judges, through: :judging_assignments, source: :user
   has_many :judging_rounds, dependent: :restrict_with_error
   has_many :contest_invitations, dependent: :destroy
+  has_many :application_question_requirements, as: :requireable, dependent: :destroy
 
   enum :access_mode, ACCESS_MODES, default: :capability_url
 

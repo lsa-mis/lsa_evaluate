@@ -2,8 +2,8 @@
 class ContainersController < ApplicationController
   include ContestDescriptionsHelper
   after_action :verify_authorized, except: :lookup_user
-  before_action :set_container, only: %i[show edit update destroy description active_applicants_report]
-  before_action :authorize_container, only: %i[show edit destroy]
+  before_action :set_container, only: %i[show edit update destroy description reports active_applicants_report]
+  before_action :authorize_container, only: %i[show edit destroy reports]
   before_action :authorize_new_container, only: :new
   before_action :authorize_admin_content, only: :admin_content
   before_action :authorize_index, only: :index
@@ -13,21 +13,18 @@ class ContainersController < ApplicationController
   end
 
   def show
-    @assignments = @container.assignments.container_administrators.or(
-      @container.assignments.container_managers
-    ).includes(:user, :role)
-    @assignment = @container.assignments.build
     @container_contest_descriptions = @container.contest_descriptions
                                                 .includes(contest_instances: :entries)
                                                 .reorder('contest_descriptions.name ASC')
-    @active_contest_descriptions = @container_contest_descriptions.select(&:active?)
   end
 
   def new
     @container = Container.new
   end
 
-  def edit; end
+  def edit
+    load_permission_assignments
+  end
 
   def create
     @container = Container.new(container_params)
@@ -59,7 +56,10 @@ class ContainersController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html do
+          load_permission_assignments
+          render :edit, status: :unprocessable_entity
+        end
         format.turbo_stream {
           render turbo_stream: turbo_stream.replace('container_form', partial: 'containers/form', locals: { container: @container }), status: :unprocessable_entity
         }
@@ -90,6 +90,10 @@ class ContainersController < ApplicationController
     render json: @users.map { |user| { uid: user.uid, display_name: user.display_name, display_name_and_uid: user.display_name_and_uid } }
   end
 
+  def reports
+    @active_contest_descriptions = @container.contest_descriptions.active.reorder('contest_descriptions.name ASC')
+  end
+
   def description
     authorize @container, :description?
     respond_to do |format|
@@ -109,8 +113,8 @@ class ContainersController < ApplicationController
 
     if @active_contest_descriptions.empty?
       respond_to do |format|
-        format.csv { redirect_to @container, alert: 'Please select at least one contest description.' }
-        format.html { redirect_to @container, alert: 'Please select at least one contest description.' }
+        format.csv { redirect_to reports_container_path(@container), alert: 'Please select at least one contest description.' }
+        format.html { redirect_to reports_container_path(@container), alert: 'Please select at least one contest description.' }
       end
       return
     end
@@ -131,9 +135,9 @@ class ContainersController < ApplicationController
 
           @profiles.each do |profile|
             csv << [
-              profile.last_name,
-              profile.first_name,
-              profile.user.email
+              csv_safe_cell(profile.last_name),
+              csv_safe_cell(profile.first_name),
+              csv_safe_cell(profile.user.email)
             ]
           end
         end
@@ -142,11 +146,20 @@ class ContainersController < ApplicationController
                   type: 'text/csv; charset=utf-8; header=present',
                   disposition: "attachment; filename=#{filename}"
       end
-      format.html { redirect_to @container, alert: 'Please request the report in CSV format.' }
+      format.html { redirect_to reports_container_path(@container), alert: 'Please request the report in CSV format.' }
     end
   end
 
   private
+
+  # Neutralize IdP-controlled name/email values so spreadsheet apps treat them as text
+  # rather than formulas when staff open the CSV (CSV injection).
+  def csv_safe_cell(value)
+    text = value.to_s
+    return text if text.empty?
+
+    text.start_with?('=', '+', '-', '@', "\t", "\r") ? "'#{text}" : text
+  end
 
   def set_container
     @container = policy_scope(Container).find(params[:id])
@@ -171,5 +184,10 @@ class ContainersController < ApplicationController
 
   def authorize_index
     authorize Container
+  end
+
+  def load_permission_assignments
+    @assignments = @container.collection_staff_assignments
+    @assignment = @container.assignments.build
   end
 end

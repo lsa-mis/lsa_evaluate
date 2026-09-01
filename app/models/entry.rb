@@ -39,24 +39,33 @@ class Entry < ApplicationRecord
   belongs_to :category
   has_one_attached :entry_file
   has_many :entry_rankings, dependent: :restrict_with_error
+  has_many :entry_answers, dependent: :destroy
 
   validates :title, presence: true
   validates :title, length: { maximum: 250 }
   validate :entry_file_validation, on: :create
-  validate :pen_name_required_if_contest_requires_it, on: :create
-  validate :accepted_financial_aid_notice_if_contest_requires_it, on: :create
 
   scope :active, -> { where(deleted: false) }
   scope :disqualified, -> { where(disqualified: true) }
 
-  attr_accessor :save_pen_name_to_profile
+  attr_accessor :save_pen_name_to_profile, :confirmed_class_level_id
+
+  def answer_for(question)
+    entry_answers.find { |answer| answer.application_question_id == question.id }
+  end
+
+  def effective_application_questions
+    EffectiveApplicationQuestions.for(contest_instance)
+  end
 
   def self.sortable_columns
     {
       'id' => 'entries.id',
       'title' => 'entries.title',
       'created_at' => 'entries.created_at',
-      'profile_display_name' => 'profiles.preferred_last_name',
+      # Slim profiles may have blank preferred names; fall back to legal last name
+      # so applicant-name sort matches Profile#display_name.
+      'profile_display_name' => "COALESCE(NULLIF(profiles.preferred_last_name, ''), profiles.legal_last_name)",
       'profile_user_uniqname' => 'users.uniqname',
       'pen_name' => 'pen_name',
       'campus_employee' => 'campus_employee',
@@ -89,19 +98,5 @@ class Entry < ApplicationRecord
 
   def soft_deletable?
     contest_instance.open?
-  end
-
-  private
-
-  def pen_name_required_if_contest_requires_it
-    if contest_instance&.require_pen_name && pen_name.blank?
-      errors.add(:pen_name, "can't be blank for this contest")
-    end
-  end
-
-  def accepted_financial_aid_notice_if_contest_requires_it
-    if contest_instance&.require_finaid_info && !accepted_financial_aid_notice
-      errors.add(:accepted_financial_aid_notice, 'must be accepted for this contest')
-    end
   end
 end

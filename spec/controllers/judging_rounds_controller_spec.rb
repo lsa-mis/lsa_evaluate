@@ -43,6 +43,65 @@ RSpec.describe JudgingRoundsController, type: :controller do
     end
   end
 
+  describe 'POST #create' do
+    let(:valid_attributes) do
+      {
+        round_number: 1,
+        start_date: contest_instance.date_closed + 1.day,
+        end_date: contest_instance.date_closed + 2.days,
+        required_entries_count: 3
+      }
+    end
+
+    before { sign_in admin }
+
+    it 'redirects to manage judging after a normal create' do
+      post :create, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        contest_instance_id: contest_instance.id,
+        judging_round: valid_attributes
+      }
+
+      expect(response).to redirect_to(
+        container_contest_description_contest_instance_judging_assignments_path(
+          container, contest_description, contest_instance
+        )
+      )
+    end
+
+    it 'redirects to the instance dashboard when created from setup' do
+      post :create, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        contest_instance_id: contest_instance.id,
+        from_setup: true,
+        judging_round: valid_attributes
+      }
+
+      expect(response).to redirect_to(
+        container_contest_description_contest_instance_path(
+          container, contest_description, contest_instance
+        )
+      )
+    end
+
+    it 're-renders the setup review process step when created from setup with invalid params' do
+      expect {
+        post :create, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          from_setup: true,
+          judging_round: valid_attributes.merge(start_date: nil)
+        }
+      }.not_to change(JudgingRound, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response).to render_template('contest_instances/setup_review_process')
+    end
+  end
+
   describe 'PATCH #update' do
     let(:valid_attributes) do
       {

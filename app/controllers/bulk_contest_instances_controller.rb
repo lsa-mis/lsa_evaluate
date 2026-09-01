@@ -84,6 +84,16 @@ class BulkContestInstancesController < ApplicationController
           success = false
           raise ActiveRecord::Rollback
         end
+
+        if last_instance
+          last_instance.application_question_requirements.find_each do |requirement|
+            new_instance.application_question_requirements.create!(
+              application_question: requirement.application_question,
+              status: requirement.status,
+              position: requirement.position
+            )
+          end
+        end
       end
     end
     success

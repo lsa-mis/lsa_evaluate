@@ -39,4 +39,15 @@ RSpec.describe ClassLevel do
       expect(class_level).to be_valid
     end
   end
+
+  describe '#graduate?' do
+    it 'returns true only for the Graduate class level' do
+      graduate = build(:class_level, name: 'Graduate')
+      undergraduate = build(:class_level, name: 'First year')
+
+      expect(graduate).to be_graduate
+      expect(undergraduate).not_to be_graduate
+      expect(undergraduate).to be_undergraduate
+    end
+  end
 end

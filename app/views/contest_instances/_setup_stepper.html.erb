@@ -1,0 +1,18 @@
+<% current_step = local_assigns.fetch(:current_step) %>
+<nav aria-label="Contest instance setup" class="setup-stepper mb-4">
+  <ol class="setup-stepper-list">
+    <% contest_instance_setup_steps(current_step).each do |step| %>
+      <li class="setup-stepper-item setup-stepper-item--<%= step[:state] %>">
+        <span class="setup-stepper-number" aria-hidden="true"><%= step[:number] %></span>
+        <span class="setup-stepper-label">
+          <% if step[:state] == :current %>
+            <span class="visually-hidden">Current step: </span>
+          <% elsif step[:state] == :complete %>
+            <span class="visually-hidden">Completed: </span>
+          <% end %>
+          <%= step[:label] %>
+        </span>
+      </li>
+    <% end %>
+  </ol>
+</nav>

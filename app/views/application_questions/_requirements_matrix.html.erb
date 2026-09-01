@@ -1,0 +1,37 @@
+<% questions = container.application_questions.active.ordered %>
+<% local_requirements = requireable.application_question_requirements.index_by(&:application_question_id) %>
+
+<h3 class="mt-4">Application Question Requirements</h3>
+<p class="text-muted small">
+  Override collection defaults for this <%= requireable.class.name.underscore.humanize.downcase %>.
+  Choose <em>Inherit</em> to use the parent setting.
+</p>
+
+<div class="table-responsive mb-3">
+  <table class="table table-sm">
+    <thead>
+      <tr>
+        <th>Question</th>
+        <th>Inherited</th>
+        <th>Override</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% questions.each do |question| %>
+        <% local = local_requirements[question.id] %>
+        <% inherited = inherited_requirement_status(question, requireable) %>
+        <tr>
+          <td>
+            <%= question.label %>
+          </td>
+          <td><%= inherited&.titleize || 'Unset' %></td>
+          <td>
+            <%= select_tag "#{param_key}[#{question.id}][status]",
+                           options_for_select(question_status_options(include_inherit: true), local&.status || 'inherit'),
+                           class: 'form-select form-select-sm' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

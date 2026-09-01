@@ -30,6 +30,8 @@ class Container < ApplicationRecord
   has_many :users, through: :assignments
   has_many :roles, through: :assignments
   has_many :contest_descriptions, dependent: :restrict_with_error
+  has_many :application_questions, dependent: :destroy
+  has_many :application_question_requirements, as: :requireable, dependent: :destroy
 
   has_rich_text :description
 
@@ -47,6 +49,7 @@ class Container < ApplicationRecord
   scope :visible, -> { joins(:visibility).where(visibilities: { kind: 'Public' }) } # Only show containers with 'Public' visibility
 
   after_create :assign_container_administrator
+  after_create :seed_system_application_questions
 
   def entries_summary
     active_entries.group(:campus_id)
@@ -57,6 +60,14 @@ class Container < ApplicationRecord
 
   def total_active_entries
     active_entries.count
+  end
+
+  def collection_staff_assignments
+    assignments
+      .joins(:role, :user)
+      .merge(Role.container_roles)
+      .includes(:user, :role)
+      .order('roles.kind ASC', 'users.last_name ASC', 'users.first_name ASC')
   end
 
   private
@@ -74,6 +85,10 @@ class Container < ApplicationRecord
       errors.add(:base, 'Collection Administrator role not found.')
       raise ActiveRecord::Rollback
     end
+  end
+
+  def seed_system_application_questions
+    ApplicationQuestion.seed_system_questions_for!(self)
   end
 
   def active_entries

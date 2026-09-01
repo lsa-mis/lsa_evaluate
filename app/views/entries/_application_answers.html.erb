@@ -1,0 +1,14 @@
+<% questions = local_assigns[:effective_questions].presence || effective_question_headers(entry.contest_instance) %>
+<div class="mt-4">
+  <h3 class="h5">Application answers</h3>
+  <% if questions.any? %>
+    <dl class="row mb-0">
+      <% questions.each do |question| %>
+        <dt class="col-sm-4"><%= question.label %></dt>
+        <dd class="col-sm-8"><%= entry_answer_display(entry, question) %></dd>
+      <% end %>
+    </dl>
+  <% else %>
+    <p class="text-muted mb-0">No application questions were collected for this instance.</p>
+  <% end %>
+</div>

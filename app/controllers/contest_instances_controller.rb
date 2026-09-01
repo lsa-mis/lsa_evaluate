@@ -1,7 +1,12 @@
 class ContestInstancesController < ApplicationController
+  include ApplicationQuestionRequirementsSync
+
   before_action :set_container
   before_action :set_contest_description
-  before_action :set_contest_instance, only: %i[show edit update destroy send_round_results deactivate regenerate_access_token]
+  before_action :set_contest_instance, only: %i[
+    show edit update destroy send_round_results deactivate regenerate_access_token
+    setup_questions update_setup_questions setup_review_process
+  ]
   before_action :authorize_container_access
 
   # GET /contest_instances
@@ -10,8 +15,12 @@ class ContestInstancesController < ApplicationController
   end
 
   def show
-    @contest_instance_entries = @contest_instance.entries.active.includes(profile: :user)
-    # @contest_instance_entries = @contest_instance.entries
+    @contest_instance_entries = @contest_instance.entries.active.includes(
+      :category,
+      { entry_answers: :application_question },
+      { profile: [ :user, :class_level ] },
+      contest_instance: { contest_description: :container }
+    )
 
     if params[:sort_column].present? && params[:sort_direction].present?
       sortable_columns = Entry.sortable_columns
@@ -28,7 +37,7 @@ class ContestInstancesController < ApplicationController
           @contest_instance_entries = @contest_instance_entries.joins(profile: :user)
         end
 
-        @contest_instance_entries = @contest_instance_entries.order("#{sort_sql} #{sort_direction}")
+        @contest_instance_entries = @contest_instance_entries.order(Arel.sql("#{sort_sql} #{sort_direction}"))
       end
     end
   end
@@ -49,7 +58,10 @@ class ContestInstancesController < ApplicationController
     @contest_instance.created_by = current_user.email
 
     if @contest_instance.save
-      redirect_to_contest_instance_path
+      sync_application_question_requirements!(@contest_instance, params[:requirements])
+      redirect_to setup_questions_container_contest_description_contest_instance_path(
+        @container, @contest_description, @contest_instance
+      ), notice: 'Contest instance was successfully created.'
     else
       render :new, status: :unprocessable_entity
     end
@@ -57,6 +69,7 @@ class ContestInstancesController < ApplicationController
 
   def update
     if @contest_instance.update(contest_instance_params)
+      sync_application_question_requirements!(@contest_instance, params[:requirements])
       redirect_to_contest_instance_path
     else
       render :edit, status: :unprocessable_entity
@@ -235,6 +248,24 @@ class ContestInstancesController < ApplicationController
                 notice: 'Invite link regenerated. Previous links no longer work.'
   end
 
+  def setup_questions
+    authorize @contest_instance, :update?
+  end
+
+  def update_setup_questions
+    authorize @contest_instance, :update?
+    sync_application_question_requirements!(@contest_instance, params[:requirements])
+    redirect_to setup_review_process_container_contest_description_contest_instance_path(
+      @container, @contest_description, @contest_instance
+    ), notice: 'Application question requirements were saved.'
+  end
+
+  def setup_review_process
+    authorize @contest_instance, :update?
+    @judging_round = @contest_instance.judging_rounds.build
+    @round_number = @contest_instance.judging_rounds.count + 1
+  end
+
   private
 
   def authorize_container_access
@@ -262,8 +293,7 @@ class ContestInstancesController < ApplicationController
     params.require(:contest_instance).permit(
       :active, :contest_description_id, :date_open, :date_closed,
       :notes, :judging_open, :judge_evaluations_complete,
-      :maximum_number_entries_per_applicant, :require_pen_name,
-      :require_campus_employment_info, :require_finaid_info, :created_by,
+      :maximum_number_entries_per_applicant, :created_by,
       :has_course_requirement, :course_requirement_description,
       :recletter_required, :transcript_required,
       :require_internal_comments, :require_external_comments,
@@ -275,105 +305,102 @@ class ContestInstancesController < ApplicationController
 
   def generate_entries_csv(entries, contest_description, contest_instance)
     require 'csv'
+    questions = EffectiveApplicationQuestions.for(contest_instance).map(&:question)
 
     CSV.generate do |csv|
-      # Header section - split across multiple columns for better layout
       contest_info = "#{contest_description.name} - #{contest_instance.date_open.strftime('%b %Y')} to #{contest_instance.date_closed.strftime('%b %Y')}"
+      csv << [contest_info]
+      csv << []
 
-      # Distribute header across columns more evenly
-      header_row1 = [contest_info] + Array.new(11, '')
-      csv << header_row1
-      csv << Array.new(12, '')  # Empty row as separator with 12 empty cells
-
-      # Column headers
       headers = [
-        'Title', 'Category',
-        'Pen Name', 'First Name', 'Last Name', 'UMID', 'Uniqname',
-        'Class Level', 'Campus', 'Entry ID', 'Created At', 'Disqualified'
-      ]
+        'Title', 'Category', 'First Name', 'Last Name', 'Display Name', 'UMID', 'Uniqname',
+        'Class Level', 'Entry ID', 'Created At', 'Disqualified'
+      ] + questions.map(&:label)
       csv << headers
 
-      # Entry data
-      entries.each do |entry|
+      entries.includes(:category, :entry_answers, profile: [ :user, :class_level ]).find_each do |entry|
         profile = entry.profile
+        answers_by_question_id = entry.entry_answers.index_by(&:application_question_id)
 
         csv << [
-          entry.title,
-          entry.category&.kind,
-          entry.pen_name,
-          profile&.user&.first_name,
-          profile&.user&.last_name,
-          profile&.umid,
-          profile&.user&.uniqname,
-          profile&.class_level&.name,
-          profile&.campus&.campus_descr,
+          csv_safe_cell(entry.title),
+          csv_safe_cell(entry.category&.kind),
+          csv_safe_cell(profile&.legal_first_name.presence || profile&.user&.first_name),
+          csv_safe_cell(profile&.legal_last_name.presence || profile&.user&.last_name),
+          csv_safe_cell(profile&.display_name),
+          csv_safe_cell(profile&.umid),
+          csv_safe_cell(profile&.user&.uniqname),
+          csv_safe_cell(profile&.class_level&.name),
           entry.id,
           entry.created_at.strftime('%m/%d/%Y %I:%M %p'),
           entry.disqualified? ? 'Yes' : 'No'
-        ]
+        ] + questions.map { |question|
+          csv_safe_cell(answers_by_question_id[question.id]&.display_value)
+        }
       end
     end
   end
 
   def generate_round_results_csv(entries, contest_description, contest_instance, judging_round)
     require 'csv'
+    questions = EffectiveApplicationQuestions.for(contest_instance).map(&:question)
 
     CSV.generate do |csv|
-      # Header section
       contest_info = "#{contest_description.name} - Round #{judging_round.round_number} Results"
-      header_row1 = [contest_info] + Array.new(15, '')
-      csv << header_row1
-      csv << Array.new(16, '')  # Empty row as separator
+      csv << [contest_info]
+      csv << []
 
-      # Column headers
       headers = [
-        'Title', 'Category',
-        'Pen Name', 'First Name', 'Last Name', 'UMID', 'Uniqname',
-        'Class Level', 'Campus', 'Entry ID', 'Selected for Next Round',
+        'Title', 'Category', 'First Name', 'Last Name', 'Display Name', 'UMID', 'Uniqname',
+        'Class Level', 'Entry ID', 'Selected for Next Round',
         'Judge Name', 'Score', 'Judge Comments [External]', 'Judge Comments [Internal]'
-      ]
+      ] + questions.map(&:label)
       csv << headers
 
-      # Entry data
-      entries.each do |entry|
+      entries.includes(:category, :entry_answers, profile: [ :user, :class_level ]).find_each do |entry|
         profile = entry.profile
         rankings = entry.entry_rankings.where(judging_round: judging_round)
         selected = rankings.exists?(selected_for_next_round: true)
+        answers_by_question_id = entry.entry_answers.index_by(&:application_question_id)
+        question_values = questions.map { |question|
+          csv_safe_cell(answers_by_question_id[question.id]&.display_value)
+        }
 
-        # Base entry data
         base_data = [
-          entry.title,
-          entry.category&.kind,
-          entry.pen_name,
-          profile&.user&.first_name,
-          profile&.user&.last_name,
-          profile&.umid,
-          profile&.user&.uniqname,
-          profile&.class_level&.name,
-          profile&.campus&.campus_descr,
+          csv_safe_cell(entry.title),
+          csv_safe_cell(entry.category&.kind),
+          csv_safe_cell(profile&.legal_first_name.presence || profile&.user&.first_name),
+          csv_safe_cell(profile&.legal_last_name.presence || profile&.user&.last_name),
+          csv_safe_cell(profile&.display_name),
+          csv_safe_cell(profile&.umid),
+          csv_safe_cell(profile&.user&.uniqname),
+          csv_safe_cell(profile&.class_level&.name),
           entry.id,
           selected ? 'Yes' : 'No'
         ]
 
-        # If there are rankings, create a row for each judge's ranking
         if rankings.any?
           rankings.each do |ranking|
-            score = ranking.rank
-            external_comments = ranking.external_comments.presence || 'No comment entered'
-            internal_comments = ranking.internal_comments.presence || 'No comment entered'
-
             csv << base_data + [
-              "#{ranking.user.display_name_or_first_name_last_name} (#{ranking.user.uid})",
-              score,
-              external_comments,
-              internal_comments
-            ]
+              csv_safe_cell("#{ranking.user.display_name_or_first_name_last_name} (#{ranking.user.uid})"),
+              ranking.rank,
+              csv_safe_cell(ranking.external_comments.presence || 'No comment entered'),
+              csv_safe_cell(ranking.internal_comments.presence || 'No comment entered')
+            ] + question_values
           end
         else
-          # If no rankings, just output the base data with empty judge fields
-          csv << base_data + [ '', '' ]
+          csv << base_data + [ '', '', '', '' ] + question_values
         end
       end
     end
+  end
+
+  # Neutralize applicant- and judge-controlled values so spreadsheet apps treat them as text
+  # rather than formulas when staff open the CSV (CSV injection).
+  def csv_safe_cell(value)
+    text = value.to_s
+    return text if text.empty?
+
+    text.start_with?('=', '+', '-', '@', "\t", "\r") ? "'#{text}" : text
   end
 end

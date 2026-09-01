@@ -4,6 +4,18 @@ RSpec.describe ContainersHelper, type: :helper do
   let(:container) { create(:container) }
   let(:description) { create(:contest_description, container: container) }
 
+  describe '#contest_description_action_links' do
+    it 'uses a list icon for viewing instances' do
+      links = helper.contest_description_action_links(container, description)
+
+      expect(links[:view][:icon]).to eq('list-ul')
+      expect(links[:view][:title]).to eq('View instances')
+      expect(links[:view][:path]).to eq(
+        container_contest_description_contest_instances_path(container, description)
+      )
+    end
+  end
+
   describe "#render_description" do
     context "when description is longer than 100 characters" do
       let(:long_text) { "This is a very long description that will definitely exceed the 100 character limit and therefore trigger the modal functionality." }

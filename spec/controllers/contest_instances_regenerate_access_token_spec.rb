@@ -30,5 +30,50 @@ RSpec.describe ContestInstancesController, type: :controller do
       )
       expect(flash[:notice]).to match(/regenerated/i)
     end
+
+    context 'when the user is a judge for the contest instance' do
+      let(:judge) { create(:user, :with_judge_role) }
+
+      before do
+        create(:judging_assignment, user: judge, contest_instance: contest_instance)
+        sign_in judge
+      end
+
+      it 'does not regenerate the access token' do
+        old_token = contest_instance.access_token
+
+        post :regenerate_access_token, params: {
+          container_id: container.id,
+          contest_description_id: description.id,
+          id: contest_instance.id
+        }
+
+        expect(contest_instance.reload.access_token).to eq(old_token)
+        expect(flash[:alert]).to match(/not authorized/i)
+      end
+    end
+
+    context 'when the user administers a different container' do
+      let(:other_admin) { create(:user) }
+      let(:other_container) { create(:container) }
+
+      before do
+        create(:assignment, user: other_admin, container: other_container, role: admin_role)
+        sign_in other_admin
+      end
+
+      it 'does not regenerate the access token' do
+        old_token = contest_instance.access_token
+
+        post :regenerate_access_token, params: {
+          container_id: container.id,
+          contest_description_id: description.id,
+          id: contest_instance.id
+        }
+
+        expect(contest_instance.reload.access_token).to eq(old_token)
+        expect(flash[:alert]).to match(/not authorized/i)
+      end
+    end
   end
 end

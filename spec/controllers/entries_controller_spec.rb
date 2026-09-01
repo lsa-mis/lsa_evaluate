@@ -1,6 +1,184 @@
 require 'rails_helper'
 
 RSpec.describe EntriesController, type: :controller do
+  describe 'POST #create' do
+    let(:class_level) { create(:class_level) }
+    let(:profile) { create(:profile, class_level: class_level) }
+    let(:user) { profile.user }
+    let(:container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) do
+      create(:contest_instance, contest_description: contest_description).tap do |ci|
+        ci.class_levels = [class_level]
+        ci.save!
+      end
+    end
+    let(:category) { contest_instance.categories.first }
+    let(:pen_name_question) { container.application_questions.find_by!(system_key: 'pen_name') }
+    let(:pdf) do
+      fixture_file_upload(
+        Rails.root.join('spec/support/files/sample_test.pdf'),
+        'application/pdf'
+      )
+    end
+
+    before do
+      ApplicationQuestionRequirement.create!(
+        application_question: pen_name_question,
+        requireable: contest_instance,
+        status: 'required'
+      )
+      sign_in user
+    end
+
+    def create_params(answers: { pen_name_question.id => 'A. Poet' }, class_level_id: class_level.id)
+      {
+        entry: {
+          title: 'New Submission',
+          contest_instance_id: contest_instance.id,
+          category_id: category.id,
+          confirmed_class_level_id: class_level_id,
+          entry_file: pdf
+        },
+        entry_answers: answers
+      }
+    end
+
+    it 'creates the entry and persists required application answers' do
+      expect {
+        post :create, params: create_params
+      }.to change(Entry, :count).by(1)
+       .and change(EntryAnswer, :count).by(1)
+
+      entry = Entry.order(:id).last
+      expect(response).to redirect_to(applicant_dashboard_path)
+      expect(entry.title).to eq('New Submission')
+      expect(entry.entry_answers.find_by!(application_question: pen_name_question).value).to eq('A. Poet')
+      expect(profile.reload.class_level_id).to eq(class_level.id)
+    end
+
+    it 'does not create an entry when a required answer is missing' do
+      expect {
+        post :create, params: create_params(answers: {})
+      }.not_to change(Entry, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(EntryAnswer.count).to eq(0)
+    end
+
+    it 'does not create an entry when class level confirmation is missing' do
+      expect {
+        post :create, params: create_params(class_level_id: nil)
+      }.not_to change(Entry, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(assigns(:entry).errors[:base]).to include('Class level must be confirmed')
+    end
+
+    it 'does not raise when confirming class level before validating the entry file' do
+      png = fixture_file_upload(
+        Rails.root.join('spec/support/files/sample_test.png'),
+        'image/png'
+      )
+
+      expect {
+        post :create, params: create_params.merge(entry: create_params[:entry].merge(entry_file: png))
+      }.not_to change(Entry, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(assigns(:entry).errors[:entry_file]).to include('must be a PDF')
+    end
+
+    it 'preserves submitted application answers on failed create' do
+      png = fixture_file_upload(
+        Rails.root.join('spec/support/files/sample_test.png'),
+        'image/png'
+      )
+
+      post :create, params: create_params(
+        answers: { pen_name_question.id => 'A. Poet' }
+      ).merge(entry: create_params[:entry].merge(entry_file: png))
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(assigns(:prefill_values)[pen_name_question.id]).to eq('A. Poet')
+    end
+
+    it 'preserves submitted answers over profile prefill on failed create' do
+      profile.update!(pen_name: 'Ink')
+      png = fixture_file_upload(
+        Rails.root.join('spec/support/files/sample_test.png'),
+        'image/png'
+      )
+
+      post :create, params: create_params(
+        answers: { pen_name_question.id => 'A. Poet' }
+      ).merge(entry: create_params[:entry].merge(entry_file: png))
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(assigns(:prefill_values)[pen_name_question.id]).to eq('A. Poet')
+    end
+
+    context 'with required boolean application questions' do
+      let(:campus_employee_question) { container.application_questions.find_by!(system_key: 'campus_employee') }
+      let(:sole_author_question) { container.application_questions.find_by!(system_key: 'submission_sole_author') }
+
+      before do
+        ApplicationQuestionRequirement.create!(
+          application_question: campus_employee_question,
+          requireable: contest_instance,
+          status: 'required'
+        )
+        ApplicationQuestionRequirement.create!(
+          application_question: sole_author_question,
+          requireable: contest_instance,
+          status: 'required'
+        )
+      end
+
+      def boolean_create_params(entry_answers)
+        create_params(answers: {
+          pen_name_question.id => 'A. Poet',
+          **entry_answers
+        })
+      end
+
+      it 'creates the entry when required yes/no and agreement answers are provided' do
+        expect {
+          post :create, params: boolean_create_params(
+            campus_employee_question.id => '0',
+            sole_author_question.id => '1'
+          )
+        }.to change(Entry, :count).by(1)
+         .and change(EntryAnswer, :count).by(3)
+
+        entry = Entry.order(:id).last
+        expect(entry.entry_answers.find_by!(application_question: campus_employee_question).value).to be(false)
+        expect(entry.entry_answers.find_by!(application_question: sole_author_question).value).to be(true)
+      end
+
+      it 'does not create the entry when a required yes/no answer is missing' do
+        expect {
+          post :create, params: boolean_create_params(sole_author_question.id => '1')
+        }.not_to change(Entry, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(assigns(:entry).errors[:base].join).to include("can't be blank")
+      end
+
+      it 'does not create the entry when a required agreement is unchecked' do
+        expect {
+          post :create, params: boolean_create_params(
+            campus_employee_question.id => '1',
+            sole_author_question.id => '0'
+          )
+        }.not_to change(Entry, :count)
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(assigns(:entry).errors[:base].join).to include('must be accepted')
+      end
+    end
+  end
+
   describe "GET #modal_details" do
     let(:profile) { create(:profile) }
     let(:contest_instance) { create(:contest_instance) }
@@ -22,11 +200,22 @@ RSpec.describe EntriesController, type: :controller do
     end
 
     context "when user is a Container Administrator for the entry's container" do
+      render_views
+
       let(:container) { contest_instance.contest_description.container }
       let(:admin_user) { create(:user) }
       let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+      let(:custom_question) do
+        create(:application_question, container: container, label: 'Favorite form', key: 'favorite_form', position: 200)
+      end
 
       before do
+        ApplicationQuestionRequirement.create!(
+          application_question: custom_question,
+          requireable: contest_instance,
+          status: 'required'
+        )
+        EntryAnswer.create!(entry: entry, application_question: custom_question, value: 'Sonnet')
         create(:assignment, user: admin_user, container: container, role: admin_role)
         sign_in admin_user
         get :modal_details, params: { id: entry.id }
@@ -38,6 +227,43 @@ RSpec.describe EntriesController, type: :controller do
 
       it "renders the details partial" do
         expect(response).to render_template('entries/modal_details')
+      end
+
+      it "includes the applicant's application answers" do
+        expect(response.body).to include('Application answers')
+        expect(response.body).to include('Favorite form')
+        expect(response.body).to include('Sonnet')
+      end
+    end
+
+    context "when user is a judge assigned to the contest instance" do
+      render_views
+
+      let(:judge_user) { create(:user, :with_judge_role) }
+      let(:container) { contest_instance.contest_description.container }
+      let(:custom_question) do
+        create(:application_question, container: container, label: 'Favorite form', key: 'favorite_form', position: 200)
+      end
+
+      before do
+        ApplicationQuestionRequirement.create!(
+          application_question: custom_question,
+          requireable: contest_instance,
+          status: 'required'
+        )
+        EntryAnswer.create!(entry: entry, application_question: custom_question, value: 'Sonnet')
+        create(:judging_assignment, user: judge_user, contest_instance: contest_instance)
+        sign_in judge_user
+        get :modal_details, params: { id: entry.id }
+      end
+
+      it "returns a successful response" do
+        expect(response).to be_successful
+      end
+
+      it "does not include application answers" do
+        expect(response.body).not_to include('Application answers')
+        expect(response.body).not_to include('Sonnet')
       end
     end
 
@@ -238,6 +464,128 @@ RSpec.describe EntriesController, type: :controller do
         patch :toggle_disqualified, params: { id: entry.id }
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to eq("!!! Not authorized !!!")
+      end
+    end
+  end
+
+  describe 'PATCH #soft_delete' do
+    let(:profile) { create(:profile) }
+    let(:user) { profile.user }
+
+    context 'when the contest is open' do
+      let(:contest_instance) { create(:contest_instance, :open) }
+      let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance, deleted: false) }
+
+      before { sign_in user }
+
+      it 'marks the entry as deleted' do
+        expect {
+          patch :soft_delete, params: { id: entry.id }
+        }.to change { entry.reload.deleted }.from(false).to(true)
+        expect(flash[:notice]).to eq('Entry was successfully removed.')
+      end
+    end
+
+    context 'when the contest is closed' do
+      let(:contest_instance) { create(:contest_instance, :closed) }
+      let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance, deleted: false) }
+
+      before { sign_in user }
+
+      it 'forbids the owner via policy when the contest is closed' do
+        expect {
+          patch :soft_delete, params: { id: entry.id }
+        }.not_to change { entry.reload.deleted }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq('!!! Not authorized !!!')
+      end
+    end
+
+    context 'when Axis Mundi attempts soft-delete after the contest closed' do
+      let(:contest_instance) { create(:contest_instance, :closed) }
+      let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance, deleted: false) }
+      let(:axis_mundi_user) { create(:user, :axis_mundi) }
+
+      before { sign_in axis_mundi_user }
+
+      it 'does not delete the entry and alerts that the contest has closed' do
+        expect {
+          patch :soft_delete, params: { id: entry.id }
+        }.not_to change { entry.reload.deleted }
+        expect(flash[:alert]).to eq('Cannot delete entry after contest has closed.')
+      end
+    end
+
+    context 'when a judge is signed in' do
+      let(:contest_instance) { create(:contest_instance, :open) }
+      let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance, deleted: false) }
+      let(:judge_user) { create(:user, :with_judge_role) }
+
+      before do
+        create(:judging_assignment, user: judge_user, contest_instance: contest_instance)
+        sign_in judge_user
+      end
+
+      it 'does not soft-delete and redirects unauthorized' do
+        expect {
+          patch :soft_delete, params: { id: entry.id }
+        }.not_to change { entry.reload.deleted }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq('!!! Not authorized !!!')
+      end
+    end
+  end
+
+  describe 'GET #applicant_profile' do
+    let(:container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+    let(:profile) { create(:profile) }
+    let!(:entry) { create(:entry, profile: profile, contest_instance: contest_instance) }
+
+    context 'when the entry owner is signed in' do
+      before { sign_in profile.user }
+
+      it 'renders the applicant profile' do
+        get :applicant_profile, params: { id: entry.id }
+        expect(response).to have_http_status(:success)
+        expect(assigns(:profile)).to eq(profile)
+      end
+    end
+
+    context 'when a Collection Administrator is signed in' do
+      let(:admin_user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+      let(:other_container) { create(:container) }
+      let(:other_description) { create(:contest_description, :active, container: other_container) }
+      let(:other_instance) { create(:contest_instance, contest_description: other_description) }
+      let!(:other_entry) { create(:entry, profile: profile, contest_instance: other_instance) }
+
+      before do
+        create(:assignment, user: admin_user, container: container, role: admin_role)
+        sign_in admin_user
+      end
+
+      it 'scopes visible entries to containers the admin manages' do
+        get :applicant_profile, params: { id: entry.id }
+        expect(response).to have_http_status(:success)
+        expect(assigns(:entries)).to include(entry)
+        expect(assigns(:entries)).not_to include(other_entry)
+      end
+    end
+
+    context 'when an assigned judge is signed in' do
+      let(:judge_user) { create(:user, :with_judge_role) }
+
+      before do
+        create(:judging_assignment, user: judge_user, contest_instance: contest_instance)
+        sign_in judge_user
+      end
+
+      it 'redirects unauthorized even though the judge can show the entry' do
+        get :applicant_profile, params: { id: entry.id }
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq('!!! Not authorized !!!')
       end
     end
   end

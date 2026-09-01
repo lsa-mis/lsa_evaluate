@@ -1,0 +1,107 @@
+<%= render 'contest_instances/setup_stepper', current_step: :review_process %>
+
+<div class="d-flex justify-content-end">
+  <%= link_to 'Cancel setup',
+              container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+              class: 'link_to' %>
+</div>
+
+<h1>Review process</h1>
+<p class="text-muted">
+  Create the first judging round for this contest instance, or skip and add rounds later from Manage Judging.
+</p>
+
+<% if @contest_instance.judging_rounds.any? %>
+  <div class="alert alert-success">
+    This instance already has <%= pluralize(@contest_instance.judging_rounds.count, 'judging round') %>.
+    You can add another below or continue to the dashboard.
+  </div>
+<% end %>
+
+<div class="card">
+  <div class="card-body">
+    <%= form_with(model: [@container, @contest_description, @contest_instance, @judging_round], local: true) do |f| %>
+      <%= hidden_field_tag :from_setup, true %>
+
+      <% if @judging_round.errors.any? %>
+        <div class="alert alert-danger">
+          <h4><%= pluralize(@judging_round.errors.count, 'error') %> prohibited this judging round from being saved:</h4>
+          <ul>
+            <% @judging_round.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.label :round_number %>
+        <%= f.number_field :round_number, value: @round_number, class: 'form-control' %>
+        <div class="form-text">The round number is used to sequentially order the judging rounds for a contest instance. It automatically increments for each new round and should only be changed in "special" cases.</div>
+      </div>
+
+      <div class="mt-3">
+        <%= f.label :required_entries_count, 'Number of Entries to be Selected', class: 'form-label' %>
+        <%= f.number_field :required_entries_count, class: 'form-control', min: 0 %>
+        <div class="form-text">Enter the number of entries that judges must select and rank for this round.</div>
+      </div>
+
+      <div class="form-group mt-3">
+        <%= f.label :start_date, 'Date and time to open judging round to judges' %>
+        <%= f.datetime_local_field :start_date, class: 'form-control' %>
+      </div>
+
+      <div class="form-group mt-3">
+        <%= f.label :end_date, 'Date and time to close judging round to judges' %>
+        <%= f.datetime_local_field :end_date, class: 'form-control' %>
+      </div>
+
+      <div class="form-group mt-3">
+        <%= f.label :special_instructions, 'Instructions for Judges' %>
+        <%= f.text_area :special_instructions, class: 'form-control', rows: 3,
+            placeholder: 'Enter any instructions or guidelines for judges specific to this round...' %>
+        <small class="form-text text-muted">
+          These instructions will be visible to judges on the Judging Dashboard when they are evaluating entries in this round.
+        </small>
+      </div>
+
+      <h3 class="mt-4">Comment Requirements</h3>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <%= f.label :require_internal_comments, class: 'form-check-label' do %>
+              <%= f.check_box :require_internal_comments, class: 'form-check-input me-2' %>
+              Require Internal Comments
+            <% end %>
+          </div>
+          <div class="form-group mt-3">
+            <%= f.label :min_internal_comment_words, 'Minimum Words for Internal Comments' %>
+            <%= f.number_field :min_internal_comment_words, class: 'form-control', min: 0 %>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <%= f.label :require_external_comments, class: 'form-check-label' do %>
+              <%= f.check_box :require_external_comments, class: 'form-check-input me-2' %>
+              Require External Comments
+            <% end %>
+          </div>
+          <div class="form-group mt-3">
+            <%= f.label :min_external_comment_words, 'Minimum Words for External Comments' %>
+            <%= f.number_field :min_external_comment_words, class: 'form-control', min: 0 %>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions py-2">
+        <%= f.submit 'Save and continue', class: 'btn btn-primary' %>
+        <%= link_to 'Skip',
+                    container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                    class: 'btn btn-outline-secondary ms-2' %>
+        <%= link_to 'Cancel',
+                    container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                    class: 'text-danger link_to ms-2' %>
+      </div>
+    <% end %>
+  </div>
+</div>

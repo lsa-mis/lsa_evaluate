@@ -1,0 +1,25 @@
+<%# locals: heading, content, collapse_id %>
+<div class="accordion mb-3" id="<%= collapse_id %>-accordion">
+  <div class="accordion-item">
+    <div class="accordion-header" id="<%= collapse_id %>-heading">
+      <button type="button"
+              class="accordion-button collapsed py-2"
+              data-bs-toggle="collapse"
+              data-bs-target="#<%= collapse_id %>"
+              aria-expanded="false"
+              aria-controls="<%= collapse_id %>">
+        <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
+        <%= heading %>
+      </button>
+    </div>
+    <div id="<%= collapse_id %>"
+         class="accordion-collapse collapse"
+         role="region"
+         aria-labelledby="<%= collapse_id %>-heading"
+         data-bs-parent="#<%= collapse_id %>-accordion">
+      <div class="accordion-body">
+        <%= content %>
+      </div>
+    </div>
+  </div>
+</div>

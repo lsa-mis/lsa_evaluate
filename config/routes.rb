@@ -41,6 +41,12 @@ Rails.application.routes.draw do
   end
 
   resources :containers do
+    resources :application_questions, except: [ :show ] do
+      collection do
+        patch :update_requirements
+        patch :reorder
+      end
+    end
     resources :contest_descriptions do
       resources :contest_instances do
         member do
@@ -50,6 +56,9 @@ Rails.application.routes.draw do
           get :export_round_results
           patch :deactivate
           post :regenerate_access_token
+          get 'setup/questions', action: :setup_questions, as: :setup_questions
+          patch 'setup/questions', action: :update_setup_questions
+          get 'setup/review_process', action: :setup_review_process, as: :setup_review_process
         end
         resources :contest_invitations, only: [ :create, :destroy ] do
           collection do
@@ -98,6 +107,7 @@ Rails.application.routes.draw do
     resources :assignments, only: %i[create destroy]
     member do
       get 'description'
+      get :reports
       get :active_applicants_report
     end
   end

@@ -1,4 +1,6 @@
 class JudgingRoundsController < ApplicationController
+  helper ContestInstancesHelper
+
   before_action :set_contest_instance
   before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete, :update_rankings, :finalize_rankings, :send_instructions, :notify_completed ]
   before_action :authorize_contest_instance
@@ -24,12 +26,15 @@ class JudgingRoundsController < ApplicationController
     @round_number = @contest_instance.judging_rounds.count + 1
 
     if @judging_round.save
-      redirect_to container_contest_description_contest_instance_judging_assignments_path(
-        @container, @contest_description, @contest_instance
-      ), notice: 'Judging round was successfully created.'
+      redirect_to after_judging_round_save_path, notice: 'Judging round was successfully created.'
     else
       flash.now[:alert] = @judging_round.errors.full_messages
-      render :new, status: :unprocessable_entity
+      if from_setup?
+        @round_number = @contest_instance.judging_rounds.count + 1
+        render template: 'contest_instances/setup_review_process', status: :unprocessable_entity
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
   end
 
@@ -424,5 +429,21 @@ class JudgingRoundsController < ApplicationController
       :special_instructions,
       :required_entries_count
     )
+  end
+
+  def from_setup?
+    ActiveModel::Type::Boolean.new.cast(params[:from_setup])
+  end
+
+  def after_judging_round_save_path
+    if from_setup?
+      container_contest_description_contest_instance_path(
+        @container, @contest_description, @contest_instance
+      )
+    else
+      container_contest_description_contest_instance_judging_assignments_path(
+        @container, @contest_description, @contest_instance
+      )
+    end
   end
 end

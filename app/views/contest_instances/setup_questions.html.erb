@@ -1,0 +1,35 @@
+<%= render 'setup_stepper', current_step: :questions %>
+
+<div class="d-flex justify-content-end">
+  <%= link_to 'Cancel setup',
+              container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+              class: 'link_to' %>
+</div>
+
+<h1>Review questions</h1>
+<p class="text-muted">
+  Collection defaults apply until you save overrides. You can skip this step and change questions later from Edit Instance.
+</p>
+
+<%= form_with url: setup_questions_container_contest_description_contest_instance_path(
+                    @container, @contest_description, @contest_instance
+                  ),
+              method: :patch,
+              local: true do %>
+  <%= render 'application_questions/requirements_matrix',
+             container: @container,
+             requireable: @contest_instance,
+             param_key: 'requirements' %>
+
+  <div class="form-actions py-2">
+    <%= submit_tag 'Save and continue', class: 'btn btn-primary' %>
+    <%= link_to 'Skip',
+                setup_review_process_container_contest_description_contest_instance_path(
+                  @container, @contest_description, @contest_instance
+                ),
+                class: 'btn btn-outline-secondary ms-2' %>
+    <%= link_to 'Cancel',
+                container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
+                class: 'text-danger link_to ms-2' %>
+  </div>
+<% end %>
