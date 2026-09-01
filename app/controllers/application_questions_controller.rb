@@ -122,6 +122,34 @@ class ApplicationQuestionsController < ApplicationController
       options['requires_acceptance'] = false
     end
 
+    normalize_default_value_option!(options)
+
     permitted[:options] = options
+  end
+
+  def normalize_default_value_option!(options)
+    field_type = @application_question&.field_type || permitted_field_type
+    return if field_type.blank?
+
+    return options.except!('default_value', :default_value) if @application_question&.system?
+
+    return unless options.key?('default_value') || options.key?(:default_value)
+
+    raw_default = options['default_value'] || options[:default_value]
+    normalized = ApplicationQuestion.normalize_default_value_param(
+      field_type,
+      raw_default,
+      choices: Array(options['choices'])
+    )
+
+    if normalized.nil?
+      options.except!('default_value', :default_value)
+    else
+      options['default_value'] = normalized
+    end
+  end
+
+  def permitted_field_type
+    params.dig(:application_question, :field_type)
   end
 end

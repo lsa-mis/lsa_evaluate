@@ -41,7 +41,7 @@ class ApplicationQuestionPrefill
 
       PROFILE_SYSTEM_KEY_MAP[question.system_key]&.call(@profile)
     else
-      latest_custom_answer(question)&.value
+      latest_custom_answer(question)&.value || question.default_answer_value
     end
   end
 

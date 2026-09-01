@@ -81,7 +81,11 @@ class ApplicationQuestion < ApplicationRecord
   before_validation :assign_generated_key
   before_validation :normalize_key
   before_validation :assign_default_position, on: :create
+  before_validation :strip_default_value_for_system_questions
+  before_validation :normalize_default_value_in_options
   before_destroy :prevent_destroy_with_answers
+
+  validate :default_value_valid_for_field_type, if: :custom?
 
   def system?
     system_key.present?
@@ -117,6 +121,73 @@ class ApplicationQuestion < ApplicationRecord
       class_level&.undergraduate?
     else
       true
+    end
+  end
+
+  def default_value
+    options&.dig('default_value')
+  end
+
+  def default_answer_value
+    return nil unless custom?
+
+    self.class.normalized_default_answer(field_type, default_value, choices: choice_list)
+  end
+
+  def choice_list
+    Array(options&.dig('choices') || options&.dig(:choices))
+  end
+
+  def self.normalized_default_answer(field_type, raw, choices: [])
+    case field_type
+    when 'boolean'
+      return nil if raw.nil? || raw == ''
+
+      ActiveModel::Type::Boolean.new.cast(raw)
+    when 'select_with_other'
+      return nil if raw.nil?
+
+      if raw.is_a?(Hash)
+        hash = raw.stringify_keys.slice('choice', 'other')
+        return nil if hash['choice'].blank?
+
+        hash
+      else
+        raw.presence && { 'choice' => raw.to_s }
+      end
+    when 'campus', 'school'
+      raw.presence&.to_i
+    when 'date'
+      raw.presence
+    else
+      raw.presence
+    end
+  end
+
+  def self.normalize_default_value_param(field_type, raw, choices: [])
+    return nil if raw.nil?
+
+    case field_type
+    when 'boolean'
+      return nil if raw == ''
+
+      ActiveModel::Type::Boolean.new.cast(raw)
+    when 'select_with_other'
+      if raw.is_a?(ActionController::Parameters) || raw.is_a?(Hash)
+        hash = raw.respond_to?(:to_unsafe_h) ? raw.to_unsafe_h : raw.to_h
+        hash = hash.stringify_keys.slice('choice', 'other')
+        return nil if hash['choice'].blank?
+
+        hash
+      else
+        raw.presence && { 'choice' => raw.to_s }
+      end
+    when 'campus', 'school'
+      raw.presence&.to_i
+    when 'date', 'select', 'string', 'text'
+      raw.presence
+    else
+      raw.presence
     end
   end
 
@@ -231,5 +302,93 @@ class ApplicationQuestion < ApplicationRecord
 
     errors.add(:base, 'cannot delete a question that has answers; deactivate it instead')
     throw :abort
+  end
+
+  def strip_default_value_for_system_questions
+    return unless system?
+    return if options.blank?
+
+    self.options = options.except('default_value', :default_value)
+  end
+
+  def normalize_default_value_in_options
+    return unless custom?
+    return if options.blank?
+    return unless options.key?('default_value') || options.key?(:default_value)
+
+    normalized = self.class.normalize_default_value_param(field_type, options['default_value'] || options[:default_value],
+                                                          choices: choice_list)
+    if normalized.nil?
+      self.options = options.except('default_value', :default_value)
+    else
+      self.options = options.merge('default_value' => normalized)
+    end
+  end
+
+  def default_value_valid_for_field_type
+    return if default_value.nil?
+
+    case field_type
+    when 'select'
+      validate_select_default_value
+    when 'select_with_other'
+      validate_select_with_other_default_value
+    when 'date'
+      validate_date_default_value
+    when 'campus'
+      validate_campus_default_value
+    when 'school'
+      validate_school_default_value
+    when 'boolean'
+      validate_boolean_default_value
+    end
+  end
+
+  def validate_select_default_value
+    return if choice_list.include?(default_value)
+
+    errors.add(:base, 'default value must be one of the dropdown choices')
+  end
+
+  def validate_select_with_other_default_value
+    unless default_value.is_a?(Hash)
+      errors.add(:base, 'default value is invalid for dropdown with Other')
+      return
+    end
+
+    choice = default_value['choice']
+    unless choice.present? && choice_list.include?(choice)
+      errors.add(:base, 'default value must be one of the dropdown choices')
+      return
+    end
+
+    other = default_value['other']
+    return unless other.present? && choice != 'Other'
+
+    errors.add(:base, 'default other text is only allowed when Other is selected')
+  end
+
+  def validate_date_default_value
+    Date.iso8601(default_value.to_s)
+  rescue ArgumentError
+    errors.add(:base, 'default value must be a valid date')
+  end
+
+  def validate_campus_default_value
+    return if Campus.exists?(id: default_value)
+
+    errors.add(:base, 'default value must be a valid campus')
+  end
+
+  def validate_school_default_value
+    return if School.exists?(id: default_value)
+
+    errors.add(:base, 'default value must be a valid school or college')
+  end
+
+  def validate_boolean_default_value
+    return if [ true, false ].include?(default_value)
+
+    errors.add(:base, 'default value must be Yes or No')
   end
 end

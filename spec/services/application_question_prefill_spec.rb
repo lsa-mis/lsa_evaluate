@@ -80,4 +80,20 @@ RSpec.describe ApplicationQuestionPrefill do
     values = described_class.for(profile:, questions: [ campus_employee ])
     expect(values[campus_employee.id]).to be(true)
   end
+
+  it 'prefills custom questions from admin-configured defaults when no prior answer exists' do
+    custom_a.update!(options: { 'default_value' => 'Afternoon' })
+
+    values = described_class.for(profile:, questions: [ custom_a ])
+    expect(values[custom_a.id]).to eq('Afternoon')
+  end
+
+  it 'prefers prior answers over admin defaults for custom questions' do
+    custom_a.update!(options: { 'default_value' => 'Afternoon' })
+    entry = create(:entry, profile:)
+    EntryAnswer.create!(entry:, application_question: custom_a, value: 'Morning')
+
+    values = described_class.for(profile:, questions: [ custom_a ])
+    expect(values[custom_a.id]).to eq('Morning')
+  end
 end

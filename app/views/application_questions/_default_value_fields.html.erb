@@ -1,0 +1,86 @@
+<% question = local_assigns.fetch(:question) %>
+<% field_type = question.field_type %>
+<% default_value = question.options&.dig('default_value') %>
+<% choices = Array(question.options&.dig('choices')) %>
+<% choice_value = default_value.is_a?(Hash) ? default_value['choice'] : default_value %>
+<% other_value = default_value.is_a?(Hash) ? default_value['other'] : nil %>
+<% boolean_default = default_value.nil? ? '' : (default_value ? '1' : '0') %>
+
+<div class="mb-3 <%= 'd-none' unless ApplicationQuestion::FIELD_TYPES.include?(field_type) %>"
+     data-application-question-form-target="defaultValue">
+  <label class="form-label">Default value (optional)</label>
+
+  <div data-application-question-form-target="defaultValueField" data-field-type="string"
+       class="<%= 'd-none' unless field_type == 'string' %>">
+    <%= text_field_tag 'application_question[options][default_value]',
+                       field_type == 'string' ? default_value : nil,
+                       class: 'form-control' %>
+  </div>
+
+  <div data-application-question-form-target="defaultValueField" data-field-type="text"
+       class="<%= 'd-none' unless field_type == 'text' %>">
+    <%= text_area_tag 'application_question[options][default_value]',
+                      field_type == 'text' ? default_value : nil,
+                      class: 'form-control', rows: 3 %>
+  </div>
+
+  <div data-application-question-form-target="defaultValueField" data-field-type="date"
+       class="<%= 'd-none' unless field_type == 'date' %>">
+    <%= date_field_tag 'application_question[options][default_value]',
+                       field_type == 'date' ? default_value : nil,
+                       class: 'form-control' %>
+  </div>
+
+  <div data-application-question-form-target="defaultValueField" data-field-type="select"
+       class="<%= 'd-none' unless field_type == 'select' %>">
+    <%= select_tag 'application_question[options][default_value]',
+                   options_for_select(choices, field_type == 'select' ? default_value : nil),
+                   include_blank: 'No default',
+                   class: 'form-select' %>
+  </div>
+
+  <div data-application-question-form-target="defaultValueField" data-field-type="select_with_other"
+       class="<%= 'd-none' unless field_type == 'select_with_other' %>">
+    <%= select_tag 'application_question[options][default_value][choice]',
+                   options_for_select(choices, field_type == 'select_with_other' ? choice_value : nil),
+                   include_blank: 'No default',
+                   class: 'form-select mb-2' %>
+    <%= text_field_tag 'application_question[options][default_value][other]',
+                       field_type == 'select_with_other' ? other_value : nil,
+                       class: 'form-control',
+                       placeholder: 'If Other, please specify' %>
+  </div>
+
+  <div data-application-question-form-target="defaultValueField" data-field-type="boolean"
+       class="<%= 'd-none' unless field_type == 'boolean' %>">
+    <%= select_tag 'application_question[options][default_value]',
+                   options_for_select([['No default', ''], ['Yes', '1'], ['No', '0']],
+                                      field_type == 'boolean' ? boolean_default : ''),
+                   class: 'form-select' %>
+  </div>
+
+  <div data-application-question-form-target="defaultValueField" data-field-type="campus"
+       class="<%= 'd-none' unless field_type == 'campus' %>">
+    <%= select_tag 'application_question[options][default_value]',
+                   options_from_collection_for_select(Campus.all, :id, :campus_descr,
+                                                      field_type == 'campus' ? default_value : nil),
+                   include_blank: 'No default',
+                   class: 'form-select' %>
+  </div>
+
+  <div data-application-question-form-target="defaultValueField" data-field-type="school"
+       class="<%= 'd-none' unless field_type == 'school' %>">
+    <%= select_tag 'application_question[options][default_value]',
+                   options_from_collection_for_select(School.all, :id, :name,
+                                                      field_type == 'school' ? default_value : nil),
+                   include_blank: 'No default',
+                   class: 'form-select' %>
+  </div>
+
+  <div class="form-text">
+    Pre-fills the entry form when the applicant has no prior answer for this question.
+    <% if field_type == 'boolean' && question.requires_acceptance? %>
+      For agreement-style questions, this pre-ticks the acceptance checkbox.
+    <% end %>
+  </div>
+</div>

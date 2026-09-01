@@ -166,6 +166,89 @@ RSpec.describe ApplicationQuestion do
     end
   end
 
+  describe 'default values' do
+    it 'accepts a valid select default from choices' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'select',
+        options: { 'choices' => %w[Poetry Fiction], 'default_value' => 'Poetry' }
+      )
+
+      expect(question).to be_valid
+      expect(question.default_answer_value).to eq('Poetry')
+    end
+
+    it 'rejects a select default that is not in choices' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'select',
+        options: { 'choices' => %w[Poetry Fiction], 'default_value' => 'Drama' }
+      )
+
+      expect(question).not_to be_valid
+      expect(question.errors[:base]).to include('default value must be one of the dropdown choices')
+    end
+
+    it 'accepts a valid date default' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'date',
+        options: { 'default_value' => '2026-05-01' }
+      )
+
+      expect(question).to be_valid
+      expect(question.default_answer_value).to eq('2026-05-01')
+    end
+
+    it 'rejects an invalid date default' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'date',
+        options: { 'default_value' => 'not-a-date' }
+      )
+
+      expect(question).not_to be_valid
+      expect(question.errors[:base]).to include('default value must be a valid date')
+    end
+
+    it 'accepts a valid campus default' do
+      campus = create(:campus)
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'campus',
+        options: { 'default_value' => campus.id }
+      )
+
+      expect(question).to be_valid
+      expect(question.default_answer_value).to eq(campus.id)
+    end
+
+    it 'accepts a valid boolean default' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'boolean',
+        options: { 'default_value' => true }
+      )
+
+      expect(question).to be_valid
+      expect(question.default_answer_value).to be(true)
+    end
+
+    it 'strips default values from system questions' do
+      question = container.application_questions.find_by!(system_key: 'degree')
+      question.options = { 'default_value' => 'BA' }
+
+      expect(question).to be_valid
+      expect(question.options).not_to have_key('default_value')
+    end
+  end
+
   describe '#applies_to_class_level?' do
     let(:graduate) { build(:class_level, name: 'Graduate') }
     let(:undergraduate) { build(:class_level, name: 'First year') }
