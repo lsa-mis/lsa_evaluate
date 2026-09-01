@@ -31,7 +31,7 @@ RSpec.describe 'Collection assignments', type: :request do
              as: :turbo_stream
       }.not_to change(Assignment, :count)
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response.media_type).to eq(Mime[:turbo_stream].to_s)
     end
 

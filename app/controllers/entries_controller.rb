@@ -180,9 +180,10 @@ class EntriesController < ApplicationController
     return unless @entry&.contest_instance
 
     @effective_questions = EffectiveApplicationQuestions.for(@entry.contest_instance)
-    @prefill_values = ApplicationQuestionPrefill.for(
+    @prefill_values = EntryAnswerDisplayValues.for(
       profile: current_user.profile,
-      questions: @effective_questions.map(&:question)
+      questions: @effective_questions.map(&:question),
+      submitted_answers: params[:entry_answers]
     )
     @confirmed_class_level_id = params.dig(:entry, :confirmed_class_level_id).presence ||
                                 current_user.profile.class_level_id
