@@ -67,6 +67,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response.body).to include('Yes / no')
       expect(response.body).to include('Dropdown (choose one)')
       expect(response.body).to include('Dropdown with Other')
+      expect(response.body).to include('Default value (optional)')
       expect(response.body).not_to include('>string</option>')
       expect(response.body).not_to include('>select_with_other</option>')
     end
@@ -143,6 +144,26 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response).to have_http_status(:unprocessable_entity)
       expect(response).to render_template(:new)
     end
+
+    it 'persists a normalized default value for custom select questions' do
+      post :create, params: {
+        container_id: container.id,
+        application_question: {
+          label: 'Preferred genre',
+          field_type: 'select',
+          position: 250,
+          active: true,
+          options: {
+            choices: "Poetry\nFiction",
+            default_value: 'Poetry'
+          }
+        }
+      }
+
+      question = ApplicationQuestion.order(:id).last
+      expect(question.options['default_value']).to eq('Poetry')
+      expect(response).to redirect_to(container_application_questions_path(container))
+    end
   end
 
   describe 'PATCH #update' do
@@ -178,6 +199,20 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
 
       expect(response).to redirect_to(container_application_questions_path(container))
       expect(system_question.reload.key).to eq('degree')
+    end
+
+    it 'updates a custom question default value' do
+      patch :update, params: {
+        container_id: container.id,
+        id: custom_question.id,
+        application_question: {
+          label: custom_question.label,
+          options: { default_value: 'Default workshop' }
+        }
+      }
+
+      expect(response).to redirect_to(container_application_questions_path(container))
+      expect(custom_question.reload.options['default_value']).to eq('Default workshop')
     end
   end
 
