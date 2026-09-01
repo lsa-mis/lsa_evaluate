@@ -3,6 +3,11 @@ require 'rails_helper'
 RSpec.describe 'Judging Rounds', type: :system do
   include Devise::Test::IntegrationHelpers
 
+  def visit_round_management_tab
+    click_button 'Step 2: Round-Specific Judge Assignments', wait: 5
+    expect(page).to have_css('#round-specific.active', wait: 5)
+  end
+
   let(:admin) { create(:user) }
   let(:container) { create(:container) }
   let(:contest_description) { create(:contest_description, :active, container: container) }
@@ -58,6 +63,7 @@ RSpec.describe 'Judging Rounds', type: :system do
           container, contest_description, contest_instance
         )
       )
+      visit_round_management_tab
       click_link_or_button 'Manage Round', wait: 5
       expect(page).to have_content('These are test instructions')
     end
@@ -160,8 +166,7 @@ RSpec.describe 'Judging Rounds', type: :system do
         container, contest_description, contest_instance
       )
 
-      # The round-specific tab should be active by default, but let's make sure
-      expect(page).to have_css('#round-specific.active')
+      visit_round_management_tab
 
       # Find and click the Activate button for the inactive round
       within('.judging-rounds') do
