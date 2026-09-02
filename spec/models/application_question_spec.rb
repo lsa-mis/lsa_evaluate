@@ -240,6 +240,101 @@ RSpec.describe ApplicationQuestion do
       expect(question.default_answer_value).to be(true)
     end
 
+    it 'accepts a valid select_with_other default hash' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'select_with_other',
+        options: {
+          'choices' => %w[Poetry Fiction Other],
+          'default_value' => { 'choice' => 'Other', 'other' => 'Spoken word' }
+        }
+      )
+
+      expect(question).to be_valid
+      expect(question.default_answer_value).to eq('choice' => 'Other', 'other' => 'Spoken word')
+    end
+
+    it 'normalizes a plain-string select_with_other default into a choice hash' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'select_with_other',
+        options: { 'choices' => %w[Poetry Fiction Other], 'default_value' => 'Poetry' }
+      )
+
+      expect(question).to be_valid
+      expect(question.options['default_value']).to eq('choice' => 'Poetry')
+      expect(question.default_answer_value).to eq('choice' => 'Poetry')
+    end
+
+    it 'rejects a select_with_other default whose choice is not in the list' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'select_with_other',
+        options: {
+          'choices' => %w[Poetry Fiction Other],
+          'default_value' => { 'choice' => 'Drama' }
+        }
+      )
+
+      expect(question).not_to be_valid
+      expect(question.errors[:base]).to include('default value must be one of the dropdown choices')
+    end
+
+    it 'rejects select_with_other other-text when the choice is not Other' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'select_with_other',
+        options: {
+          'choices' => %w[Poetry Fiction Other],
+          'default_value' => { 'choice' => 'Poetry', 'other' => 'should not be here' }
+        }
+      )
+
+      expect(question).not_to be_valid
+      expect(question.errors[:base]).to include('default other text is only allowed when Other is selected')
+    end
+
+    it 'accepts a valid school default' do
+      school = create(:school)
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'school',
+        options: { 'default_value' => school.id }
+      )
+
+      expect(question).to be_valid
+      expect(question.default_answer_value).to eq(school.id)
+    end
+
+    it 'rejects an unknown school default' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'school',
+        options: { 'default_value' => 0 }
+      )
+
+      expect(question).not_to be_valid
+      expect(question.errors[:base]).to include('default value must be a valid school or college')
+    end
+
+    it 'rejects an unknown campus default' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'campus',
+        options: { 'default_value' => 0 }
+      )
+
+      expect(question).not_to be_valid
+      expect(question.errors[:base]).to include('default value must be a valid campus')
+    end
+
     it 'strips default values from system questions' do
       question = container.application_questions.find_by!(system_key: 'degree')
       question.options = { 'default_value' => 'BA' }
