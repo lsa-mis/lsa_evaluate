@@ -6,79 +6,19 @@
       <h3>Entry Rankings</h3>
     </div>
     <div class="card-body">
-      <div class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Entry ID</th>
-              <th>Title</th>
-              <th>Average Rank</th>
-              <th>Individual Rankings</th>
-              <% if @judging_round.round_number < @contest_instance.judging_rounds.count %>
-                <th>Select for Next Round</th>
-              <% end %>
-            </tr>
-          </thead>
-          <tbody>
-            <% @entries.each do |entry| %>
-              <tr>
-                <td><%= entry.id %></td>
-                <td><%= entry.title %></td>
-                <td>
-                  <%= @judging_round.average_rank_for_entry(entry) || 'No rankings' %>
-                </td>
-                <td>
-                  <% entry.entry_rankings.select { |ranking| ranking.judging_round_id == @judging_round.id }.each do |ranking| %>
-                    <div>
-                      <%= content_tag(:span,
-                        display_email(ranking.user.email),
-                        data: {
-                          'bs-toggle': 'tooltip',
-                          'bs-html': 'true',
-                          'bs-title': "#{h(ranking.user.display_name)}<br>#{h(display_email(ranking.user.email))}"
-                        }
-                      ) %> : <%= ranking.rank || 'Not ranked' %>
-                      <% if ranking.internal_comments.present? || ranking.external_comments.present? %>
-                        <button class="btn btn-sm btn-outline-info ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#comments-<%= ranking.id %>">
-                          View Comments
-                        </button>
-                        <div class="collapse mt-2" id="comments-<%= ranking.id %>">
-                          <div class="card card-body">
-                            <% if ranking.internal_comments.present? %>
-                              <strong>Internal Comments:</strong>
-                              <p><%= ranking.internal_comments %></p>
-                            <% end %>
-                            <% if ranking.external_comments.present? %>
-                              <strong>External Comments:</strong>
-                              <p><%= ranking.external_comments %></p>
-                            <% end %>
-                          </div>
-                        </div>
-                      <% end %>
-                    </div>
-                  <% end %>
-                </td>
-                <% if @judging_round.round_number < @contest_instance.judging_rounds.count %>
-                  <td class="text-center">
-                    <%= render 'entry_checkbox',
-                      entry: entry,
-                      judging_round: @judging_round,
-                      container: @container,
-                      contest_description: @contest_description,
-                      contest_instance: @contest_instance
-                    %>
-                  </td>
-                <% end %>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+      <%= render 'judging_results/rankings_table',
+            round: @judging_round,
+            container: @container,
+            contest_description: @contest_description,
+            contest_instance: @contest_instance,
+            show_next_round_column: @judging_round.round_number < @contest_instance.judging_rounds.count,
+            link_entry_details: false,
+            sort_context: :judging_round %>
     </div>
   </div>
 
   <div class="mt-4">
-    <%= link_to 'Back to Judging Assignments',
+    <%= link_to 'Back to Manage Judging',
         container_contest_description_contest_instance_judging_assignments_path(
           @container, @contest_description, @contest_instance
         ),

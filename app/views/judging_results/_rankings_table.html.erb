@@ -1,0 +1,131 @@
+<% context = judging_round_rankings_context(round) %>
+<% judges = context[:judges] %>
+<% entries = context[:entries] %>
+<% rankings_by_entry_and_judge = context[:rankings_by_entry_and_judge] %>
+
+<div class="mb-3 d-flex flex-wrap gap-2 align-items-center">
+  <span class="text-muted">Sort by judge:</span>
+  <% judges.each do |judge| %>
+    <%= link_to judge.display_name_or_first_name_last_name,
+          judging_rankings_sort_path(
+            round, container, contest_description, contest_instance,
+            judge: judge,
+            sort_context: local_assigns[:sort_context]
+          ),
+          class: "btn btn-sm #{params[:sort_judge_id].to_i == judge.id ? 'btn-primary' : 'btn-outline-secondary'}",
+          data: { turbo: false } %>
+  <% end %>
+  <% if params[:sort_judge_id].present? %>
+    <%= link_to 'Clear sort',
+          judging_rankings_clear_sort_path(
+            round, container, contest_description, contest_instance,
+            sort_context: local_assigns[:sort_context]
+          ),
+          class: 'btn btn-sm btn-link',
+          data: { turbo: false } %>
+  <% end %>
+</div>
+
+<div class="table-responsive" id="round-<%= round.id %>-rankings">
+  <table class="table">
+    <thead>
+      <tr>
+        <th class="small">Entry ID</th>
+        <th>Title</th>
+        <% judges.each do |judge| %>
+          <th>
+            <%= content_tag(:span,
+              judge.display_name_or_first_name_last_name,
+              data: {
+                'bs-toggle': 'tooltip',
+                'bs-html': 'true',
+                'bs-title': display_email(judge.email)
+              }
+            ) %>
+          </th>
+        <% end %>
+        <% if show_average_rank_column? %>
+          <th class="text-muted">Average Rank</th>
+        <% end %>
+        <th>Comments</th>
+        <% if local_assigns.fetch(:show_next_round_column, false) %>
+          <th>Select for Next Round</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% entries.each do |entry| %>
+        <% entry_rankings = rankings_by_entry_and_judge[entry.id].values %>
+        <tr>
+          <td>
+            <% if local_assigns.fetch(:link_entry_details, true) %>
+              <button type="button"
+                      class="btn btn-sm btn-outline-primary"
+                      data-action="click->modal#open"
+                      data-url="<%= modal_details_entry_path(entry) %>"
+                      data-modal-title="Entry <%= entry.id %> Details">
+                <%= entry.id %>
+              </button>
+            <% else %>
+              <%= entry.id %>
+            <% end %>
+          </td>
+          <td><%= entry.title %></td>
+          <% judges.each do |judge| %>
+            <% ranking = rankings_by_entry_and_judge[entry.id][judge.id] %>
+            <td>
+              <% if ranking&.rank %>
+                <span class="badge bg-secondary"><%= ranking.rank %></span>
+              <% else %>
+                <span class="text-muted">—</span>
+              <% end %>
+            </td>
+          <% end %>
+          <% if show_average_rank_column? %>
+            <td class="text-muted">
+              <%= entry_rankings.map(&:rank).compact.then { |ranks| ranks.any? ? (ranks.sum.to_f / ranks.size).round(2) : 'No rankings' } %>
+            </td>
+          <% end %>
+          <td>
+            <div class="comments-container scrollable-container">
+              <% has_comments = false %>
+              <% entry_rankings.each do |ranking| %>
+                <% if ranking.external_comments.present? || ranking.internal_comments.present? %>
+                  <% has_comments = true %>
+                  <div class="mb-2 border-bottom pb-2">
+                    <strong><%= ranking.user.display_name_or_first_name_last_name %></strong>
+                    <% if ranking.external_comments.present? %>
+                      <div class="text-muted small mt-1">
+                        <strong class="text-primary">External:</strong>
+                        <%= ranking.external_comments %>
+                      </div>
+                    <% end %>
+                    <% if ranking.internal_comments.present? %>
+                      <div class="text-muted small mt-1">
+                        <strong class="text-secondary">Internal:</strong>
+                        <%= ranking.internal_comments %>
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
+              <% end %>
+              <% unless has_comments %>
+                <div class="text-muted">No comments yet</div>
+              <% end %>
+            </div>
+          </td>
+          <% if local_assigns.fetch(:show_next_round_column, false) %>
+            <td class="text-center">
+              <%= render 'judging_rounds/entry_checkbox',
+                entry: entry,
+                judging_round: round,
+                container: container,
+                contest_description: contest_description,
+                contest_instance: contest_instance %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

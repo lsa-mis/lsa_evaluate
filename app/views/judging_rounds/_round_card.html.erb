@@ -1,0 +1,149 @@
+<div class="judging-round-item">
+<div class="card mb-3 border-<%= round.completed? ? 'secondary' : (round.active? ? 'success' : 'warning') %>">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h5 class="mb-0">Round <%= round.round_number %></h5>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="badge bg-<%= round.completed? ? 'secondary' : (round.active? ? 'success' : 'warning') %>">
+        <%= round.completed? ? 'Completed' : (round.active? ? 'Active' : 'Pending') %>
+      </span>
+      <% if round.round_judge_assignments.active.any? %>
+        <button type="button"
+                class="btn btn-sm btn-outline-success"
+                data-bs-toggle="modal"
+                data-bs-target="#sendInstructionsModal<%= round.id %>">
+          <i class="bi bi-envelope me-1"></i>Send judging instructions
+        </button>
+      <% end %>
+      <% if round.completed? %>
+        <%= link_to 'Review Rankings & Select Entries',
+            container_contest_description_contest_instance_judging_round_path(
+              container, contest_description, contest_instance, round
+            ),
+            class: 'btn btn-primary btn-sm' %>
+      <% end %>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row mb-3">
+      <div class="col">
+        <strong><i class="bi bi-calendar me-1"></i> Dates:</strong>
+        <%= format_datetime(round.start_date) %> - <%= format_datetime(round.end_date) %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col">
+        <div class="d-flex align-items-center">
+          <strong class="me-3"><i class="bi bi-people me-1"></i> Judges Assigned:</strong>
+          <div class="d-flex flex-wrap">
+            <% assignments = round.round_judge_assignments.active.includes(:user) %>
+            <% if assignments.any? %>
+              <% assignments.each do |assignment| %>
+                <% judge = assignment.user %>
+                <span class="badge bg-<%= assignment.instructions_sent_at ? 'success' : 'secondary' %> text-white me-2 mb-1 d-inline-flex align-items-center"
+                      data-bs-toggle="tooltip"
+                      data-bs-html="true"
+                      data-bs-title="<%= h(judge.display_name_or_first_name_last_name) %><br><%= h(display_email(judge.email)) %><% if assignment.instructions_sent_at %><br><small>Instructions sent: <%= I18n.l(assignment.instructions_sent_at, format: :short) %></small><% end %>">
+                  <%= judge.display_name_and_uid %>
+                  <% if assignment.instructions_sent_at %>
+                    <i class="bi bi-check-circle-fill ms-1" title="Instructions sent"></i>
+                  <% end %>
+                </span>
+              <% end %>
+            <% else %>
+              <em class="text-muted">No judges assigned to this round</em>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-2">
+      <div class="col">
+        <strong class="me-3">Minimum entries to be evaluated per judge:</strong>
+        <%= round.required_entries_count %>
+      </div>
+    </div>
+
+    <div class="row flex justify-content-space-around mb-2">
+      <strong>Comment requirements:</strong>
+      <div class="col-4">
+        <p class="ms-3 small">Internal:
+          <%= round.require_internal_comments ? 'Required' : 'Optional' %>
+          <% if round.require_internal_comments && round.min_internal_comment_words > 0 %>
+            (minimum <%= pluralize(round.min_internal_comment_words, 'word') %>)
+          <% end %>
+        </p>
+      </div>
+      <div class="col-4">
+        <p class="ms-3 small">External:
+          <%= round.require_external_comments ? 'Required' : 'Optional' %>
+          <% if round.require_external_comments && round.min_external_comment_words > 0 %>
+            (minimum <%= pluralize(round.min_external_comment_words, 'word') %>)
+          <% end %>
+        </p>
+      </div>
+    </div>
+
+    <% if round.special_instructions.present? %>
+      <div class="row mb-3">
+        <div class="col">
+          <div class="alert alert-warning mb-0">
+            <strong><i class="bi bi-exclamation-circle me-1"></i>Instructions:</strong><br>
+            <%= simple_format(round.special_instructions) %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="row">
+      <div class="col">
+        <div class="d-flex gap-2 flex-wrap">
+          <%= link_to 'Manage Round',
+              container_contest_description_contest_instance_judging_round_round_judge_assignments_path(
+                container, contest_description, contest_instance, round
+              ),
+              class: 'btn btn-secondary btn-sm' %>
+
+          <% if round.completed? %>
+            <%= button_to 'Mark Incomplete',
+                uncomplete_container_contest_description_contest_instance_judging_round_path(
+                  container, contest_description, contest_instance, round
+                ),
+                method: :patch,
+                class: 'btn btn-warning btn-sm' %>
+          <% else %>
+            <% if round.active? %>
+              <%= button_to 'Deactivate',
+                  deactivate_container_contest_description_contest_instance_judging_round_path(
+                    container, contest_description, contest_instance, round
+                  ),
+                  method: :patch,
+                  class: 'btn btn-warning btn-sm' %>
+            <% else %>
+              <%= button_to 'Activate',
+                  activate_container_contest_description_contest_instance_judging_round_path(
+                    container, contest_description, contest_instance, round
+                  ),
+                  method: :patch,
+                  class: 'btn btn-success btn-sm' %>
+            <% end %>
+            <%= button_to 'Mark Complete',
+                complete_container_contest_description_contest_instance_judging_round_path(
+                  container, contest_description, contest_instance, round
+                ),
+                method: :patch,
+                class: 'btn btn-info btn-sm' %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%= render 'judging_rounds/send_instructions_modal',
+      round: round,
+      container: container,
+      contest_description: contest_description,
+      contest_instance: contest_instance %>
+</div>

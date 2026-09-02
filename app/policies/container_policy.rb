@@ -44,6 +44,10 @@ class ContainerPolicy < ApplicationPolicy
     owns_container? || axis_mundi?
   end
 
+  def manage_judging?
+    owns_container? || axis_mundi?
+  end
+
   def description?
     true
   end

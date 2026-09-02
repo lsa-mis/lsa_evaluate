@@ -1,9 +1,0 @@
-<% if policy(@contest_instance).manage_judges? %>
-  <%= link_to 'Manage Judging',
-      container_contest_description_contest_instance_judging_assignments_path(
-        @container, @contest_description, @contest_instance
-      ),
-      class: 'btn btn-sm btn-outline-secondary mb-2',
-      data: { 'bs-toggle': 'tooltip' },
-      title: 'Manage the judging rounds and assignments for this contest instance' %>
-<% end %>

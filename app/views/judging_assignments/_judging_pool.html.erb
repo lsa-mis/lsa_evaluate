@@ -48,6 +48,17 @@
             <%= hidden_field_tag 'judging_assignment[user_id]', nil, data: { uid_lookup_target: 'uidInput' } %>
             <div data-uid-lookup-target="results" class="autocomplete-results"></div>
           </div>
+          <% if @judging_rounds.any? %>
+            <div class="mb-3">
+              <p class="mb-2"><strong>Optionally assign to rounds now:</strong></p>
+              <% @judging_rounds.each do |round| %>
+                <div class="form-check">
+                  <%= check_box_tag 'judging_round_ids[]', round.id, false, id: "assign_round_#{round.id}", class: 'form-check-input' %>
+                  <%= label_tag "assign_round_#{round.id}", "Round #{round.round_number}", class: 'form-check-label' %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
           <%= f.submit "Assign Judge", class: "btn btn-primary mt-3" %>
         </div>
       <% end %>
@@ -81,6 +92,17 @@
               <div class="invalid-feedback">Please enter a last name.</div>
             </div>
             <%= f.submit "Create and Assign Judge", class: "btn btn-success" %>
+            <% if @judging_rounds.any? %>
+              <div class="mt-3">
+                <p class="mb-2"><strong>Optionally assign to rounds now:</strong></p>
+                <% @judging_rounds.each do |round| %>
+                  <div class="form-check">
+                    <%= check_box_tag 'judging_round_ids[]', round.id, false, id: "create_assign_round_#{round.id}", class: 'form-check-input' %>
+                    <%= label_tag "create_assign_round_#{round.id}", "Round #{round.round_number}", class: 'form-check-label' %>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
           <% end %>
         </div>
       </div>

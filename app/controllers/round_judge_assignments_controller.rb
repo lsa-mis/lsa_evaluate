@@ -10,6 +10,9 @@ class RoundJudgeAssignmentsController < ApplicationController
   end
 
   def create
+    user = User.find(round_judge_assignment_params[:user_id])
+    ensure_pool_assignment!(user)
+
     @round_judge_assignment = @judging_round.round_judge_assignments.build(round_judge_assignment_params)
 
     if @round_judge_assignment.save
@@ -49,5 +52,11 @@ class RoundJudgeAssignmentsController < ApplicationController
 
   def round_judge_assignment_params
     params.require(:round_judge_assignment).permit(:user_id)
+  end
+
+  def ensure_pool_assignment!(user)
+    return if @contest_instance.judging_assignments.exists?(user: user)
+
+    @contest_instance.judging_assignments.create!(user: user)
   end
 end

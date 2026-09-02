@@ -213,7 +213,11 @@ class ContestInstancesController < ApplicationController
         format.csv do
           filename = "#{@contest_description.name.parameterize}-round-#{judging_round.round_number}-results-#{Time.zone.today}.csv"
 
-          csv_data = generate_round_results_csv(@entries, @contest_description, @contest_instance, judging_round)
+          csv_data = if params[:wide].present?
+            generate_wide_round_results_csv(@entries, @contest_description, @contest_instance, judging_round)
+          else
+            generate_round_results_csv(@entries, @contest_description, @contest_instance, judging_round)
+          end
 
           send_data csv_data,
                     type: 'text/csv; charset=utf-8; header=present',
@@ -391,6 +395,65 @@ class ContestInstancesController < ApplicationController
         else
           csv << base_data + [ '', '', '', '' ] + question_values
         end
+      end
+    end
+  end
+
+  def generate_wide_round_results_csv(entries, contest_description, contest_instance, judging_round)
+    require 'csv'
+    questions = EffectiveApplicationQuestions.for(contest_instance).map(&:question)
+    judges = judging_round.round_judge_assignments.includes(:user).map(&:user).uniq.sort_by do |user|
+      [user.last_name.to_s.downcase, user.first_name.to_s.downcase]
+    end
+
+    CSV.generate do |csv|
+      contest_info = "#{contest_description.name} - Round #{judging_round.round_number} Results (Wide Format)"
+      csv << [contest_info]
+      csv << []
+
+      headers = [
+        'Title', 'Category', 'First Name', 'Last Name', 'Display Name', 'UMID', 'Uniqname',
+        'Class Level', 'Entry ID', 'Selected for Next Round'
+      ] + judges.map { |judge| "#{judge.display_name_or_first_name_last_name} Rank" } +
+        ['Judge Comments [External]', 'Judge Comments [Internal]'] + questions.map(&:label)
+      csv << headers
+
+      entries.includes(:category, :entry_answers, profile: [ :user, :class_level ]).find_each do |entry|
+        profile = entry.profile
+        rankings = entry.entry_rankings.where(judging_round: judging_round).index_by(&:user_id)
+        selected = rankings.values.any?(&:selected_for_next_round?)
+        answers_by_question_id = entry.entry_answers.index_by(&:application_question_id)
+        question_values = questions.map { |question|
+          csv_safe_cell(answers_by_question_id[question.id]&.display_value)
+        }
+
+        judge_ranks = judges.map { |judge| rankings[judge.id]&.rank }
+        comments = judges.filter_map do |judge|
+          ranking = rankings[judge.id]
+          next unless ranking
+
+          external = ranking.external_comments.presence
+          internal = ranking.internal_comments.presence
+          next unless external || internal
+
+          "#{judge.display_name_or_first_name_last_name}: #{[external, internal].compact.join(' | ')}"
+        end
+
+        csv << [
+          csv_safe_cell(entry.title),
+          csv_safe_cell(entry.category&.kind),
+          csv_safe_cell(profile&.legal_first_name.presence || profile&.user&.first_name),
+          csv_safe_cell(profile&.legal_last_name.presence || profile&.user&.last_name),
+          csv_safe_cell(profile&.display_name),
+          csv_safe_cell(profile&.umid),
+          csv_safe_cell(profile&.user&.uniqname),
+          csv_safe_cell(profile&.class_level&.name),
+          entry.id,
+          selected ? 'Yes' : 'No'
+        ] + judge_ranks + [
+          csv_safe_cell(comments.join('; ')),
+          ''
+        ] + question_values
       end
     end
   end
