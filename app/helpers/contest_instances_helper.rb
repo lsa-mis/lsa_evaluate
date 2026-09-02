@@ -30,4 +30,16 @@ module ContestInstancesHelper
       "External link: Learn more about financial aid terms and conditions on the Office of Financial Aid's website"
     ])
   end
+
+  def contest_instance_active_tab
+    allowed_tabs = %w[summary entries manage-judges judging-results]
+    return params[:tab] if params[:tab].in?(allowed_tabs)
+    return 'judging-results' if params[:sort_judge_id].present?
+
+    'summary'
+  end
+
+  def contest_instance_tab_active?(tab_name)
+    contest_instance_active_tab == tab_name
+  end
 end

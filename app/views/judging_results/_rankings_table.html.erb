@@ -7,12 +7,22 @@
   <span class="text-muted">Sort by judge:</span>
   <% judges.each do |judge| %>
     <%= link_to judge.display_name_or_first_name_last_name,
-          request.params.merge(sort_judge_id: judge.id, anchor: "round-#{round.id}-rankings"),
-          class: "btn btn-sm #{params[:sort_judge_id].to_i == judge.id ? 'btn-primary' : 'btn-outline-secondary'}" %>
+          judging_rankings_sort_path(
+            round, container, contest_description, contest_instance,
+            judge: judge,
+            sort_context: local_assigns[:sort_context]
+          ),
+          class: "btn btn-sm #{params[:sort_judge_id].to_i == judge.id ? 'btn-primary' : 'btn-outline-secondary'}",
+          data: { turbo: false } %>
   <% end %>
   <% if params[:sort_judge_id].present? %>
-    <%= link_to 'Clear sort', request.params.except(:sort_judge_id).merge(anchor: "round-#{round.id}-rankings"),
-          class: 'btn btn-sm btn-link' %>
+    <%= link_to 'Clear sort',
+          judging_rankings_clear_sort_path(
+            round, container, contest_description, contest_instance,
+            sort_context: local_assigns[:sort_context]
+          ),
+          class: 'btn btn-sm btn-link',
+          data: { turbo: false } %>
   <% end %>
 </div>
 

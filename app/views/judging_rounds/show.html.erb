@@ -12,7 +12,8 @@
             contest_description: @contest_description,
             contest_instance: @contest_instance,
             show_next_round_column: @judging_round.round_number < @contest_instance.judging_rounds.count,
-            link_entry_details: false %>
+            link_entry_details: false,
+            sort_context: :judging_round %>
     </div>
   </div>
 

@@ -31,6 +31,9 @@ application.register("confirm", ConfirmController)
 import ContestActivationController from "./contest_activation_controller"
 application.register("contest-activation", ContestActivationController)
 
+import ContestInstanceTabsController from "./contest_instance_tabs_controller"
+application.register("contest-instance-tabs", ContestInstanceTabsController)
+
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
 

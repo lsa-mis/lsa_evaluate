@@ -35,4 +35,38 @@ module JudgingResultsHelper
       rankings_by_entry_and_judge: rankings_by_entry_and_judge
     }
   end
+
+  def judging_rankings_sort_path(round, container, contest_description, contest_instance, judge: nil, sort_context: nil)
+    anchor = "round-#{round.id}-rankings"
+    url_options = { anchor: anchor }
+    url_options[:sort_judge_id] = judge.id if judge
+    sort_context ||= infer_judging_rankings_sort_context
+
+    if sort_context == :contest_instance
+      url_options[:tab] = 'judging-results'
+      container_contest_description_contest_instance_path(
+        container, contest_description, contest_instance, url_options
+      )
+    else
+      container_contest_description_contest_instance_judging_round_path(
+        container, contest_description, contest_instance, round, url_options
+      )
+    end
+  end
+
+  def judging_rankings_clear_sort_path(round, container, contest_description, contest_instance, sort_context: nil)
+    judging_rankings_sort_path(
+      round, container, contest_description, contest_instance, sort_context: sort_context
+    )
+  end
+
+  private
+
+  def infer_judging_rankings_sort_context
+    if controller_name == 'contest_instances' && action_name == 'show'
+      :contest_instance
+    else
+      :judging_round
+    end
+  end
 end
