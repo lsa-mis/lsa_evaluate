@@ -35,6 +35,7 @@ class BulkJudgingWindowForm
 
   def end_date_after_start_date
     return if end_date.blank? || start_date.blank?
+    return if parsed_end_date.nil? || parsed_start_date.nil?
 
     if parsed_end_date < parsed_start_date
       errors.add(:end_date, 'must be after start date')
