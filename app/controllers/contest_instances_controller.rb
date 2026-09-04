@@ -436,7 +436,8 @@ class ContestInstancesController < ApplicationController
           internal = ranking.internal_comments.presence
           next unless external || internal
 
-          "#{judge.display_name_or_first_name_last_name}: #{[external, internal].compact.join(' | ')}"
+          safe_parts = [external, internal].compact.map { |text| csv_safe_cell(text) }
+          "#{judge.display_name_or_first_name_last_name}: #{safe_parts.join(' | ')}"
         end
 
         csv << [
@@ -451,7 +452,7 @@ class ContestInstancesController < ApplicationController
           entry.id,
           selected ? 'Yes' : 'No'
         ] + judge_ranks + [
-          csv_safe_cell(comments.join('; ')),
+          comments.join('; '),
           ''
         ] + question_values
       end
