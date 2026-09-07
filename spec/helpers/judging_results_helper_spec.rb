@@ -67,4 +67,63 @@ RSpec.describe JudgingResultsHelper, type: :helper do
       )
     end
   end
+
+  describe '#judging_round_rankings_context' do
+    let(:container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+    let(:round) { create(:judging_round, contest_instance: contest_instance, round_number: 1) }
+    let(:judge_a) { create(:user, :with_judge_role, first_name: 'Ann', last_name: 'Zebra') }
+    let(:judge_b) { create(:user, :with_judge_role, first_name: 'Bob', last_name: 'Able') }
+    let!(:entry_high) { create(:entry, contest_instance: contest_instance, title: 'High ranked') }
+    let!(:entry_low) { create(:entry, contest_instance: contest_instance, title: 'Low ranked') }
+    let!(:entry_unranked) { create(:entry, contest_instance: contest_instance, title: 'Unranked') }
+
+    before do
+      create(:judging_assignment, contest_instance: contest_instance, user: judge_a)
+      create(:judging_assignment, contest_instance: contest_instance, user: judge_b)
+      create(:round_judge_assignment, judging_round: round, user: judge_a)
+      create(:round_judge_assignment, judging_round: round, user: judge_b)
+      create(:entry_ranking, entry: entry_high, judging_round: round, user: judge_a, rank: 2)
+      create(:entry_ranking, entry: entry_high, judging_round: round, user: judge_b, rank: 1)
+      create(:entry_ranking, entry: entry_low, judging_round: round, user: judge_a, rank: 5)
+      create(:entry_ranking, entry: entry_low, judging_round: round, user: judge_b, rank: 4)
+      create(:entry_ranking, entry: entry_unranked, judging_round: round, user: judge_b, rank: 3)
+      allow(helper).to receive(:params).and_return(ActionController::Parameters.new({}))
+    end
+
+    it 'orders judges by last name then first name' do
+      context = helper.judging_round_rankings_context(round)
+
+      expect(context[:judges]).to eq([judge_b, judge_a])
+    end
+
+    it 'sorts entries by selected judge rank and places missing ranks last' do
+      allow(helper).to receive(:params).and_return(
+        ActionController::Parameters.new(sort_judge_id: judge_a.id.to_s)
+      )
+
+      context = helper.judging_round_rankings_context(round)
+
+      expect(context[:entries]).to eq([entry_high, entry_low, entry_unranked])
+    end
+
+    it 'falls back to multi-judge rank order when sort_judge_id is absent' do
+      context = helper.judging_round_rankings_context(round)
+
+      # Judges ordered Able then Zebra; compare [judge_b rank, judge_a rank]
+      # high: [1, 2], low: [4, 5], unranked: [3, INF] => high, unranked, low
+      expect(context[:entries]).to eq([entry_high, entry_unranked, entry_low])
+    end
+
+    it 'ignores sort_judge_id values that are not assigned to the round' do
+      allow(helper).to receive(:params).and_return(
+        ActionController::Parameters.new(sort_judge_id: '999999')
+      )
+
+      context = helper.judging_round_rankings_context(round)
+
+      expect(context[:entries]).to eq([entry_high, entry_unranked, entry_low])
+    end
+  end
 end
