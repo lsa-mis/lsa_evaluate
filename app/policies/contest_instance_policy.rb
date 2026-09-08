@@ -93,6 +93,10 @@ class ContestInstancePolicy < ApplicationPolicy
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end
 
+  def preview_dates?
+    update?
+  end
+
   def notify_completed?
     return false unless user && record
     return false unless record.judging_open?(user)
