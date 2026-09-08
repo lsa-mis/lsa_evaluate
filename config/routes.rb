@@ -27,10 +27,10 @@ Rails.application.routes.draw do
 
   devise_scope :user do
     delete 'sign_out', to: 'users/sessions#destroy'
+    get 'session/heartbeat', to: 'users/sessions#heartbeat'
   end
 
   get 'judge_dashboard', to: 'judge_dashboard#index'
-  get 'session/heartbeat', to: 'users/sessions#heartbeat'
 
   resources :judging_rounds, only: [ :show ] do
     member do

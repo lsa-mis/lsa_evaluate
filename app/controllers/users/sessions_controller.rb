@@ -3,6 +3,9 @@
 module Users
   # The SessionsController class handles user sessions and authentication.
   class SessionsController < Devise::SessionsController
+    # Heartbeat must answer 401 for expired sessions instead of redirecting to sign-in.
+    skip_before_action :authenticate_user!, only: :heartbeat
+
     # Destroys the user session and preserves the SAML UID and session index in the session.
     def destroy
       saml_uid = session['saml_uid']

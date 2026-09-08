@@ -47,6 +47,73 @@ RSpec.describe BulkJudgingWindowsController, type: :controller do
       expect(response).to have_http_status(:unprocessable_entity)
       expect(flash.now[:alert]).to include('select at least one')
     end
+
+    it 'renders new when the bulk form is invalid' do
+      original_end_date = judging_round.end_date
+
+      post :create, params: {
+        container_id: container.id,
+        judging_round_ids: { judging_round.id.to_s => judging_round.id.to_s },
+        bulk_judging_window_form: {
+          end_date: '',
+          cascade_following_rounds: '1',
+          cascade_mode: 'minimum_bump'
+        }
+      }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to render_template(:new)
+      expect(judging_round.reload.end_date).to eq(original_end_date)
+    end
+
+    it 'renders new with failure details when the updater rejects a round' do
+      allow(BulkJudgingWindowUpdater).to receive(:new).and_return(
+        instance_double(
+          BulkJudgingWindowUpdater,
+          call: BulkJudgingWindowUpdater::Result.new(
+            updated: [],
+            failed: [ {
+              contest_name: contest_description.name,
+              round_number: judging_round.round_number,
+              errors: [ 'End date must be after start date' ]
+            } ],
+            cascaded: []
+          )
+        )
+      )
+
+      post :create, params: {
+        container_id: container.id,
+        judging_round_ids: { judging_round.id.to_s => judging_round.id.to_s },
+        bulk_judging_window_form: {
+          end_date: (judging_round.end_date + 2.days).strftime('%Y-%m-%dT%H:%M'),
+          cascade_following_rounds: '1',
+          cascade_mode: 'minimum_bump'
+        }
+      }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(flash.now[:alert]).to include(contest_description.name)
+      expect(flash.now[:alert]).to include("Round #{judging_round.round_number}")
+      expect(flash.now[:alert]).to include('End date must be after start date')
+    end
+  end
+
+  describe 'authorization' do
+    it 'denies users who cannot manage judging for the container' do
+      sign_in create(:user, :employee)
+
+      post :create, params: {
+        container_id: container.id,
+        judging_round_ids: { judging_round.id.to_s => judging_round.id.to_s },
+        bulk_judging_window_form: {
+          end_date: (judging_round.end_date + 2.days).strftime('%Y-%m-%dT%H:%M')
+        }
+      }
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq('!!! Not authorized !!!')
+    end
   end
 
   describe 'POST #preview' do
