@@ -67,5 +67,28 @@ RSpec.describe JudgingRoundDateCascadePlanner do
       expect(round_two_end_change).to be_present
       expect(round_three_start_change).to be_present
     end
+
+    it 'includes a proposed start date change when provided' do
+      plan = described_class.new(
+        round_two,
+        proposed_end_date: '2026-03-30 17:00',
+        proposed_start_date: '2026-03-17 09:00'
+      ).call
+
+      start_change = plan[:affected_rounds].find { |change| change.round == round_two && change.field == :start_date }
+      expect(start_change.to).to eq(Time.zone.parse('2026-03-17 09:00'))
+      expect(plan[:conflicts]).to be false
+    end
+
+    it 'falls back to minimum_bump when an unknown cascade mode is given' do
+      plan = described_class.new(
+        round_one,
+        proposed_end_date: '2026-03-22 17:00',
+        mode: :not_a_real_mode
+      ).call
+
+      start_change = plan[:affected_rounds].find { |change| change.round == round_two && change.field == :start_date }
+      expect(start_change.to).to eq(Time.zone.parse('2026-03-22 17:00'))
+    end
   end
 end
