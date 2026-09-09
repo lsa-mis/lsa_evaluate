@@ -50,6 +50,10 @@ class JudgingRound < ApplicationRecord
   validate :only_one_active_round_per_contest
 
   scope :active, -> { where(active: true) }
+  scope :for_container, lambda { |container|
+    joins(contest_instance: :contest_description)
+      .where(contest_descriptions: { container_id: container.id })
+  }
 
   before_create :set_active_by_default
 

@@ -16,8 +16,9 @@ class BulkJudgingWindowsController < ApplicationController
 
   def create
     @bulk_judging_window = BulkJudgingWindowForm.new(form_params)
+    scoped_round_ids = judging_rounds_for_ids(selected_round_ids).pluck(:id)
 
-    if selected_round_ids.blank?
+    if scoped_round_ids.blank?
       @judging_rounds = load_judging_rounds
       flash.now[:alert] = 'Please select at least one judging round.'
       return render :new, status: :unprocessable_entity
@@ -29,7 +30,8 @@ class BulkJudgingWindowsController < ApplicationController
     end
 
     result = BulkJudgingWindowUpdater.new(
-      round_ids: selected_round_ids,
+      round_ids: scoped_round_ids,
+      container: @container,
       end_date: @bulk_judging_window.parsed_end_date,
       start_date: @bulk_judging_window.parsed_start_date,
       update_start_date: @bulk_judging_window.update_start_date?,
@@ -57,10 +59,13 @@ class BulkJudgingWindowsController < ApplicationController
   end
 
   def load_judging_rounds
-    JudgingRound.joins(contest_instance: { contest_description: :container })
-                .where(contest_descriptions: { container_id: @container.id })
+    JudgingRound.for_container(@container)
                 .includes(contest_instance: :contest_description)
                 .order('contest_descriptions.name', 'contest_instances.date_open', 'judging_rounds.round_number')
+  end
+
+  def judging_rounds_for_ids(round_ids)
+    load_judging_rounds.where(id: round_ids)
   end
 
   def selected_round_ids
@@ -84,7 +89,7 @@ class BulkJudgingWindowsController < ApplicationController
     cascade_mode = params[:cascade_mode].presence || 'minimum_bump'
     round_ids = params[:judging_round_ids] || []
 
-    JudgingRound.where(id: round_ids).includes(contest_instance: :contest_description).map do |round|
+    judging_rounds_for_ids(round_ids).map do |round|
       plan = JudgingRoundDateCascadePlanner.new(
         round,
         proposed_end_date: end_date,

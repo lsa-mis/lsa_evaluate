@@ -11,9 +11,10 @@ class BulkJudgingWindowUpdater
     end
   end
 
-  def initialize(round_ids:, end_date:, start_date: nil, update_start_date: false, cascade: true, cascade_mode: :minimum_bump)
+  def initialize(round_ids:, end_date:, container:, start_date: nil, update_start_date: false, cascade: true, cascade_mode: :minimum_bump)
     @round_ids = Array(round_ids).map(&:to_i).uniq
     @end_date = end_date
+    @container = container
     @start_date = start_date
     @update_start_date = update_start_date
     @cascade = cascade
@@ -34,7 +35,8 @@ class BulkJudgingWindowUpdater
   private
 
   def load_rounds
-    JudgingRound.where(id: @round_ids)
+    JudgingRound.for_container(@container)
+                .where(id: @round_ids)
                 .includes(contest_instance: { contest_description: :container, judging_rounds: [] })
                 .order('contest_instances.id', 'judging_rounds.round_number')
   end

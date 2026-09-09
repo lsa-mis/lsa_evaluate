@@ -8,6 +8,7 @@ RSpec.describe BulkJudgingWindowUpdater do
            date_open: Time.zone.parse('2026-02-01 09:00'),
            date_closed: Time.zone.parse('2026-03-01 17:00'))
   end
+  let(:container) { contest_instance.contest_description.container }
   let!(:round_one) do
     create(:judging_round,
            contest_instance: contest_instance,
@@ -25,6 +26,7 @@ RSpec.describe BulkJudgingWindowUpdater do
 
   it 'updates the selected round end date' do
     result = described_class.new(
+      container: container,
       round_ids: [round_one.id],
       end_date: '2026-03-14 17:00',
       cascade: false
@@ -36,6 +38,7 @@ RSpec.describe BulkJudgingWindowUpdater do
 
   it 'cascades following round dates when enabled' do
     result = described_class.new(
+      container: container,
       round_ids: [round_one.id],
       end_date: '2026-03-22 17:00',
       cascade: true
@@ -49,6 +52,7 @@ RSpec.describe BulkJudgingWindowUpdater do
 
   it 'fails when cascade is disabled and dates conflict' do
     result = described_class.new(
+      container: container,
       round_ids: [round_one.id],
       end_date: '2026-03-22 17:00',
       cascade: false
@@ -60,6 +64,7 @@ RSpec.describe BulkJudgingWindowUpdater do
 
   it 'returns success with no updates when round_ids are empty' do
     result = described_class.new(
+      container: container,
       round_ids: [],
       end_date: '2026-03-14 17:00',
       cascade: false
@@ -72,6 +77,7 @@ RSpec.describe BulkJudgingWindowUpdater do
 
   it 'ignores unknown round ids and deduplicates selected ids' do
     result = described_class.new(
+      container: container,
       round_ids: [round_one.id, round_one.id, 0],
       end_date: '2026-03-14 17:00',
       cascade: false
@@ -84,6 +90,7 @@ RSpec.describe BulkJudgingWindowUpdater do
 
   it 'updates the selected round start date when requested' do
     result = described_class.new(
+      container: container,
       round_ids: [round_two.id],
       end_date: '2026-03-30 17:00',
       start_date: '2026-03-17 09:00',
@@ -98,6 +105,7 @@ RSpec.describe BulkJudgingWindowUpdater do
 
   it 'preserves gaps between rounds when cascading in preserve_gaps mode' do
     result = described_class.new(
+      container: container,
       round_ids: [round_one.id],
       end_date: '2026-03-22 17:00',
       cascade: true,
@@ -127,6 +135,7 @@ RSpec.describe BulkJudgingWindowUpdater do
     )
 
     result = described_class.new(
+      container: container,
       round_ids: [round_one.id, other_round.id],
       end_date: '2026-03-14 12:00',
       cascade: false
@@ -136,5 +145,33 @@ RSpec.describe BulkJudgingWindowUpdater do
     expect(result.updated.map(&:id)).to contain_exactly(round_one.id, other_round.id)
     expect(round_one.reload.end_date).to eq(Time.zone.parse('2026-03-14 12:00'))
     expect(other_round.reload.end_date).to eq(Time.zone.parse('2026-03-14 12:00'))
+  end
+
+  it 'ignores judging rounds that belong to another container' do
+    foreign_instance = create(
+      :contest_instance,
+      date_open: Time.zone.parse('2026-02-01 09:00'),
+      date_closed: Time.zone.parse('2026-03-01 17:00')
+    )
+    foreign_round = create(
+      :judging_round,
+      contest_instance: foreign_instance,
+      round_number: 1,
+      start_date: Time.zone.parse('2026-03-02 09:00'),
+      end_date: Time.zone.parse('2026-03-15 17:00')
+    )
+    original_foreign_end_date = foreign_round.end_date
+
+    result = described_class.new(
+      container: container,
+      round_ids: [round_one.id, foreign_round.id],
+      end_date: '2026-03-14 12:00',
+      cascade: false
+    ).call
+
+    expect(result.success?).to be true
+    expect(result.updated.map(&:id)).to eq([round_one.id])
+    expect(round_one.reload.end_date).to eq(Time.zone.parse('2026-03-14 12:00'))
+    expect(foreign_round.reload.end_date).to eq(original_foreign_end_date)
   end
 end
