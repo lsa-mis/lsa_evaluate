@@ -58,6 +58,7 @@ class EntriesController < ApplicationController
         answer.entry = @entry
         answer.save!
       end
+      ProfileCampusSync.call(profile: current_user.profile, answers: validator.built_answers)
       saved = true
     end
 

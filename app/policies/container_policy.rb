@@ -60,6 +60,10 @@ class ContainerPolicy < ApplicationPolicy
     active_applicants_report?
   end
 
+  def applicants?
+    reports?
+  end
+
   private
 
   def user_has_containers?

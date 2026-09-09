@@ -18,6 +18,7 @@
         <% end %>
         <p class="m-0">Display name: <%= simple_format(profile.display_name, { class: 'fw-light' }) %></p>
         <p class="m-0">Class Level: <%= simple_format(profile.class_level&.name, { class: 'fw-light' }) %></p>
+        <p class="m-0">Campus: <%= simple_format(profile.resolved_campus_name, { class: 'fw-light' }) %></p>
       </div>
     </div>
   </div>

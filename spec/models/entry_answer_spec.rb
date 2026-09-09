@@ -67,6 +67,12 @@ RSpec.describe EntryAnswer do
       expect(build_answer(question: school_q, value: school.id).display_value).to eq('LSA')
     end
 
+    it 'returns a campus id for campus answers' do
+      campus = create(:campus)
+      campus_q = container.application_questions.find_by!(system_key: 'campus')
+      expect(build_answer(question: campus_q, value: campus.id).campus_id_value).to eq(campus.id)
+    end
+
     it 'renders select_with_other Other answers with free text' do
       question = container.application_questions.find_by!(system_key: 'contest_referral_source')
       answer = build_answer(question:, value: { 'choice' => 'Other', 'other' => 'Bus ad' })

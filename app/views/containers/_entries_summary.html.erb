@@ -3,11 +3,14 @@
   <%= render 'section_help_accordion',
              heading: 'Entries Summary',
              heading_tag: :h2,
-             help_text: 'Summary of active entries across all active contests in this collection',
+             help_text: 'Summary of active entries and unique submitters across all active contests in this collection',
              collapse_id: 'entries-summary-help' %>
 
   <p class="mb-1">
     Total Entries in all Active Instances of Active Contests: <%= container.total_active_entries %>
+  </p>
+  <p class="mb-1">
+    Unique Submitters: <%= container.total_active_unique_submitters %>
   </p>
 
   <% if container.entries_summary.any? %>
@@ -17,7 +20,8 @@
         <thead>
           <tr>
             <th>Campus</th>
-            <th class="text-end">Count</th>
+            <th class="text-end">Submissions</th>
+            <th class="text-end">Unique people</th>
           </tr>
         </thead>
         <tbody>
@@ -25,6 +29,7 @@
             <tr>
               <td><%= summary.campus_descr %></td>
               <td class="text-end"><%= summary.entry_count %></td>
+              <td class="text-end"><%= summary.unique_people %></td>
             </tr>
           <% end %>
         </tbody>
