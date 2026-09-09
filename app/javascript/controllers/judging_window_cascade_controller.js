@@ -106,30 +106,7 @@ export default class extends Controller {
       return
     }
 
-    const rows = plan.changes.map((change) => `
-      <tr>
-        <td>Round ${change.round_number}</td>
-        <td>${change.field.replace("_", " ")}</td>
-        <td>${change.from}</td>
-        <td>${change.to}</td>
-        <td>${change.reason}</td>
-      </tr>
-    `).join("")
-
-    this.previewContentTarget.innerHTML = `
-      <table class="table table-sm table-bordered mt-2 mb-0">
-        <thead>
-          <tr>
-            <th>Round</th>
-            <th>Field</th>
-            <th>Current</th>
-            <th>Proposed</th>
-            <th>Reason</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    `
+    this.previewContentTarget.replaceChildren(this.buildChangesTable(plan.changes))
     this.previewPanelTarget.classList.remove("d-none")
   }
 
@@ -140,37 +117,12 @@ export default class extends Controller {
       return
     }
 
-    const html = conflictingPlans.map((plan) => {
-      const rows = plan.changes.map((change) => `
-        <tr>
-          <td>Round ${change.round_number}</td>
-          <td>${change.field.replace("_", " ")}</td>
-          <td>${change.from}</td>
-          <td>${change.to}</td>
-          <td>${change.reason}</td>
-        </tr>
-      `).join("")
+    const fragment = document.createDocumentFragment()
+    conflictingPlans.forEach((plan) => {
+      fragment.appendChild(this.buildPlanPreview(plan))
+    })
 
-      return `
-        <div class="mb-3">
-          <strong>${plan.contest_name}</strong> (${plan.instance_label}) — Round ${plan.round_number}
-          <table class="table table-sm table-bordered mt-2 mb-0">
-            <thead>
-              <tr>
-                <th>Round</th>
-                <th>Field</th>
-                <th>Current</th>
-                <th>Proposed</th>
-                <th>Reason</th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>
-      `
-    }).join("")
-
-    this.previewContentTarget.innerHTML = html
+    this.previewContentTarget.replaceChildren(fragment)
     this.previewPanelTarget.classList.remove("d-none")
 
     if (this.hasCascadeToggleTarget) {
@@ -183,8 +135,61 @@ export default class extends Controller {
       this.previewPanelTarget.classList.add("d-none")
     }
     if (this.hasPreviewContentTarget) {
-      this.previewContentTarget.innerHTML = ""
+      this.previewContentTarget.replaceChildren()
     }
+  }
+
+  buildPlanPreview(plan) {
+    const wrapper = document.createElement("div")
+    wrapper.className = "mb-3"
+
+    const name = document.createElement("strong")
+    name.textContent = this.toText(plan.contest_name)
+    wrapper.appendChild(name)
+    wrapper.appendChild(
+      document.createTextNode(` (${this.toText(plan.instance_label)}) — Round ${this.toText(plan.round_number)}`)
+    )
+    wrapper.appendChild(this.buildChangesTable(plan.changes))
+    return wrapper
+  }
+
+  buildChangesTable(changes) {
+    const table = document.createElement("table")
+    table.className = "table table-sm table-bordered mt-2 mb-0"
+
+    const thead = document.createElement("thead")
+    const headerRow = document.createElement("tr")
+    ;["Round", "Field", "Current", "Proposed", "Reason"].forEach((label) => {
+      const th = document.createElement("th")
+      th.textContent = label
+      headerRow.appendChild(th)
+    })
+    thead.appendChild(headerRow)
+    table.appendChild(thead)
+
+    const tbody = document.createElement("tbody")
+    ;(changes || []).forEach((change) => {
+      const row = document.createElement("tr")
+      this.appendTextCell(row, `Round ${this.toText(change.round_number)}`)
+      this.appendTextCell(row, this.toText(change.field).replace("_", " "))
+      this.appendTextCell(row, change.from)
+      this.appendTextCell(row, change.to)
+      this.appendTextCell(row, change.reason)
+      tbody.appendChild(row)
+    })
+    table.appendChild(tbody)
+
+    return table
+  }
+
+  appendTextCell(row, value) {
+    const cell = document.createElement("td")
+    cell.textContent = this.toText(value)
+    row.appendChild(cell)
+  }
+
+  toText(value) {
+    return value == null ? "" : String(value)
   }
 
   confirmSubmit(event) {
