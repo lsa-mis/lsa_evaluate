@@ -177,6 +177,30 @@ RSpec.describe EntriesController, type: :controller do
         expect(assigns(:entry).errors[:base].join).to include('must be accepted')
       end
     end
+
+    context 'with a campus application question' do
+      let(:campus) { create(:campus) }
+      let(:campus_question) { container.application_questions.find_by!(system_key: 'campus') }
+
+      before do
+        ApplicationQuestionRequirement.create!(
+          application_question: campus_question,
+          requireable: contest_instance,
+          status: 'required'
+        )
+        profile.update!(campus: nil)
+      end
+
+      it 'writes the campus answer onto the profile' do
+        post :create, params: create_params(answers: {
+          pen_name_question.id => 'A. Poet',
+          campus_question.id => campus.id
+        })
+
+        expect(response).to redirect_to(applicant_dashboard_path)
+        expect(profile.reload.campus_id).to eq(campus.id)
+      end
+    end
   end
 
   describe "GET #modal_details" do

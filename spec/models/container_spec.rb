@@ -157,8 +157,12 @@ RSpec.describe Container do
       summary = container.entries_summary
 
       expect(summary.length).to eq(2)
-      expect(summary.find { |s| s.campus_descr == 'Campus A' }.entry_count).to eq(2)
-      expect(summary.find { |s| s.campus_descr == 'Campus B' }.entry_count).to eq(1)
+      campus_a = summary.find { |s| s.campus_descr == 'Campus A' }
+      campus_b = summary.find { |s| s.campus_descr == 'Campus B' }
+      expect(campus_a.entry_count).to eq(2)
+      expect(campus_a.unique_people).to eq(1)
+      expect(campus_b.entry_count).to eq(1)
+      expect(campus_b.unique_people).to eq(1)
     end
 
     it 'excludes entries from inactive contest descriptions' do
@@ -190,6 +194,16 @@ RSpec.describe Container do
       create_list(:entry, 3, contest_instance: contest_instance)
 
       expect(container.total_active_entries).to eq(3)
+    end
+
+    it 'returns unique submitter count' do
+      contest_desc = create(:contest_description, container: container, active: true)
+      contest_instance = create(:contest_instance, contest_description: contest_desc, active: true)
+      profile = create(:profile)
+      create_list(:entry, 2, contest_instance: contest_instance, profile: profile)
+      create(:entry, contest_instance: contest_instance)
+
+      expect(container.total_active_unique_submitters).to eq(2)
     end
 
     it 'excludes deleted entries from count' do

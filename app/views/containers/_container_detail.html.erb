@@ -13,6 +13,13 @@
             <% end %>
           <% end %>
 
+          <% if policy(@container).applicants? %>
+            <%= link_to container_applicants_path(@container),
+                        class: 'btn btn-sm btn-outline-primary' do %>
+              <i class="bi bi-people me-1" aria-hidden="true"></i> Applicants
+            <% end %>
+          <% end %>
+
           <% if policy(@container).reports? %>
             <%= link_to reports_container_path(@container),
                         class: 'btn btn-sm btn-outline-primary' do %>

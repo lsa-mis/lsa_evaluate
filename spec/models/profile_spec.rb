@@ -70,4 +70,26 @@ RSpec.describe Profile do
       expect(profile.display_name).to eq(user.email)
     end
   end
+
+  describe '#resolved_campus_name' do
+    it 'uses the profile campus when present' do
+      campus = create(:campus, campus_descr: 'Ann Arbor')
+      profile.campus = campus
+      expect(profile.resolved_campus_name).to eq('Ann Arbor')
+    end
+
+    it 'falls back to the latest campus answer' do
+      saved = create(:profile, campus: nil)
+      campus = create(:campus, campus_descr: 'Dearborn')
+      entry = create(:entry, profile: saved)
+      campus_question = entry.contest_instance.contest_description.container.application_questions.find_by!(system_key: 'campus')
+      EntryAnswer.create!(entry: entry, application_question: campus_question, value: campus.id)
+
+      expect(saved.resolved_campus_name).to eq('Dearborn')
+    end
+
+    it 'returns Unknown when no campus is available' do
+      expect(profile.resolved_campus_name).to eq('Unknown')
+    end
+  end
 end
