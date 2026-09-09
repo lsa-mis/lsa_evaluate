@@ -1,6 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe 'Judging Round Selection', type: :system do
+  def visit_round_management_tab
+    click_button 'Step 2: Round-Specific Judge Assignments', wait: 5
+    expect(page).to have_css('#round-specific.active', wait: 5)
+  end
+
+  def visit_review_rankings_page
+    visit_round_management_tab
+    click_link 'Review Rankings & Select Entries', wait: 5
+  end
   let(:container) { create(:container) }
   let(:contest_description) { create(:contest_description, :active, container: container) }
   let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
@@ -66,14 +75,14 @@ RSpec.describe 'Judging Round Selection', type: :system do
       visit container_contest_description_contest_instance_judging_assignments_path(
         container, contest_description, contest_instance
       )
-      click_link 'Review Rankings & Select Entries', wait: 5
+      visit_review_rankings_page
     end
 
     it 'displays all entries with their rankings' do
       expect(page).to have_content('First Entry')
       expect(page).to have_content('Second Entry')
-      expect(page).to have_content('1.5') # Average rank for entry1 (1 + 2 / 2)
-      expect(page).to have_content('1.5') # Average rank for entry2 (2 + 1 / 2)
+      expect(page).to have_css('.badge.bg-secondary', text: '1', minimum: 2)
+      expect(page).to have_css('.badge.bg-secondary', text: '2', minimum: 2)
     end
 
     it 'allows selecting entries for the next round', :js do
@@ -139,14 +148,8 @@ RSpec.describe 'Judging Round Selection', type: :system do
     end
 
     it 'shows judge comments when clicking view comments', :js do
-      within('tr', text: 'First Entry') do
-        first('button', text: 'View Comments').click
-      end
-
-      # Wait for Bootstrap collapse animation
-      expect(page).to have_css('.collapse.show', wait: 5)
-      expect(page).to have_content('Internal Comments')
-      expect(page).to have_content('External Comments')
+      expect(page).to have_content('Internal:')
+      expect(page).to have_content('External:')
     end
   end
 

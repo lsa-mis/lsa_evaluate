@@ -113,6 +113,108 @@ RSpec.describe JudgingAssignmentsController, type: :controller do
     end
   end
 
+  describe '#create' do
+    let(:judge) { create(:user, :with_judge_role) }
+    let!(:round_one) { create(:judging_round, contest_instance: contest_instance, round_number: 1) }
+    let!(:round_two) do
+      create(
+        :judging_round,
+        contest_instance: contest_instance,
+        round_number: 2,
+        start_date: round_one.end_date + 1.day,
+        end_date: round_one.end_date + 2.days
+      )
+    end
+    let!(:other_instance_round) do
+      other_instance = create(:contest_instance, contest_description: contest_description, active: false)
+      create(:judging_round, contest_instance: other_instance, round_number: 1)
+    end
+
+    let(:base_params) do
+      {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        contest_instance_id: contest_instance.id,
+        judging_assignment: { user_id: judge.id, active: true }
+      }
+    end
+
+    it 'creates a judging assignment for the selected judge' do
+      expect {
+        post :create, params: base_params
+      }.to change(JudgingAssignment, :count).by(1)
+
+      expect(flash[:notice]).to include('Judge was successfully assigned')
+      expect(JudgingAssignment.last.user).to eq(judge)
+    end
+
+    it 'assigns the judge only to selected rounds in this contest instance' do
+      expect {
+        post :create, params: base_params.merge(judging_round_ids: [round_one.id, other_instance_round.id, ''])
+      }.to change(RoundJudgeAssignment, :count).by(1)
+
+      expect(round_one.round_judge_assignments.where(user: judge)).to exist
+      expect(round_two.round_judge_assignments.where(user: judge)).not_to exist
+      expect(other_instance_round.round_judge_assignments.where(user: judge)).not_to exist
+    end
+
+    it 'does not create round assignments when no rounds are selected' do
+      expect {
+        post :create, params: base_params.merge(judging_round_ids: ['', nil])
+      }.to change(JudgingAssignment, :count).by(1)
+        .and change(RoundJudgeAssignment, :count).by(0)
+    end
+
+    it 'does not duplicate round assignments when create_judge also selects rounds' do
+      create(:judging_assignment, user: judge, contest_instance: contest_instance)
+      create(:round_judge_assignment, judging_round: round_one, user: judge)
+
+      expect {
+        post :create_judge, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          email: judge.email,
+          first_name: judge.first_name,
+          last_name: judge.last_name,
+          judging_round_ids: [round_one.id, round_two.id]
+        }
+      }.to change(RoundJudgeAssignment, :count).by(1)
+
+      expect(round_one.round_judge_assignments.where(user: judge).count).to eq(1)
+      expect(round_two.round_judge_assignments.where(user: judge)).to exist
+    end
+
+    it 'redirects with errors when the assignment is invalid' do
+      allow_any_instance_of(JudgingAssignment).to receive(:save).and_return(false)
+      allow_any_instance_of(JudgingAssignment).to receive_message_chain(:errors, :full_messages)
+        .and_return(['User has already been taken'])
+
+      expect {
+        post :create, params: base_params
+      }.not_to change(JudgingAssignment, :count)
+
+      expect(flash[:alert]).to include('User has already been taken')
+    end
+  end
+
+  describe '#destroy' do
+    let!(:assignment) { create(:judging_assignment, contest_instance: contest_instance) }
+
+    it 'removes the judging assignment' do
+      expect {
+        delete :destroy, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          id: assignment.id
+        }
+      }.to change(JudgingAssignment, :count).by(-1)
+
+      expect(flash[:notice]).to include('Judge assignment was successfully removed')
+    end
+  end
+
   describe '#judge_lookup' do
     let!(:available_judge) { create(:user, first_name: 'Alice', last_name: 'Smith', email: 'alice@example.com') }
     let!(:other_judge) { create(:user, first_name: 'Bob', last_name: 'Jones', email: 'bob@example.com') }

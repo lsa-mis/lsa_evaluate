@@ -1,0 +1,13 @@
+<div class="form-check mb-2">
+  <%= check_box_tag "judging_round_ids[#{round.id}]",
+                    round.id,
+                    false,
+                    id: "judging_round_#{round.id}",
+                    class: "form-check-input",
+                    data: {
+                      checkboxselect_target: "checkbox",
+                      judging_window_cascade_target: "roundCheckbox",
+                      action: "change->checkboxselect#toggleCheckboxAll change->judging-window-cascade#roundSelectionChanged"
+                    } %>
+  <%= label_tag "judging_round_#{round.id}", "Select", class: "form-check-label visually-hidden" %>
+</div>

@@ -1,0 +1,174 @@
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Bulk Update Judging Windows</h1>
+    <%= link_to "Return to Collection", container_path(@container), class: "link_to" %>
+  </div>
+
+  <%= simple_form_for(
+        @bulk_judging_window,
+        url: container_bulk_judging_windows_path(@container),
+        method: :post,
+        as: :bulk_judging_window_form,
+        html: {
+          data: {
+            controller: "checkboxselect judging-window-cascade",
+            action: "submit->checkboxselect#submitForm",
+            checkboxselect_error_text_value: "Please select at least one judging round.",
+            judging_window_cascade_preview_url_value: preview_container_bulk_judging_windows_path(@container)
+          }
+        }
+      ) do |f| %>
+
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Select Judging Rounds</h3>
+        <div class="form-check">
+          <%= check_box_tag "filter_active_only", "1", true,
+                class: "form-check-input",
+                id: "filter_active_only",
+                data: { action: "change->judging-window-cascade#filterActiveRounds" } %>
+          <%= label_tag "filter_active_only", "Show active rounds only", class: "form-check-label" %>
+        </div>
+      </div>
+
+      <div class="form-check mb-3">
+        <%= check_box_tag "select_all",
+                          "1",
+                          false,
+                          class: "form-check-input",
+                          data: {
+                            checkboxselect_target: "checkboxAll",
+                            action: "change->checkboxselect#toggleCheckbox"
+                          } %>
+        <%= label_tag "select_all", "Select All Visible", class: "form-check-label" %>
+      </div>
+
+      <div data-checkboxselect-target="errorMessage" class="text-danger mb-2"></div>
+
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Contest</th>
+              <th>Instance</th>
+              <th>Round</th>
+              <th>Status</th>
+              <th>Start</th>
+              <th>End</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @judging_rounds.each do |round| %>
+              <tr data-judging-window-cascade-target="roundRow"
+                  data-active="<%= round.active? %>">
+                <td><%= render "round_row_checkbox", round: round %></td>
+                <td><%= round.contest_instance.contest_description.name %></td>
+                <td>
+                  <%= l(round.contest_instance.date_open, format: :short) %>
+                  –
+                  <%= l(round.contest_instance.date_closed, format: :short) %>
+                </td>
+                <td>Round <%= round.round_number %></td>
+                <td>
+                  <% if round.completed? %>
+                    <span class="badge bg-secondary">Completed</span>
+                  <% elsif round.active? %>
+                    <span class="badge bg-success">Active</span>
+                  <% else %>
+                    <span class="badge bg-light text-dark">Inactive</span>
+                  <% end %>
+                </td>
+                <td><%= l(round.start_date, format: :long) %></td>
+                <td><%= l(round.end_date, format: :long) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <%= f.label :end_date, "New End Date and Time", class: "form-label" %>
+        <%= f.input :end_date,
+                    as: :datetime,
+                    html5: true,
+                    input_html: {
+                      class: "form-control datetime-picker",
+                      data: {
+                        judging_window_cascade_target: "endDate",
+                        action: "change->judging-window-cascade#schedulePreview input->judging-window-cascade#schedulePreview"
+                      }
+                    },
+                    required: true,
+                    label: false %>
+      </div>
+
+      <div class="col-md-6">
+        <div class="form-check mt-4">
+          <%= f.input :update_start_date,
+                      as: :boolean,
+                      label: "Also update start date",
+                      input_html: {
+                        data: {
+                          judging_window_cascade_target: "updateStartDateToggle",
+                          action: "change->judging-window-cascade#toggleStartDate change->judging-window-cascade#schedulePreview"
+                        }
+                      } %>
+        </div>
+        <div class="d-none" data-judging-window-cascade-target="startDateField">
+          <%= f.label :start_date, "New Start Date and Time", class: "form-label" %>
+          <%= f.input :start_date,
+                      as: :datetime,
+                      html5: true,
+                      input_html: {
+                        class: "form-control datetime-picker",
+                        data: {
+                          judging_window_cascade_target: "startDate",
+                          action: "change->judging-window-cascade#schedulePreview input->judging-window-cascade#schedulePreview"
+                        }
+                      },
+                      label: false %>
+        </div>
+      </div>
+    </div>
+
+  <%= render "cascade_preview" %>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="form-check mb-3">
+          <%= f.input :cascade_following_rounds,
+                      as: :boolean,
+                      label: "Automatically adjust following round dates",
+                      input_html: {
+                        checked: @bulk_judging_window.cascade_following_rounds.nil? ? true : @bulk_judging_window.cascade_enabled?,
+                        data: { judging_window_cascade_target: "cascadeToggle" }
+                      } %>
+        </div>
+
+        <%= f.label :cascade_mode, "Cascade mode", class: "form-label" %>
+        <%= f.input :cascade_mode,
+                    collection: [
+                      ['Minimum bump (next round starts when previous ends)', 'minimum_bump'],
+                      ['Preserve gaps (keep original spacing between rounds)', 'preserve_gaps']
+                    ],
+                    include_blank: false,
+                    label: false,
+                    input_html: {
+                      class: "form-select",
+                      data: {
+                        judging_window_cascade_target: "cascadeMode",
+                        action: "change->judging-window-cascade#schedulePreview"
+                      }
+                    } %>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <%= f.button :submit, "Update Judging Windows", class: "btn btn-primary", data: { action: "click->judging-window-cascade#confirmSubmit" } %>
+      <%= link_to "Cancel", container_path(@container), class: "btn btn-link text-danger" %>
+    </div>
+  <% end %>
+</div>

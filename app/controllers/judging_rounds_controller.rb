@@ -2,7 +2,7 @@ class JudgingRoundsController < ApplicationController
   helper ContestInstancesHelper
 
   before_action :set_contest_instance
-  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete, :update_rankings, :finalize_rankings, :send_instructions, :notify_completed ]
+  before_action :set_judging_round, only: [ :show, :edit, :update, :destroy, :activate, :deactivate, :complete, :uncomplete, :update_rankings, :finalize_rankings, :send_instructions, :notify_completed, :preview_dates ]
   before_action :authorize_contest_instance
   before_action :check_edit_warning, only: [ :edit, :update ]
 
@@ -39,14 +39,69 @@ class JudgingRoundsController < ApplicationController
   end
 
   def update
-    if @judging_round.update(judging_round_params)
-      redirect_to container_contest_description_contest_instance_judging_assignments_path(
-        @container, @contest_description, @contest_instance
-      ), notice: 'Judging round was successfully updated.'
-    else
-      flash.now[:alert] = @judging_round.errors.full_messages
-      render :edit, status: :unprocessable_entity
+    permitted = judging_round_params
+    cascade = ActiveModel::Type::Boolean.new.cast(params[:cascade_following_rounds])
+    cascade_mode = (params[:cascade_mode].presence || 'minimum_bump').to_sym
+    date_result = nil
+
+    if permitted[:end_date].present?
+      date_result = JudgingRoundDateUpdater.new(
+        @judging_round,
+        end_date: permitted[:end_date],
+        start_date: permitted[:start_date],
+        update_start_date: permitted[:start_date].present?,
+        cascade: cascade,
+        cascade_mode: cascade_mode
+      ).call
+
+      unless date_result.success
+        @show_warning = @judging_round.start_date <= Time.current
+        flash.now[:alert] = date_result.errors
+        return render :edit, status: :unprocessable_entity
+      end
+
+      permitted = permitted.except(:start_date, :end_date)
     end
+
+    if permitted.present? && !@judging_round.update(permitted)
+      flash.now[:alert] = @judging_round.errors.full_messages
+      return render :edit, status: :unprocessable_entity
+    end
+
+    if permitted.blank? && date_result.nil? && !@judging_round.update(judging_round_params)
+      flash.now[:alert] = @judging_round.errors.full_messages
+      return render :edit, status: :unprocessable_entity
+    end
+
+    notice = 'Judging round was successfully updated.'
+    if date_result&.cascaded&.any?
+      notice += " #{date_result.cascaded.size} following round date#{'s' unless date_result.cascaded.size == 1} adjusted."
+    end
+    redirect_to container_contest_description_contest_instance_judging_assignments_path(
+      @container, @contest_description, @contest_instance
+    ), notice: notice
+  end
+
+  def preview_dates
+    plan = JudgingRoundDateCascadePlanner.new(
+      @judging_round,
+      proposed_end_date: params[:end_date],
+      proposed_start_date: params[:start_date],
+      mode: (params[:cascade_mode].presence || 'minimum_bump').to_sym
+    ).call
+
+    render json: {
+      conflicts: plan[:conflicts],
+      changes: plan[:affected_rounds].map do |change|
+        {
+          round_number: change.round.round_number,
+          field: change.field.to_s,
+          from: I18n.l(change.from, format: :long),
+          to: I18n.l(change.to, format: :long),
+          reason: change.reason
+        }
+      end
+    }
   end
 
   def destroy

@@ -115,6 +115,33 @@ RSpec.describe JudgingRound, type: :model do
     end
   end
 
+  describe '.for_container' do
+    let(:container) { create(:container) }
+    let(:other_container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:other_description) { create(:contest_description, :active, container: other_container) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+    let(:other_instance) { create(:contest_instance, contest_description: other_description) }
+    let!(:owned_round) do
+      create(:judging_round,
+             contest_instance: contest_instance,
+             round_number: 1,
+             start_date: contest_instance.date_closed + 1.day,
+             end_date: contest_instance.date_closed + 2.days)
+    end
+    let!(:foreign_round) do
+      create(:judging_round,
+             contest_instance: other_instance,
+             round_number: 1,
+             start_date: other_instance.date_closed + 1.day,
+             end_date: other_instance.date_closed + 2.days)
+    end
+
+    it 'returns only judging rounds that belong to the given container' do
+      expect(described_class.for_container(container)).to contain_exactly(owned_round)
+    end
+  end
+
   describe 'automatic activation' do
     let(:contest_instance) { create(:contest_instance, date_closed: 1.day.from_now) }
 

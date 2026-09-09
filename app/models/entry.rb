@@ -79,6 +79,35 @@ class Entry < ApplicationRecord
     !disqualified && !deleted
   end
 
+  def finalist?
+    last_round = last_judging_round
+    return false unless last_round
+
+    entry_rankings.any? { |ranking| ranking.judging_round_id == last_round.id && ranking.selected_for_next_round? }
+  end
+
+  def advanced?
+    return false if finalist?
+
+    entry_rankings.any?(&:selected_for_next_round?)
+  end
+
+  def outcome_label
+    return 'Finalist' if finalist?
+    return 'Advanced' if advanced?
+
+    nil
+  end
+
+  def last_judging_round
+    rounds = contest_instance.judging_rounds
+    if rounds.loaded?
+      rounds.max_by(&:round_number)
+    else
+      rounds.order(round_number: :desc).first
+    end
+  end
+
   def entry_file_validation
     if entry_file.attached?
       # Validate file type

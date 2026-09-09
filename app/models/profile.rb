@@ -58,7 +58,22 @@ class Profile < ApplicationRecord
     user&.email.to_s
   end
 
+  def resolved_campus_name
+    campus&.campus_descr.presence || latest_campus_from_answers&.campus_descr.presence || 'Unknown'
+  end
+
   private
+
+  def latest_campus_from_answers
+    answer = EntryAnswer
+      .joins(:entry, :application_question)
+      .where(entries: { profile_id: id, deleted: false })
+      .where(application_questions: { field_type: 'campus' })
+      .order('entries.created_at DESC', 'entry_answers.id DESC')
+      .first
+
+    Campus.find_by(id: answer.campus_id_value) if answer
+  end
 
   def normalize_names
     self.legal_first_name = legal_first_name.to_s.strip

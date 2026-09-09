@@ -4,7 +4,16 @@
   <%#= link_to "Return to Instance", container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance), class: "link_to" %>
 </div>
 <% if (content = render_editable_content('judging_assignments', 'instructions')) %>
-    <%= content %>
+  <%= render 'shared/collapsible_instructions',
+             heading: 'Manage Judging instructions',
+             content: content,
+             collapse_id: 'judging-assignments-instructions-help' %>
+<% end %>
+<% if (content = render_editable_content('judging_assignments', 'session_timeout_guidance')) %>
+  <%= render 'shared/collapsible_instructions',
+             heading: 'Judge session timeout guidance',
+             content: content,
+             collapse_id: 'judging-assignments-session-timeout-help' %>
 <% end %>
 
 <nav aria-label="breadcrumb">
@@ -21,14 +30,14 @@
 
   <ul class="nav nav-tabs" id="contestInstanceTabs" role="tablist">
     <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="round-specific-tab" data-bs-toggle="tab" data-bs-target="#round-specific" type="button" role="tab" aria-controls="round-specific" aria-selected="false">Round-Specific Judge Assignments</button>
+      <button class="nav-link active" id="pool-of-judges-tab" data-bs-toggle="tab" data-bs-target="#pool-of-judges" type="button" role="tab" aria-controls="pool-of-judges" aria-selected="true">Step 1: Judges assigned to this contest instance</button>
     </li>
     <li class="nav-item" role="presentation">
-      <button class="nav-link" id="pool-of-judges-tab" data-bs-toggle="tab" data-bs-target="#pool-of-judges" type="button" role="tab" aria-controls="pool-of-judges" aria-selected="true">Judges assigned to this contest instance</button>
+      <button class="nav-link" id="round-specific-tab" data-bs-toggle="tab" data-bs-target="#round-specific" type="button" role="tab" aria-controls="round-specific" aria-selected="false">Step 2: Round-Specific Judge Assignments</button>
     </li>
   </ul>
   <div class="tab-content" id="contestInstanceTabsContent">
-    <div class="tab-pane fade show active" id="round-specific" role="tabpanel" aria-labelledby="round-specific-tab"><%= render 'round_management' %></div>
-    <div class="tab-pane fade" id="pool-of-judges" role="tabpanel" aria-labelledby="pool-of-judges-tab"><%= render 'judging_pool' %></div>
+    <div class="tab-pane fade show active" id="pool-of-judges" role="tabpanel" aria-labelledby="pool-of-judges-tab"><%= render 'judging_pool' %></div>
+    <div class="tab-pane fade" id="round-specific" role="tabpanel" aria-labelledby="round-specific-tab"><%= render 'round_management' %></div>
   </div>
 </div>

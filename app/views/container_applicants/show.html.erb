@@ -1,0 +1,13 @@
+<div class="container">
+  <div class="d-flex justify-content-end mb-3">
+    <%= link_to 'Back to Applicants', container_applicants_path(@container), class: 'btn btn-secondary' %>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <%= render 'profiles/profile', profile: @profile %>
+    </div>
+  </div>
+
+  <%= render 'applicant_profiles/submissions', entries: @entries %>
+</div>

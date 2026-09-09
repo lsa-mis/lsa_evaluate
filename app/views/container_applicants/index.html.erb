@@ -1,0 +1,135 @@
+<div class="container">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <h1 class="mb-0">Applicants for <%= @container.name %></h1>
+    <%= link_to 'Return to Collection', container_path(@container), class: 'link_to text-nowrap' %>
+  </div>
+
+  <p class="text-muted">
+    Search everyone who submitted to contests in this collection, without opening each contest.
+  </p>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <%= form_with url: container_applicants_path(@container), method: :get, data: { turbo: false }, class: 'row g-3 align-items-end' do |f| %>
+        <div class="col-md-4">
+          <%= label_tag :name, 'Name', class: 'form-label' %>
+          <%= text_field_tag :name, @name_filter, class: 'form-control', placeholder: 'Search by name...' %>
+        </div>
+        <div class="col-md-3">
+          <%= label_tag :campus_id, 'Campus', class: 'form-label' %>
+          <%= select_tag :campus_id,
+                options_for_select(
+                  [['All campuses', '']] +
+                    @campuses.map { |campus| [campus.campus_descr, campus.id.to_s] } +
+                    [['Unknown', ContainerApplicantsQuery::CAMPUS_UNKNOWN]],
+                  @campus_id_filter.to_s
+                ),
+                class: 'form-select' %>
+        </div>
+        <div class="col-md-3">
+          <%= label_tag :year, 'Year / timeframe', class: 'form-label' %>
+          <%= select_tag :year,
+                options_for_select(year_filter_options, @selected_year),
+                class: 'form-select' %>
+        </div>
+        <div class="col-md-2 d-flex flex-wrap gap-2">
+          <%= f.submit 'Filter', class: 'btn btn-primary' %>
+          <%= link_to 'Clear', container_applicants_path(@container), class: 'btn btn-outline-secondary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="text-muted small">Unique submitters</div>
+          <div class="fs-3 fw-semibold"><%= @summary.unique_submitters %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="text-muted small">Total submissions</div>
+          <div class="fs-3 fw-semibold"><%= @summary.total_submissions %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <%= link_to 'Export CSV',
+                container_applicants_path(@container, format: :csv, **filter_query),
+                class: 'btn btn-outline-primary',
+                data: { turbo: false } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if @summary.by_campus.any? %>
+    <div class="mb-4">
+      <h2 class="h5">By campus</h2>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped">
+          <thead>
+            <tr>
+              <th>Campus</th>
+              <th class="text-end">Submissions</th>
+              <th class="text-end">Unique people</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @summary.by_campus.each do |row| %>
+              <tr>
+                <td><%= row.campus_descr %></td>
+                <td class="text-end"><%= row.entry_count %></td>
+                <td class="text-end"><%= row.unique_people %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="card">
+    <div class="card-body">
+      <% if @applicants.any? %>
+        <div class="table-responsive">
+          <table class="table table-striped table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Campus</th>
+                <th>Year(s)</th>
+                <th class="text-end">Submissions</th>
+                <th>Contests</th>
+                <th>Finalist in</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @applicants.each do |applicant| %>
+                <tr>
+                  <td>
+                    <%= link_to applicant.name, container_applicant_path(@container, applicant.profile) %>
+                  </td>
+                  <td><%= applicant.campus_name %></td>
+                  <td><%= applicant.years.join(', ') %></td>
+                  <td class="text-end"><%= applicant.submission_count %></td>
+                  <td><%= applicant.contest_names.join(', ') %></td>
+                  <td><%= applicant.finalist_contest_names.join(', ').presence || '—' %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <%== @pagy.series_nav(:bootstrap) %>
+      <% else %>
+        <p class="text-muted mb-0">No applicants match the current filters.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

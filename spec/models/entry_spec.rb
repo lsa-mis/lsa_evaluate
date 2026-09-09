@@ -163,4 +163,39 @@ RSpec.describe Entry, type: :model do
       expect(entry.errors[:base].join).to include("can't be blank")
     end
   end
+
+  describe 'outcomes' do
+    let(:entry) { create(:entry, contest_instance: contest_instance, profile: profile) }
+
+    it 'treats selection on the last round as a finalist' do
+      round = create(:judging_round, contest_instance: contest_instance, round_number: 1)
+      create(:entry_ranking, :selected, :with_assigned_judge, entry: entry, judging_round: round)
+
+      expect(entry.finalist?).to be true
+      expect(entry.outcome_label).to eq('Finalist')
+    end
+
+    it 'treats selection on an earlier round as advanced' do
+      round_one = create(
+        :judging_round,
+        contest_instance: contest_instance,
+        round_number: 1,
+        start_date: contest_instance.date_closed + 1.hour,
+        end_date: contest_instance.date_closed + 2.days
+      )
+      round_one.update_columns(active: false, completed: true)
+      create(
+        :judging_round,
+        contest_instance: contest_instance,
+        round_number: 2,
+        start_date: round_one.end_date + 1.hour,
+        end_date: round_one.end_date + 2.days
+      )
+      create(:entry_ranking, :selected, :with_assigned_judge, entry: entry, judging_round: round_one)
+
+      expect(entry.reload.finalist?).to be false
+      expect(entry.advanced?).to be true
+      expect(entry.outcome_label).to eq('Advanced')
+    end
+  end
 end

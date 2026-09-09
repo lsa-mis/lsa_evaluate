@@ -679,6 +679,77 @@ RSpec.describe ContestInstancesController, type: :controller do
           expect(entry_row[12]).to eq("'=HYPERLINK(\"http://evil.example\")")
           expect(entry_row[13]).to eq("'+1-800-evil")
         end
+
+        it 'exports a wide-format CSV with per-judge rank columns' do
+          get :export_round_results, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            round_id: judging_round.id,
+            wide: '1',
+            format: :csv
+          }
+
+          expect(response).to be_successful
+          csv = CSV.parse(response.body)
+          expect(csv[0][0]).to include('Wide Format')
+
+          judge_rank_header = "#{judge.display_name_or_first_name_last_name} Rank"
+          expect(csv[2]).to include(
+            'Title',
+            'Entry ID',
+            'Selected for Next Round',
+            judge_rank_header,
+            'Judge Comments [External]',
+            'Judge Comments [Internal]'
+          )
+
+          entry_row = csv.find { |row| row[0] == 'Entry One' }
+          expect(entry_row).not_to be_nil
+          rank_index = csv[2].index(judge_rank_header)
+          expect(entry_row[rank_index]).to eq('1')
+          expect(entry_row[8]).to eq(entry1.id.to_s)
+          expect(entry_row[9]).to eq('No')
+        end
+
+        it 'neutralizes formula-like values in wide-format CSV exports' do
+          pen_name_question = contest_instance.contest_description.container.application_questions.find_by!(system_key: 'pen_name')
+          ApplicationQuestionRequirement.create!(
+            application_question: pen_name_question,
+            requireable: contest_instance,
+            status: 'required'
+          )
+          entry1.update!(title: '=CMD|"/c calc"!A0')
+          EntryAnswer.create!(
+            entry: entry1,
+            application_question: pen_name_question,
+            value: '@SUM(A1)'
+          )
+          ranking = EntryRanking.find_by!(entry: entry1, judging_round: judging_round, user: judge)
+          ranking.update!(
+            external_comments: '=HYPERLINK("http://evil.example")',
+            internal_comments: '+1-800-evil'
+          )
+
+          get :export_round_results, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            id: contest_instance.id,
+            round_id: judging_round.id,
+            wide: true,
+            format: :csv
+          }
+
+          csv = CSV.parse(response.body)
+          entry_row = csv.find { |row| row[0] == "'=CMD|\"/c calc\"!A0" }
+          expect(entry_row).not_to be_nil
+
+          comments_index = csv[2].index('Judge Comments [External]')
+          pen_name_index = csv[2].index(pen_name_question.label)
+          expect(entry_row[comments_index]).to include("'=HYPERLINK(\"http://evil.example\")")
+          expect(entry_row[comments_index]).to include("'+1-800-evil")
+          expect(entry_row[pen_name_index]).to eq("'@SUM(A1)")
+        end
       end
 
       context 'with no entries' do

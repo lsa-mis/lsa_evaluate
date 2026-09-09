@@ -27,6 +27,7 @@ Rails.application.routes.draw do
 
   devise_scope :user do
     delete 'sign_out', to: 'users/sessions#destroy'
+    get 'session/heartbeat', to: 'users/sessions#heartbeat'
   end
 
   get 'judge_dashboard', to: 'judge_dashboard#index'
@@ -73,6 +74,7 @@ Rails.application.routes.draw do
             patch :uncomplete
             post :send_instructions
             post :notify_completed
+            post :preview_dates
           end
           post 'update_rankings', on: :member
           post 'finalize_rankings', on: :member
@@ -100,7 +102,13 @@ Rails.application.routes.draw do
         get 'eligibility_rules'
       end
     end
+    resources :applicants, only: [ :index, :show ], controller: 'container_applicants'
     resources :bulk_contest_instances, only: [ :new, :create ]
+    resources :bulk_judging_windows, only: [ :new, :create ] do
+      collection do
+        post :preview
+      end
+    end
     collection do
       get 'lookup_user'
     end

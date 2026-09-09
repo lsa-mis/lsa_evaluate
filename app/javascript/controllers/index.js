@@ -31,6 +31,9 @@ application.register("confirm", ConfirmController)
 import ContestActivationController from "./contest_activation_controller"
 application.register("contest-activation", ContestActivationController)
 
+import ContestInstanceTabsController from "./contest_instance_tabs_controller"
+application.register("contest-instance-tabs", ContestInstanceTabsController)
+
 import DropdownController from "./dropdown_controller"
 application.register("dropdown", DropdownController)
 
@@ -63,6 +66,12 @@ application.register("judging-round-form", JudgingRoundFormController)
 
 import JudgingRoundShowController from "./judging_round_show_controller"
 application.register("judging-round-show", JudgingRoundShowController)
+
+import JudgingWindowCascadeController from "./judging_window_cascade_controller"
+application.register("judging-window-cascade", JudgingWindowCascadeController)
+
+import SessionWarningController from "./session_warning_controller"
+application.register("session-warning", SessionWarningController)
 
 import ModalController from "./modal_controller"
 application.register("modal", ModalController)

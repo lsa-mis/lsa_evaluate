@@ -175,6 +175,78 @@ RSpec.describe JudgingRoundsController, type: :controller do
           expect(response).to render_template(:edit)
         end
       end
+
+      context 'when extending end date overlaps a following round' do
+        let(:contest_instance) do
+          create(:contest_instance,
+                 contest_description: contest_description,
+                 date_open: Time.zone.parse('2026-02-01 09:00'),
+                 date_closed: Time.zone.parse('2026-03-01 17:00'))
+        end
+        let!(:round_one) do
+          create(:judging_round,
+                 contest_instance: contest_instance,
+                 round_number: 1,
+                 start_date: Time.zone.parse('2026-03-02 09:00'),
+                 end_date: Time.zone.parse('2026-03-15 17:00'))
+        end
+        let!(:round_two) do
+          create(:judging_round,
+                 contest_instance: contest_instance,
+                 round_number: 2,
+                 start_date: Time.zone.parse('2026-03-16 09:00'),
+                 end_date: Time.zone.parse('2026-03-30 17:00'))
+        end
+        let(:overlapping_end_date) { '2026-03-22 17:00' }
+
+        it 'cascades following round dates when cascade is enabled' do
+          patch :update, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            contest_instance_id: contest_instance.id,
+            id: round_one.id,
+            cascade_following_rounds: '1',
+            cascade_mode: 'minimum_bump',
+            judging_round: {
+              start_date: round_one.start_date,
+              end_date: overlapping_end_date
+            }
+          }
+
+          expect(response).to redirect_to(
+            container_contest_description_contest_instance_judging_assignments_path(
+              container, contest_description, contest_instance
+            )
+          )
+          expect(flash[:notice]).to include('1 following round date adjusted')
+          expect(round_one.reload.end_date).to eq(Time.zone.parse(overlapping_end_date))
+          expect(round_two.reload.start_date).to eq(Time.zone.parse(overlapping_end_date))
+        end
+
+        it 'rejects the update when cascade is disabled and dates conflict' do
+          original_round_two_start = round_two.start_date
+
+          patch :update, params: {
+            container_id: container.id,
+            contest_description_id: contest_description.id,
+            contest_instance_id: contest_instance.id,
+            id: round_one.id,
+            cascade_following_rounds: '0',
+            judging_round: {
+              start_date: round_one.start_date,
+              end_date: overlapping_end_date
+            }
+          }
+
+          expect(response).to have_http_status(:unprocessable_content)
+          expect(response).to render_template(:edit)
+          expect(flash.now[:alert]).to include(
+            'Extending this round conflicts with following round dates. Enable cascade to adjust them.'
+          )
+          expect(round_one.reload.end_date).to eq(Time.zone.parse('2026-03-15 17:00'))
+          expect(round_two.reload.start_date).to eq(original_round_two_start)
+        end
+      end
     end
 
     context 'when user is not container administrator' do
@@ -188,6 +260,86 @@ RSpec.describe JudgingRoundsController, type: :controller do
           id: judging_round.id,
           judging_round: valid_attributes
         }
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
+
+  describe 'POST #preview_dates' do
+    let(:contest_instance) do
+      create(:contest_instance,
+             contest_description: contest_description,
+             date_open: Time.zone.parse('2026-02-01 09:00'),
+             date_closed: Time.zone.parse('2026-03-01 17:00'))
+    end
+    let!(:round_one) do
+      create(:judging_round,
+             contest_instance: contest_instance,
+             round_number: 1,
+             start_date: Time.zone.parse('2026-03-02 09:00'),
+             end_date: Time.zone.parse('2026-03-15 17:00'))
+    end
+    let!(:round_two) do
+      create(:judging_round,
+             contest_instance: contest_instance,
+             round_number: 2,
+             start_date: Time.zone.parse('2026-03-16 09:00'),
+             end_date: Time.zone.parse('2026-03-30 17:00'))
+    end
+
+    context 'when user is container administrator' do
+      before { sign_in admin }
+
+      it 'returns cascade conflicts and proposed date changes as JSON' do
+        post :preview_dates, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          id: round_one.id,
+          end_date: '2026-03-22 17:00',
+          cascade_mode: 'minimum_bump'
+        }
+
+        expect(response).to be_successful
+        body = JSON.parse(response.body)
+        expect(body['conflicts']).to be true
+        start_change = body['changes'].find do |change|
+          change['round_number'] == 2 && change['field'] == 'start_date'
+        end
+        expect(start_change).to be_present
+        expect(start_change['reason']).to be_present
+        expect(start_change['to']).to include('March')
+        expect(start_change['from']).to include('March')
+      end
+
+      it 'reports no conflicts when the proposed end date fits' do
+        post :preview_dates, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          id: round_one.id,
+          end_date: '2026-03-15 18:00'
+        }
+
+        body = JSON.parse(response.body)
+        expect(body['conflicts']).to be false
+        expect(body['changes'].size).to eq(1)
+        expect(body['changes'].first['field']).to eq('end_date')
+      end
+    end
+
+    context 'when user is not container administrator' do
+      before { sign_in judge }
+
+      it 'redirects to root' do
+        post :preview_dates, params: {
+          container_id: container.id,
+          contest_description_id: contest_description.id,
+          contest_instance_id: contest_instance.id,
+          id: round_one.id,
+          end_date: '2026-03-22 17:00'
+        }
+
         expect(response).to redirect_to(root_path)
       end
     end

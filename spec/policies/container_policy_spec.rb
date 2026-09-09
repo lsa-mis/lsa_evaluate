@@ -21,6 +21,8 @@ RSpec.describe ContainerPolicy do
       it { is_expected.to permit_action(:update) }
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
+      it { is_expected.to permit_action(:applicants) }
+      it { is_expected.to permit_action(:manage_judging) }
     end
 
     context 'with a non-employee user' do
@@ -30,6 +32,8 @@ RSpec.describe ContainerPolicy do
       it { is_expected.not_to permit_action(:update) }
       it { is_expected.not_to permit_action(:active_applicants_report) }
       it { is_expected.not_to permit_action(:reports) }
+      it { is_expected.not_to permit_action(:applicants) }
+      it { is_expected.not_to permit_action(:manage_judging) }
     end
 
     context 'with an employee user with a manager role' do
@@ -43,6 +47,8 @@ RSpec.describe ContainerPolicy do
       it { is_expected.to permit_action(:update) }
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
+      it { is_expected.to permit_action(:applicants) }
+      it { is_expected.to permit_action(:manage_judging) }
     end
 
     context 'with an Axis Mundi user' do
@@ -57,6 +63,8 @@ RSpec.describe ContainerPolicy do
       it { is_expected.to permit_action(:destroy) }
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
+      it { is_expected.to permit_action(:applicants) }
+      it { is_expected.to permit_action(:manage_judging) }
     end
   end
 

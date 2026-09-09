@@ -52,14 +52,23 @@ class Container < ApplicationRecord
   after_create :seed_system_application_questions
 
   def entries_summary
-    active_entries.group(:campus_id)
-                 .joins(profile: :campus)
-                 .select('campuses.campus_descr, COUNT(*) as entry_count')
-                 .order('campuses.campus_descr')
+    active_entries
+      .left_joins(profile: :campus)
+      .group('campuses.id', 'campuses.campus_descr')
+      .select(
+        "COALESCE(campuses.campus_descr, 'Unknown') AS campus_descr, " \
+        'COUNT(*) AS entry_count, ' \
+        'COUNT(DISTINCT entries.profile_id) AS unique_people'
+      )
+      .order(Arel.sql("COALESCE(campuses.campus_descr, 'Unknown')"))
   end
 
   def total_active_entries
     active_entries.count
+  end
+
+  def total_active_unique_submitters
+    active_entries.distinct.count(:profile_id)
   end
 
   def collection_staff_assignments

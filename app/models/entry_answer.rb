@@ -50,6 +50,17 @@ class EntryAnswer < ApplicationRecord
     ActiveModel::Type::Boolean.new.cast(raw_scalar) == true
   end
 
+  def scalar_value
+    raw_scalar
+  end
+
+  def campus_id_value
+    return unless application_question.field_type == 'campus'
+
+    id = raw_scalar.to_i
+    id if id.positive?
+  end
+
   private
 
   def raw_scalar
