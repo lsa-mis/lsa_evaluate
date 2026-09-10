@@ -64,6 +64,12 @@ class ContainerPolicy < ApplicationPolicy
     reports?
   end
 
+  # Staff autocomplete for assigning collection admins/managers.
+  # Same audience as index: employees, existing collection staff, or axis mundi.
+  def lookup_user?
+    user_is_employee? || user_has_containers? || axis_mundi?
+  end
+
   private
 
   def user_has_containers?
