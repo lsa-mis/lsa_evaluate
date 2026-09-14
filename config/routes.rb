@@ -30,6 +30,14 @@ Rails.application.routes.draw do
     get 'session/heartbeat', to: 'users/sessions#heartbeat'
   end
 
+  # Cursor IDE browser cannot complete U-M SAML. This picker signs in as an
+  # existing user without the IdP. Never enable on staging or production.
+  if Rails.env.development? || Rails.env.test?
+    namespace :dev do
+      resources :sessions, only: [ :index, :create ]
+    end
+  end
+
   get 'judge_dashboard', to: 'judge_dashboard#index'
 
   resources :judging_rounds, only: [ :show ] do

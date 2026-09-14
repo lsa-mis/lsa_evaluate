@@ -7,3 +7,7 @@
                   data: { turbo: false } %><br />
   <% end %>
 <% end %>
+
+<% if dev_browser_login_allowed? %>
+  <%= link_to 'Local browser login', dev_sessions_path, class: 'btn btn-outline-secondary btn-sm mb-4' %>
+<% end %>

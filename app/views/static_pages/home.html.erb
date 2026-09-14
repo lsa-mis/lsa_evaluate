@@ -33,6 +33,10 @@
                         params: saml_authorize_params,
                         class: "btn btn-warning btn-sm mb-4",
                         data: { turbo: "false" } %>
+          <% if dev_browser_login_allowed? %>
+            <%= link_to 'Local browser login', dev_sessions_path,
+                        class: 'btn btn-outline-secondary btn-sm mb-4' %>
+          <% end %>
         </div>
       </div>
     </div>
