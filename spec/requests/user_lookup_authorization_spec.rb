@@ -28,6 +28,19 @@ RSpec.describe 'User lookup authorization', type: :request do
       expect(flash[:alert]).to eq('!!! Not authorized !!!')
     end
 
+    it 'denies contest judges who are not collection staff' do
+      container = create(:container)
+      judge_role = create(:role, kind: 'Judge')
+      judge = create(:user, :student)
+      create(:assignment, container: container, user: judge, role: judge_role)
+      sign_in judge
+
+      get user_lookup_path, params: { q: 'Ada' }, as: :json
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq('!!! Not authorized !!!')
+    end
+
     it 'requires authentication' do
       get user_lookup_path, params: { q: 'Ada' }, as: :json
 
@@ -51,6 +64,19 @@ RSpec.describe 'User lookup authorization', type: :request do
     it 'denies applicants who are not collection staff' do
       applicant = create(:user, :student)
       sign_in applicant
+
+      get lookup_user_containers_path, params: { uid: 'adal' }, as: :json
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq('!!! Not authorized !!!')
+    end
+
+    it 'denies contest judges who are not collection staff' do
+      container = create(:container)
+      judge_role = create(:role, kind: 'Judge')
+      judge = create(:user, :student)
+      create(:assignment, container: container, user: judge, role: judge_role)
+      sign_in judge
 
       get lookup_user_containers_path, params: { uid: 'adal' }, as: :json
 

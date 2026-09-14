@@ -80,6 +80,17 @@ RSpec.describe ContainerPolicy do
 
       it { is_expected.to permit_action(:lookup_user) }
     end
+
+    context 'with a contest judge who is not collection staff' do
+      let(:user) { create(:user, :student) }
+      let(:judge_role) { create(:role, kind: 'Judge') }
+
+      before do
+        create(:assignment, container: container, user: user, role: judge_role)
+      end
+
+      it { is_expected.not_to permit_action(:lookup_user) }
+    end
   end
 
   describe 'scope' do

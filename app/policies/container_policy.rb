@@ -65,15 +65,22 @@ class ContainerPolicy < ApplicationPolicy
   end
 
   # Staff autocomplete for assigning collection admins/managers.
-  # Same audience as index: employees, existing collection staff, or axis mundi.
+  # Employees, collection administrators/managers, or axis mundi.
+  # Judge-role assignments do not grant access; judges cannot use this UI.
   def lookup_user?
-    user_is_employee? || user_has_containers? || axis_mundi?
+    user_is_employee? || user_is_collection_staff? || axis_mundi?
   end
 
   private
 
   def user_has_containers?
     user&.containers&.exists?
+  end
+
+  def user_is_collection_staff?
+    return false unless user
+
+    user.assignments.joins(:role).merge(Role.container_roles).exists?
   end
 
   def owns_container?
