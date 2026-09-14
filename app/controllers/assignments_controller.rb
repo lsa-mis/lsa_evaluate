@@ -1,6 +1,10 @@
+# frozen_string_literal: true
+
 class AssignmentsController < ApplicationController
   include ActionView::RecordIdentifier
   before_action :set_container
+  before_action :authorize_manage_assignments
+  after_action :verify_authorized
 
   def create
     uid = params[:assignment][:uid]
@@ -53,6 +57,10 @@ class AssignmentsController < ApplicationController
 
   def set_container
     @container = policy_scope(Container).find(params[:container_id])
+  end
+
+  def authorize_manage_assignments
+    authorize @container, :manage_assignments?
   end
 
   def assignment_params

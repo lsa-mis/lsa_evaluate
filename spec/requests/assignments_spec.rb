@@ -48,6 +48,40 @@ RSpec.describe 'Collection assignments', type: :request do
       expect(response).to redirect_to(root_path)
       expect(flash[:alert]).to eq('!!! Not authorized !!!')
     end
+
+    it 'allows collection administrators to create assignments' do
+      collection_admin = create(:user, :employee)
+      create(:assignment, container: container, user: collection_admin, role: admin_role)
+      sign_in collection_admin
+      assignee = create(:user, uid: 'newmanager')
+      manager_role = create(:role, :collection_manager)
+
+      expect {
+        post container_assignments_path(container), params: {
+          assignment: { uid: assignee.uid, role_id: manager_role.id }
+        }
+      }.to change(Assignment, :count).by(1)
+
+      expect(response).to redirect_to(edit_container_path(container))
+      expect(Assignment.last).to have_attributes(user: assignee, role: manager_role, container: container)
+    end
+
+    it 'denies contest judges from creating collection administrator assignments' do
+      judge_role = create(:role, :judge)
+      judge = create(:user, :student)
+      create(:assignment, container: container, user: judge, role: judge_role)
+      sign_in judge
+      assignee = create(:user, uid: 'targetstaff')
+
+      expect {
+        post container_assignments_path(container), params: {
+          assignment: { uid: assignee.uid, role_id: admin_role.id }
+        }
+      }.not_to change(Assignment, :count)
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq('!!! Not authorized !!!')
+    end
   end
 
   describe 'DELETE /containers/:container_id/assignments/:id' do
@@ -73,6 +107,23 @@ RSpec.describe 'Collection assignments', type: :request do
 
       expect(response).to redirect_to(edit_container_path(container))
       expect(flash[:alert]).to include('Cannot delete the last Container Administrator.')
+    end
+
+    it 'denies contest judges from removing collection assignments' do
+      judge_role = create(:role, :judge)
+      judge = create(:user, :student)
+      create(:assignment, container: container, user: judge, role: judge_role)
+      keep_admin = create(:assignment, container: container, role: admin_role)
+      removable = create(:assignment, container: container, role: admin_role)
+      sign_in judge
+
+      expect {
+        delete container_assignment_path(container, removable)
+      }.not_to change(Assignment, :count)
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq('!!! Not authorized !!!')
+      expect(Assignment.exists?(keep_admin.id)).to be(true)
     end
   end
 end
