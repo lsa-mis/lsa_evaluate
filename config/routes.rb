@@ -23,7 +23,9 @@ Rails.application.routes.draw do
   # Unguessable applicant invite URL for private contest instances
   get '/c/:token', to: 'contest_invites#show', as: :contest_invite
 
-  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }
+  devise_for :users,
+             skip: [ :registrations, :passwords ],
+             controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }
 
   devise_scope :user do
     delete 'sign_out', to: 'users/sessions#destroy'

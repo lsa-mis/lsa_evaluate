@@ -118,6 +118,25 @@ RSpec.describe EntriesController, type: :controller do
       expect(assigns(:prefill_values)[pen_name_question.id]).to eq('A. Poet')
     end
 
+    it 'ignores hostile ownership and status fields on create' do
+      other_profile = create(:profile, class_level: class_level)
+
+      expect {
+        post :create, params: create_params.merge(
+          entry: create_params[:entry].merge(
+            profile_id: other_profile.id,
+            deleted: true,
+            disqualified: true
+          )
+        )
+      }.to change(Entry, :count).by(1)
+
+      entry = Entry.order(:id).last
+      expect(entry.profile_id).to eq(profile.id)
+      expect(entry.deleted).to be(false)
+      expect(entry.disqualified).to be(false)
+    end
+
     context 'with required boolean application questions' do
       let(:campus_employee_question) { container.application_questions.find_by!(system_key: 'campus_employee') }
       let(:sole_author_question) { container.application_questions.find_by!(system_key: 'submission_sole_author') }
