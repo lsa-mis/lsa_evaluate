@@ -1,6 +1,7 @@
 # app/controllers/errors_controller.rb
 class ErrorsController < ApplicationController
   skip_before_action :authenticate_user!
+  skip_forgery_protection
 
   def not_found
     logger.info('!!!!!!! Handling 404 Not Found error')

@@ -12,7 +12,8 @@ module Rack
 
     # Substrings matched against the request path or query string.
     PROBE_PATH_PATTERNS = [
-      'php-cgi', 'xampp', 'wp-admin', 'wp-login',
+      'php-cgi', 'xampp', 'wp-admin', 'wp-login', 'wp-json',
+      'wp-content', 'wp-includes', '/wordpress/',
       'officescan', 'kubepi', 'administrator/manifests',
       'ext-js', 'WebApp/', 'eonweb', 'phoenix/favicon',
       '/CHANGELOG.txt', '/images/logo',
@@ -50,6 +51,11 @@ module Rack
     private
 
     def sanitize_env!(env)
+      # Client-IP is not a standard proxy header. Scanners set it to 127.0.0.1
+      # while Hatchbox nginx sets X-Forwarded-For to the real client; Rails then
+      # raises ActionDispatch::RemoteIp::IpSpoofAttackError on the mismatch.
+      env.delete('HTTP_CLIENT_IP')
+
       env.each do |key, value|
         next unless value.is_a?(String)
 
