@@ -286,7 +286,10 @@ RSpec.describe ContestInstancesController, type: :controller do
           container_id: container.id,
           contest_description_id: contest_description.id,
           id: contest_instance.id,
-          contest_instance: { date_closed: 1.day.ago } # Invalid: past date
+          contest_instance: {
+            date_open: 2.weeks.from_now,
+            date_closed: 1.week.from_now
+          }
         }
 
         expect(response).to render_template(:edit)
