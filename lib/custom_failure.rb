@@ -8,7 +8,8 @@ class CustomFailure < Devise::FailureApp
     end
   end
 
-  def flash_message
+  # Devise 5 FailureApp sets flash via i18n_message (not flash_message).
+  def i18n_message(default = nil)
     if warden_message == :timeout
       'Your session has expired. Please log in again to continue.'
     else
