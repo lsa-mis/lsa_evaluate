@@ -1,0 +1,87 @@
+<div class="container mt-4">
+  <div class="alert alert-warning" role="alert">
+    <strong>Local development only.</strong>
+    This page bypasses U-M WebLogin so the Cursor IDE browser can use the app
+    as an existing user. It is not routed in staging or production, and it
+    refuses requests that are not from localhost.
+  </div>
+
+  <h1>Local browser login</h1>
+  <p class="text-muted">
+    Sign in as any user already in this development database. Campus SAML is
+    not used.
+  </p>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <%= form_with url: dev_sessions_path, method: :post, local: true, data: { turbo: false }, class: 'row g-3 align-items-end' do |f| %>
+        <div class="col-md-8">
+          <%= f.label :login, 'Email, uniqname, or uid', class: 'form-label' %>
+          <%= f.text_field :login, value: params[:login], class: 'form-control',
+                           placeholder: 'rsmoke@umich.edu', autocomplete: 'username' %>
+        </div>
+        <div class="col-md-4">
+          <%= button_tag 'Sign in', type: 'submit', class: 'btn btn-warning' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%= form_with url: dev_sessions_path, method: :get, local: true, class: 'row g-3 align-items-end mb-4' do |f| %>
+    <div class="col-md-8">
+      <%= f.label :q, 'Filter user list', class: 'form-label' %>
+      <%= f.text_field :q, value: @query, class: 'form-control', placeholder: 'Search name, email, or uniqname' %>
+    </div>
+    <div class="col-md-4">
+      <%= button_tag 'Filter', type: 'submit', class: 'btn btn-primary' %>
+      <% if @query.present? %>
+        <%= link_to 'Clear', dev_sessions_path, class: 'btn btn-outline-secondary' %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="card">
+    <div class="card-body">
+      <% if @users.empty? %>
+        <p class="mb-0">No users matched that search.</p>
+      <% else %>
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Uniqname</th>
+                <th>Roles</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @users.each do |user| %>
+                <tr>
+                  <td><%= user.display_name_or_first_name_last_name %></td>
+                  <td><%= user.email %></td>
+                  <td><%= user.uniqname.presence || user.uid %></td>
+                  <td>
+                    <% user.roles.each do |role| %>
+                      <span class="badge bg-primary"><%= role.kind %></span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= button_to "Sign in as #{user.email}",
+                                  dev_sessions_path,
+                                  method: :post,
+                                  params: { user_id: user.id, q: @query },
+                                  class: 'btn btn-sm btn-warning',
+                                  data: { turbo: false } %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-muted mb-0">Showing up to 50 matching users. Use the filter if you do not see the account you need.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

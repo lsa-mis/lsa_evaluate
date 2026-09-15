@@ -70,8 +70,8 @@ RSpec.describe User do
       expect(described_class.ancestors).to include(Devise::Models::DatabaseAuthenticatable)
     end
 
-    it 'includes registerable module' do
-      expect(described_class.ancestors).to include(Devise::Models::Registerable)
+    it 'does not include registerable module' do
+      expect(described_class.ancestors).not_to include(Devise::Models::Registerable)
     end
 
     it 'includes recoverable module' do

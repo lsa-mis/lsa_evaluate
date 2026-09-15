@@ -60,6 +60,18 @@ RSpec.describe ProfilesController, type: :controller do
       expect(profile.major).to be_nil
       expect(profile.pen_name).to be_nil
     end
+
+    it 'ignores a hostile user_id and keeps the profile on the signed-in user' do
+      other_user = create(:user)
+
+      post :create, params: {
+        profile: profile_attributes.merge(user_id: other_user.id)
+      }
+
+      expect(user.reload.profile).to be_present
+      expect(user.profile.user_id).to eq(user.id)
+      expect(other_user.reload.profile).to be_nil
+    end
   end
 
   describe 'PATCH #update' do
@@ -89,6 +101,20 @@ RSpec.describe ProfilesController, type: :controller do
       expect(profile.preferred_last_name).to eq('Preferred')
       expect(profile.degree).to eq(original_degree)
       expect(profile.pen_name).to eq(original_pen_name)
+    end
+
+    it 'ignores a hostile user_id on update' do
+      other_user = create(:user)
+
+      patch :update, params: {
+        id: profile.id,
+        profile: { user_id: other_user.id, legal_first_name: 'Still Mine' }
+      }
+
+      profile.reload
+      expect(response).to redirect_to(applicant_dashboard_path)
+      expect(profile.user_id).to eq(user.id)
+      expect(profile.legal_first_name).to eq('Still Mine')
     end
   end
 end

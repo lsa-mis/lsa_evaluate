@@ -172,8 +172,7 @@ class EntriesController < ApplicationController
 
   def entry_params
     params.require(:entry).permit(
-      :title, :disqualified, :deleted, :contest_instance_id,
-      :profile_id, :category_id, :entry_file, :confirmed_class_level_id
+      :title, :contest_instance_id, :category_id, :entry_file, :confirmed_class_level_id
     )
   end
 

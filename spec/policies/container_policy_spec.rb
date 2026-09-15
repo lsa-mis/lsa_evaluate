@@ -19,10 +19,12 @@ RSpec.describe ContainerPolicy do
 
       it { is_expected.to permit_action(:create) }
       it { is_expected.to permit_action(:update) }
+      it { is_expected.to permit_action(:manage_assignments) }
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
       it { is_expected.to permit_action(:applicants) }
       it { is_expected.to permit_action(:manage_judging) }
+      it { is_expected.to permit_action(:lookup_user) }
     end
 
     context 'with a non-employee user' do
@@ -30,10 +32,12 @@ RSpec.describe ContainerPolicy do
 
       it { is_expected.not_to permit_action(:create) }
       it { is_expected.not_to permit_action(:update) }
+      it { is_expected.not_to permit_action(:manage_assignments) }
       it { is_expected.not_to permit_action(:active_applicants_report) }
       it { is_expected.not_to permit_action(:reports) }
       it { is_expected.not_to permit_action(:applicants) }
       it { is_expected.not_to permit_action(:manage_judging) }
+      it { is_expected.not_to permit_action(:lookup_user) }
     end
 
     context 'with an employee user with a manager role' do
@@ -45,10 +49,12 @@ RSpec.describe ContainerPolicy do
 
       it { is_expected.to permit_action(:create) }
       it { is_expected.to permit_action(:update) }
+      it { is_expected.to permit_action(:manage_assignments) }
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
       it { is_expected.to permit_action(:applicants) }
       it { is_expected.to permit_action(:manage_judging) }
+      it { is_expected.to permit_action(:lookup_user) }
     end
 
     context 'with an Axis Mundi user' do
@@ -60,11 +66,36 @@ RSpec.describe ContainerPolicy do
 
       it { is_expected.to permit_action(:create) }
       it { is_expected.to permit_action(:update) }
+      it { is_expected.to permit_action(:manage_assignments) }
       it { is_expected.to permit_action(:destroy) }
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
       it { is_expected.to permit_action(:applicants) }
       it { is_expected.to permit_action(:manage_judging) }
+      it { is_expected.to permit_action(:lookup_user) }
+    end
+
+    context 'with a student who is assigned to a collection' do
+      let(:user) { create(:user, :student) }
+
+      before do
+        create(:assignment, container: container, user: user, role: container_manager_role)
+      end
+
+      it { is_expected.to permit_action(:lookup_user) }
+    end
+
+    context 'with a contest judge who is not collection staff' do
+      let(:user) { create(:user, :student) }
+      let(:judge_role) { create(:role, kind: 'Judge') }
+
+      before do
+        create(:assignment, container: container, user: user, role: judge_role)
+      end
+
+      it { is_expected.not_to permit_action(:lookup_user) }
+      it { is_expected.not_to permit_action(:update) }
+      it { is_expected.not_to permit_action(:manage_assignments) }
     end
   end
 

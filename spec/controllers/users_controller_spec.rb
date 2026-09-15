@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
   describe '#lookup' do
-    let(:current_user) { create(:user) }
+    let(:current_user) { create(:user, :employee) }
     let!(:user1) { create(:user, first_name: 'Alice', last_name: 'Smith', email: 'alice@example.com', uid: 'alice1') }
     let!(:user2) { create(:user, first_name: 'Bob', last_name: 'Jones', email: 'bob@example.com', uid: 'bobby') }
     let!(:user3) { create(:user, first_name: 'Carol', last_name: 'Brown', email: 'carol@example.com', uid: 'carolb') }
@@ -50,6 +50,15 @@ RSpec.describe UsersController, type: :controller do
       get :lookup, params: { q: 'Test' }, format: :json
       results = JSON.parse(response.body)
       expect(results.length).to be <= 10
+    end
+
+    it 'denies non-staff users' do
+      sign_in create(:user, :student)
+
+      get :lookup, params: { q: 'Alice' }, format: :json
+
+      expect(response).to redirect_to(root_path)
+      expect(flash[:alert]).to eq('!!! Not authorized !!!')
     end
   end
 end

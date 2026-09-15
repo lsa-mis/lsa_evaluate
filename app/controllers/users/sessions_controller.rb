@@ -4,7 +4,20 @@ module Users
   # The SessionsController class handles user sessions and authentication.
   class SessionsController < Devise::SessionsController
     # Heartbeat must answer 401 for expired sessions instead of redirecting to sign-in.
-    skip_before_action :authenticate_user!, only: :heartbeat
+    # Sign-in must not run ApplicationController's authenticate_user! / Sentry user
+    # lookup, or a password POST would authenticate before we can reject it.
+    skip_before_action :authenticate_user!, only: [ :new, :create, :heartbeat ]
+    skip_before_action :set_sentry_context, only: [ :new, :create, :heartbeat ]
+
+    def create
+      unless DatabaseAuthentication.enabled?
+        warden.logout(resource_name) if warden.authenticated?(resource_name)
+        redirect_to new_user_session_path, alert: 'Please sign in with your U-M account.'
+        return
+      end
+
+      super
+    end
 
     # Destroys the user session and preserves the SAML UID and session index in the session.
     def destroy
@@ -34,6 +47,12 @@ module Users
       else
         head :unauthorized
       end
+    end
+
+    protected
+
+    def allow_params_authentication!
+      super if DatabaseAuthentication.enabled?
     end
   end
 end

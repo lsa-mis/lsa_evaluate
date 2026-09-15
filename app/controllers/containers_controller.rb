@@ -1,12 +1,13 @@
 # app/controllers/containers_controller.rb
 class ContainersController < ApplicationController
   include ContestDescriptionsHelper
-  after_action :verify_authorized, except: :lookup_user
+  after_action :verify_authorized
   before_action :set_container, only: %i[show edit update destroy description reports active_applicants_report]
   before_action :authorize_container, only: %i[show edit destroy reports]
   before_action :authorize_new_container, only: :new
   before_action :authorize_admin_content, only: :admin_content
   before_action :authorize_index, only: :index
+  before_action :authorize_lookup_user, only: :lookup_user
 
   def index
     @containers = policy_scope(Container)
@@ -87,7 +88,9 @@ class ContainersController < ApplicationController
 
   def lookup_user
     @users = User.where('uid LIKE ?', "%#{params[:uid]}%").limit(10)
-    render json: @users.map { |user| { uid: user.uid, display_name: user.display_name, display_name_and_uid: user.display_name_and_uid } }
+    render json: @users.map { |user|
+      { uid: user.uid, display_name: user.display_name, display_name_and_uid: user.display_name_and_uid }
+    }
   end
 
   def reports
@@ -184,6 +187,10 @@ class ContainersController < ApplicationController
 
   def authorize_index
     authorize Container
+  end
+
+  def authorize_lookup_user
+    authorize Container, :lookup_user?
   end
 
   def load_permission_assignments

@@ -8,7 +8,10 @@ class ProfilePolicy < ApplicationPolicy
   end
 
   def create?
-    !user_has_persisted_profile? || axis_mundi?
+    return true if axis_mundi?
+    return false unless user_is_owner?
+
+    !user_has_persisted_profile?
   end
 
   def show?

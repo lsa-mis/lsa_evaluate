@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
+  def dev_browser_login_allowed?
+    return false unless Rails.application.routes.url_helpers.respond_to?(:dev_sessions_path)
+
+    DevBrowserLogin.allowed?(request)
+  end
+
   def render_editable_content(page, section)
     content_record = EditableContent.find_by(page: page, section: section)
     return unless content_record

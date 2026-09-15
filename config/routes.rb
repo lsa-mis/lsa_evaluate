@@ -23,11 +23,21 @@ Rails.application.routes.draw do
   # Unguessable applicant invite URL for private contest instances
   get '/c/:token', to: 'contest_invites#show', as: :contest_invite
 
-  devise_for :users, controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }
+  devise_for :users,
+             skip: [ :registrations, :passwords ],
+             controllers: { omniauth_callbacks: 'users/omniauth_callbacks', sessions: 'users/sessions' }
 
   devise_scope :user do
     delete 'sign_out', to: 'users/sessions#destroy'
     get 'session/heartbeat', to: 'users/sessions#heartbeat'
+  end
+
+  # Cursor IDE browser cannot complete U-M SAML. This picker signs in as an
+  # existing user without the IdP. Never enable on staging or production.
+  if Rails.env.development? || Rails.env.test?
+    namespace :dev do
+      resources :sessions, only: [ :index, :create ]
+    end
   end
 
   get 'judge_dashboard', to: 'judge_dashboard#index'
@@ -142,8 +152,14 @@ Rails.application.routes.draw do
   get '/500', to: 'errors#internal_server_error', as: 'internal_server_error'
 
   mount ActiveStorage::Engine => '/rails/active_storage', as: 'active_storage'
-  if Rails.env.development? || Rails.env.staging?
+  # Development: local inbox UI. Staging: axis mundi only — unauthenticated
+  # Letter Opener exposes invite tokens and applicant PII.
+  if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: '/letter_opener'
+  elsif Rails.env.staging?
+    authenticate :user, ->(user) { LetterOpenerAccess.allowed?(user) } do
+      mount LetterOpenerWeb::Engine, at: '/letter_opener'
+    end
   end
 
   resources :users_dashboard, only: %i[ index show ]
@@ -167,8 +183,9 @@ Rails.application.routes.draw do
   # Mount the feedback gem engine
   mount LsaTdxFeedback::Engine => '/lsa_tdx_feedback', as: 'lsa_tdx_feedback'
 
-  # Place this at the very end of the file to catch all undefined routes
-  match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|
+  # GET/HEAD only so unknown POSTs do not hit this controller and trip CSRF.
+  # Other methods fall through to RoutingError, then exceptions_app renders /404.
+  match '*path', to: 'errors#not_found', via: %i[get head], constraints: lambda { |req|
     req.path.exclude?('/rails/active_storage') &&
     req.path.exclude?('/letter_opener')
   }

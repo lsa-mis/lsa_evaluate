@@ -37,7 +37,10 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, :registerable,
+  # Campus SAML is the only public sign-in. :database_authenticatable remains
+  # so SAML/user factories can persist a random password; registration and
+  # password-reset routes are skipped in config/routes.rb.
+  devise :database_authenticatable,
          :recoverable, :rememberable, :validatable,
          :trackable, :lockable, :timeoutable,
          :omniauthable, omniauth_providers: [ :saml ]
