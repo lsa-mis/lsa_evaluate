@@ -183,8 +183,9 @@ Rails.application.routes.draw do
   # Mount the feedback gem engine
   mount LsaTdxFeedback::Engine => '/lsa_tdx_feedback', as: 'lsa_tdx_feedback'
 
-  # Place this at the very end of the file to catch all undefined routes
-  match '*path', to: 'errors#not_found', via: :all, constraints: lambda { |req|
+  # GET/HEAD only so unknown POSTs do not hit this controller and trip CSRF.
+  # Other methods fall through to RoutingError, then exceptions_app renders /404.
+  match '*path', to: 'errors#not_found', via: %i[get head], constraints: lambda { |req|
     req.path.exclude?('/rails/active_storage') &&
     req.path.exclude?('/letter_opener')
   }
