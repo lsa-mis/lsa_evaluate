@@ -34,6 +34,12 @@ module LsaEvaluate
     config.active_record.default_timezone = :utc
     config.exceptions_app = self.routes
 
+    # Hatchbox nginx sets X-Forwarded-For (and Forwarded) to the real client, but
+    # also forwards a client-supplied Client-IP header. Rails RemoteIp treats that
+    # mismatch as ActionDispatch::RemoteIp::IpSpoofAttackError (EVALUATE-3E).
+    # Disable the check and trust the proxy headers; Rack::Defense drops Client-IP.
+    config.action_dispatch.ip_spoofing_check = false
+
     # Configure CSRF protection to work with OmniAuth SAML
     # This allows SAML callbacks to work properly without disabling CSRF protection
     config.action_controller.forgery_protection_origin_check = false
@@ -44,7 +50,8 @@ module LsaEvaluate
     # in config/environments, which are processed later.
     config.generators.system_tests = nil
 
-    # Add security middleware
-    config.middleware.use Rack::Defense
+    # Run before RemoteIp so scanner probes and Client-IP stripping happen
+    # before Rails logs request.remote_ip.
+    config.middleware.insert_before ActionDispatch::RemoteIp, Rack::Defense
   end
 end

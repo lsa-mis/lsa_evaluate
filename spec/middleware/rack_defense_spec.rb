@@ -41,6 +41,20 @@ RSpec.describe Rack::Defense do
       end
     end
 
+    [
+      '/blog/wp-json/batch/v1',
+      '/blog/wordpress/wp-json/batch/v1',
+      '/wp-content/plugins/hello.php',
+      '/wp-includes/js/wp-embed.min.js'
+    ].each do |probe_path|
+      it "blocks WordPress probe #{probe_path}" do
+        status, _headers, body = call_with(path: probe_path)
+
+        expect(status).to eq(403)
+        expect(body).to eq(['Forbidden'])
+      end
+    end
+
     it 'blocks POST requests with php content in the body' do
       status, = call_with(
         path: '/',
@@ -157,6 +171,26 @@ RSpec.describe Rack::Defense do
 
       expect(status).to eq(200)
       expect(body).to eq(['OK'])
+    end
+  end
+
+  describe 'Client-IP header' do
+    it 'drops HTTP_CLIENT_IP so Rails RemoteIp does not raise a spoof error' do
+      captured_env = nil
+      inspecting_app = lambda do |env|
+        captured_env = env
+        [200, {}, ['OK']]
+      end
+      middleware = described_class.new(inspecting_app)
+
+      env = Rack::MockRequest.env_for('/missing-page')
+      env['HTTP_CLIENT_IP'] = '127.0.0.1'
+      env['HTTP_X_FORWARDED_FOR'] = '203.0.113.50'
+      status, = middleware.call(env)
+
+      expect(status).to eq(200)
+      expect(captured_env).not_to have_key('HTTP_CLIENT_IP')
+      expect(captured_env['HTTP_X_FORWARDED_FOR']).to eq('203.0.113.50')
     end
   end
 end
