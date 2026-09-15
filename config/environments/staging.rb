@@ -31,8 +31,11 @@ Rails.application.configure do
   # Store uploaded files on the local file system.
   config.active_storage.service = :local
 
-  # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  # Force all access to the app over SSL and use secure cookies.
+  # HSTS is set at the reverse proxy (same as production).
+  config.force_ssl = true
+  config.ssl_options = { hsts: false }
+  config.session_store :cookie_store, key: 'evaluate_session', secure: true
 
   # Logging
   config.log_level = :info

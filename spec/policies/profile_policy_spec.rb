@@ -46,15 +46,18 @@ RSpec.describe ProfilePolicy do
     let(:another_user) { create(:user) } # A different user
     let(:profile) { create(:profile, user: another_user) } # Profile belongs to another user
 
-    it 'permits new and create actions' do
-      # Ensure the user does not have a profile
+    it 'permits new when the user has no profile of their own' do
       expect(user.profile).to be_nil
-
-      # Test new? policy
       expect(subject).to permit_action(:new)
+    end
 
-      # Test create? policy
-      expect(subject).to permit_action(:create)
+    it 'forbids create when the profile belongs to another user' do
+      expect(subject).not_to permit_action(:create)
+    end
+
+    it 'permits create for an unsaved profile owned by the user' do
+      own_profile = user.build_profile
+      expect(described_class.new(user, own_profile)).to permit_action(:create)
     end
 
     it 'forbids show, update, and destroy actions' do

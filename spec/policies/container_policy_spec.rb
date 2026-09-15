@@ -19,6 +19,7 @@ RSpec.describe ContainerPolicy do
 
       it { is_expected.to permit_action(:create) }
       it { is_expected.to permit_action(:update) }
+      it { is_expected.to permit_action(:manage_assignments) }
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
       it { is_expected.to permit_action(:applicants) }
@@ -31,6 +32,7 @@ RSpec.describe ContainerPolicy do
 
       it { is_expected.not_to permit_action(:create) }
       it { is_expected.not_to permit_action(:update) }
+      it { is_expected.not_to permit_action(:manage_assignments) }
       it { is_expected.not_to permit_action(:active_applicants_report) }
       it { is_expected.not_to permit_action(:reports) }
       it { is_expected.not_to permit_action(:applicants) }
@@ -47,6 +49,7 @@ RSpec.describe ContainerPolicy do
 
       it { is_expected.to permit_action(:create) }
       it { is_expected.to permit_action(:update) }
+      it { is_expected.to permit_action(:manage_assignments) }
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
       it { is_expected.to permit_action(:applicants) }
@@ -63,6 +66,7 @@ RSpec.describe ContainerPolicy do
 
       it { is_expected.to permit_action(:create) }
       it { is_expected.to permit_action(:update) }
+      it { is_expected.to permit_action(:manage_assignments) }
       it { is_expected.to permit_action(:destroy) }
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
@@ -90,6 +94,8 @@ RSpec.describe ContainerPolicy do
       end
 
       it { is_expected.not_to permit_action(:lookup_user) }
+      it { is_expected.not_to permit_action(:update) }
+      it { is_expected.not_to permit_action(:manage_assignments) }
     end
   end
 

@@ -19,7 +19,7 @@ module Users
     def handle_auth(kind)
       if user_signed_in?
         flash[:notice] = "Your #{kind} account was connected."
-        redirect_to edit_user_registration_path
+        redirect_to root_path
       else
         sign_in_and_redirect @user, event: :authentication
         set_flash_message(:notice, :success, kind: kind)
@@ -58,7 +58,7 @@ module Users
         else
           Rails.logger.error("Failed to create/update user: #{@user.errors.full_messages.join(', ')}")
           flash[:alert] = "User creation/update failed: #{@user.errors.full_messages.join(', ')}"
-          redirect_to new_user_registration_path and return
+          redirect_to new_user_session_path and return
         end
       end
     end
@@ -97,7 +97,7 @@ module Users
       Rails.logger.error("Failed to sync affiliations: #{e.message}")
       # Optionally, add further error handling here, such as notifying the user
       flash[:alert] = "Failed to sync affiliations: #{e.message}"
-      redirect_to new_user_registration_path and return
+      redirect_to new_user_session_path and return
     end
 
     def user_params

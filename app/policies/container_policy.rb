@@ -32,6 +32,12 @@ class ContainerPolicy < ApplicationPolicy
     owns_container? || axis_mundi?
   end
 
+  # Collection Administrator / Manager (or axis mundi) may grant or revoke
+  # collection staff roles. Judge container assignments must not qualify.
+  def manage_assignments?
+    update?
+  end
+
   def destroy?
     axis_mundi?
   end
