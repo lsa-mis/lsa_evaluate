@@ -1,0 +1,51 @@
+<div>
+  <div class="header">
+    <h1><%= @contest_description.name %></h1>
+  </div>
+
+  <p>Dear <%= @user.display_name_or_first_name_last_name %>,</p>
+
+  <p>Congratulations on your award for the <%= @contest_description.name %>.</p>
+
+  <div class="entry-details">
+    <h2>Your Entry</h2>
+    <p><strong>Title:</strong> <%= @entry.title %></p>
+    <% if @entry.category.present? %>
+      <p><strong>Category:</strong> <%= @entry.category.kind %></p>
+    <% end %>
+    <% if @entry.award_status_label.present? %>
+      <p><strong>Status:</strong> <%= @entry.award_status_label %></p>
+    <% end %>
+    <% if @entry.placement_label.present? %>
+      <p><strong>Placement:</strong> <%= @entry.placement_label %></p>
+    <% end %>
+  </div>
+
+  <% if @primary_award || @add_on_awards.any? %>
+    <h2>Your Awards</h2>
+    <ul>
+      <% if @primary_award %>
+        <li>
+          <%= @primary_award.award.name %>
+          <% if @include_amounts && @primary_award.amount.present? %>
+            — <%= number_to_currency(@primary_award.amount) %>
+          <% end %>
+        </li>
+      <% end %>
+      <% @add_on_awards.each do |entry_award| %>
+        <li>
+          <%= entry_award.award.name %>
+          <% if @include_amounts && entry_award.amount.present? %>
+            — <%= number_to_currency(entry_award.amount) %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <p>We appreciate your work and hope you will stay involved in future contests.</p>
+
+  <% if @contact_email.present? %>
+    <p>If you have questions about this award, please contact <%= mail_to @contact_email, @contact_email %>.</p>
+  <% end %>
+</div>

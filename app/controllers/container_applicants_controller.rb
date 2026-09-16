@@ -77,7 +77,7 @@ class ContainerApplicantsController < ApplicationController
          .where(profile: profile)
          .joins(contest_instance: { contest_description: :container })
          .where(containers: { id: @container.id })
-         .includes(:category, :entry_rankings, contest_instance: [ :contest_description, :judging_rounds ])
+         .includes(:category, :entry_rankings, { entry_awards: :award }, contest_instance: [ :contest_description, :judging_rounds ])
          .order('contest_instances.date_open DESC', 'entries.created_at DESC')
   end
 

@@ -3,7 +3,7 @@
 class EntriesController < ApplicationController
   include AvailableContestsConcern
   before_action :set_entry, only: %i[ show edit update destroy soft_delete modal_details ]
-  before_action :set_entry_for_toggle_disqualified, only: %i[ toggle_disqualified ]
+  before_action :set_entry_for_toggle_disqualified, only: %i[ toggle_disqualified update_award_outcome ]
   before_action :set_entry_for_profile, only: %i[ applicant_profile ]
   before_action :authorize_entry, only: %i[show edit update destroy]
   before_action :authorize_index, only: [ :index ]
@@ -129,6 +129,36 @@ class EntriesController < ApplicationController
     redirect_to request.referer || root_path, notice: 'Entry disqualification status has been updated.'
   end
 
+  def update_award_outcome
+    authorize @entry, :update_award_outcome?
+    @container = @entry.contest_instance.contest_description.container
+    @contest_description = @entry.contest_instance.contest_description
+    @contest_instance = @entry.contest_instance
+    redirect_path = container_contest_description_contest_instance_path(
+      @container, @contest_description, @contest_instance, tab: 'awards'
+    )
+
+    if @entry.update(award_outcome_params)
+      respond_to do |format|
+        format.turbo_stream do
+          flash.now[:notice] = 'Award outcome saved.'
+          prepare_award_outcome_frame
+          render 'entry_awards/upsert'
+        end
+        format.html { redirect_to redirect_path, notice: 'Award outcome saved.' }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream do
+          flash.now[:alert] = @entry.errors.full_messages.to_sentence
+          prepare_award_outcome_frame
+          render 'entry_awards/upsert', status: :unprocessable_entity
+        end
+        format.html { redirect_to redirect_path, alert: @entry.errors.full_messages.to_sentence }
+      end
+    end
+  end
+
   def applicant_profile
     authorize @entry, :view_applicant_profile?
     @profile = @entry.profile
@@ -174,6 +204,21 @@ class EntriesController < ApplicationController
     params.require(:entry).permit(
       :title, :contest_instance_id, :category_id, :entry_file, :confirmed_class_level_id
     )
+  end
+
+  def award_outcome_params
+    params.require(:entry).permit(:award_status, :placement).tap do |permitted|
+      permitted[:placement] = nil if permitted[:placement].blank?
+    end
+  end
+
+  def prepare_award_outcome_frame
+    @entry = Entry.includes(
+      :category,
+      { entry_awards: :award },
+      { profile: [ :user, :class_level ] }
+    ).find(@entry.id)
+    @catalog_awards = @container.awards.active.ordered
   end
 
   def prepare_application_questions
