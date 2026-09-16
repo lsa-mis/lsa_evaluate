@@ -37,6 +37,21 @@ RSpec.describe EntryAnswer do
       question = container.application_questions.find_by!(system_key: 'pen_name')
       expect(build_answer(question:, value: '')).to be_blank_answer
     end
+
+    it 'treats empty multiselect arrays as blank and filled arrays as present' do
+      question = create(
+        :application_question,
+        container:,
+        field_type: 'multiselect',
+        key: 'preferred_genres',
+        label: 'Preferred genres',
+        options: { 'choices' => %w[Poetry Fiction] }
+      )
+
+      expect(build_answer(question:, value: [])).to be_blank_answer
+      expect(build_answer(question:, value: [ '' ])).to be_blank_answer
+      expect(build_answer(question:, value: %w[Poetry])).not_to be_blank_answer
+    end
   end
 
   describe '#agreement_accepted?' do
@@ -77,6 +92,19 @@ RSpec.describe EntryAnswer do
       question = container.application_questions.find_by!(system_key: 'contest_referral_source')
       answer = build_answer(question:, value: { 'choice' => 'Other', 'other' => 'Bus ad' })
       expect(answer.display_value).to eq('Other: Bus ad')
+    end
+
+    it 'joins multiselect answers for display' do
+      question = create(
+        :application_question,
+        container:,
+        field_type: 'multiselect',
+        key: 'preferred_genres',
+        label: 'Preferred genres',
+        options: { 'choices' => %w[Poetry Fiction Drama] }
+      )
+
+      expect(build_answer(question:, value: %w[Poetry Drama]).display_value).to eq('Poetry, Drama')
     end
 
     it 'falls back to the raw campus/school id when the record is missing' do
