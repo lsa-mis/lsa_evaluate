@@ -60,6 +60,53 @@ RSpec.describe AwardsController, type: :controller do
     end
   end
 
+  describe 'PATCH #update' do
+    render_views
+
+    it 'updates an unassigned award kind' do
+      award = create(:award, container: container, kind: 'primary')
+
+      patch :update, params: {
+        container_id: container.id,
+        id: award.id,
+        award: { kind: 'add_on' }
+      }
+
+      expect(award.reload).to be_add_on
+    end
+
+    it 'ignores kind changes after the prize has been assigned' do
+      award = create(:award, container: container, kind: 'primary', name: 'First Place')
+      contest_description = create(:contest_description, :active, container: container)
+      contest_instance = create(:contest_instance, contest_description: contest_description)
+      entry = create(:entry, contest_instance: contest_instance)
+      create(:entry_award, entry: entry, award: award)
+
+      patch :update, params: {
+        container_id: container.id,
+        id: award.id,
+        award: { name: 'Renamed Prize', kind: 'add_on' }
+      }
+
+      award.reload
+      expect(award.name).to eq('Renamed Prize')
+      expect(award).to be_primary
+    end
+
+    it 'does not offer a kind field after the prize has been assigned' do
+      award = create(:award, container: container)
+      contest_description = create(:contest_description, :active, container: container)
+      contest_instance = create(:contest_instance, contest_description: contest_description)
+      entry = create(:entry, contest_instance: contest_instance)
+      create(:entry_award, entry: entry, award: award)
+
+      get :edit, params: { container_id: container.id, id: award.id }
+
+      expect(response.body).to include('cannot be changed after this prize has been assigned')
+      expect(response.body).not_to include('name="award[kind]"')
+    end
+  end
+
   describe 'DELETE #destroy' do
     it 'deletes an unassigned award' do
       award = create(:award, container: container)

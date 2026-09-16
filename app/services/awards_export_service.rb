@@ -13,7 +13,7 @@ class AwardsExportService
     questions = application_questions
 
     CSV.generate do |csv|
-      csv << [ @title ]
+      csv << [ csv_safe_cell(@title) ]
       csv << []
       csv << roster_headers(questions)
 
@@ -25,7 +25,7 @@ class AwardsExportService
 
   def disbursement_csv
     CSV.generate do |csv|
-      csv << [ @title ]
+      csv << [ csv_safe_cell(@title) ]
       csv << []
       csv << disbursement_headers
 
@@ -72,7 +72,7 @@ class AwardsExportService
       'Primary Award', 'Primary Amount', 'Primary Shortcode',
       'Add-on Awards', 'Add-on Amounts', 'Add-on Shortcodes',
       'Total Amount'
-    ] + questions.map(&:label)
+    ] + questions.map { |question| csv_safe_cell(question.label) }
   end
 
   def disbursement_headers

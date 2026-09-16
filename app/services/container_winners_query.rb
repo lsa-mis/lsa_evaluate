@@ -7,6 +7,7 @@ class ContainerWinnersQuery
     @contest_instance_id = contest_instance_id.presence
     @award_status = award_status.presence
     @award_kind = award_kind.presence
+    @award_kind = nil unless Award.kinds.value?(@award_kind.to_s)
   end
 
   def entries
@@ -41,7 +42,10 @@ class ContainerWinnersQuery
     end
 
     if @award_kind
-      scope = scope.joins(entry_awards: :award).where(awards: { kind: @award_kind }).distinct
+      matching_entry_ids = EntryAward.joins(:award)
+                                     .where(awards: { kind: @award_kind })
+                                     .select(:entry_id)
+      scope = scope.where(id: matching_entry_ids)
     end
 
     scope

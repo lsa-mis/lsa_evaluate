@@ -64,4 +64,20 @@ RSpec.describe 'Awards workspace', type: :system do
     expect(page).to have_content('First Place')
     expect(page).to have_content('Winner')
   end
+
+  it 'removes an assigned prize from the awards tab' do
+    award = create(:award, container: container, name: 'First Place')
+    create(:entry_award, entry: entry, award: award)
+
+    visit container_contest_description_contest_instance_path(
+      container, contest_description, contest_instance, tab: 'awards'
+    )
+
+    accept_confirm do
+      click_link 'Remove'
+    end
+
+    expect(page).to have_content('Prize removed.')
+    expect(entry.reload.entry_awards).to be_empty
+  end
 end

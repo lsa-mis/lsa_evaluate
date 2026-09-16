@@ -37,6 +37,7 @@ class Award < ApplicationRecord
   validates :kind, presence: true, inclusion: { in: KINDS.values }
   validates :default_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :position, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+  validate :kind_not_changed_when_assigned
 
   before_validation :assign_position, on: :create
 
@@ -47,11 +48,30 @@ class Award < ApplicationRecord
     KIND_LABELS.fetch(kind, kind.to_s.humanize)
   end
 
+  def kind_locked?
+    persisted? && assigned?
+  end
+
+  def assigned?
+    if entry_awards.loaded?
+      entry_awards.any?
+    else
+      entry_awards.exists?
+    end
+  end
+
   def self.kind_options
     KIND_LABELS.map { |value, label| [ label, value ] }
   end
 
   private
+
+  def kind_not_changed_when_assigned
+    return unless will_save_change_to_kind?
+    return unless assigned?
+
+    errors.add(:kind, 'cannot be changed after the prize has been assigned')
+  end
 
   def assign_position
     return unless new_record?

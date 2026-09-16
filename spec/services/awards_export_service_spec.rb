@@ -32,6 +32,22 @@ RSpec.describe AwardsExportService do
       expect(csv).to include('SC-ADDON')
       expect(csv).to include('1700.00')
     end
+
+    it 'sanitizes spreadsheet formulas in the title and question labels' do
+      question = instance_double(ApplicationQuestion, id: -1, label: '=CMD()')
+      dangerous = described_class.new(
+        entries: contest_instance.entries.active,
+        title: '=1+2',
+        contest_instance: contest_instance
+      )
+      allow(dangerous).to receive(:application_questions).and_return([ question ])
+
+      csv = dangerous.roster_csv
+
+      expect(csv).to include("'=1+2")
+      expect(csv).to include("'=CMD()")
+      expect(csv).not_to match(/(^|,)=1\+2/)
+    end
   end
 
   describe '#disbursement_csv' do
@@ -43,6 +59,16 @@ RSpec.describe AwardsExportService do
       expect(csv).to include('SC-PRIMARY')
       expect(csv).to include('SC-ADDON')
       expect(lines.grep(/Winning Play/).size).to eq(2)
+    end
+
+    it 'sanitizes spreadsheet formulas in the title' do
+      csv = described_class.new(
+        entries: contest_instance.entries.active,
+        title: '@SUM(A1)',
+        contest_instance: contest_instance
+      ).disbursement_csv
+
+      expect(csv).to include("'@SUM(A1)")
     end
   end
 end

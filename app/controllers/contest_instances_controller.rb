@@ -7,6 +7,7 @@ class ContestInstancesController < ApplicationController
     show edit update destroy send_round_results deactivate regenerate_access_token
     setup_questions update_setup_questions setup_review_process
     award_email_preferences send_award_notices export_awards_roster export_awards_disbursement
+    awards_panel
   ]
   before_action :authorize_container_access
 
@@ -23,8 +24,7 @@ class ContestInstancesController < ApplicationController
       contest_instance: { contest_description: :container }
     )
 
-    @catalog_awards = @container.awards.active.ordered
-    @awards_tab_entries = @contest_instance.awards_tab_entries
+    load_awards_tab if params[:tab] == 'awards'
 
     if params[:sort_column].present? && params[:sort_direction].present?
       sortable_columns = Entry.sortable_columns
@@ -273,6 +273,10 @@ class ContestInstancesController < ApplicationController
     @award_notice_entries = @contest_instance.award_notice_entries
   end
 
+  def awards_panel
+    load_awards_tab
+  end
+
   def send_award_notices
     authorize @contest_instance, :send_award_notices?
     include_amounts = params[:include_amounts] == '1'
@@ -353,6 +357,11 @@ class ContestInstancesController < ApplicationController
     send_data csv_data,
               type: 'text/csv; charset=utf-8; header=present',
               disposition: "attachment; filename=#{filename}"
+  end
+
+  def load_awards_tab
+    @catalog_awards = @container.awards.active.ordered
+    @awards_tab_entries = @contest_instance.awards_tab_entries
   end
 
   def contest_instance_params

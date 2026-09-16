@@ -6,11 +6,16 @@ class EntryAwardsController < ApplicationController
   before_action :set_entry_award, only: %i[update destroy]
 
   def create
-    @entry = @contest_instance.entries.active.find(params[:entry_id])
-    @entry_award = @entry.entry_awards.new(create_entry_award_params)
-    authorize @entry_award
+    saved = false
 
-    if @entry_award.save
+    Entry.transaction do
+      @entry = @contest_instance.entries.active.lock.find(params[:entry_id])
+      @entry_award = @entry.entry_awards.new(create_entry_award_params)
+      authorize @entry_award
+      saved = @entry_award.save
+    end
+
+    if saved
       respond_with_entry_frame(notice: 'Prize assigned.')
     else
       respond_with_entry_frame(

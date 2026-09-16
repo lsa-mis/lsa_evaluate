@@ -61,6 +61,28 @@ RSpec.describe Award, type: :model do
     end
   end
 
+  describe 'kind' do
+    it 'allows kind to change before the prize is assigned' do
+      award = create(:award, :add_on, container: container)
+
+      expect(award.update(kind: 'primary')).to be true
+    end
+
+    it 'does not allow kind to change after the prize is assigned' do
+      award = create(:award, :add_on, container: container)
+      contest_description = create(:contest_description, :active, container: container)
+      contest_instance = create(:contest_instance, contest_description: contest_description)
+      entry = create(:entry, contest_instance: contest_instance)
+      create(:entry_award, entry: entry, award: award)
+
+      award.reload
+      award.kind = 'primary'
+
+      expect(award).not_to be_valid
+      expect(award.errors[:kind]).to include('cannot be changed after the prize has been assigned')
+    end
+  end
+
   describe 'destroy' do
     it 'is blocked when the award has been assigned' do
       award = create(:award, container: container)

@@ -27,6 +27,24 @@ RSpec.describe ContainerWinnersController, type: :controller do
       expect(response.body).to include('Poetry')
       expect(response.body).to include('1st')
     end
+
+    it 'filters by prize kind without using DISTINCT' do
+      add_on_profile = create(:profile, preferred_first_name: 'Add', preferred_last_name: 'Onn')
+      add_on_entry = create(
+        :entry,
+        contest_instance: contest_instance,
+        profile: add_on_profile,
+        award_status: 'finalist',
+        title: 'Add-On Only Poem'
+      )
+      create(:entry_award, :add_on, entry: add_on_entry)
+
+      get :show, params: { id: container.id, award_kind: 'add_on' }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('Add-On Only Poem')
+      expect(response.body).not_to include(entry.title)
+    end
   end
 
   describe 'GET #export_roster' do

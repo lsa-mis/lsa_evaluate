@@ -53,7 +53,18 @@
       <%= render "judging_results" %>
     </div>
     <div class="tab-pane fade <%= 'show active' if contest_instance_tab_active?('awards') %>" id="awards" role="tabpanel" aria-labelledby="awards-tab">
-      <%= render "awards" %>
+      <% awards_panel_path = awards_panel_container_contest_description_contest_instance_path(
+           @container, @contest_description, @contest_instance
+         ) %>
+      <% if contest_instance_tab_active?('awards') %>
+        <%= turbo_frame_tag 'contest_instance_awards' do %>
+          <%= render 'awards' %>
+        <% end %>
+      <% else %>
+        <%= turbo_frame_tag 'contest_instance_awards', src: awards_panel_path, loading: :lazy do %>
+          <p class="text-muted p-3 mb-0">Loading awards…</p>
+        <% end %>
+      <% end %>
     </div>
   </div>
   <%= render partial: "shared/modal" %>

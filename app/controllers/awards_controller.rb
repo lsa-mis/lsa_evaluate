@@ -56,8 +56,8 @@ class AwardsController < ApplicationController
   end
 
   def award_params
-    params.require(:award).permit(
-      :name, :kind, :default_amount, :default_shortcode, :description, :active
-    )
+    permitted = [ :name, :default_amount, :default_shortcode, :description, :active ]
+    permitted << :kind unless @award&.kind_locked?
+    params.require(:award).permit(*permitted)
   end
 end

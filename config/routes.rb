@@ -67,6 +67,7 @@ Rails.application.routes.draw do
           post 'send_round_results'
           get 'award_email_preferences'
           post 'send_award_notices'
+          get :awards_panel
           get :export_entries
           get :export_round_results
           get :export_awards_roster

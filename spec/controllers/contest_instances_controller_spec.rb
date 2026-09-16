@@ -1011,5 +1011,39 @@ RSpec.describe ContestInstancesController, type: :controller do
       expect(response.body).to include('Award Status')
       expect(response.body).to include(entry.title)
     end
+
+    it 'does not load awards tab data on the default contest instance show' do
+      get :show, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id
+      }
+
+      expect(assigns(:awards_tab_entries)).to be_nil
+      expect(assigns(:catalog_awards)).to be_nil
+    end
+
+    it 'loads awards tab data when the awards tab is requested' do
+      get :show, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id,
+        tab: 'awards'
+      }
+
+      expect(assigns(:awards_tab_entries)).to include(entry)
+      expect(assigns(:catalog_awards)).to be_present
+    end
+
+    it 'renders the lazy awards panel' do
+      get :awards_panel, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(assigns(:awards_tab_entries)).to include(entry)
+    end
   end
 end

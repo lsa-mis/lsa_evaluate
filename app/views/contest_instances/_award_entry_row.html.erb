@@ -74,15 +74,17 @@
                   </div>
                   <div class="col-sm-4">
                     <%= f.submit 'Update', class: 'btn btn-sm btn-outline-secondary' %>
-                    <%= button_to 'Remove',
-                                  container_contest_description_contest_instance_entry_award_path(
-                                    container, contest_description, contest_instance, entry_award
-                                  ),
-                                  method: :delete,
-                                  class: 'btn btn-sm btn-link text-danger',
-                                  form: { data: { turbo_confirm: 'Remove this prize from the entry?' }, class: 'd-inline' } %>
                   </div>
                 <% end %>
+                <%= link_to 'Remove',
+                            container_contest_description_contest_instance_entry_award_path(
+                              container, contest_description, contest_instance, entry_award
+                            ),
+                            class: 'btn btn-sm btn-link text-danger px-0',
+                            data: {
+                              turbo_method: :delete,
+                              turbo_confirm: 'Remove this prize from the entry?'
+                            } %>
               <% else %>
                 <div class="small">
                   <%= format_award_amount(entry_award.amount) %>

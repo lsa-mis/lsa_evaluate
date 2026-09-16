@@ -24,6 +24,7 @@ class EntryAward < ApplicationRecord
   validate :award_is_active, on: :create
 
   before_validation :copy_defaults_from_award, on: :create
+  around_create :serialize_primary_assignment
 
   scope :primary, -> { joins(:award).where(awards: { kind: Award.kinds[:primary] }) }
   scope :add_on, -> { joins(:award).where(awards: { kind: Award.kinds[:add_on] }) }
@@ -56,14 +57,35 @@ class EntryAward < ApplicationRecord
     errors.add(:award, 'must belong to the same collection as this entry')
   end
 
+  def serialize_primary_assignment
+    unless award&.primary? && entry&.persisted?
+      yield
+      return
+    end
+
+    aborted = false
+    entry.with_lock do
+      if sibling_primary_prize_exists?
+        errors.add(:award, 'already has a primary prize assigned')
+        aborted = true
+      else
+        yield
+      end
+    end
+    throw :abort if aborted
+  end
+
   def one_primary_prize_per_entry
     return unless award&.primary? && entry
-
-    existing = entry.entry_awards.joins(:award).where(awards: { kind: Award.kinds[:primary] })
-    existing = existing.where.not(id: id) if persisted?
-    return unless existing.exists?
+    return unless sibling_primary_prize_exists?
 
     errors.add(:award, 'already has a primary prize assigned')
+  end
+
+  def sibling_primary_prize_exists?
+    existing = entry.entry_awards.joins(:award).where(awards: { kind: Award.kinds[:primary] })
+    existing = existing.where.not(id: id) if persisted?
+    existing.exists?
   end
 
   def award_is_active
