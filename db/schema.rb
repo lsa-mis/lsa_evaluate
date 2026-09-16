@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_234301) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_15_210000) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.text "body", size: :long
     t.datetime "created_at", null: false
@@ -100,6 +100,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_234301) do
     t.index ["user_id"], name: "index_assignments_on_user_id"
   end
 
+  create_table "awards", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.bigint "container_id", null: false
+    t.datetime "created_at", null: false
+    t.decimal "default_amount", precision: 10, scale: 2
+    t.string "default_shortcode"
+    t.text "description"
+    t.string "kind", default: "primary", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["container_id", "name"], name: "index_awards_on_container_id_and_name", unique: true
+    t.index ["container_id", "position"], name: "index_awards_on_container_id_and_position"
+    t.index ["container_id"], name: "index_awards_on_container_id"
+  end
+
   create_table "campuses", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "campus_cd", null: false
     t.string "campus_descr", null: false
@@ -175,6 +191,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_234301) do
     t.string "access_token", null: false
     t.boolean "active", default: false, null: false
     t.boolean "archived", default: false, null: false
+    t.integer "award_emails_sent_count", default: 0, null: false
     t.bigint "contest_description_id", null: false
     t.text "course_requirement_description"
     t.datetime "created_at", null: false
@@ -225,6 +242,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_234301) do
 
   create_table "entries", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.boolean "accepted_financial_aid_notice", default: false, null: false
+    t.string "award_status", default: "unawarded", null: false
     t.boolean "campus_employee", default: false, null: false
     t.bigint "category_id", null: false
     t.bigint "contest_instance_id", null: false
@@ -233,10 +251,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_234301) do
     t.boolean "disqualified", default: false, null: false
     t.text "financial_aid_description"
     t.string "pen_name"
+    t.integer "placement"
     t.bigint "profile_id", null: false
     t.boolean "receiving_financial_aid", default: false, null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
+    t.index ["award_status"], name: "index_entries_on_award_status"
     t.index ["category_id"], name: "category_id_idx"
     t.index ["category_id"], name: "index_entries_on_category_id"
     t.index ["contest_instance_id"], name: "contest_instance_id_idx"
@@ -255,6 +275,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_234301) do
     t.index ["application_question_id"], name: "index_entry_answers_on_application_question_id"
     t.index ["entry_id", "application_question_id"], name: "index_entry_answers_on_entry_id_and_application_question_id", unique: true
     t.index ["entry_id"], name: "index_entry_answers_on_entry_id"
+  end
+
+  create_table "entry_awards", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.decimal "amount", precision: 10, scale: 2
+    t.bigint "award_id", null: false
+    t.datetime "created_at", null: false
+    t.bigint "entry_id", null: false
+    t.text "notes"
+    t.string "shortcode"
+    t.datetime "updated_at", null: false
+    t.index ["award_id"], name: "index_entry_awards_on_award_id"
+    t.index ["entry_id", "award_id"], name: "index_entry_awards_on_entry_id_and_award_id", unique: true
+    t.index ["entry_id"], name: "index_entry_awards_on_entry_id"
   end
 
   create_table "entry_rankings", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -421,6 +454,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_234301) do
   add_foreign_key "assignments", "containers"
   add_foreign_key "assignments", "roles"
   add_foreign_key "assignments", "users"
+  add_foreign_key "awards", "containers"
   add_foreign_key "category_contest_instances", "categories"
   add_foreign_key "category_contest_instances", "contest_instances"
   add_foreign_key "class_level_requirements", "class_levels"
@@ -436,6 +470,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_234301) do
   add_foreign_key "entries", "profiles"
   add_foreign_key "entry_answers", "application_questions"
   add_foreign_key "entry_answers", "entries"
+  add_foreign_key "entry_awards", "awards"
+  add_foreign_key "entry_awards", "entries"
   add_foreign_key "entry_rankings", "entries"
   add_foreign_key "entry_rankings", "judging_rounds"
   add_foreign_key "entry_rankings", "users"

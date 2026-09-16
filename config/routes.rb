@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     member do
       patch 'soft_delete'
       patch :toggle_disqualified
+      patch :update_award_outcome
       get :applicant_profile
       get :modal_details
     end
@@ -58,13 +59,18 @@ Rails.application.routes.draw do
         patch :reorder
       end
     end
+    resources :awards, except: [ :show ]
     resources :contest_descriptions do
       resources :contest_instances do
         member do
           get 'email_preferences'
           post 'send_round_results'
+          get 'award_email_preferences'
+          post 'send_award_notices'
           get :export_entries
           get :export_round_results
+          get :export_awards_roster
+          get :export_awards_disbursement
           patch :deactivate
           post :regenerate_access_token
           get 'setup/questions', action: :setup_questions, as: :setup_questions
@@ -102,6 +108,7 @@ Rails.application.routes.draw do
           end
         end
         resources :entry_rankings, only: [ :create, :update ]
+        resources :entry_awards, only: [ :create, :update, :destroy ]
         resources :judging_assignments, only: [ :index, :create, :destroy ] do
           collection do
             post 'create_judge'
@@ -127,6 +134,9 @@ Rails.application.routes.draw do
       get 'description'
       get :reports
       get :active_applicants_report
+      get :winners, to: 'container_winners#show'
+      get :export_awards_roster, to: 'container_winners#export_roster'
+      get :export_awards_disbursement, to: 'container_winners#export_disbursement'
     end
   end
 
