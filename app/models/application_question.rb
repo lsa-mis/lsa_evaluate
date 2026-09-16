@@ -2,7 +2,7 @@
 
 class ApplicationQuestion < ApplicationRecord
   FIELD_TYPES = %w[
-    string text boolean date select select_with_other campus school
+    string text boolean date select select_with_other multiselect campus school
   ].freeze
 
   FIELD_TYPE_LABELS = {
@@ -12,6 +12,7 @@ class ApplicationQuestion < ApplicationRecord
     'date' => 'Date',
     'select' => 'Dropdown (choose one)',
     'select_with_other' => 'Dropdown with Other',
+    'multiselect' => 'Checkboxes (choose one or more)',
     'campus' => 'Campus list',
     'school' => 'School or college list'
   }.freeze
@@ -155,6 +156,8 @@ class ApplicationQuestion < ApplicationRecord
       else
         raw.presence && { 'choice' => raw.to_s }
       end
+    when 'multiselect'
+      normalize_multiselect_values(raw)
     when 'campus', 'school'
       raw.presence&.to_i
     when 'date'
@@ -182,6 +185,8 @@ class ApplicationQuestion < ApplicationRecord
       else
         raw.presence && { 'choice' => raw.to_s }
       end
+    when 'multiselect'
+      normalize_multiselect_values(raw)
     when 'campus', 'school'
       raw.presence&.to_i
     when 'date', 'select', 'string', 'text'
@@ -189,6 +194,20 @@ class ApplicationQuestion < ApplicationRecord
     else
       raw.presence
     end
+  end
+
+  def self.normalize_multiselect_values(raw)
+    return nil if raw.nil?
+
+    items = if raw.is_a?(ActionController::Parameters)
+              raw.to_unsafe_h.values
+            elsif raw.is_a?(Hash)
+              raw.values
+            else
+              Array.wrap(raw)
+            end
+
+    items.map { |item| item.to_s.strip }.reject(&:blank?).uniq.presence
   end
 
   def self.seed_system_questions_for!(container)
@@ -331,6 +350,8 @@ class ApplicationQuestion < ApplicationRecord
     case field_type
     when 'select'
       validate_select_default_value
+    when 'multiselect'
+      validate_multiselect_default_value
     when 'select_with_other'
       validate_select_with_other_default_value
     when 'date'
@@ -348,6 +369,17 @@ class ApplicationQuestion < ApplicationRecord
     return if choice_list.include?(default_value)
 
     errors.add(:base, 'default value must be one of the dropdown choices')
+  end
+
+  def validate_multiselect_default_value
+    unless default_value.is_a?(Array)
+      errors.add(:base, 'default values must be among the listed choices')
+      return
+    end
+
+    return if default_value.all? { |item| choice_list.include?(item) }
+
+    errors.add(:base, 'default values must be among the listed choices')
   end
 
   def validate_select_with_other_default_value

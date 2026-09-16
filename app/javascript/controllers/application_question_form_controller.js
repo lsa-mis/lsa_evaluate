@@ -1,13 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["choices", "requiresAcceptance", "defaultValue", "defaultValueField"]
+  static targets = ["choices", "choicesHint", "requiresAcceptance", "defaultValue", "defaultValueField"]
   static values = {
-    selectTypes: { type: Array, default: ["select", "select_with_other"] },
+    selectTypes: { type: Array, default: ["select", "select_with_other", "multiselect"] },
     booleanType: { type: String, default: "boolean" },
     defaultValueTypes: {
       type: Array,
-      default: ["string", "text", "date", "select", "select_with_other", "boolean", "campus", "school"]
+      default: ["string", "text", "date", "select", "select_with_other", "multiselect", "boolean", "campus", "school"]
     }
   }
 
@@ -21,6 +21,11 @@ export default class extends Controller {
     if (this.hasChoicesTarget) {
       this.choicesTarget.classList.toggle("d-none", !this.selectTypesValue.includes(fieldType))
     }
+
+    this.choicesHintTargets.forEach((element) => {
+      const multiple = element.dataset.selectKind === "multiple"
+      element.classList.toggle("d-none", fieldType === "multiselect" ? !multiple : multiple)
+    })
 
     if (this.hasRequiresAcceptanceTarget) {
       this.requiresAcceptanceTarget.classList.toggle("d-none", fieldType !== this.booleanTypeValue)

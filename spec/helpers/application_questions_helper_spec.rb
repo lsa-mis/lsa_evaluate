@@ -151,5 +151,31 @@ RSpec.describe ApplicationQuestionsHelper, type: :helper do
       expect(html).to include('type="checkbox"')
       expect(html).not_to include('type="radio"')
     end
+
+    it 'renders multiselect checkboxes with array names and checked state' do
+      question = create(
+        :application_question,
+        container:,
+        field_type: 'multiselect',
+        label: 'Preferred genres',
+        key: 'preferred_genres',
+        options: { 'choices' => %w[Poetry Fiction Drama] }
+      )
+      html = helper.render_application_question_field(
+        nil,
+        question: question,
+        name: "entry_answers[#{question.id}]",
+        value: %w[Poetry Drama],
+        required: true
+      ).to_s
+
+      expect(html).to include("name=\"entry_answers[#{question.id}][]\"")
+      expect(html).to include('type="checkbox"')
+      expect(html).to include('value="Poetry"')
+      expect(html).to include('value="Fiction"')
+      expect(html).to include('value="Drama"')
+      expect(html).not_to include('required=')
+      expect(html.scan(/checked="checked"/).size).to eq(2)
+    end
   end
 end

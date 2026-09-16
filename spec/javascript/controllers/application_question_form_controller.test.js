@@ -13,6 +13,7 @@ describe("ApplicationQuestionFormController", () => {
         <option value="text">Paragraph</option>
         <option value="select">Dropdown (choose one)</option>
         <option value="select_with_other">Dropdown with Other</option>
+        <option value="multiselect">Checkboxes (choose one or more)</option>
       </select>
       <div data-application-question-form-target="choices">Dropdown choices</div>
     </form>
@@ -48,6 +49,13 @@ describe("ApplicationQuestionFormController", () => {
 
   it("shows dropdown choices when the answer type includes Other", () => {
     fieldTypeSelect().value = "select_with_other"
+    fieldTypeSelect().dispatchEvent(new Event("change", { bubbles: true }))
+
+    expect(choices().classList.contains("d-none")).toBe(false)
+  })
+
+  it("shows choices when the answer type is checkboxes", () => {
+    fieldTypeSelect().value = "multiselect"
     fieldTypeSelect().dispatchEvent(new Event("change", { bubbles: true }))
 
     expect(choices().classList.contains("d-none")).toBe(false)

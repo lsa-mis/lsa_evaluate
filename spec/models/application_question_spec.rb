@@ -86,7 +86,8 @@ RSpec.describe ApplicationQuestion do
         [ 'Short answer (one line)', 'string' ],
         [ 'Paragraph', 'text' ],
         [ 'Yes / no', 'boolean' ],
-        [ 'Dropdown (choose one)', 'select' ]
+        [ 'Dropdown (choose one)', 'select' ],
+        [ 'Checkboxes (choose one or more)', 'multiselect' ]
       )
     end
   end
@@ -189,6 +190,43 @@ RSpec.describe ApplicationQuestion do
 
       expect(question).not_to be_valid
       expect(question.errors[:base]).to include('default value must be one of the dropdown choices')
+    end
+
+    it 'accepts a valid multiselect default array from choices' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'multiselect',
+        options: { 'choices' => %w[Poetry Fiction Drama], 'default_value' => %w[Poetry Drama] }
+      )
+
+      expect(question).to be_valid
+      expect(question.default_answer_value).to eq(%w[Poetry Drama])
+    end
+
+    it 'normalizes a scalar multiselect default into an array' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'multiselect',
+        options: { 'choices' => %w[Poetry Fiction], 'default_value' => 'Poetry' }
+      )
+
+      expect(question).to be_valid
+      expect(question.options['default_value']).to eq(%w[Poetry])
+      expect(question.default_answer_value).to eq(%w[Poetry])
+    end
+
+    it 'rejects a multiselect default that is not in choices' do
+      question = build(
+        :application_question,
+        container:,
+        field_type: 'multiselect',
+        options: { 'choices' => %w[Poetry Fiction], 'default_value' => %w[Poetry Drama] }
+      )
+
+      expect(question).not_to be_valid
+      expect(question.errors[:base]).to include('default values must be among the listed choices')
     end
 
     it 'accepts a valid date default' do

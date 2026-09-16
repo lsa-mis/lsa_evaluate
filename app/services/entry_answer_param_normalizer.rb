@@ -25,6 +25,8 @@ class EntryAnswerParamNormalizer
       else
         { 'choice' => @raw }
       end
+    when 'multiselect'
+      ApplicationQuestion.normalize_multiselect_values(@raw)
     when 'campus', 'school'
       @raw.presence&.to_i
     when 'date'

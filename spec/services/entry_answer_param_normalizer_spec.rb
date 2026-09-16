@@ -57,5 +57,20 @@ RSpec.describe EntryAnswerParamNormalizer do
       expect(described_class.normalize(text_q, 'Ada')).to eq('Ada')
       expect(described_class.normalize(text_q, '   ')).to be_nil
     end
+
+    it 'normalizes multiselect arrays, scalars, and blanks' do
+      q = question(
+        'multiselect',
+        key: 'preferred_genres',
+        label: 'Preferred genres',
+        options: { 'choices' => %w[Poetry Fiction Drama] }
+      )
+
+      expect(described_class.normalize(q, %w[Poetry Drama Poetry])).to eq(%w[Poetry Drama])
+      expect(described_class.normalize(q, 'Fiction')).to eq(%w[Fiction])
+      expect(described_class.normalize(q, [ '', '  ' ])).to be_nil
+      expect(described_class.normalize(q, nil)).to be_nil
+      expect(described_class.normalize(q, [])).to be_nil
+    end
   end
 end
