@@ -1,0 +1,12 @@
+<%= turbo_stream.replace dom_id(@entry, :awards) do %>
+  <%= render 'contest_instances/award_entry_row',
+        entry: @entry,
+        container: @container,
+        contest_description: @contest_description,
+        contest_instance: @contest_instance,
+        catalog_awards: @catalog_awards %>
+<% end %>
+
+<%= turbo_stream.update 'flash' do %>
+  <%= render 'shared/flash_messages' %>
+<% end %>

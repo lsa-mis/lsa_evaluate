@@ -70,6 +70,10 @@ class ContainerPolicy < ApplicationPolicy
     reports?
   end
 
+  def winners?
+    reports?
+  end
+
   # Staff autocomplete for assigning collection admins/managers.
   # Employees, collection administrators/managers, or axis mundi.
   # Judge-role assignments do not grant access; judges cannot use this UI.

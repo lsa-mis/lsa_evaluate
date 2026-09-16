@@ -1,0 +1,124 @@
+<%= turbo_frame_tag dom_id(entry, :awards) do %>
+  <% assignable_awards = assignable_catalog_awards(entry, catalog_awards) %>
+  <div class="card mb-3 <%= 'border-success' if entry.awarded? %>">
+    <div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between gap-2 mb-3">
+        <div>
+          <h3 class="h5 mb-1">
+            <%= entry.title %>
+            <% if suggested_for_award?(entry, contest_instance) && !entry.awarded? %>
+              <span class="badge bg-info text-dark">Suggested from judging</span>
+            <% end %>
+            <% if entry.awarded? %>
+              <span class="badge bg-success"><%= entry.award_status_label || 'Awarded' %></span>
+            <% end %>
+          </h3>
+          <div class="text-muted small">
+            <%= entry.profile.display_name %>
+            · <%= entry.category&.kind %>
+            · UMID <%= entry.profile.umid %>
+            <% if entry.placement.present? %>
+              · <%= entry.placement_label %> place
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <% if policy(contest_instance).manage_awards? %>
+        <%= form_with model: entry,
+                      url: update_award_outcome_entry_path(entry),
+                      method: :patch,
+                      class: 'row g-2 align-items-end mb-3' do |f| %>
+          <div class="col-md-3">
+            <%= f.label :award_status, 'Status', class: 'form-label' %>
+            <%= f.select :award_status,
+                         options_for_select(award_status_options, entry.award_status),
+                         {},
+                         class: 'form-select form-select-sm' %>
+          </div>
+          <div class="col-md-3">
+            <%= f.label :placement, 'Placement', class: 'form-label' %>
+            <%= f.select :placement,
+                         options_for_select(placement_options, entry.placement),
+                         {},
+                         class: 'form-select form-select-sm' %>
+          </div>
+          <div class="col-md-3">
+            <%= f.submit 'Save outcome', class: 'btn btn-sm btn-outline-primary' %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <% if entry.entry_awards.any? %>
+        <div class="mb-3">
+          <% entry.entry_awards.sort_by { |entry_award| entry_award.primary? ? 0 : 1 }.each do |entry_award| %>
+            <div class="border rounded p-2 mb-2">
+              <div class="small fw-semibold mb-2">
+                <%= entry_award.award&.name %>
+                <span class="text-muted">(<%= entry_award.award&.kind_label %>)</span>
+              </div>
+              <% if policy(contest_instance).manage_awards? %>
+                <%= form_with model: entry_award,
+                              url: container_contest_description_contest_instance_entry_award_path(
+                                container, contest_description, contest_instance, entry_award
+                              ),
+                              method: :patch,
+                              class: 'row g-2 align-items-end' do |f| %>
+                  <div class="col-sm-4">
+                    <%= f.label :amount, class: 'form-label form-label-sm mb-0' %>
+                    <%= f.number_field :amount, step: 0.01, min: 0, class: 'form-control form-control-sm' %>
+                  </div>
+                  <div class="col-sm-4">
+                    <%= f.label :shortcode, class: 'form-label form-label-sm mb-0' %>
+                    <%= f.text_field :shortcode, class: 'form-control form-control-sm' %>
+                  </div>
+                  <div class="col-sm-4">
+                    <%= f.submit 'Update', class: 'btn btn-sm btn-outline-secondary' %>
+                    <%= button_to 'Remove',
+                                  container_contest_description_contest_instance_entry_award_path(
+                                    container, contest_description, contest_instance, entry_award
+                                  ),
+                                  method: :delete,
+                                  class: 'btn btn-sm btn-link text-danger',
+                                  form: { data: { turbo_confirm: 'Remove this prize from the entry?' }, class: 'd-inline' } %>
+                  </div>
+                <% end %>
+              <% else %>
+                <div class="small">
+                  <%= format_award_amount(entry_award.amount) %>
+                  · <%= entry_award.shortcode.presence || 'No shortcode' %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if policy(contest_instance).manage_awards? && assignable_awards.any? %>
+        <%= form_with url: container_contest_description_contest_instance_entry_awards_path(
+              container, contest_description, contest_instance
+            ),
+            method: :post,
+            class: 'row g-2 align-items-end' do |f| %>
+          <%= hidden_field_tag :entry_id, entry.id %>
+          <div class="col-md-6">
+            <%= label_tag "entry_award_award_id_#{entry.id}", 'Assign prize', class: 'form-label' %>
+            <%= select_tag 'entry_award[award_id]',
+                           options_from_collection_for_select(
+                             assignable_awards, :id, ->(award) { "#{award.name} (#{award.kind_label})" }
+                           ),
+                           include_blank: 'Select a prize',
+                           class: 'form-select form-select-sm',
+                           id: "entry_award_award_id_#{entry.id}",
+                           required: true %>
+          </div>
+          <div class="col-md-3">
+            <%= submit_tag 'Assign', class: 'btn btn-sm btn-primary' %>
+          </div>
+        <% end %>
+      <% elsif policy(contest_instance).manage_awards? && catalog_awards.any? %>
+        <p class="small text-muted mb-0">All active catalog prizes for this entry have been assigned.</p>
+      <% end %>
+    </div>
+  </div>
+<% end %>

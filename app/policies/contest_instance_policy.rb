@@ -89,6 +89,14 @@ class ContestInstancePolicy < ApplicationPolicy
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end
 
+  def manage_awards?
+    export_entries?
+  end
+
+  def send_award_notices?
+    manage_awards?
+  end
+
   def send_instructions?
     user&.has_container_role?(record.contest_description.container) || axis_mundi?
   end

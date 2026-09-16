@@ -7,8 +7,10 @@
 #  campus_employee               :boolean          default(FALSE), not null
 #  deleted                       :boolean          default(FALSE), not null
 #  disqualified                  :boolean          default(FALSE), not null
+#  award_status                  :string(255)      default("unawarded"), not null
 #  financial_aid_description     :text(65535)
 #  pen_name                      :string(255)
+#  placement                     :integer
 #  receiving_financial_aid       :boolean          default(FALSE), not null
 #  title                         :string(255)      not null
 #  created_at                    :datetime         not null
@@ -22,6 +24,7 @@
 #  category_id_idx                       (category_id)
 #  contest_instance_id_idx               (contest_instance_id)
 #  id_unq_idx                            (id) UNIQUE
+#  index_entries_on_award_status         (award_status)
 #  index_entries_on_category_id          (category_id)
 #  index_entries_on_contest_instance_id  (contest_instance_id)
 #  index_entries_on_profile_id           (profile_id)
@@ -34,19 +37,41 @@
 #  fk_rails_...  (profile_id => profiles.id)
 #
 class Entry < ApplicationRecord
+  AWARD_STATUSES = {
+    unawarded: 'unawarded',
+    winner: 'winner',
+    finalist: 'finalist'
+  }.freeze
+
   belongs_to :contest_instance
   belongs_to :profile
   belongs_to :category
   has_one_attached :entry_file
   has_many :entry_rankings, dependent: :restrict_with_error
   has_many :entry_answers, dependent: :destroy
+  has_many :entry_awards, dependent: :destroy
+  has_many :awards, through: :entry_awards
+
+  enum :award_status, AWARD_STATUSES, default: :unawarded
 
   validates :title, presence: true
   validates :title, length: { maximum: 250 }
+  validates :placement, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validate :entry_file_validation, on: :create
 
   scope :active, -> { where(deleted: false) }
   scope :disqualified, -> { where(disqualified: true) }
+  scope :awarded, -> {
+    where(
+      <<~SQL.squish
+        entries.award_status <> 'unawarded'
+        OR EXISTS (
+          SELECT 1 FROM entry_awards
+          WHERE entry_awards.entry_id = entries.id
+        )
+      SQL
+    )
+  }
 
   attr_accessor :save_pen_name_to_profile, :confirmed_class_level_id
 
@@ -97,6 +122,42 @@ class Entry < ApplicationRecord
     return 'Advanced' if advanced?
 
     nil
+  end
+
+  def awarded?
+    !unawarded? || entry_awards.any?
+  end
+
+  def primary_entry_award
+    if entry_awards.loaded?
+      entry_awards.find(&:primary?)
+    else
+      entry_awards.primary.first
+    end
+  end
+
+  def add_on_entry_awards
+    if entry_awards.loaded?
+      entry_awards.select(&:add_on?)
+    else
+      entry_awards.add_on
+    end
+  end
+
+  def total_award_amount
+    entry_awards.sum { |entry_award| entry_award.amount || 0 }
+  end
+
+  def placement_label
+    return if placement.blank?
+
+    placement.ordinalize
+  end
+
+  def award_status_label
+    return if unawarded?
+
+    award_status.humanize
   end
 
   def last_judging_round

@@ -1,0 +1,107 @@
+<div class="d-flex justify-content-end">
+  <%= link_to 'Return to Manage Collection', container_path(@container), class: 'link_to text-nowrap' %>
+</div>
+
+<h1 class="mt-4">Winners for <%= @container.name %></h1>
+<p class="text-muted">
+  Official award outcomes across contests in this collection. Use the exports for mail merge and payment shortcodes.
+</p>
+
+<%= form_with url: winners_container_path(@container), method: :get, local: true, class: 'row g-3 align-items-end mb-4' do %>
+  <div class="col-md-3">
+    <%= label_tag :contest_description_id, 'Contest', class: 'form-label' %>
+    <%= select_tag :contest_description_id,
+                   options_from_collection_for_select(@contest_descriptions, :id, :name, params[:contest_description_id]),
+                   include_blank: 'All contests',
+                   class: 'form-select' %>
+  </div>
+  <div class="col-md-3">
+    <%= label_tag :contest_instance_id, 'Instance', class: 'form-label' %>
+    <%= select_tag :contest_instance_id,
+                   options_from_collection_for_select(@contest_instances, :id, :display_name, params[:contest_instance_id]),
+                   include_blank: 'All instances',
+                   class: 'form-select' %>
+  </div>
+  <div class="col-md-2">
+    <%= label_tag :award_status, 'Status', class: 'form-label' %>
+    <%= select_tag :award_status,
+                   options_for_select(award_status_options, params[:award_status]),
+                   include_blank: 'All statuses',
+                   class: 'form-select' %>
+  </div>
+  <div class="col-md-2">
+    <%= label_tag :award_kind, 'Prize kind', class: 'form-label' %>
+    <%= select_tag :award_kind,
+                   options_for_select(Award.kind_options, params[:award_kind]),
+                   include_blank: 'All prizes',
+                   class: 'form-select' %>
+  </div>
+  <div class="col-md-2">
+    <%= submit_tag 'Filter', class: 'btn btn-primary' %>
+  </div>
+<% end %>
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+  <%= link_to export_awards_roster_container_path(
+                @container,
+                contest_description_id: params[:contest_description_id],
+                contest_instance_id: params[:contest_instance_id],
+                award_status: params[:award_status],
+                award_kind: params[:award_kind]
+              ),
+              class: 'btn btn-sm btn-outline-primary',
+              data: { turbo: false } do %>
+    <i class="bi bi-file-earmark-spreadsheet"></i>
+    Export award roster
+  <% end %>
+  <%= link_to export_awards_disbursement_container_path(
+                @container,
+                contest_description_id: params[:contest_description_id],
+                contest_instance_id: params[:contest_instance_id],
+                award_status: params[:award_status],
+                award_kind: params[:award_kind]
+              ),
+              class: 'btn btn-sm btn-outline-secondary',
+              data: { turbo: false } do %>
+    <i class="bi bi-cash-stack"></i>
+    Export disbursement list
+  <% end %>
+</div>
+
+<% if @entries.any? %>
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th>Applicant</th>
+          <th>Contest</th>
+          <th>Status</th>
+          <th>Placement</th>
+          <th>Prizes</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @entries.each do |entry| %>
+          <tr>
+            <td>
+              <%= link_to entry.profile.display_name, container_applicant_path(@container, entry.profile) %>
+              <div class="small text-muted"><%= entry.profile.umid %></div>
+            </td>
+            <td>
+              <%= entry.contest_instance.contest_description.name %>
+              <div class="small text-muted"><%= entry.contest_instance.display_name %></div>
+              <div class="small"><%= entry.title %> · <%= entry.category&.kind %></div>
+            </td>
+            <td><%= entry.award_status_label || '—' %></td>
+            <td><%= entry.placement_label || '—' %></td>
+            <td><%= entry_prizes_summary(entry) %></td>
+            <td><%= format_award_amount(entry.total_award_amount) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-muted">No awarded entries match these filters.</p>
+<% end %>

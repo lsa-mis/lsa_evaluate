@@ -32,7 +32,7 @@ module ContestInstancesHelper
   end
 
   def contest_instance_active_tab
-    allowed_tabs = %w[summary entries manage-judges judging-results]
+    allowed_tabs = %w[summary entries manage-judges judging-results awards]
     return params[:tab] if params[:tab].in?(allowed_tabs)
     return 'judging-results' if params[:sort_judge_id].present?
 

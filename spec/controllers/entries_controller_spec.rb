@@ -632,4 +632,24 @@ RSpec.describe EntriesController, type: :controller do
       end
     end
   end
+
+  describe 'PATCH #update_award_outcome' do
+    let(:user) { create(:user, :axis_mundi) }
+    let(:contest_instance) { create(:contest_instance) }
+    let(:entry) { create(:entry, contest_instance: contest_instance) }
+    let!(:entry_award) { create(:entry_award, entry: entry) }
+
+    before { sign_in user }
+
+    it 'eager loads assigned prizes when a turbo stream update fails' do
+      patch :update_award_outcome, params: {
+        id: entry.id,
+        entry: { award_status: 'winner', placement: 0 }
+      }, format: :turbo_stream
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(assigns(:entry).entry_awards.loaded?).to be true
+      expect(assigns(:entry).entry_awards.first.association(:award).loaded?).to be true
+    end
+  end
 end

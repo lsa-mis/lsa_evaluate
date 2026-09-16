@@ -198,4 +198,47 @@ RSpec.describe Entry, type: :model do
       expect(entry.outcome_label).to eq('Advanced')
     end
   end
+
+  describe 'award outcomes' do
+    let(:entry) { create(:entry, contest_instance: contest_instance, profile: profile) }
+
+    it 'treats winner or assigned prizes as awarded' do
+      expect(entry.awarded?).to be false
+
+      entry.update!(award_status: 'winner', placement: 1)
+      expect(entry).to be_winner
+      expect(entry.awarded?).to be true
+      expect(entry.placement_label).to eq('1st')
+      expect(entry.award_status_label).to eq('Winner')
+    end
+
+    it 'includes entries with prizes in the awarded scope even when unawarded' do
+      create(:entry_award, entry: entry)
+
+      expect(described_class.awarded).to include(entry)
+      expect(entry.reload.awarded?).to be true
+    end
+
+    it 'sums assigned prize amounts' do
+      create(:entry_award, entry: entry, amount: 1000)
+      create(:entry_award, :add_on, entry: entry, amount: 250)
+
+      expect(entry.reload.total_award_amount).to eq(1250)
+      expect(entry.primary_entry_award).to be_present
+      expect(entry.add_on_entry_awards.size).to eq(1)
+    end
+
+    it 'treats nil prize amounts as zero' do
+      honorary = create(
+        :award,
+        container: contest_instance.contest_description.container,
+        name: 'Honorary mention',
+        default_amount: nil
+      )
+      create(:entry_award, entry: entry, award: honorary, amount: nil)
+      create(:entry_award, :add_on, entry: entry, amount: 250)
+
+      expect(entry.reload.total_award_amount).to eq(250)
+    end
+  end
 end
