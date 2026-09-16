@@ -45,7 +45,7 @@ RSpec.describe 'Awards workspace', type: :system do
     expect(page).to have_content('Analytical Engine')
     select 'Winner', from: 'Status'
     select '1st', from: 'Placement'
-    click_button 'Save outcome'
+    click_button 'Save'
 
     expect(page).to have_content('Award outcome saved.')
     select 'First Place (Primary prize)', from: 'Assign prize'
