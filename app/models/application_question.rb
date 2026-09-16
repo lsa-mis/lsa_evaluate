@@ -196,7 +196,7 @@ class ApplicationQuestion < ApplicationRecord
     end
   end
 
-  def self.normalize_multiselect_values(raw)
+  def self.normalize_multiselect_values(raw, choices: nil)
     return nil if raw.nil?
 
     items = if raw.is_a?(ActionController::Parameters)
@@ -207,7 +207,9 @@ class ApplicationQuestion < ApplicationRecord
               Array.wrap(raw)
             end
 
-    items.map { |item| item.to_s.strip }.reject(&:blank?).uniq.presence
+    items = items.map { |item| item.to_s.strip }.reject(&:blank?).uniq
+    items &= Array(choices) unless choices.nil?
+    items.presence
   end
 
   def self.seed_system_questions_for!(container)

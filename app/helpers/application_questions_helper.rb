@@ -42,7 +42,7 @@ module ApplicationQuestionsHelper
       select_tag field_name, options_for_select(choices, value),
                  include_blank: true, class: 'form-select', required: required, id: dom_id(question, :answer)
     when 'multiselect'
-      render_multiselect_checkboxes(field_name, question, value)
+      render_multiselect_checkboxes(field_name, question, value, required:)
     when 'select_with_other'
       choices = Array(question.options&.dig('choices') || question.options&.dig(:choices))
       choice_value = value.is_a?(Hash) ? (value['choice'] || value[:choice]) : value
@@ -73,23 +73,34 @@ module ApplicationQuestionsHelper
                   class: 'form-check-input', id: dom_id(question, :answer), required: false
   end
 
-  def render_multiselect_checkboxes(field_name, question, value)
+  def render_multiselect_checkboxes(field_name, question, value, required: false)
     choices = Array(question.options&.dig('choices') || question.options&.dig(:choices))
     selected = Array(value).map(&:to_s)
     checkbox_name = "#{field_name}[]"
-
-    safe_join(
-      choices.map.with_index do |choice, index|
-        input_id = dom_id(question, :"answer_#{index}")
-        content_tag(:div, class: 'form-check') do
-          safe_join([
-            check_box_tag(checkbox_name, choice, selected.include?(choice.to_s),
-                          class: 'form-check-input', id: input_id),
-            label_tag(input_id, choice, class: 'form-check-label')
-          ])
-        end
+    legend = content_tag(:legend, class: 'form-label') do
+      if required
+        safe_join([ question.label, ' ', content_tag(:span, '*', class: 'text-danger') ])
+      else
+        question.label
       end
-    )
+    end
+    help = if question.help_text.present?
+             content_tag(:div, question.help_text, class: 'form-text mb-1')
+           end
+    boxes = choices.map.with_index do |choice, index|
+      input_id = index.zero? ? dom_id(question, :answer) : dom_id(question, :"answer_#{index}")
+      content_tag(:div, class: 'form-check') do
+        safe_join([
+          check_box_tag(checkbox_name, choice, selected.include?(choice.to_s),
+                        class: 'form-check-input', id: input_id),
+          label_tag(input_id, choice, class: 'form-check-label')
+        ])
+      end
+    end
+
+    content_tag(:fieldset, class: 'border-0 p-0 m-0 w-100') do
+      safe_join([ legend, help, *boxes ].compact)
+    end
   end
 
   def render_yes_no_radios(field_name, question, value, required:)

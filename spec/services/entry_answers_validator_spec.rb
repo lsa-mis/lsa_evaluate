@@ -217,6 +217,22 @@ RSpec.describe EntryAnswersValidator do
       expect(validator.call).to be(true)
       expect(validator.built_answers.first.value).to eq(%w[Poetry Drama])
     end
+
+    it 'drops values that are not in the configured choices' do
+      validator = described_class.new(
+        entry:,
+        effective_questions: EffectiveApplicationQuestions.for(contest_instance),
+        answers_params: { genres_question.id.to_s => %w[Poetry NotAChoice] }
+      )
+
+      expect(validator.call).to be(true)
+      expect(validator.built_answers.first.value).to eq(%w[Poetry])
+    end
+
+    it 'rejects a required multiselect whose answers are all outside the choice list' do
+      expect(validate!(genres_question.id.to_s => %w[Nope])).to be(false)
+      expect(entry.errors[:base].join).to include("can't be blank")
+    end
   end
 
   describe 'campus and school normalization' do

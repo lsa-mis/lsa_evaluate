@@ -68,6 +68,8 @@ RSpec.describe EntryAnswerParamNormalizer do
 
       expect(described_class.normalize(q, %w[Poetry Drama Poetry])).to eq(%w[Poetry Drama])
       expect(described_class.normalize(q, 'Fiction')).to eq(%w[Fiction])
+      expect(described_class.normalize(q, %w[Poetry NotAChoice])).to eq(%w[Poetry])
+      expect(described_class.normalize(q, %w[Nope])).to be_nil
       expect(described_class.normalize(q, [ '', '  ' ])).to be_nil
       expect(described_class.normalize(q, nil)).to be_nil
       expect(described_class.normalize(q, [])).to be_nil

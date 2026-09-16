@@ -52,7 +52,8 @@
                        placeholder: 'If Other, please specify' %>
   </div>
 
-  <div data-application-question-form-target="defaultValueField" data-field-type="multiselect"
+  <div data-application-question-form-target="defaultValueField multiselectDefaults"
+       data-field-type="multiselect"
        class="<%= 'd-none' unless field_type == 'multiselect' %>">
     <% choices.each_with_index do |choice, index| %>
       <div class="form-check">

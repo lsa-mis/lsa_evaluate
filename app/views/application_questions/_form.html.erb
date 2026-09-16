@@ -32,7 +32,11 @@
       <label class="form-label">Choices (one per line)</label>
       <%= text_area_tag 'application_question[options][choices]',
                         Array(@application_question.options&.dig('choices')).join("\n"),
-                        class: 'form-control', rows: 5 %>
+                        class: 'form-control', rows: 5,
+                        data: {
+                          application_question_form_target: 'choicesInput',
+                          action: 'input->application-question-form#syncChoiceDefaults'
+                        } %>
       <div class="form-text <%= 'd-none' if @application_question.field_type == 'multiselect' %>"
            data-application-question-form-target="choicesHint" data-select-kind="single">
         Applicants pick one option from this list.

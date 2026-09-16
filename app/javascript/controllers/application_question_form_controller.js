@@ -1,7 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["choices", "choicesHint", "requiresAcceptance", "defaultValue", "defaultValueField"]
+  static targets = [
+    "choices",
+    "choicesHint",
+    "choicesInput",
+    "requiresAcceptance",
+    "defaultValue",
+    "defaultValueField",
+    "multiselectDefaults"
+  ]
   static values = {
     selectTypes: { type: Array, default: ["select", "select_with_other", "multiselect"] },
     booleanType: { type: String, default: "boolean" },
@@ -16,7 +24,7 @@ export default class extends Controller {
   }
 
   toggle() {
-    const fieldType = this.element.querySelector('[name="application_question[field_type]"]')?.value
+    const fieldType = this.fieldType()
 
     if (this.hasChoicesTarget) {
       this.choicesTarget.classList.toggle("d-none", !this.selectTypesValue.includes(fieldType))
@@ -35,6 +43,64 @@ export default class extends Controller {
       const showDefault = this.defaultValueTypesValue.includes(fieldType)
       this.defaultValueTarget.classList.toggle("d-none", !showDefault)
     }
+
+    this.syncChoiceDefaults()
+    this.applyDefaultFieldEnabledState()
+  }
+
+  syncChoiceDefaults() {
+    if (!this.hasMultiselectDefaultsTarget) return
+
+    const choices = this.choiceList()
+    const container = this.multiselectDefaultsTarget
+    const checked = new Set(
+      Array.from(container.querySelectorAll("input[type='checkbox']:checked")).map((input) => input.value)
+    )
+    const disabled = this.fieldType() !== "multiselect"
+
+    container.replaceChildren(
+      ...choices.map((choice, index) => this.buildDefaultCheckbox(choice, index, checked.has(choice), disabled))
+    )
+  }
+
+  fieldType() {
+    return this.element.querySelector('[name="application_question[field_type]"]')?.value
+  }
+
+  choiceList() {
+    if (!this.hasChoicesInputTarget) return []
+
+    return this.choicesInputTarget.value
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+  }
+
+  buildDefaultCheckbox(choice, index, isChecked, disabled) {
+    const wrapper = document.createElement("div")
+    wrapper.className = "form-check"
+
+    const id = `application_question_options_default_value_${index}`
+    const input = document.createElement("input")
+    input.type = "checkbox"
+    input.className = "form-check-input"
+    input.name = "application_question[options][default_value][]"
+    input.value = choice
+    input.id = id
+    input.checked = isChecked
+    input.disabled = disabled
+
+    const label = document.createElement("label")
+    label.className = "form-check-label"
+    label.htmlFor = id
+    label.textContent = choice
+
+    wrapper.append(input, label)
+    return wrapper
+  }
+
+  applyDefaultFieldEnabledState() {
+    const fieldType = this.fieldType()
 
     this.defaultValueFieldTargets.forEach((element) => {
       const active = element.dataset.fieldType === fieldType

@@ -15,7 +15,13 @@ describe("ApplicationQuestionFormController", () => {
         <option value="select_with_other">Dropdown with Other</option>
         <option value="multiselect">Checkboxes (choose one or more)</option>
       </select>
-      <div data-application-question-form-target="choices">Dropdown choices</div>
+      <div data-application-question-form-target="choices">
+        <textarea name="application_question[options][choices]"
+                  data-application-question-form-target="choicesInput"
+                  data-action="input->application-question-form#syncChoiceDefaults"></textarea>
+      </div>
+      <div data-application-question-form-target="defaultValueField multiselectDefaults"
+           data-field-type="multiselect"></div>
     </form>
   `
 
@@ -35,6 +41,8 @@ describe("ApplicationQuestionFormController", () => {
 
   const fieldTypeSelect = () => container.querySelector('[name="application_question[field_type]"]')
   const choices = () => container.querySelector('[data-application-question-form-target="choices"]')
+  const choicesInput = () => container.querySelector('[data-application-question-form-target="choicesInput"]')
+  const defaultCheckboxes = () => container.querySelectorAll('[data-field-type="multiselect"] input[type="checkbox"]')
 
   it("hides dropdown choices for a short answer on connect", () => {
     expect(choices().classList.contains("d-none")).toBe(true)
@@ -68,5 +76,33 @@ describe("ApplicationQuestionFormController", () => {
     fieldTypeSelect().dispatchEvent(new Event("change", { bubbles: true }))
 
     expect(choices().classList.contains("d-none")).toBe(true)
+  })
+
+  it("builds default checkboxes from the choices textarea while creating a question", () => {
+    fieldTypeSelect().value = "multiselect"
+    fieldTypeSelect().dispatchEvent(new Event("change", { bubbles: true }))
+    choicesInput().value = "Poetry\nFiction\n Drama "
+    choicesInput().dispatchEvent(new Event("input", { bubbles: true }))
+
+    const boxes = defaultCheckboxes()
+    expect(boxes).toHaveLength(3)
+    expect(Array.from(boxes).map((input) => input.value)).toEqual(["Poetry", "Fiction", "Drama"])
+    expect(Array.from(boxes).every((input) => !input.disabled)).toBe(true)
+  })
+
+  it("keeps checked default checkboxes when the choice list is edited", () => {
+    fieldTypeSelect().value = "multiselect"
+    fieldTypeSelect().dispatchEvent(new Event("change", { bubbles: true }))
+    choicesInput().value = "Poetry\nFiction"
+    choicesInput().dispatchEvent(new Event("input", { bubbles: true }))
+    defaultCheckboxes()[0].checked = true
+
+    choicesInput().value = "Poetry\nDrama"
+    choicesInput().dispatchEvent(new Event("input", { bubbles: true }))
+
+    const boxes = defaultCheckboxes()
+    expect(Array.from(boxes).map((input) => input.value)).toEqual(["Poetry", "Drama"])
+    expect(boxes[0].checked).toBe(true)
+    expect(boxes[1].checked).toBe(false)
   })
 })

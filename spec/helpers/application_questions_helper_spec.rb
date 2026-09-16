@@ -159,6 +159,7 @@ RSpec.describe ApplicationQuestionsHelper, type: :helper do
         field_type: 'multiselect',
         label: 'Preferred genres',
         key: 'preferred_genres',
+        help_text: 'Pick all that apply',
         options: { 'choices' => %w[Poetry Fiction Drama] }
       )
       html = helper.render_application_question_field(
@@ -169,6 +170,11 @@ RSpec.describe ApplicationQuestionsHelper, type: :helper do
         required: true
       ).to_s
 
+      expect(html).to include('<fieldset')
+      expect(html).to include('<legend')
+      expect(html).to include('Preferred genres')
+      expect(html).to include('Pick all that apply')
+      expect(html).to include("id=\"#{helper.dom_id(question, :answer)}\"")
       expect(html).to include("name=\"entry_answers[#{question.id}][]\"")
       expect(html).to include('type="checkbox"')
       expect(html).to include('value="Poetry"')
