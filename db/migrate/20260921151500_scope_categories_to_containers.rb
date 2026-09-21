@@ -41,8 +41,10 @@ class ScopeCategoriesToContainers < ActiveRecord::Migration[8.1]
         container_ids = container_ids_for(category)
 
         if container_ids.empty?
-          assign_orphan_category!(category)
-          next
+          raise 'Cannot scope categories to containers: category ' \
+                "##{category.id} (#{category.kind}) has no contest-instance or entry " \
+                'references to determine its owning container. Assign it to a contest ' \
+                'or remove it before migrating.'
         end
 
         primary_container_id = container_ids.first
@@ -96,16 +98,6 @@ class ScopeCategoriesToContainers < ActiveRecord::Migration[8.1]
       .pluck('contest_descriptions.container_id')
 
     (via_instances + via_entries).compact.uniq.sort
-  end
-
-  def assign_orphan_category!(category)
-    fallback_container_id = MigrationContainer.order(:id).limit(1).pick(:id)
-    unless fallback_container_id
-      raise 'Cannot scope categories to containers: no containers exist to own ' \
-            "category ##{category.id} (#{category.kind})."
-    end
-
-    category.update_columns(container_id: fallback_container_id)
   end
 
   def remap_category_for_container!(old_category_id, new_category_id, container_id)
