@@ -1,14 +1,13 @@
+<h2><%= @category.new_record? ? 'New' : 'Edit' %> Category</h2>
 
-<%= simple_form_for(@category) do |f| %>
+<%= simple_form_for([@container, @category]) do |f| %>
   <%= f.error_notification %>
-  <%= f.error_notification message: f.object.errors[:base].to_sentence if f.object.errors[:base].present? %>
 
-  <div class="form-inputs">
-    <%= f.input :kind %>
-    <%= f.input :description %>
-  </div>
+  <%= f.input :kind, hint: 'The document type applicants will select (for example, Fiction or Research Paper).' %>
+  <%= f.input :description, as: :text, input_html: { rows: 3 } %>
 
   <div class="form-actions">
-    <%= f.button :submit %>
+    <%= f.button :submit, class: 'btn btn-primary' %>
+    <%= link_to 'Cancel', container_categories_path(@container), class: 'text-danger link_to' %>
   </div>
 <% end %>

@@ -60,14 +60,23 @@
 
     <h3>Categories</h3>
     <div class="form-group">
-      <%= f.collection_check_boxes :category_ids, Category.all, :id, :kind do |b| %>
-      <div class="checkbox">
-        <label>
-        <%= b.check_box %> <%= b.text %>
-        </label>
-      </div>
+      <% available_categories = @container.categories.ordered %>
+      <% if available_categories.any? %>
+        <%= f.collection_check_boxes :category_ids, available_categories, :id, :kind do |b| %>
+        <div class="checkbox">
+          <label>
+          <%= b.check_box %> <%= b.text %>
+          </label>
+        </div>
+        <% end %>
+        <small class="form-text text-muted">Select the categories that apply to this contest.</small>
+      <% else %>
+        <div class="alert alert-warning mb-0">
+          No categories are defined for this collection yet.
+          <%= link_to 'Add categories to the catalog', container_categories_path(@container), class: 'alert-link' %>
+          before creating a contest instance.
+        </div>
       <% end %>
-      <small class="form-text text-muted">Select the categories that apply to this contest.</small>
     </div>
 
     <h3>Class Level Requirements</h3>

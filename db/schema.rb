@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_15_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_151500) do
   create_table "action_text_rich_texts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.text "body", size: :long
     t.datetime "created_at", null: false
@@ -128,11 +128,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_210000) do
   end
 
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+    t.bigint "container_id", null: false
     t.datetime "created_at", null: false
     t.text "description"
     t.string "kind"
     t.datetime "updated_at", null: false
-    t.index ["kind"], name: "index_categories_on_kind", unique: true
+    t.index ["container_id", "kind"], name: "index_categories_on_container_id_and_kind", unique: true
+    t.index ["container_id"], name: "index_categories_on_container_id"
   end
 
   create_table "category_contest_instances", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -455,6 +457,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_15_210000) do
   add_foreign_key "assignments", "roles"
   add_foreign_key "assignments", "users"
   add_foreign_key "awards", "containers"
+  add_foreign_key "categories", "containers"
   add_foreign_key "category_contest_instances", "categories"
   add_foreign_key "category_contest_instances", "contest_instances"
   add_foreign_key "class_level_requirements", "class_levels"

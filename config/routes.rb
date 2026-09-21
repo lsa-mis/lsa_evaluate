@@ -60,6 +60,7 @@ Rails.application.routes.draw do
       end
     end
     resources :awards, except: [ :show ]
+    resources :categories, except: [ :show ]
     resources :contest_descriptions do
       resources :contest_instances do
         member do
@@ -150,7 +151,6 @@ Rails.application.routes.draw do
     end
   end
   resources :editable_contents, only: %i[index edit update]
-  resources :categories
   resources :class_levels
   resources :address_types
   resources :campuses

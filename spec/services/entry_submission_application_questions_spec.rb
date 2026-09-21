@@ -6,7 +6,7 @@ RSpec.describe 'Entry submission application questions' do
   let(:container) { create(:container) }
   let(:contest_description) { create(:contest_description, :active, container:) }
   let(:contest_instance) { create(:contest_instance, contest_description:) }
-  let(:category) { create(:category, kind: 'ecat') }
+  let(:category) { create(:category, kind: 'ecat', container:) }
   let(:profile) { create(:profile) }
   let(:entry) { build(:entry, category:, contest_instance:, profile:, pen_name: nil) }
 
