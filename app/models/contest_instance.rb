@@ -7,6 +7,7 @@
 #  access_token                         :string(255)      not null
 #  active                               :boolean          default(FALSE), not null
 #  archived                             :boolean          default(FALSE), not null
+#  award_emails_sent_count              :integer          default(0), not null
 #  course_requirement_description       :text(65535)
 #  created_by                           :string(255)
 #  date_closed                          :datetime         not null
@@ -188,6 +189,48 @@ class ContestInstance < ApplicationRecord
 
   def display_name
     "#{contest_description.name} - #{date_open.strftime('%Y-%m-%d')} to #{date_closed.strftime('%Y-%m-%d')}"
+  end
+
+  def awards_tab_entries
+    selected_ids = last_round_selected_entry_ids
+    entries.active.includes(
+      :category,
+      { entry_awards: :award },
+      { profile: [ :user, :class_level, :school, :campus ] }
+    ).sort_by do |entry|
+      last_name = entry.profile&.legal_last_name.to_s.downcase
+      [
+        selected_ids.include?(entry.id) ? 0 : 1,
+        entry.placement.nil? ? 1 : 0,
+        entry.placement || 0,
+        last_name,
+        entry.id
+      ]
+    end
+  end
+
+  def last_round_selected_entry_ids
+    @last_round_selected_entry_ids ||= begin
+      last_round = if judging_rounds.loaded?
+                     judging_rounds.max_by(&:round_number)
+                   else
+                     judging_rounds.order(round_number: :desc).first
+                   end
+      return Set.new unless last_round
+
+      Set.new(
+        last_round.entry_rankings.where(selected_for_next_round: true).distinct.pluck(:entry_id)
+      )
+    end
+  end
+
+  def award_notice_entries
+    entries.active.merge(Entry.awarded).includes(
+      :category,
+      { entry_awards: :award },
+      { profile: :user },
+      contest_instance: { contest_description: :container }
+    )
   end
 
   def current_round_entries

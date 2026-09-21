@@ -94,4 +94,15 @@ RSpec.describe ContestInstancesHelper, type: :helper do
       expect(helper.contest_instance_tab_active?('summary')).to be false
     end
   end
+
+  describe 'awards tab' do
+    it 'accepts awards as a valid tab' do
+      allow(helper).to receive(:params).and_return(
+        ActionController::Parameters.new(tab: 'awards')
+      )
+
+      expect(helper.contest_instance_active_tab).to eq('awards')
+      expect(helper.contest_instance_tab_active?('awards')).to be true
+    end
+  end
 end

@@ -1,0 +1,64 @@
+<div class="mt-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+    <div>
+      <h2 class="h4 mb-1">Awards</h2>
+      <p class="text-muted mb-0">
+        Record official placements and assign prizes after judging.
+        Suggested entries were selected on the last judging round; confirm winners here.
+      </p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <% if policy(@contest_instance).manage_awards? %>
+        <%= link_to export_awards_roster_container_contest_description_contest_instance_path(
+              @container, @contest_description, @contest_instance, format: :csv
+            ),
+            class: 'btn btn-sm btn-outline-primary',
+            data: { turbo: false } do %>
+          <i class="bi bi-file-earmark-spreadsheet"></i>
+          Export award roster
+        <% end %>
+        <%= link_to export_awards_disbursement_container_contest_description_contest_instance_path(
+              @container, @contest_description, @contest_instance, format: :csv
+            ),
+            class: 'btn btn-sm btn-outline-secondary',
+            data: { turbo: false } do %>
+          <i class="bi bi-cash-stack"></i>
+          Export disbursement list
+        <% end %>
+        <%= link_to award_email_preferences_container_contest_description_contest_instance_path(
+              @container, @contest_description, @contest_instance
+            ),
+            class: 'btn btn-sm btn-outline-primary' do %>
+          <i class="bi bi-envelope text-um-blue"></i>
+          Email award notices
+        <% end %>
+        <% if @contest_instance.award_emails_sent_count.positive? %>
+          <span class="badge bg-secondary align-self-center">
+            Emails sent: <%= pluralize(@contest_instance.award_emails_sent_count, 'time') %>
+          </span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if @container.awards.none? %>
+    <div class="alert alert-info">
+      No prizes are defined for this collection yet.
+      <%= link_to 'Add awards to the catalog', container_awards_path(@container), class: 'alert-link' %>
+      before assigning them to entries.
+    </div>
+  <% end %>
+
+  <% if @awards_tab_entries.any? %>
+    <% @awards_tab_entries.each do |entry| %>
+      <%= render 'contest_instances/award_entry_row',
+            entry: entry,
+            container: @container,
+            contest_description: @contest_description,
+            contest_instance: @contest_instance,
+            catalog_awards: @catalog_awards %>
+    <% end %>
+  <% else %>
+    <p class="text-muted">No active entries in this contest instance.</p>
+  <% end %>
+</div>

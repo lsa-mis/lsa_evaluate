@@ -1,0 +1,28 @@
+<h2><%= @award.new_record? ? 'New' : 'Edit' %> Award</h2>
+
+<%= simple_form_for([@container, @award]) do |f| %>
+  <%= f.error_notification %>
+
+  <%= f.input :name %>
+  <% if @award.kind_locked? %>
+    <div class="mb-3">
+      <label class="form-label">Kind</label>
+      <div><%= @award.kind_label %></div>
+      <div class="form-text">Kind cannot be changed after this prize has been assigned.</div>
+    </div>
+  <% else %>
+    <%= f.input :kind,
+                collection: Award.kind_options,
+                include_blank: false,
+                hint: 'Primary prizes are typically first place or the main award. Add-on prizes can be layered on top.' %>
+  <% end %>
+  <%= f.input :default_amount, as: :decimal, hint: 'Optional. Copied onto the winner when this prize is assigned.' %>
+  <%= f.input :default_shortcode, hint: 'UM payment shortcode used when disbursing this prize.' %>
+  <%= f.input :description, as: :text, input_html: { rows: 3 } %>
+  <%= f.input :active %>
+
+  <div class="form-actions">
+    <%= f.button :submit, class: 'btn btn-primary' %>
+    <%= link_to 'Cancel', container_awards_path(@container), class: 'text-danger link_to' %>
+  </div>
+<% end %>

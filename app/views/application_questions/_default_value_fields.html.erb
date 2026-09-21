@@ -5,6 +5,7 @@
 <% choice_value = default_value.is_a?(Hash) ? default_value['choice'] : default_value %>
 <% other_value = default_value.is_a?(Hash) ? default_value['other'] : nil %>
 <% boolean_default = default_value.nil? ? '' : (default_value ? '1' : '0') %>
+<% selected_defaults = field_type == 'multiselect' && default_value.is_a?(Array) ? default_value.map(&:to_s) : [] %>
 
 <div class="mb-3 <%= 'd-none' unless ApplicationQuestion::FIELD_TYPES.include?(field_type) %>"
      data-application-question-form-target="defaultValue">
@@ -49,6 +50,21 @@
                        field_type == 'select_with_other' ? other_value : nil,
                        class: 'form-control',
                        placeholder: 'If Other, please specify' %>
+  </div>
+
+  <div data-application-question-form-target="defaultValueField multiselectDefaults"
+       data-field-type="multiselect"
+       class="<%= 'd-none' unless field_type == 'multiselect' %>">
+    <% choices.each_with_index do |choice, index| %>
+      <div class="form-check">
+        <%= check_box_tag 'application_question[options][default_value][]',
+                          choice,
+                          selected_defaults.include?(choice.to_s),
+                          class: 'form-check-input',
+                          id: "application_question_options_default_value_#{index}" %>
+        <%= label_tag "application_question_options_default_value_#{index}", choice, class: 'form-check-label' %>
+      </div>
+    <% end %>
   </div>
 
   <div data-application-question-form-target="defaultValueField" data-field-type="boolean"

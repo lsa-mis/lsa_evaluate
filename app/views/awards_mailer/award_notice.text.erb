@@ -1,0 +1,29 @@
+<%= @contest_description.name %>
+
+Dear <%= @user.display_name_or_first_name_last_name %>,
+
+Congratulations on your award for the <%= @contest_description.name %>.
+
+YOUR ENTRY
+=================
+Title: <%= @entry.title %>
+<% if @entry.category.present? %>Category: <%= @entry.category.kind %><% end %>
+<% if @entry.award_status_label.present? %>Status: <%= @entry.award_status_label %><% end %>
+<% if @entry.placement_label.present? %>Placement: <%= @entry.placement_label %><% end %>
+
+<% if @primary_award || @add_on_awards.any? %>
+YOUR AWARDS
+=================
+<% if @primary_award %>
+* <%= @primary_award.award.name %><% if @include_amounts && @primary_award.amount.present? %> — <%= number_to_currency(@primary_award.amount) %><% end %>
+<% end %>
+<% @add_on_awards.each do |entry_award| %>
+* <%= entry_award.award.name %><% if @include_amounts && entry_award.amount.present? %> — <%= number_to_currency(entry_award.amount) %><% end %>
+<% end %>
+<% end %>
+
+We appreciate your work and hope you will stay involved in future contests.
+
+<% if @contact_email.present? %>
+If you have questions about this award, please contact <%= @contact_email %>.
+<% end %>

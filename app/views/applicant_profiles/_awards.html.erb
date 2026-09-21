@@ -1,0 +1,50 @@
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h2>Awards</h2>
+      </div>
+      <div class="card-body">
+        <% awarded_entries = entries.select(&:awarded?) %>
+        <% if awarded_entries.any? %>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Contest</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Placement</th>
+                <th>Prizes</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% awarded_entries.each do |entry| %>
+                <tr>
+                  <td><%= "#{entry.contest_instance.contest_description.name} - #{entry.contest_instance.date_open.year}" %></td>
+                  <td><%= entry.title %></td>
+                  <td><%= entry.award_status_label || '—' %></td>
+                  <td><%= entry.placement_label || '—' %></td>
+                  <td>
+                    <% entry.entry_awards.each do |entry_award| %>
+                      <div>
+                        <%= entry_award.award&.name %>
+                        (<%= format_award_amount(entry_award.amount) %>)
+                      </div>
+                    <% end %>
+                    <% if entry.entry_awards.none? %>
+                      —
+                    <% end %>
+                  </td>
+                  <td><%= format_award_amount(entry.total_award_amount) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <p class="text-center mb-0">No awards recorded for this applicant yet.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

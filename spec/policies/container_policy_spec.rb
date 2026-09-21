@@ -23,6 +23,7 @@ RSpec.describe ContainerPolicy do
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
       it { is_expected.to permit_action(:applicants) }
+      it { is_expected.to permit_action(:winners) }
       it { is_expected.to permit_action(:manage_judging) }
       it { is_expected.to permit_action(:lookup_user) }
     end
@@ -36,6 +37,7 @@ RSpec.describe ContainerPolicy do
       it { is_expected.not_to permit_action(:active_applicants_report) }
       it { is_expected.not_to permit_action(:reports) }
       it { is_expected.not_to permit_action(:applicants) }
+      it { is_expected.not_to permit_action(:winners) }
       it { is_expected.not_to permit_action(:manage_judging) }
       it { is_expected.not_to permit_action(:lookup_user) }
     end
@@ -53,6 +55,7 @@ RSpec.describe ContainerPolicy do
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
       it { is_expected.to permit_action(:applicants) }
+      it { is_expected.to permit_action(:winners) }
       it { is_expected.to permit_action(:manage_judging) }
       it { is_expected.to permit_action(:lookup_user) }
     end
@@ -71,6 +74,7 @@ RSpec.describe ContainerPolicy do
       it { is_expected.to permit_action(:active_applicants_report) }
       it { is_expected.to permit_action(:reports) }
       it { is_expected.to permit_action(:applicants) }
+      it { is_expected.to permit_action(:winners) }
       it { is_expected.to permit_action(:manage_judging) }
       it { is_expected.to permit_action(:lookup_user) }
     end

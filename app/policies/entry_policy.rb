@@ -15,6 +15,10 @@ class EntryPolicy < ApplicationPolicy
     user&.has_container_role?(record.contest_instance.contest_description.container) || axis_mundi?
   end
 
+  def update_award_outcome?
+    toggle_disqualified?
+  end
+
   def view_applicant_profile?
     container = record.contest_instance.contest_description.container
     record.profile.user == user ||

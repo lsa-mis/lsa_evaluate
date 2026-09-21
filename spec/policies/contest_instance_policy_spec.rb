@@ -186,6 +186,14 @@ RSpec.describe ContestInstancePolicy do
     include_examples 'container role gated admin action', :export_entries
   end
 
+  describe '#manage_awards?' do
+    include_examples 'container role gated admin action', :manage_awards
+  end
+
+  describe '#send_award_notices?' do
+    include_examples 'container role gated admin action', :send_award_notices
+  end
+
   describe '#preview_dates?' do
     include_examples 'container role gated admin action', :preview_dates
   end

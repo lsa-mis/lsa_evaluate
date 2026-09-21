@@ -67,6 +67,7 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response.body).to include('Yes / no')
       expect(response.body).to include('Dropdown (choose one)')
       expect(response.body).to include('Dropdown with Other')
+      expect(response.body).to include('Checkboxes (choose one or more)')
       expect(response.body).to include('Default value (optional)')
       expect(response.body).not_to include('>string</option>')
       expect(response.body).not_to include('>select_with_other</option>')
@@ -162,6 +163,28 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
 
       question = ApplicationQuestion.order(:id).last
       expect(question.options['default_value']).to eq('Poetry')
+      expect(response).to redirect_to(container_application_questions_path(container))
+    end
+
+    it 'persists choices and a default array for custom multiselect questions' do
+      post :create, params: {
+        container_id: container.id,
+        application_question: {
+          label: 'Preferred genres',
+          field_type: 'multiselect',
+          position: 250,
+          active: true,
+          options: {
+            choices: "Poetry\nFiction\nDrama",
+            default_value: %w[Poetry Drama]
+          }
+        }
+      }
+
+      question = ApplicationQuestion.order(:id).last
+      expect(question.field_type).to eq('multiselect')
+      expect(question.options['choices']).to eq(%w[Poetry Fiction Drama])
+      expect(question.options['default_value']).to eq(%w[Poetry Drama])
       expect(response).to redirect_to(container_application_questions_path(container))
     end
   end
