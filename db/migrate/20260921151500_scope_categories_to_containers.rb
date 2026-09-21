@@ -26,27 +26,18 @@ class ScopeCategoriesToContainers < ActiveRecord::Migration[8.1]
   end
 
   def up
+    # MySQL DDL implicitly commits, so validate ownership before any schema change.
+    # Otherwise a mid-migration raise leaves a half-migrated, non-retryable schema.
+    scope_plan = build_category_scope_plan!
+
     add_reference :categories, :container, null: true, foreign_key: true
     remove_index :categories, name: 'index_categories_on_kind'
 
     say_with_time 'Scoping categories to containers' do
       MigrationCategory.reset_column_information
 
-      # Snapshot legacy IDs before inserting per-container duplicates so find_each
-      # cannot reprocess those new rows as orphans (or collide on unique kind).
-      max_legacy_id = MigrationCategory.maximum(:id)
-      next if max_legacy_id.nil?
-
-      MigrationCategory.where('id <= ?', max_legacy_id).find_each do |category|
-        container_ids = container_ids_for(category)
-
-        if container_ids.empty?
-          raise 'Cannot scope categories to containers: category ' \
-                "##{category.id} (#{category.kind}) has no contest-instance or entry " \
-                'references to determine its owning container. Assign it to a contest ' \
-                'or remove it before migrating.'
-        end
-
+      scope_plan.each do |category_id, container_ids|
+        category = MigrationCategory.find(category_id)
         primary_container_id = container_ids.first
         category.update_columns(container_id: primary_container_id)
 
@@ -81,6 +72,27 @@ class ScopeCategoriesToContainers < ActiveRecord::Migration[8.1]
   end
 
   private
+
+  def build_category_scope_plan!
+    plan = {}
+    unmapped = []
+
+    MigrationCategory.find_each do |category|
+      container_ids = container_ids_for(category)
+      if container_ids.empty?
+        unmapped << category
+      else
+        plan[category.id] = container_ids
+      end
+    end
+
+    return plan if unmapped.empty?
+
+    details = unmapped.map { |category| "##{category.id} (#{category.kind})" }.join(', ')
+    raise 'Cannot scope categories to containers: these categories have no ' \
+          "contest-instance or entry references to determine ownership: #{details}. " \
+          'Assign them to a contest or remove them before migrating.'
+  end
 
   def container_ids_for(category)
     via_instances = MigrationCategoryContestInstance
