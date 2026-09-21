@@ -110,19 +110,6 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
                       { kind: 'Private' }
                     ])
 
-  # Seed data for Category
-  Category.create([
-                    { kind: 'Drama', description: 'Category for drama works.' },
-                    { kind: 'Screenplay', description: 'Category for screenplay works.' },
-                    { kind: 'Non-Fiction', description: 'Category for non-fiction works.' },
-                    { kind: 'Fiction', description: 'Category for fiction works.' },
-                    { kind: 'Poetry', description: 'Category for poetry works.' },
-                    { kind: 'Novel', description: 'Category for novel works.' },
-                    { kind: 'Short Fiction', description: 'Category for short fiction works.' },
-                    { kind: 'Text-Image', description: 'Category for text-image works.' },
-                    { kind: 'Research Paper', description: 'Category for research paper works.' }
-                  ])
-
   # Seed data for ClassLevel
   ClassLevel.create([
                       { name: 'First year', description: 'First year of school.' },
@@ -248,6 +235,29 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
     creator: user2
   )
 
+  # Seed data for Category (container-scoped catalogs)
+  [
+    { kind: 'Drama', description: 'Category for drama works.' },
+    { kind: 'Screenplay', description: 'Category for screenplay works.' },
+    { kind: 'Non-Fiction', description: 'Category for non-fiction works.' },
+    { kind: 'Fiction', description: 'Category for fiction works.' },
+    { kind: 'Poetry', description: 'Category for poetry works.' },
+    { kind: 'Novel', description: 'Category for novel works.' },
+    { kind: 'Short Fiction', description: 'Category for short fiction works.' },
+    { kind: 'Text-Image', description: 'Category for text-image works.' }
+  ].each do |attrs|
+    container1.categories.create!(attrs)
+  end
+
+  container2.categories.create!(
+    kind: 'Research Paper',
+    description: 'Category for research paper works.'
+  )
+  container2.categories.create!(
+    kind: 'Equations',
+    description: 'Category for equation-focused submissions.'
+  )
+
   # Seed data for ContestDescription
   contest_description1 = ContestDescription.create!(
     active: true,
@@ -293,7 +303,7 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
     maximum_number_entries_per_applicant: 1,
     created_by: user1.email,
     class_levels: [ ClassLevel.find_by(name: 'First year') ],
-    categories: [ Category.find_by(kind: 'Drama') ]
+    categories: [ container1.categories.find_by!(kind: 'Drama') ]
   )
 
   # Do the same for the other contest instances
@@ -310,7 +320,7 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
     maximum_number_entries_per_applicant: 2,
     created_by: user1.email,
     class_levels: [ ClassLevel.find_by(name: 'Second year') ],
-    categories: [ Category.find_by(kind: 'Fiction') ]
+    categories: [ container1.categories.find_by!(kind: 'Fiction') ]
   )
 
   contest_instance3 = ContestInstance.create!(
@@ -327,6 +337,6 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
     maximum_number_entries_per_applicant: 1,
     created_by: user1.email,
     class_levels: [ ClassLevel.find_by(name: 'Second year'), ClassLevel.find_by(name: 'Junior') ],
-    categories: [ Category.find_by(kind: 'Research Paper') ]
+    categories: [ container2.categories.find_by!(kind: 'Research Paper') ]
   )
 end

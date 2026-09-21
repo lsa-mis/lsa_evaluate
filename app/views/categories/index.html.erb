@@ -1,14 +1,46 @@
-<p style="color: green"><%= notice %></p>
-
-<h1>Categories</h1>
-
-<div id="categories">
-  <% @categories.each do |category| %>
-    <%= render category %>
-    <p>
-      <%= link_to "Show", category %>
-    </p>
-  <% end %>
+<div class="d-flex justify-content-end">
+  <div>
+    <%= link_to 'Return to Manage Collection', container_path(@container), class: 'link_to text-nowrap' %>
+  </div>
 </div>
 
-<%= link_to "New", new_category_path %>
+<h2 class="mt-4">Document Categories</h2>
+<p class="text-muted">
+  Define the document types available for contests in this collection.
+  Contest instances then select which of these categories applicants can choose when submitting.
+</p>
+
+<div class="mb-3">
+  <%= link_to 'Add category', new_container_category_path(@container), class: 'btn btn-sm btn-primary' %>
+</div>
+
+<% if @categories.any? %>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Description</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @categories.each do |category| %>
+          <tr>
+            <td><strong><%= category.kind %></strong></td>
+            <td><%= category.description %></td>
+            <td class="text-nowrap">
+              <%= link_to 'Edit', edit_container_category_path(@container, category), class: 'link_to' %>
+              <%= button_to 'Delete', container_category_path(@container, category),
+                            method: :delete,
+                            class: 'btn btn-link btn-sm text-danger p-0 ms-2',
+                            form: { data: { turbo_confirm: 'Delete this category from the catalog?' } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-muted">No categories have been defined for this collection yet.</p>
+<% end %>

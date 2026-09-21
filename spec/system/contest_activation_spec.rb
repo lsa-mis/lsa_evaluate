@@ -15,7 +15,7 @@ RSpec.describe 'Contest Activation Workflow', type: :system, js: true do
            section: 'instructions')
 
     # Create required categories and class levels for contest instances
-    create(:category, kind: 'Fiction')
+    create(:category, kind: 'Fiction', container: container)
     create(:class_level, name: 'Undergraduate')
 
     sign_in user
