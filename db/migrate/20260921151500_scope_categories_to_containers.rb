@@ -32,7 +32,12 @@ class ScopeCategoriesToContainers < ActiveRecord::Migration[8.1]
     say_with_time 'Scoping categories to containers' do
       MigrationCategory.reset_column_information
 
-      MigrationCategory.find_each do |category|
+      # Snapshot legacy IDs before inserting per-container duplicates so find_each
+      # cannot reprocess those new rows as orphans (or collide on unique kind).
+      max_legacy_id = MigrationCategory.maximum(:id)
+      next if max_legacy_id.nil?
+
+      MigrationCategory.where('id <= ?', max_legacy_id).find_each do |category|
         container_ids = container_ids_for(category)
 
         if container_ids.empty?
