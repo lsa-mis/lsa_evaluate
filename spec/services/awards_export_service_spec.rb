@@ -48,6 +48,24 @@ RSpec.describe AwardsExportService do
       expect(csv).to include("'=CMD()")
       expect(csv).not_to match(/(^|,)=1\+2/)
     end
+
+    it 'sanitizes formula-like applicant identity fields' do
+      entry.profile.update!(
+        legal_first_name: '+Ann',
+        legal_last_name: '=1+2',
+        preferred_first_name: nil,
+        preferred_last_name: nil
+      )
+      entry.profile.user.update!(email: '=formula@umich.edu', uniqname: '-uniq')
+
+      csv = service.roster_csv
+
+      expect(csv).to include("'=1+2")
+      expect(csv).to include("'+Ann")
+      expect(csv).to include("'=formula@umich.edu")
+      expect(csv).to include("'-uniq")
+      expect(csv).not_to match(/(^|,)=1\+2/)
+    end
   end
 
   describe '#disbursement_csv' do
@@ -69,6 +87,24 @@ RSpec.describe AwardsExportService do
       ).disbursement_csv
 
       expect(csv).to include("'@SUM(A1)")
+    end
+
+    it 'sanitizes formula-like identity fields on each prize row' do
+      entry.profile.update!(
+        legal_first_name: '+Ann',
+        legal_last_name: '=Cmd',
+        preferred_first_name: nil,
+        preferred_last_name: nil
+      )
+      entry.profile.user.update!(email: '=evil@umich.edu', uniqname: '@uniq')
+
+      csv = service.disbursement_csv
+
+      expect(csv).to include("'=Cmd")
+      expect(csv).to include("'+Ann")
+      expect(csv).to include("'=evil@umich.edu")
+      expect(csv).to include("'@uniq")
+      expect(csv).not_to match(/(^|,)=Cmd/)
     end
   end
 end

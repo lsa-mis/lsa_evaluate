@@ -634,22 +634,96 @@ RSpec.describe EntriesController, type: :controller do
   end
 
   describe 'PATCH #update_award_outcome' do
-    let(:user) { create(:user, :axis_mundi) }
-    let(:contest_instance) { create(:contest_instance) }
+    let(:container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
     let(:entry) { create(:entry, contest_instance: contest_instance) }
     let!(:entry_award) { create(:entry_award, entry: entry) }
 
-    before { sign_in user }
+    context 'when Axis Mundi is signed in' do
+      let(:user) { create(:user, :axis_mundi) }
 
-    it 'eager loads assigned prizes when a turbo stream update fails' do
-      patch :update_award_outcome, params: {
-        id: entry.id,
-        entry: { award_status: 'winner', placement: 0 }
-      }, format: :turbo_stream
+      before { sign_in user }
 
-      expect(response).to have_http_status(:unprocessable_content)
-      expect(assigns(:entry).entry_awards.loaded?).to be true
-      expect(assigns(:entry).entry_awards.first.association(:award).loaded?).to be true
+      it 'saves award status and placement via turbo stream' do
+        patch :update_award_outcome, params: {
+          id: entry.id,
+          entry: { award_status: 'winner', placement: 2 }
+        }, format: :turbo_stream
+
+        expect(response).to have_http_status(:ok)
+        expect(flash.now[:notice]).to eq('Award outcome saved.')
+        expect(entry.reload).to have_attributes(award_status: 'winner', placement: 2)
+      end
+
+      it 'clears placement when the blank option is submitted' do
+        entry.update!(award_status: 'finalist', placement: 3)
+
+        patch :update_award_outcome, params: {
+          id: entry.id,
+          entry: { award_status: 'unawarded', placement: '' }
+        }, format: :turbo_stream
+
+        expect(response).to have_http_status(:ok)
+        expect(entry.reload).to have_attributes(award_status: 'unawarded', placement: nil)
+      end
+
+      it 'eager loads assigned prizes when a turbo stream update fails' do
+        patch :update_award_outcome, params: {
+          id: entry.id,
+          entry: { award_status: 'winner', placement: 0 }
+        }, format: :turbo_stream
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(assigns(:entry).entry_awards.loaded?).to be true
+        expect(assigns(:entry).entry_awards.first.association(:award).loaded?).to be true
+      end
+    end
+
+    context 'when a Collection Administrator is signed in' do
+      let(:admin_user) { create(:user) }
+      let(:admin_role) { create(:role, kind: 'Collection Administrator') }
+
+      before do
+        create(:assignment, user: admin_user, container: container, role: admin_role)
+        sign_in admin_user
+      end
+
+      it 'allows the administrator to save an award outcome' do
+        patch :update_award_outcome, params: {
+          id: entry.id,
+          entry: { award_status: 'finalist', placement: 1 }
+        }
+
+        expect(response).to redirect_to(
+          container_contest_description_contest_instance_path(
+            container, contest_description, contest_instance, tab: 'awards'
+          )
+        )
+        expect(flash[:notice]).to eq('Award outcome saved.')
+        expect(entry.reload).to have_attributes(award_status: 'finalist', placement: 1)
+      end
+    end
+
+    context 'when an assigned judge is signed in' do
+      let(:judge_user) { create(:user, :with_judge_role) }
+
+      before do
+        create(:judging_assignment, user: judge_user, contest_instance: contest_instance)
+        sign_in judge_user
+      end
+
+      it 'denies award outcome updates' do
+        expect {
+          patch :update_award_outcome, params: {
+            id: entry.id,
+            entry: { award_status: 'winner', placement: 1 }
+          }
+        }.not_to change { entry.reload.attributes.slice('award_status', 'placement') }
+
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to eq('!!! Not authorized !!!')
+      end
     end
   end
 end
