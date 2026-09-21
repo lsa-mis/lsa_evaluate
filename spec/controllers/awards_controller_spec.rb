@@ -58,6 +58,22 @@ RSpec.describe AwardsController, type: :controller do
       expect(award.default_shortcode).to eq('P/G999')
       expect(response).to redirect_to(container_awards_path(container))
     end
+
+    it 'rejects an invalid kind with an unprocessable response' do
+      expect {
+        post :create, params: {
+          container_id: container.id,
+          award: {
+            name: 'Invalid Kind Prize',
+            kind: 'not_a_real_kind',
+            active: true
+          }
+        }
+      }.not_to change(Award, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(assigns(:award).errors[:kind]).to include('is not included in the list')
+    end
   end
 
   describe 'PATCH #update' do

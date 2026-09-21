@@ -678,6 +678,18 @@ RSpec.describe EntriesController, type: :controller do
         expect(assigns(:entry).entry_awards.loaded?).to be true
         expect(assigns(:entry).entry_awards.first.association(:award).loaded?).to be true
       end
+
+      it 'rejects an invalid award status with an unprocessable response' do
+        expect {
+          patch :update_award_outcome, params: {
+            id: entry.id,
+            entry: { award_status: 'not_a_real_status', placement: 1 }
+          }, format: :turbo_stream
+        }.not_to change { entry.reload.award_status }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(flash.now[:alert]).to include('is not included in the list')
+      end
     end
 
     context 'when a Collection Administrator is signed in' do

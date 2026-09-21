@@ -202,6 +202,13 @@ RSpec.describe Entry, type: :model do
   describe 'award outcomes' do
     let(:entry) { create(:entry, contest_instance: contest_instance, profile: profile) }
 
+    it 'rejects an invalid award status without raising' do
+      entry.award_status = 'not_a_real_status'
+
+      expect(entry).not_to be_valid
+      expect(entry.errors[:award_status]).to include('is not included in the list')
+    end
+
     it 'treats winner or assigned prizes as awarded' do
       expect(entry.awarded?).to be false
 

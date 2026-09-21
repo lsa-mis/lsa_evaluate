@@ -30,11 +30,11 @@ class Award < ApplicationRecord
   belongs_to :container
   has_many :entry_awards, dependent: :restrict_with_error
 
-  enum :kind, KINDS, default: :primary
+  enum :kind, KINDS, default: :primary, validate: true
 
   validates :name, presence: true
   validates :name, uniqueness: { scope: :container_id, case_sensitive: false }
-  validates :kind, presence: true, inclusion: { in: KINDS.values }
+  validates :kind, presence: true
   validates :default_amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :position, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validate :kind_not_changed_when_assigned

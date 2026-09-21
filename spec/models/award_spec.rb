@@ -42,6 +42,14 @@ RSpec.describe Award, type: :model do
       award = build(:award, container: container, default_amount: nil)
       expect(award).to be_valid
     end
+
+    it 'rejects an invalid kind without raising' do
+      award = build(:award, container: container)
+      award.kind = 'not_a_real_kind'
+
+      expect(award).not_to be_valid
+      expect(award.errors[:kind]).to include('is not included in the list')
+    end
   end
 
   describe 'position' do

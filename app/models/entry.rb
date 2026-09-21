@@ -52,7 +52,7 @@ class Entry < ApplicationRecord
   has_many :entry_awards, dependent: :destroy
   has_many :awards, through: :entry_awards
 
-  enum :award_status, AWARD_STATUSES, default: :unawarded
+  enum :award_status, AWARD_STATUSES, default: :unawarded, validate: true
 
   validates :title, presence: true
   validates :title, length: { maximum: 250 }
