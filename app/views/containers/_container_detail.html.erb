@@ -11,6 +11,10 @@
                         class: 'btn btn-sm btn-outline-primary' do %>
               <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Application Questions
             <% end %>
+            <%= link_to container_categories_path(@container),
+                        class: 'btn btn-sm btn-outline-primary' do %>
+              <i class="bi bi-tags me-1" aria-hidden="true"></i> Categories
+            <% end %>
             <%= link_to container_awards_path(@container),
                         class: 'btn btn-sm btn-outline-primary' do %>
               <i class="bi bi-trophy me-1" aria-hidden="true"></i> Awards

@@ -37,8 +37,8 @@
 require 'rails_helper'
 
 RSpec.describe Entry, type: :model do
-  let(:category) { create(:category, kind: "ecat") }
   let(:contest_instance) { create(:contest_instance) }
+  let(:category) { create(:category, kind: 'ecat', container: contest_instance.contest_description.container) }
   let(:profile) { create(:profile) }
 
   describe 'Factory' do
@@ -65,7 +65,8 @@ RSpec.describe Entry, type: :model do
     end
 
     it 'is not valid without a category' do
-      entry = build(:entry, category: nil, contest_instance: contest_instance, profile: profile)
+      entry = build(:entry, contest_instance: contest_instance, profile: profile)
+      entry.category = nil
       expect(entry).not_to be_valid
     end
 
@@ -84,6 +85,15 @@ RSpec.describe Entry, type: :model do
       entry = build(:entry, title: 'a' * 251, category: category, contest_instance: contest_instance, profile: profile)
       expect(entry).not_to be_valid
       expect(entry.errors[:title]).to include("is too long (maximum is 250 characters)")
+    end
+
+    it 'is not valid when category is not selected for the contest instance' do
+      other_category = create(:category, kind: 'other', container: contest_instance.contest_description.container)
+      entry = build(:entry, category: other_category, contest_instance: contest_instance, profile: profile)
+      entry.contest_instance.categories = [ category ]
+
+      expect(entry).not_to be_valid
+      expect(entry.errors[:category]).to include('must be one of the categories for this contest')
     end
   end
 
@@ -143,8 +153,8 @@ RSpec.describe Entry, type: :model do
   end
 
   describe 'application question answers' do
-    let(:category) { create(:category, kind: 'ecat') }
     let(:contest_instance) { create(:contest_instance) }
+    let(:category) { create(:category, kind: 'ecat', container: contest_instance.contest_description.container) }
     let(:profile) { create(:profile) }
     let(:pen_name_question) do
       contest_instance.contest_description.container.application_questions.find_by!(system_key: 'pen_name')

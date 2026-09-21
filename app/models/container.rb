@@ -32,6 +32,7 @@ class Container < ApplicationRecord
   has_many :contest_descriptions, dependent: :restrict_with_error
   has_many :application_questions, dependent: :destroy
   has_many :awards, dependent: :destroy
+  has_many :categories, dependent: :destroy
   has_many :application_question_requirements, as: :requireable, dependent: :destroy
 
   has_rich_text :description

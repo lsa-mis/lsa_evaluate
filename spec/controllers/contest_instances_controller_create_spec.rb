@@ -5,7 +5,7 @@ RSpec.describe ContestInstancesController, type: :controller do
   let(:user) { create(:user, :axis_mundi) }
   let(:container) { create(:container, department: department) }
   let(:contest_description) { create(:contest_description, :active, container: container) }
-  let!(:category) { create(:category, kind: 'Fiction_Base') }
+  let!(:category) { create(:category, kind: 'Fiction_Base', container: container) }
   let!(:class_level) { create(:class_level, name: 'Undergraduate_Base') }
 
   before do
@@ -209,8 +209,8 @@ RSpec.describe ContestInstancesController, type: :controller do
     end
 
     context 'with categories and class levels' do
-      let!(:category1) { create(:category, kind: 'Fiction') }
-      let!(:category2) { create(:category, kind: 'Poetry') }
+      let!(:category1) { create(:category, kind: 'Fiction', container: container) }
+      let!(:category2) { create(:category, kind: 'Poetry', container: container) }
       let!(:class_level1) { create(:class_level, name: 'Undergraduate') }
       let!(:class_level2) { create(:class_level, name: 'Graduate') }
 

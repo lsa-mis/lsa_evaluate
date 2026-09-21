@@ -58,6 +58,7 @@ class Entry < ApplicationRecord
   validates :title, length: { maximum: 250 }
   validates :placement, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validate :entry_file_validation, on: :create
+  validate :category_must_belong_to_contest
 
   scope :active, -> { where(deleted: false) }
   scope :disqualified, -> { where(disqualified: true) }
@@ -184,6 +185,21 @@ class Entry < ApplicationRecord
     else
       errors.add(:entry_file, "can't be blank")
     end
+  end
+
+  def category_must_belong_to_contest
+    return if category_id.blank? || contest_instance.blank?
+
+    unless contest_instance.category_ids.include?(category_id)
+      errors.add(:category, 'must be one of the categories for this contest')
+      return
+    end
+
+    container_id = contest_instance.contest_description&.container_id
+    return if container_id.blank? || category.blank?
+    return if category.container_id == container_id
+
+    errors.add(:category, 'must belong to this collection')
   end
 
   def soft_deletable?

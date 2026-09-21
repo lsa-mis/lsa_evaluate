@@ -59,7 +59,8 @@ FactoryBot.define do
       end
 
       if contest_instance.categories.empty?
-        contest_instance.categories << build(:category)
+        container = contest_instance.contest_description&.container
+        contest_instance.categories << build(:category, container: container)
       end
     end
 

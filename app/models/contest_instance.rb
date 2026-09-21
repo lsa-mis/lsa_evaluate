@@ -70,6 +70,7 @@ class ContestInstance < ApplicationRecord
   validates :access_mode, presence: true, inclusion: { in: ACCESS_MODES.values }
   validate :must_have_at_least_one_class_level_requirement
   validate :must_have_at_least_one_category
+  validate :categories_belong_to_container
   validate :only_one_active_per_contest_description
   validate :date_closed_after_date_open
   validate :cannot_activate_if_description_inactive
@@ -263,6 +264,15 @@ class ContestInstance < ApplicationRecord
 
   def must_have_at_least_one_category
     errors.add(:base, 'At least one category must be selected.') if categories.empty?
+  end
+
+  def categories_belong_to_container
+    container_id = contest_description&.container_id
+    return if container_id.blank? || categories.empty?
+
+    return if categories.all? { |category| category.container_id == container_id }
+
+    errors.add(:categories, 'must belong to this collection')
   end
 
   def only_one_active_per_contest_description

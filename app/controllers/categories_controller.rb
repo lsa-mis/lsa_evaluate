@@ -1,61 +1,58 @@
+# frozen_string_literal: true
+
 class CategoriesController < ApplicationController
-  before_action :set_category, only: %i[show edit update destroy]
+  before_action :set_container
+  before_action :set_category, only: %i[edit update destroy]
+  before_action :authorize_container
 
   def index
-    authorize Category
-    @categories = policy_scope(Category)
-  end
-
-  def show
-    authorize @category
+    @categories = @container.categories.ordered
   end
 
   def new
-    @category = Category.new
-    authorize @category
-  end
-
-  def edit
-    authorize @category
+    @category = @container.categories.new
   end
 
   def create
-    @category = Category.new(category_params)
-    authorize @category
-
-    respond_to do |format|
-      if @category.save
-        format.html { redirect_to @category, notice: 'Category was successfully created.' }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-      end
+    @category = @container.categories.new(category_params)
+    if @category.save
+      redirect_to container_categories_path(@container), notice: 'Category was successfully created.'
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
+  def edit; end
+
   def update
-    authorize @category
-    respond_to do |format|
-      if @category.update(category_params)
-        format.html { redirect_to @category, notice: 'Category was successfully updated.' }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-      end
+    if @category.update(category_params)
+      redirect_to container_categories_path(@container), notice: 'Category was successfully updated.'
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    authorize @category
-    @category.destroy
-
-    respond_to do |format|
-      format.html { redirect_to categories_url, notice: 'Category was successfully destroyed.' }
+    if @category.destroy
+      redirect_to container_categories_path(@container), notice: 'Category was successfully deleted.'
+    else
+      redirect_to container_categories_path(@container),
+                  alert: @category.errors.full_messages.to_sentence.presence || 'Unable to delete category.'
     end
   end
 
   private
 
+  def set_container
+    @container = policy_scope(Container).find(params[:container_id])
+  end
+
   def set_category
-    @category = Category.find(params[:id])
+    @category = @container.categories.find(params[:id])
+  end
+
+  def authorize_container
+    authorize @container, :update?
   end
 
   def category_params
