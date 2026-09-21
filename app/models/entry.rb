@@ -188,15 +188,17 @@ class Entry < ApplicationRecord
   end
 
   def category_must_belong_to_contest
-    return if category_id.blank? || contest_instance.blank?
+    return if category.blank? || contest_instance.blank?
 
-    unless contest_instance.category_ids.include?(category_id)
+    # Check the associated record, not category_id. A new category has no id yet,
+    # and belongs_to autosave would persist it after this validation otherwise.
+    unless contest_instance.categories.include?(category)
       errors.add(:category, 'must be one of the categories for this contest')
       return
     end
 
     container_id = contest_instance.contest_description&.container_id
-    return if container_id.blank? || category.blank?
+    return if container_id.blank?
     return if category.container_id == container_id
 
     errors.add(:category, 'must belong to this collection')

@@ -95,6 +95,14 @@ RSpec.describe Entry, type: :model do
       expect(entry).not_to be_valid
       expect(entry.errors[:category]).to include('must be one of the categories for this contest')
     end
+
+    it 'is not valid when assigned a new category that is not on the contest' do
+      entry = build(:entry, category: category, contest_instance: contest_instance, profile: profile)
+      entry.category = build(:category, container: create(:container))
+
+      expect(entry).not_to be_valid
+      expect(entry.errors[:category]).to include('must be one of the categories for this contest')
+    end
   end
 
   describe 'associations' do
