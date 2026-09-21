@@ -68,9 +68,9 @@ class ScopeCategoriesToContainers < ActiveRecord::Migration[8.1]
   end
 
   def down
-    remove_index :categories, name: 'index_categories_on_container_id_and_kind'
-    remove_reference :categories, :container, foreign_key: true
-    add_index :categories, :kind, unique: true, name: 'index_categories_on_kind'
+    # up may duplicate kind across containers; restoring a global unique kind index
+    # cannot safely reverse that without remapping and merging rows.
+    raise ActiveRecord::IrreversibleMigration
   end
 
   private
@@ -95,13 +95,12 @@ class ScopeCategoriesToContainers < ActiveRecord::Migration[8.1]
 
   def assign_orphan_category!(category)
     fallback_container_id = MigrationContainer.order(:id).limit(1).pick(:id)
-    if fallback_container_id
-      category.update_columns(container_id: fallback_container_id)
-    else
-      MigrationCategoryContestInstance.where(category_id: category.id).delete_all
-      MigrationEntry.where(category_id: category.id).delete_all
-      category.delete
+    unless fallback_container_id
+      raise 'Cannot scope categories to containers: no containers exist to own ' \
+            "category ##{category.id} (#{category.kind})."
     end
+
+    category.update_columns(container_id: fallback_container_id)
   end
 
   def remap_category_for_container!(old_category_id, new_category_id, container_id)
