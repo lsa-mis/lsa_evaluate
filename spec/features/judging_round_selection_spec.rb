@@ -1,15 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe 'Judging Round Selection', type: :system do
-  def visit_round_management_tab
-    click_button 'Step 2: Round-Specific Judge Assignments', wait: 5
-    expect(page).to have_css('#round-specific.active', wait: 5)
-  end
-
-  def visit_review_rankings_page
-    visit_round_management_tab
-    click_link 'Review Rankings & Select Entries', wait: 5
-  end
   let(:container) { create(:container) }
   let(:contest_description) { create(:contest_description, :active, container: container) }
   let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
@@ -39,6 +30,16 @@ RSpec.describe 'Judging Round Selection', type: :system do
   let(:judge2) { create(:user, :with_judge_role) }
   let(:entry1) { create(:entry, contest_instance: contest_instance, title: 'First Entry') }
   let(:entry2) { create(:entry, contest_instance: contest_instance, title: 'Second Entry') }
+
+  def rankings_path
+    container_contest_description_contest_instance_judging_round_path(
+      container, contest_description, contest_instance, judging_round
+    )
+  end
+
+  def next_round_checkbox(entry)
+    find("#selected_for_next_round_checkbox_#{entry.id}")
+  end
 
   before do
     # Create both judging rounds in sequence
@@ -72,10 +73,7 @@ RSpec.describe 'Judging Round Selection', type: :system do
   context 'when logged in as collection admin' do
     before do
       sign_in collection_admin
-      visit container_contest_description_contest_instance_judging_assignments_path(
-        container, contest_description, contest_instance
-      )
-      visit_review_rankings_page
+      visit rankings_path
     end
 
     it 'displays all entries with their rankings' do
@@ -87,62 +85,33 @@ RSpec.describe 'Judging Round Selection', type: :system do
 
     it 'allows selecting entries for the next round', :js do
       within('tr', text: 'First Entry') do
-        checkbox = find('input[name="selected_for_next_round"]')
-        checkbox.click
+        expect(next_round_checkbox(entry1)).not_to be_checked
+        next_round_checkbox(entry1).click
       end
 
-      # Wait for the flash message to appear
+      within('tr', text: 'First Entry') do
+        expect(page).to have_css("#selected_for_next_round_checkbox_#{entry1.id}:checked", wait: 10)
+      end
       expect(page).to have_css('.alert.alert-success', text: 'Entry selection updated successfully', wait: 5)
 
-      # Verify the entry was selected in the database
-      entry1_ranking = EntryRanking.find_by(entry: entry1, judging_round: judging_round)
-      expect(entry1_ranking.selected_for_next_round).to be true
+      expect(EntryRanking.where(entry: entry1, judging_round: judging_round, selected_for_next_round: true).count).to eq(2)
     end
 
     it 'allows deselecting entries', :js do
-      # First select an entry
+      EntryRanking.where(entry: entry2, judging_round: judging_round)
+                  .update_all(selected_for_next_round: true)
+      visit rankings_path
+
       within('tr', text: 'Second Entry') do
-        checkbox = find("input[name='selected_for_next_round']")
-        expect(checkbox).not_to be_checked
-        checkbox.click
+        expect(next_round_checkbox(entry2)).to be_checked
+        next_round_checkbox(entry2).click
       end
 
-      # Wait for the flash message to appear
+      within('tr', text: 'Second Entry') do
+        expect(page).to have_css("#selected_for_next_round_checkbox_#{entry2.id}:not(:checked)", wait: 10)
+      end
       expect(page).to have_css('.alert.alert-success', text: 'Entry selection updated successfully', wait: 5)
 
-      # Verify ALL rankings for this entry are now selected
-      expect(EntryRanking.where(entry: entry2, judging_round: judging_round, selected_for_next_round: true).count).to eq(2)
-
-      # Verify the checkbox is now checked
-      within('tr', text: 'Second Entry') do
-        checkbox = find("input[name='selected_for_next_round']")
-        expect(checkbox).to be_checked
-      end
-
-      # Then deselect it
-      within('tr', text: 'Second Entry') do
-        find("input[name='selected_for_next_round']").click
-      end
-
-      # Wait for the checkbox to be unchecked via Turbo Stream
-      within('tr', text: 'Second Entry') do
-        expect(page).to have_css("input[name='selected_for_next_round']:not(:checked)", wait: 10)
-      end
-
-      # Wait for the flash message to appear
-      expect(page).to have_css('.alert.alert-success', text: 'Entry selection updated successfully', wait: 5)
-
-      # Use a retry loop to wait for the database state to change
-      Timeout.timeout(5) do
-        loop do
-          if EntryRanking.where(entry: entry2, judging_round: judging_round, selected_for_next_round: false).count == 2
-            break
-          end
-          sleep 0.1
-        end
-      end
-
-      # Final verification
       expect(EntryRanking.where(entry: entry2, judging_round: judging_round, selected_for_next_round: false).count).to eq(2)
       expect(EntryRanking.where(entry: entry2, judging_round: judging_round, selected_for_next_round: true).count).to eq(0)
     end
@@ -156,9 +125,7 @@ RSpec.describe 'Judging Round Selection', type: :system do
   context 'when logged in as a judge' do
     before do
       sign_in judge1
-      visit container_contest_description_contest_instance_judging_round_path(
-        container, contest_description, contest_instance, judging_round
-      )
+      visit rankings_path
     end
 
     it 'denies access to the selection interface' do

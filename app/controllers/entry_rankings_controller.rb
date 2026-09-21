@@ -75,7 +75,8 @@ class EntryRankingsController < ApplicationController
                 contest_instance: @contest_instance
               }
             ),
-            turbo_stream.replace('flash', partial: 'shared/flash_messages')
+            # Use update so the #flash wrapper remains for subsequent Turbo responses
+            turbo_stream.update('flash', partial: 'shared/flash_messages')
           ]
         }
       end
