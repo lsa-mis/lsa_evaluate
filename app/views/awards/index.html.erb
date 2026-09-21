@@ -1,0 +1,58 @@
+<div class="d-flex justify-content-end">
+  <div>
+    <%= link_to 'Return to Manage Collection', container_path(@container), class: 'link_to text-nowrap' %>
+  </div>
+</div>
+
+<h2 class="mt-4">Awards</h2>
+<p class="text-muted">
+  Define prizes for this collection, including primary awards and add-on prizes.
+  Default amounts and payment shortcodes are copied onto each winner when you assign a prize,
+  and can be overridden for that contest instance.
+</p>
+
+<div class="mb-3">
+  <%= link_to 'Add award', new_container_award_path(@container), class: 'btn btn-sm btn-primary' %>
+</div>
+
+<% if @awards.any? %>
+  <div class="table-responsive">
+    <table class="table table-sm align-middle">
+      <thead>
+        <tr>
+          <th>Award</th>
+          <th>Kind</th>
+          <th>Default amount</th>
+          <th>Shortcode</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @awards.each do |award| %>
+          <tr class="<%= 'table-secondary' unless award.active? %>">
+            <td>
+              <strong><%= award.name %></strong>
+              <% if award.description.present? %>
+                <div class="small text-muted"><%= award.description %></div>
+              <% end %>
+            </td>
+            <td><%= award.kind_label %></td>
+            <td><%= format_award_amount(award.default_amount) %></td>
+            <td><%= award.default_shortcode.presence || '—' %></td>
+            <td><%= award.active? ? 'Active' : 'Inactive' %></td>
+            <td class="text-nowrap">
+              <%= link_to 'Edit', edit_container_award_path(@container, award), class: 'link_to' %>
+              <%= button_to 'Delete', container_award_path(@container, award),
+                            method: :delete,
+                            class: 'btn btn-link btn-sm text-danger p-0 ms-2',
+                            form: { data: { turbo_confirm: 'Delete this award from the catalog?' } } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-muted">No awards have been defined for this collection yet.</p>
+<% end %>

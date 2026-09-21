@@ -75,24 +75,7 @@
               <% end %>
             <% end %>
 
-            <%= label_tag dom_id(question, :answer), question.label, class: 'form-label' %>
-            <% if required %><span class="text-danger">*</span><% end %>
-            <% if question.help_text.present? %>
-              <div class="form-text mb-1"><%= question.help_text %></div>
-            <% end %>
-
-            <% if question.field_type == 'boolean' && question.requires_acceptance? %>
-              <div class="form-check">
-                <%= render_application_question_field(
-                      nil,
-                      question: question,
-                      name: "entry_answers[#{question.id}]",
-                      value: value,
-                      required: required
-                    ) %>
-                <%= label_tag dom_id(question, :answer), question.label, class: 'form-check-label' %>
-              </div>
-            <% else %>
+            <% if question.field_type == 'multiselect' %>
               <%= render_application_question_field(
                     nil,
                     question: question,
@@ -100,6 +83,33 @@
                     value: value,
                     required: required
                   ) %>
+            <% else %>
+              <%= label_tag dom_id(question, :answer), question.label, class: 'form-label' %>
+              <% if required %><span class="text-danger">*</span><% end %>
+              <% if question.help_text.present? %>
+                <div class="form-text mb-1"><%= question.help_text %></div>
+              <% end %>
+
+              <% if question.field_type == 'boolean' && question.requires_acceptance? %>
+                <div class="form-check">
+                  <%= render_application_question_field(
+                        nil,
+                        question: question,
+                        name: "entry_answers[#{question.id}]",
+                        value: value,
+                        required: required
+                      ) %>
+                  <%= label_tag dom_id(question, :answer), question.label, class: 'form-check-label' %>
+                </div>
+              <% else %>
+                <%= render_application_question_field(
+                      nil,
+                      question: question,
+                      name: "entry_answers[#{question.id}]",
+                      value: value,
+                      required: required
+                    ) %>
+              <% end %>
             <% end %>
           </div>
         <% end %>

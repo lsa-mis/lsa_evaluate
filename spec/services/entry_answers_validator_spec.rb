@@ -183,6 +183,58 @@ RSpec.describe EntryAnswersValidator do
     end
   end
 
+  describe 'multiselect answers' do
+    let!(:genres_question) do
+      create(
+        :application_question,
+        container:,
+        field_type: 'multiselect',
+        key: 'preferred_genres',
+        label: 'Preferred genres',
+        options: { 'choices' => %w[Poetry Fiction Drama] }
+      )
+    end
+
+    before { require_question!(genres_question) }
+
+    it 'rejects a required multiselect with no boxes checked' do
+      expect(validate!({})).to be(false)
+      expect(entry.errors[:base].join).to include("can't be blank")
+    end
+
+    it 'rejects a required multiselect with an empty array' do
+      expect(validate!(genres_question.id.to_s => [])).to be(false)
+      expect(entry.errors[:base].join).to include("can't be blank")
+    end
+
+    it 'accepts one or more selected choices and stores them as an array' do
+      validator = described_class.new(
+        entry:,
+        effective_questions: EffectiveApplicationQuestions.for(contest_instance),
+        answers_params: { genres_question.id.to_s => %w[Poetry Drama] }
+      )
+
+      expect(validator.call).to be(true)
+      expect(validator.built_answers.first.value).to eq(%w[Poetry Drama])
+    end
+
+    it 'drops values that are not in the configured choices' do
+      validator = described_class.new(
+        entry:,
+        effective_questions: EffectiveApplicationQuestions.for(contest_instance),
+        answers_params: { genres_question.id.to_s => %w[Poetry NotAChoice] }
+      )
+
+      expect(validator.call).to be(true)
+      expect(validator.built_answers.first.value).to eq(%w[Poetry])
+    end
+
+    it 'rejects a required multiselect whose answers are all outside the choice list' do
+      expect(validate!(genres_question.id.to_s => %w[Nope])).to be(false)
+      expect(entry.errors[:base].join).to include("can't be blank")
+    end
+  end
+
   describe 'campus and school normalization' do
     let!(:campus_question) { container.application_questions.find_by!(system_key: 'campus') }
     let!(:school_question) { container.application_questions.find_by!(system_key: 'school') }

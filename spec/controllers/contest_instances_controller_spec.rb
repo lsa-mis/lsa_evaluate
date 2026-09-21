@@ -965,4 +965,85 @@ RSpec.describe ContestInstancesController, type: :controller do
       expect(assigns(:contest_instance_entries).map(&:title)).to include('Only Entry')
     end
   end
+
+  describe 'award notices and exports' do
+    let(:user) { create(:user, :axis_mundi) }
+    let(:container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+    let(:entry) { create(:entry, contest_instance: contest_instance, award_status: 'winner') }
+
+    before do
+      create(:entry_award, entry: entry)
+      sign_in user
+    end
+
+    it 'queues award notice emails for awarded entries' do
+      mail = instance_double(ActionMailer::MessageDelivery, deliver_later: true)
+      allow(AwardsMailer).to receive(:award_notice).and_return(mail)
+
+      post :send_award_notices, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id,
+        include_amounts: '1'
+      }
+
+      expect(AwardsMailer).to have_received(:award_notice).with(kind_of(Entry), include_amounts: true)
+      expect(mail).to have_received(:deliver_later)
+      expect(contest_instance.reload.award_emails_sent_count).to eq(1)
+      expect(response).to redirect_to(
+        container_contest_description_contest_instance_path(
+          container, contest_description, contest_instance, tab: 'awards'
+        )
+      )
+    end
+
+    it 'exports an award roster CSV' do
+      get :export_awards_roster, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(response.content_type).to include('text/csv')
+      expect(response.body).to include('Award Status')
+      expect(response.body).to include(entry.title)
+    end
+
+    it 'does not load awards tab data on the default contest instance show' do
+      get :show, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id
+      }
+
+      expect(assigns(:awards_tab_entries)).to be_nil
+      expect(assigns(:catalog_awards)).to be_nil
+    end
+
+    it 'loads awards tab data when the awards tab is requested' do
+      get :show, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id,
+        tab: 'awards'
+      }
+
+      expect(assigns(:awards_tab_entries)).to include(entry)
+      expect(assigns(:catalog_awards)).to be_present
+    end
+
+    it 'renders the lazy awards panel' do
+      get :awards_panel, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(assigns(:awards_tab_entries)).to include(entry)
+    end
+  end
 end

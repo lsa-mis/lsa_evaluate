@@ -6,6 +6,8 @@ class ContestInstancesController < ApplicationController
   before_action :set_contest_instance, only: %i[
     show edit update destroy send_round_results deactivate regenerate_access_token
     setup_questions update_setup_questions setup_review_process
+    award_email_preferences send_award_notices export_awards_roster export_awards_disbursement
+    awards_panel
   ]
   before_action :authorize_container_access
 
@@ -21,6 +23,8 @@ class ContestInstancesController < ApplicationController
       { profile: [ :user, :class_level ] },
       contest_instance: { contest_description: :container }
     )
+
+    load_awards_tab if params[:tab] == 'awards'
 
     if params[:sort_column].present? && params[:sort_direction].present?
       sortable_columns = Entry.sortable_columns
@@ -264,6 +268,62 @@ class ContestInstancesController < ApplicationController
     ), notice: 'Application question requirements were saved.'
   end
 
+  def award_email_preferences
+    authorize @contest_instance, :send_award_notices?
+    @award_notice_entries = @contest_instance.award_notice_entries
+  end
+
+  def awards_panel
+    load_awards_tab
+  end
+
+  def send_award_notices
+    authorize @contest_instance, :send_award_notices?
+    include_amounts = params[:include_amounts] == '1'
+    entries = @contest_instance.award_notice_entries
+    awards_path = container_contest_description_contest_instance_path(
+      @container, @contest_description, @contest_instance, tab: 'awards'
+    )
+
+    if entries.none?
+      redirect_to awards_path, alert: 'No awarded entries to notify. Assign a winner, finalist, or prize first.'
+      return
+    end
+
+    entries.each do |entry|
+      AwardsMailer.award_notice(entry, include_amounts: include_amounts).deliver_later
+    end
+
+    @contest_instance.increment!(:award_emails_sent_count)
+
+    redirect_to awards_path,
+                notice: "Successfully queued #{entries.size} award notice emails. This is email batch ##{@contest_instance.award_emails_sent_count}."
+  end
+
+  def export_awards_roster
+    authorize @contest_instance, :manage_awards?
+    send_awards_csv(
+      AwardsExportService.new(
+        entries: @contest_instance.entries.active,
+        title: "#{@contest_description.name} - Award roster",
+        contest_instance: @contest_instance
+      ).roster_csv,
+      "#{@contest_description.name.parameterize}-award-roster-#{Time.zone.today}.csv"
+    )
+  end
+
+  def export_awards_disbursement
+    authorize @contest_instance, :manage_awards?
+    send_awards_csv(
+      AwardsExportService.new(
+        entries: @contest_instance.entries.active,
+        title: "#{@contest_description.name} - Award disbursement",
+        contest_instance: @contest_instance
+      ).disbursement_csv,
+      "#{@contest_description.name.parameterize}-award-disbursement-#{Time.zone.today}.csv"
+    )
+  end
+
   def setup_review_process
     authorize @contest_instance, :update?
     @judging_round = @contest_instance.judging_rounds.build
@@ -291,6 +351,17 @@ class ContestInstancesController < ApplicationController
   def redirect_to_contest_instance_path
     redirect_to container_contest_description_contest_instance_path(@container, @contest_description, @contest_instance),
                 notice: 'Contest instance was successfully created/updated.'
+  end
+
+  def send_awards_csv(csv_data, filename)
+    send_data csv_data,
+              type: 'text/csv; charset=utf-8; header=present',
+              disposition: "attachment; filename=#{filename}"
+  end
+
+  def load_awards_tab
+    @catalog_awards = @container.awards.active.ordered
+    @awards_tab_entries = @contest_instance.awards_tab_entries
   end
 
   def contest_instance_params

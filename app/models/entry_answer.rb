@@ -22,6 +22,8 @@ class EntryAnswer < ApplicationRecord
       else
         raw_scalar.to_s
       end
+    when 'multiselect'
+      Array(raw_scalar).map(&:to_s).reject(&:blank?).join(', ')
     when 'date'
       raw_scalar.to_s
     else
@@ -41,6 +43,8 @@ class EntryAnswer < ApplicationRecord
       else
         raw_scalar.blank?
       end
+    when 'multiselect'
+      Array(raw_scalar).all?(&:blank?)
     else
       raw_scalar.blank?
     end

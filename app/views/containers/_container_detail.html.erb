@@ -11,6 +11,10 @@
                         class: 'btn btn-sm btn-outline-primary' do %>
               <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Application Questions
             <% end %>
+            <%= link_to container_awards_path(@container),
+                        class: 'btn btn-sm btn-outline-primary' do %>
+              <i class="bi bi-trophy me-1" aria-hidden="true"></i> Awards
+            <% end %>
           <% end %>
 
           <% if policy(@container).applicants? %>
@@ -24,6 +28,13 @@
             <%= link_to reports_container_path(@container),
                         class: 'btn btn-sm btn-outline-primary' do %>
               <i class="bi bi-download me-1" aria-hidden="true"></i> Generate Reports
+            <% end %>
+          <% end %>
+
+          <% if policy(@container).winners? %>
+            <%= link_to winners_container_path(@container),
+                        class: 'btn btn-sm btn-outline-primary' do %>
+              <i class="bi bi-award me-1" aria-hidden="true"></i> Winners
             <% end %>
           <% end %>
 
