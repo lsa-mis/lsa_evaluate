@@ -51,7 +51,8 @@ module ApplicationQuestionsHelper
         select_tag("#{field_name}[choice]", options_for_select(choices, choice_value),
                    include_blank: true, class: 'form-select mb-2', required: required, id: dom_id(question, :choice)),
         text_field_tag("#{field_name}[other]", other_value, class: 'form-control',
-                       placeholder: 'If Other, please specify', id: dom_id(question, :other))
+                       placeholder: 'If Other, please specify', id: dom_id(question, :other),
+                       aria: { label: "#{question.label} other" })
       ])
     when 'campus'
       select_tag field_name,

@@ -13,6 +13,8 @@ class EntryAnswersValidator
   def call
     @effective_questions.each do |effective|
       question = effective.question
+      next unless question.applies_to_class_level?(class_level_for_validation)
+
       raw = @answers_params[question.id.to_s] || @answers_params[question.id]
       normalized = EntryAnswerParamNormalizer.normalize(question, raw)
       normalized = false if question.field_type == 'boolean' && normalized.nil? && effective.status != 'required'
@@ -20,7 +22,6 @@ class EntryAnswersValidator
       @built_answers << answer
 
       next unless effective.status == 'required'
-      next unless question.applies_to_class_level?(class_level_for_validation)
 
       if question.agreement?
         unless answer.agreement_accepted?

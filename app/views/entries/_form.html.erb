@@ -95,7 +95,8 @@
                     required: required
                   ) %>
             <% else %>
-              <%= label_tag dom_id(question, :answer), question.label, class: 'form-label' %>
+              <% label_for = question.field_type == 'select_with_other' ? dom_id(question, :choice) : dom_id(question, :answer) %>
+              <%= label_tag label_for, question.label, class: 'form-label' %>
               <span class="text-danger<%= ' d-none' unless required %>"
                     data-class-level-questions-target="requiredMarker">*</span>
               <% if question.help_text.present? %>
