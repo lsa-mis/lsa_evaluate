@@ -78,4 +78,18 @@ RSpec.describe Category, type: :model do
       expect(category.errors[:description]).to include("can't be blank")
     end
   end
+
+  describe 'destroy restrictions' do
+    it 'prevents deleting a category that still has entries' do
+      contest_description = create(:contest_description, :active, container: container)
+      contest_instance = create(:contest_instance, contest_description: contest_description)
+      contest_instance.categories = [ category ]
+      create(:entry, contest_instance: contest_instance, category: category)
+
+      expect(category.destroy).to be false
+      expect(category.errors[:base]).to be_present
+      expect(Category.exists?(category.id)).to be true
+    end
+  end
 end
+

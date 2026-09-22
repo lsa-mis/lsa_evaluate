@@ -103,6 +103,20 @@ RSpec.describe Entry, type: :model do
       expect(entry).not_to be_valid
       expect(entry.errors[:category]).to include('must be one of the categories for this contest')
     end
+
+    it 'is not valid when a selected contest category belongs to another collection' do
+      foreign_category = create(:category, container: create(:container), kind: 'Cross Collection')
+      # Bypass ContestInstance validation to prove Entry still guards collection ownership.
+      CategoryContestInstance.create!(category: foreign_category, contest_instance: contest_instance)
+      contest_instance.categories.reload
+
+      # Assign after factory hooks so they cannot rewrite the foreign category onto this container.
+      entry = build(:entry, contest_instance: contest_instance, profile: profile)
+      entry.category = foreign_category
+
+      expect(entry).not_to be_valid
+      expect(entry.errors[:category]).to include('must belong to this collection')
+    end
   end
 
   describe 'associations' do

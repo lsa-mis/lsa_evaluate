@@ -267,4 +267,154 @@ RSpec.describe ContestInstance, type: :model do
       expect(instance).to be_valid
     end
   end
+
+  describe 'category container scoping' do
+    let(:container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:own_category) { create(:category, kind: 'Fiction', container: container) }
+    let(:foreign_category) { create(:category, kind: 'Fiction', container: create(:container)) }
+
+    it 'rejects categories that belong to another collection' do
+      contest_instance = build(
+        :contest_instance,
+        :without_categories,
+        contest_description: contest_description
+      )
+      contest_instance.categories = [ foreign_category ]
+
+      expect(contest_instance).not_to be_valid
+      expect(contest_instance.errors[:categories]).to include('must belong to this collection')
+    end
+
+    it 'allows categories from the contest collection' do
+      contest_instance = build(
+        :contest_instance,
+        :without_categories,
+        contest_description: contest_description
+      )
+      contest_instance.categories = [ own_category ]
+
+      expect(contest_instance).to be_valid
+    end
+  end
+
+  describe '#last_round_selected_entry_ids' do
+    let(:contest_instance) { create(:contest_instance) }
+
+    it 'returns an empty set when there are no judging rounds' do
+      expect(contest_instance.last_round_selected_entry_ids).to eq(Set.new)
+    end
+
+    context 'with multiple judging rounds' do
+      let!(:round_one) do
+        create(
+          :judging_round,
+          contest_instance: contest_instance,
+          round_number: 1,
+          start_date: contest_instance.date_closed + 1.day,
+          end_date: contest_instance.date_closed + 2.days
+        )
+      end
+      let!(:round_two) do
+        create(
+          :judging_round,
+          contest_instance: contest_instance,
+          round_number: 2,
+          start_date: round_one.end_date + 1.day,
+          end_date: round_one.end_date + 2.days
+        )
+      end
+      let(:selected_entry) { create(:entry, contest_instance: contest_instance) }
+      let(:unselected_entry) { create(:entry, contest_instance: contest_instance) }
+      let(:earlier_round_only_entry) { create(:entry, contest_instance: contest_instance) }
+
+      before do
+        create(
+          :entry_ranking,
+          :selected,
+          :with_assigned_judge,
+          entry: selected_entry,
+          judging_round: round_two
+        )
+        create(
+          :entry_ranking,
+          :with_assigned_judge,
+          entry: unselected_entry,
+          judging_round: round_two,
+          selected_for_next_round: false
+        )
+        create(
+          :entry_ranking,
+          :selected,
+          :with_assigned_judge,
+          entry: earlier_round_only_entry,
+          judging_round: round_one
+        )
+      end
+
+      it 'returns only entries selected in the highest-numbered round' do
+        expect(contest_instance.last_round_selected_entry_ids).to eq(Set.new([ selected_entry.id ]))
+      end
+    end
+  end
+
+  describe '#awards_tab_entries' do
+    let(:contest_instance) { create(:contest_instance) }
+    let!(:judging_round) do
+      create(
+        :judging_round,
+        contest_instance: contest_instance,
+        round_number: 1,
+        start_date: contest_instance.date_closed + 1.day,
+        end_date: contest_instance.date_closed + 2.days
+      )
+    end
+    let(:zebra_profile) { create(:profile, legal_last_name: 'Zebra') }
+    let(:alpha_profile) { create(:profile, legal_last_name: 'Alpha') }
+    let(:baker_profile) { create(:profile, legal_last_name: 'Baker') }
+    let!(:selected_without_placement) do
+      create(:entry, contest_instance: contest_instance, profile: zebra_profile, placement: nil)
+    end
+    let!(:unselected_with_placement) do
+      create(:entry, contest_instance: contest_instance, profile: alpha_profile, placement: 1)
+    end
+    let!(:selected_with_placement) do
+      create(:entry, contest_instance: contest_instance, profile: baker_profile, placement: 2)
+    end
+    let!(:deleted_entry) do
+      create(:entry, contest_instance: contest_instance, profile: create(:profile), deleted: true)
+    end
+
+    before do
+      create(
+        :entry_ranking,
+        :selected,
+        :with_assigned_judge,
+        entry: selected_without_placement,
+        judging_round: judging_round
+      )
+      create(
+        :entry_ranking,
+        :selected,
+        :with_assigned_judge,
+        entry: selected_with_placement,
+        judging_round: judging_round
+      )
+    end
+
+    it 'orders selected finalists first, then by placement, then by last name' do
+      expect(contest_instance.awards_tab_entries).to eq(
+        [
+          selected_with_placement,
+          selected_without_placement,
+          unselected_with_placement
+        ]
+      )
+    end
+
+    it 'excludes soft-deleted entries' do
+      expect(contest_instance.awards_tab_entries).not_to include(deleted_entry)
+    end
+  end
 end
+
