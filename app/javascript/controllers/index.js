@@ -87,3 +87,6 @@ application.register("uid-lookup", UidLookupController)
 
 import WordCounterController from "./word_counter_controller"
 application.register("word-counter", WordCounterController)
+
+import ClassLevelQuestionsController from "./class_level_questions_controller"
+application.register("class-level-questions", ClassLevelQuestionsController)

@@ -33,4 +33,13 @@ RSpec.describe School, type: :model do
       expect(duplicate_school).not_to be_valid
     end
   end
+
+  describe '.rackham' do
+    it 'finds the Rackham school by name' do
+      rackham = create(:school, name: School::RACKHAM_NAME)
+      create(:school, name: 'LSA')
+
+      expect(described_class.rackham).to eq(rackham)
+    end
+  end
 end

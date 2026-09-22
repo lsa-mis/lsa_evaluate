@@ -2,8 +2,10 @@
   <%= simple_form_for(@entry, html: {
         'data-turbo' => false,
         data: {
-          controller: 'form-submission',
-          action: 'submit->form-submission#showLoading'
+          controller: 'form-submission class-level-questions',
+          action: 'submit->form-submission#showLoading',
+          class_level_questions_graduate_class_level_ids_value: ClassLevel.select(&:graduate?).map(&:id),
+          class_level_questions_rackham_school_id_value: School.rackham&.id
         }
       }) do |f| %>
     <%= f.error_notification %>
@@ -51,7 +53,12 @@
       </p>
       <%= select_tag 'entry[confirmed_class_level_id]',
                      options_from_collection_for_select(ClassLevel.all, :id, :name, @confirmed_class_level_id || current_user.profile.class_level_id),
-                     class: 'form-select', required: true %>
+                     class: 'form-select',
+                     required: true,
+                     data: {
+                       class_level_questions_target: 'classLevel',
+                       action: 'change->class-level-questions#refresh'
+                     } %>
 
       <% if @effective_questions.any? %>
         <h3 class="mt-4">Additional Questions</h3>
@@ -60,7 +67,11 @@
           <% class_level = ClassLevel.find_by(id: @confirmed_class_level_id) %>
           <% required = application_question_required_for_class_level?(effective, class_level) %>
           <% value = @prefill_values[question.id] %>
-          <div class="mb-3">
+          <% initially_hidden = !question.applies_to_class_level?(class_level) %>
+          <div class="mb-3<%= ' d-none' if initially_hidden %>"
+               data-class-level-questions-target="question"
+               data-class-level-scope="<%= question.class_level_scope %>"
+               data-required-when-applicable="<%= effective.status == 'required' %>">
             <% if question.system_key == 'accepted_financial_aid_notice' %>
               <% if (content = render_editable_content('profiles', 'finaid_information')) %>
                 <strong>Important note for students receiving needs-based financial aid:</strong>
@@ -84,8 +95,10 @@
                     required: required
                   ) %>
             <% else %>
-              <%= label_tag dom_id(question, :answer), question.label, class: 'form-label' %>
-              <% if required %><span class="text-danger">*</span><% end %>
+              <% label_for = question.field_type == 'select_with_other' ? dom_id(question, :choice) : dom_id(question, :answer) %>
+              <%= label_tag label_for, question.label, class: 'form-label' %>
+              <span class="text-danger<%= ' d-none' unless required %>"
+                    data-class-level-questions-target="requiredMarker">*</span>
               <% if question.help_text.present? %>
                 <div class="form-text mb-1"><%= question.help_text %></div>
               <% end %>
@@ -107,8 +120,26 @@
                       question: question,
                       name: "entry_answers[#{question.id}]",
                       value: value,
-                      required: required
+                      required: required,
+                      html_options: question.system_key == 'school' ? {
+                        data: {
+                          class_level_questions_target: 'schoolSelect',
+                          action: 'change->class-level-questions#refresh'
+                        }
+                      } : {}
                     ) %>
+                <% if question.system_key == 'school' %>
+                  <% show_rackham_hint = class_level&.graduate? &&
+                                         value.present? &&
+                                         School.rackham &&
+                                         value.to_i != School.rackham.id %>
+                  <div class="alert alert-warning mt-2 mb-0 py-2 small<%= ' d-none' unless show_rackham_hint %>"
+                       role="status"
+                       data-class-level-questions-target="schoolRackhamHint">
+                    You previously selected a school other than Rackham. Graduate applicants usually select
+                    <strong>Rackham</strong>—please update this unless another school applies.
+                  </div>
+                <% end %>
               <% end %>
             <% end %>
           </div>

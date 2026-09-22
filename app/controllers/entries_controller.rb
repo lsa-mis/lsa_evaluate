@@ -54,10 +54,7 @@ class EntriesController < ApplicationController
 
       raise ActiveRecord::Rollback unless valid_answers && @entry.save
 
-      validator.built_answers.each do |answer|
-        answer.entry = @entry
-        answer.save!
-      end
+      persist_entry_answers!(validator.built_answers)
       ProfileCampusSync.call(profile: current_user.profile, answers: validator.built_answers)
       saved = true
     end
@@ -73,11 +70,30 @@ class EntriesController < ApplicationController
   def update
     authorize @entry
     prepare_application_questions
+
+    saved = false
+    ActiveRecord::Base.transaction do
+      update_confirmed_class_level!
+      validator = EntryAnswersValidator.new(
+        entry: @entry,
+        effective_questions: @effective_questions,
+        answers_params: params[:entry_answers]
+      )
+      valid_answers = validator.call
+
+      raise ActiveRecord::Rollback unless valid_answers && @entry.update(entry_params)
+
+      persist_entry_answers!(validator.built_answers)
+      ProfileCampusSync.call(profile: current_user.profile, answers: validator.built_answers)
+      saved = true
+    end
+
     respond_to do |format|
-      if @entry.update(entry_params)
+      if saved
         format.html { redirect_to applicant_dashboard_path, notice: 'Entry was successfully updated.' }
         format.json { render :show, status: :ok, location: @entry }
       else
+        prepare_application_questions
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @entry.errors, status: :unprocessable_entity }
       end
@@ -251,5 +267,13 @@ class EntriesController < ApplicationController
     end
 
     current_user.profile.class_level_id = profile.class_level_id
+  end
+
+  def persist_entry_answers!(built_answers)
+    built_answers.each do |answer|
+      record = @entry.entry_answers.find_or_initialize_by(application_question_id: answer.application_question_id)
+      record.value = answer.value
+      record.save!
+    end
   end
 end

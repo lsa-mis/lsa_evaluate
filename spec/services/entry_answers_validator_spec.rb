@@ -295,14 +295,28 @@ RSpec.describe EntryAnswersValidator do
     it 'does not require major for graduate students' do
       entry.profile.class_level = graduate_level
 
-      expect(validate!(department_question.id.to_s => 'English')).to be(true)
+      expect(validate!({ department_question.id.to_s => { 'choice' => 'English Language and Literature' } })).to be(true)
     end
 
     it 'still requires department for graduate students' do
       entry.profile.class_level = graduate_level
 
       expect(validate!({})).to be(false)
-      expect(entry.errors[:base].join).to include('Department (if graduate)')
+      expect(entry.errors[:base].join).to include('What is your Department')
+    end
+
+    it 'does not build nil answers for non-applicable class-level questions' do
+      entry.profile.class_level = undergraduate_level
+      validator = described_class.new(
+        entry: entry,
+        effective_questions: EffectiveApplicationQuestions.for(contest_instance),
+        answers_params: { major_question.id.to_s => 'English' }
+      )
+
+      expect(validator.call).to be(true)
+      system_keys = validator.built_answers.map { |answer| answer.application_question.system_key }
+      expect(system_keys).to include('major')
+      expect(system_keys).not_to include('department')
     end
   end
 

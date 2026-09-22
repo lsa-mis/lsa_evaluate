@@ -87,6 +87,7 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
                   { name: 'Law' },
                   { name: 'Art and Design' },
                   { name: 'Education' },
+                  { name: 'Rackham' },
                   { name: 'Other' }
                 ])
 
