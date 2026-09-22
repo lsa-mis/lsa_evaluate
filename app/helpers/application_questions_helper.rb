@@ -24,7 +24,7 @@ module ApplicationQuestionsHelper
     effective.question.applies_to_class_level?(class_level)
   end
 
-  def render_application_question_field(form_builder_or_nil, question:, name:, value: nil, required: false)
+  def render_application_question_field(form_builder_or_nil, question:, name:, value: nil, required: false, html_options: {})
     field_name = name
     case question.field_type
     when 'boolean'
@@ -34,13 +34,13 @@ module ApplicationQuestionsHelper
         render_yes_no_radios(field_name, question, value, required:)
       end
     when 'text'
-      text_area_tag field_name, value, class: 'form-control', rows: 3, required: required, id: dom_id(question, :answer)
+      text_area_tag field_name, value, class: 'form-control', rows: 3, required: required, id: dom_id(question, :answer), **html_options
     when 'date'
-      date_field_tag field_name, value, class: 'form-control', required: required, id: dom_id(question, :answer)
+      date_field_tag field_name, value, class: 'form-control', required: required, id: dom_id(question, :answer), **html_options
     when 'select'
       choices = Array(question.options&.dig('choices') || question.options&.dig(:choices))
       select_tag field_name, options_for_select(choices, value),
-                 include_blank: true, class: 'form-select', required: required, id: dom_id(question, :answer)
+                 include_blank: true, class: 'form-select', required: required, id: dom_id(question, :answer), **html_options
     when 'multiselect'
       render_multiselect_checkboxes(field_name, question, value, required:)
     when 'select_with_other'
@@ -56,13 +56,13 @@ module ApplicationQuestionsHelper
     when 'campus'
       select_tag field_name,
                  options_from_collection_for_select(Campus.all, :id, :campus_descr, value),
-                 include_blank: true, class: 'form-select', required: required, id: dom_id(question, :answer)
+                 include_blank: true, class: 'form-select', required: required, id: dom_id(question, :answer), **html_options
     when 'school'
       select_tag field_name,
                  options_from_collection_for_select(School.all, :id, :name, value),
-                 include_blank: true, class: 'form-select', required: required, id: dom_id(question, :answer)
+                 include_blank: true, class: 'form-select', required: required, id: dom_id(question, :answer), **html_options
     else
-      text_field_tag field_name, value, class: 'form-control', required: required, id: dom_id(question, :answer)
+      text_field_tag field_name, value, class: 'form-control', required: required, id: dom_id(question, :answer), **html_options
     end
   end
 

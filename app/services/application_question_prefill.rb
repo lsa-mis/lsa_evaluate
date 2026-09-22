@@ -37,12 +37,40 @@ class ApplicationQuestionPrefill
   def prefill_for(question)
     if question.system?
       answer = latest_system_answer(question.system_key)
-      return answer.value if answer
+      if answer
+        normalized_answer = normalize_system_value(question, answer.value)
+        return normalized_answer unless normalized_answer.nil?
+      end
 
-      PROFILE_SYSTEM_KEY_MAP[question.system_key]&.call(@profile)
+      profile_value = PROFILE_SYSTEM_KEY_MAP[question.system_key]&.call(@profile)
+      normalized = normalize_system_value(question, profile_value)
+      return normalized unless normalized.nil?
+
+      default_for_missing_system_value(question)
     else
       latest_custom_answer(question)&.value || question.default_answer_value
     end
+  end
+
+  def normalize_system_value(question, value)
+    case question.system_key
+    when 'department'
+      ApplicationQuestion.map_department_answer(
+        value,
+        choices: question.choice_list.presence || ApplicationQuestion::DEPARTMENT_CHOICES
+      )
+    when 'school'
+      value.presence
+    else
+      value
+    end
+  end
+
+  def default_for_missing_system_value(question)
+    return unless question.system_key == 'school'
+    return unless @profile.class_level&.graduate?
+
+    School.rackham&.id
   end
 
   def latest_system_answer(system_key)

@@ -226,16 +226,16 @@ RSpec.describe 'Entry submission application questions' do
       entry.profile.class_level = undergraduate_level
 
       expect(validate!({})).to be(false)
-      expect(entry.errors[:base].join).to include('Major (if undergraduate)')
-      expect(entry.errors[:base].join).not_to include('Department (if graduate)')
+      expect(entry.errors[:base].join).to include('What is your Major')
+      expect(entry.errors[:base].join).not_to include('What is your Department')
     end
 
     it 'requires department but not major for graduate students' do
       entry.profile.class_level = graduate_level
 
       expect(validate!({})).to be(false)
-      expect(entry.errors[:base].join).to include('Department (if graduate)')
-      expect(entry.errors[:base].join).not_to include('Major (if undergraduate)')
+      expect(entry.errors[:base].join).to include('What is your Department')
+      expect(entry.errors[:base].join).not_to include('What is your Major')
     end
   end
 end

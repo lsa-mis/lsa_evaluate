@@ -96,4 +96,51 @@ RSpec.describe ApplicationQuestionPrefill do
     values = described_class.for(profile:, questions: [ custom_a ])
     expect(values[custom_a.id]).to eq('Morning')
   end
+
+  describe 'school and department class-level prefills' do
+    let(:graduate_level) { create(:class_level, name: 'Graduate') }
+    let(:undergraduate_level) { create(:class_level, name: 'First year') }
+    let(:rackham) { create(:school, name: School::RACKHAM_NAME) }
+    let(:other_school) { create(:school, name: 'LSA') }
+    let(:school_question) { container_a.application_questions.find_by!(system_key: 'school') }
+    let(:department_question) { container_a.application_questions.find_by!(system_key: 'department') }
+
+    it 'defaults school to Rackham for graduates with no prior school' do
+      rackham
+      profile.update!(class_level: graduate_level, school: nil)
+
+      values = described_class.for(profile:, questions: [ school_question ])
+      expect(values[school_question.id]).to eq(rackham.id)
+    end
+
+    it 'does not overwrite an existing school with Rackham' do
+      rackham
+      profile.update!(class_level: graduate_level, school: other_school)
+
+      values = described_class.for(profile:, questions: [ school_question ])
+      expect(values[school_question.id]).to eq(other_school.id)
+    end
+
+    it 'does not default school to Rackham for undergraduates' do
+      rackham
+      profile.update!(class_level: undergraduate_level, school: nil)
+
+      values = described_class.for(profile:, questions: [ school_question ])
+      expect(values[school_question.id]).to be_nil
+    end
+
+    it 'maps legacy profile department strings onto select_with_other values' do
+      profile.update!(department: 'English')
+
+      values = described_class.for(profile:, questions: [ department_question ])
+      expect(values[department_question.id]).to eq('choice' => 'English Language and Literature')
+    end
+
+    it 'maps unknown legacy department strings to Other' do
+      profile.update!(department: 'Astrophysics')
+
+      values = described_class.for(profile:, questions: [ department_question ])
+      expect(values[department_question.id]).to eq('choice' => 'Other', 'other' => 'Astrophysics')
+    end
+  end
 end

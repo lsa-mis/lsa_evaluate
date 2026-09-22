@@ -23,6 +23,53 @@ class ApplicationQuestion < ApplicationRecord
     submission_acknowledgement_agreement
   ].freeze
 
+  DEPARTMENT_CHOICES = [
+    'American Culture',
+    'Anthropology',
+    'Biological Chemistry',
+    'Climate and Space Sciences',
+    'Comparative Literature',
+    'Composition (School of Music, Theatre & Dance)',
+    'Creative Writing',
+    'Dance',
+    'English Language and Literature',
+    "Helen Zell Writers' Program",
+    'Information - Library Science',
+    'Law',
+    'Libraries, Archives, and Knowledge Environments in Society',
+    'Linguistics',
+    'Marsal School of Education',
+    'Mathematics',
+    'Medicine',
+    'Philosophy',
+    'Public Administration',
+    'Public Policy',
+    'Romance Languages and Literatures',
+    'School for Environment and Sustainability',
+    'Social Work',
+    'Wallace House Center for Journalists',
+    'Other'
+  ].freeze
+
+  # Maps common free-text profile.department variants onto curated choices.
+  DEPARTMENT_CHOICE_ALIASES = {
+    'english' => 'English Language and Literature',
+    'english language and literature' => 'English Language and Literature',
+    'english language & literature' => 'English Language and Literature',
+    'english language and literature department' => 'English Language and Literature',
+    'department of english language and literature' => 'English Language and Literature',
+    'english (mfa)' => "Helen Zell Writers' Program",
+    "helen zell writers' program" => "Helen Zell Writers' Program",
+    'helen zell writers program' => "Helen Zell Writers' Program",
+    "helen zell writer's program" => "Helen Zell Writers' Program",
+    "lsa, helen zell writer's program" => "Helen Zell Writers' Program",
+    "english - helen zell writers' program" => "Helen Zell Writers' Program",
+    'school of social work' => 'Social Work',
+    'marsal school of education secmac' => 'Marsal School of Education',
+    'composition (school of music, theater, & dance)' => 'Composition (School of Music, Theatre & Dance)',
+    'wallace house center for journalists' => 'Wallace House Center for Journalists'
+  }.freeze
+
   SYSTEM_QUESTION_DEFINITIONS = [
     { system_key: 'pen_name', key: 'pen_name', label: 'Pen name', field_type: 'string',
       help_text: 'The pen name should bear no resemblance to your real name or any other personal information.' },
@@ -34,13 +81,15 @@ class ApplicationQuestion < ApplicationRecord
     { system_key: 'financial_aid_description', key: 'financial_aid_description',
       label: 'Financial aid description', field_type: 'text' },
     { system_key: 'degree', key: 'degree', label: 'Degree', field_type: 'string' },
-    { system_key: 'department', key: 'department', label: 'Department (if graduate)', field_type: 'string' },
-    { system_key: 'major', key: 'major', label: 'Major (if undergraduate)', field_type: 'string' },
+    { system_key: 'department', key: 'department', label: 'What is your Department',
+      field_type: 'select_with_other', options: { choices: DEPARTMENT_CHOICES } },
+    { system_key: 'major', key: 'major', label: 'What is your Major', field_type: 'string' },
     { system_key: 'grad_date', key: 'grad_date', label: 'Expected graduation date', field_type: 'date' },
     { system_key: 'hometown_publication', key: 'hometown_publication',
       label: 'Hometown newspaper or preferred media outlet', field_type: 'string' },
     { system_key: 'campus', key: 'campus', label: 'Primary campus class location', field_type: 'campus' },
-    { system_key: 'school', key: 'school', label: 'School or college', field_type: 'school' },
+    { system_key: 'school', key: 'school', label: 'School or college', field_type: 'school',
+      help_text: 'Graduate students: School or college is usually Rackham. If you previously selected another school, please update this to Rackham unless another school applies.' },
     { system_key: 'contest_referral_source', key: 'contest_referral_source',
       label: 'How did you hear about this contest?', field_type: 'select_with_other',
       options: { choices: [ 'Faculty', 'Advisor', 'Friend', 'Website', 'Social media', 'Other' ] } },
@@ -115,14 +164,49 @@ class ApplicationQuestion < ApplicationRecord
   end
 
   def applies_to_class_level?(class_level)
-    case system_key
-    when 'department'
+    case class_level_scope
+    when 'graduate'
       class_level&.graduate?
-    when 'major'
+    when 'undergraduate'
       class_level&.undergraduate?
     else
       true
     end
+  end
+
+  def class_level_scope
+    case system_key
+    when 'department'
+      'graduate'
+    when 'major'
+      'undergraduate'
+    else
+      'all'
+    end
+  end
+
+  def self.map_department_answer(raw, choices: DEPARTMENT_CHOICES)
+    return nil if raw.nil?
+
+    if raw.is_a?(Hash)
+      hash = raw.stringify_keys.slice('choice', 'other')
+      return nil if hash['choice'].blank?
+
+      return hash
+    end
+
+    stripped = raw.to_s.strip
+    return nil if stripped.blank?
+
+    choice_list = Array(choices)
+    exact = choice_list.find { |choice| choice.casecmp?(stripped) }
+    return { 'choice' => exact } if exact
+
+    alias_key = stripped.downcase.gsub(/\s+/, ' ').strip
+    canonical = DEPARTMENT_CHOICE_ALIASES[alias_key]
+    return { 'choice' => canonical } if canonical.present? && choice_list.include?(canonical)
+
+    { 'choice' => 'Other', 'other' => stripped }
   end
 
   def default_value
