@@ -45,6 +45,18 @@ RSpec.describe ApplicationQuestionsController, type: :controller do
       expect(response.body).to include('application-question-sort')
       expect(response.body).to include(reorder_container_application_questions_path(container))
     end
+
+    it 'renders the collapsible application questions instructions when editable content exists' do
+      create(:editable_content, page: 'application_questions', section: 'instructions').tap do |record|
+        record.update!(content: 'About profile and system questions')
+      end
+
+      get :index, params: { container_id: container.id }
+
+      expect(response.body).to include('About application questions')
+      expect(response.body).to include('application-questions-instructions-help')
+      expect(response.body).to include('About profile and system questions')
+    end
   end
 
   describe 'GET #new' do

@@ -21,10 +21,10 @@ module ApplicationHelper
         content_tag(:i, '', class: 'bi bi-pencil')
       end
       # Combine the content and the edit link, marking it as HTML safe
-      safe_join([ content_html, edit_link ], ' ').html_safe
+      safe_join([ content_html, edit_link ], ' ')
     else
       # If the user doesn't have the role, just render the content
-      html_escape(content_html)
+      content_html
     end
   end
 
