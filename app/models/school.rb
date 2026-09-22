@@ -12,6 +12,12 @@
 #  id_unq_idx  (id) UNIQUE
 #
 class School < ApplicationRecord
+  RACKHAM_NAME = 'Rackham'
+
   validates :name, presence: true
   validates :id, uniqueness: true
+
+  def self.rackham
+    find_by(name: RACKHAM_NAME)
+  end
 end

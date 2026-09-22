@@ -401,4 +401,46 @@ RSpec.describe ApplicationQuestion do
       expect(degree_question.applies_to_class_level?(undergraduate)).to be(true)
     end
   end
+
+  describe 'department system question seeding' do
+    let(:department_question) { container.application_questions.find_by!(system_key: 'department') }
+    let(:major_question) { container.application_questions.find_by!(system_key: 'major') }
+    let(:school_question) { container.application_questions.find_by!(system_key: 'school') }
+
+    it 'seeds department as select_with_other with curated choices' do
+      expect(department_question.field_type).to eq('select_with_other')
+      expect(department_question.label).to eq('What is your Department')
+      expect(department_question.choice_list).to include('English Language and Literature', 'Other')
+    end
+
+    it 'seeds major with the updated label' do
+      expect(major_question.label).to eq('What is your Major')
+    end
+
+    it 'seeds school with graduate Rackham help text' do
+      expect(school_question.help_text).to include('usually Rackham')
+    end
+  end
+
+  describe '.map_department_answer' do
+    it 'maps exact and aliased free-text values onto curated choices' do
+      expect(described_class.map_department_answer('English')).to eq(
+        'choice' => 'English Language and Literature'
+      )
+      expect(described_class.map_department_answer("Helen Zell Writers' Program ")).to eq(
+        'choice' => "Helen Zell Writers' Program"
+      )
+    end
+
+    it 'maps unknown values to Other' do
+      expect(described_class.map_department_answer('Astrophysics')).to eq(
+        'choice' => 'Other',
+        'other' => 'Astrophysics'
+      )
+    end
+
+    it 'passes through select_with_other hashes' do
+      expect(described_class.map_department_answer({ 'choice' => 'Law' })).to eq({ 'choice' => 'Law' })
+    end
+  end
 end
