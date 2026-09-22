@@ -71,7 +71,9 @@ unless Rails.env.production? || ENV['SKIP_SEEDS']
                           { page: "applicant_dashboard", section: "inactivesubmission_summary",
                             content: ActionText::RichText.new(body: "Instructions for the inactivesubmission_summary") },
                           { page: "containers", section: "form_instructions",
-                            content: ActionText::RichText.new(body: "Instructions for the form_instructions") }
+                            content: ActionText::RichText.new(body: "Instructions for the form_instructions") },
+                          { page: "application_questions", section: "instructions",
+                            content: ActionText::RichText.new(body: "<p>Explain profile questions, dynamic system questions (including class-level fields such as Department and Major), and collection-specific custom questions.</p>") }
                         ])
 
   # Seed data for School
