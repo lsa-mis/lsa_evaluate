@@ -2,68 +2,105 @@
 <div id="<%= dom_id(container) %>" class="container" data-controller="modal">
   <div data-modal-target="mainContent">
     <div class="container-header mb-4">
-      <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
-        <h1 class="mb-0"><%= container.name %></h1>
+      <h1 class="mb-3"><%= container.name %></h1>
 
-        <div class="container-actions d-flex flex-wrap gap-2">
-          <% if policy(@container).update? %>
-            <%= link_to container_application_questions_path(@container),
-                        class: 'btn btn-sm btn-outline-primary' do %>
-              <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Application Questions
-            <% end %>
-            <%= link_to container_categories_path(@container),
-                        class: 'btn btn-sm btn-outline-primary' do %>
-              <i class="bi bi-tags me-1" aria-hidden="true"></i> Categories
-            <% end %>
-            <%= link_to container_awards_path(@container),
-                        class: 'btn btn-sm btn-outline-primary' do %>
-              <i class="bi bi-trophy me-1" aria-hidden="true"></i> Awards
-            <% end %>
+      <% show_configure = policy(@container).update? ||
+                          policy(@container).access_contest_instances? ||
+                          policy(@container).manage_judging? %>
+      <% show_review = policy(@container).applicants? ||
+                       policy(@container).reports? ||
+                       policy(@container).winners? %>
+
+      <% if show_configure || show_review %>
+        <div class="row g-3 mb-3">
+          <% if show_configure %>
+            <div class="<%= show_review ? 'col-lg-7' : 'col-12' %>">
+              <section class="border rounded p-3 h-100"
+                       aria-labelledby="collection-configuration-heading">
+                <h2 id="collection-configuration-heading" class="h6 text-uppercase text-muted mb-2">
+                  Configure collection
+                </h2>
+                <p class="small text-muted mb-3">
+                  Set up questions, categories, awards, and collection-wide contest settings.
+                </p>
+                <nav class="d-flex flex-wrap gap-2" aria-label="Configure collection">
+                  <% if policy(@container).update? %>
+                    <%= link_to container_application_questions_path(@container),
+                                class: 'btn btn-sm btn-outline-primary' do %>
+                      <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Application Questions
+                    <% end %>
+                    <%= link_to container_categories_path(@container),
+                                class: 'btn btn-sm btn-outline-primary' do %>
+                      <i class="bi bi-tags me-1" aria-hidden="true"></i> Categories
+                    <% end %>
+                    <%= link_to container_awards_path(@container),
+                                class: 'btn btn-sm btn-outline-primary' do %>
+                      <i class="bi bi-trophy me-1" aria-hidden="true"></i> Awards
+                    <% end %>
+                  <% end %>
+
+                  <% if policy(@container).access_contest_instances? %>
+                    <%= link_to new_container_bulk_contest_instance_activation_path(@container),
+                                class: 'btn btn-sm btn-outline-primary' do %>
+                      <i class="bi bi-toggle-on me-1" aria-hidden="true"></i> Bulk Activate Contest Instances
+                    <% end %>
+                  <% end %>
+
+                  <% if policy(@container).manage_judging? %>
+                    <%= link_to new_container_bulk_judging_window_path(@container),
+                                class: 'btn btn-sm btn-outline-primary' do %>
+                      <i class="bi bi-calendar-range me-1" aria-hidden="true"></i> Bulk Update Judging Windows
+                    <% end %>
+                  <% end %>
+
+                  <% if policy(@container).update? %>
+                    <%= link_to edit_container_path(@container),
+                                class: 'btn btn-sm btn-outline-primary' do %>
+                      <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Edit Collection Settings
+                    <% end %>
+                  <% end %>
+                </nav>
+              </section>
+            </div>
           <% end %>
 
-          <% if policy(@container).applicants? %>
-            <%= link_to container_applicants_path(@container),
-                        class: 'btn btn-sm btn-outline-primary' do %>
-              <i class="bi bi-people me-1" aria-hidden="true"></i> Applicants
-            <% end %>
-          <% end %>
+          <% if show_review %>
+            <div class="<%= show_configure ? 'col-lg-5' : 'col-12' %>">
+              <section class="border rounded p-3 h-100 bg-light"
+                       aria-labelledby="collection-activity-heading">
+                <h2 id="collection-activity-heading" class="h6 text-uppercase text-muted mb-2">
+                  Review activity
+                </h2>
+                <p class="small text-muted mb-3">
+                  See applicants, reports, and winners from this collection.
+                </p>
+                <nav class="d-flex flex-wrap gap-2" aria-label="Review activity">
+                  <% if policy(@container).applicants? %>
+                    <%= link_to container_applicants_path(@container),
+                                class: 'btn btn-sm btn-outline-secondary' do %>
+                      <i class="bi bi-people me-1" aria-hidden="true"></i> Applicants
+                    <% end %>
+                  <% end %>
 
-          <% if policy(@container).reports? %>
-            <%= link_to reports_container_path(@container),
-                        class: 'btn btn-sm btn-outline-primary' do %>
-              <i class="bi bi-download me-1" aria-hidden="true"></i> Generate Reports
-            <% end %>
-          <% end %>
+                  <% if policy(@container).reports? %>
+                    <%= link_to reports_container_path(@container),
+                                class: 'btn btn-sm btn-outline-secondary' do %>
+                      <i class="bi bi-download me-1" aria-hidden="true"></i> Generate Reports
+                    <% end %>
+                  <% end %>
 
-          <% if policy(@container).winners? %>
-            <%= link_to winners_container_path(@container),
-                        class: 'btn btn-sm btn-outline-primary' do %>
-              <i class="bi bi-award me-1" aria-hidden="true"></i> Winners
-            <% end %>
-          <% end %>
-
-          <% if policy(@container).access_contest_instances? %>
-            <%= link_to new_container_bulk_contest_instance_activation_path(@container),
-                        class: 'btn btn-sm btn-outline-primary' do %>
-              <i class="bi bi-toggle-on me-1" aria-hidden="true"></i> Bulk Activate Contest Instances
-            <% end %>
-          <% end %>
-
-          <% if policy(@container).manage_judging? %>
-            <%= link_to new_container_bulk_judging_window_path(@container),
-                        class: 'btn btn-sm btn-outline-primary' do %>
-              <i class="bi bi-calendar-range me-1" aria-hidden="true"></i> Bulk Update Judging Windows
-            <% end %>
-          <% end %>
-
-          <% if policy(@container).update? %>
-            <%= link_to edit_container_path(@container),
-                        class: 'btn btn-sm btn-outline-primary' do %>
-              <i class="bi bi-pencil-square me-1" aria-hidden="true"></i> Edit Collection Settings
-            <% end %>
+                  <% if policy(@container).winners? %>
+                    <%= link_to winners_container_path(@container),
+                                class: 'btn btn-sm btn-outline-secondary' do %>
+                      <i class="bi bi-award me-1" aria-hidden="true"></i> Winners
+                    <% end %>
+                  <% end %>
+                </nav>
+              </section>
+            </div>
           <% end %>
         </div>
-      </div>
+      <% end %>
 
       <div class="container-info">
         <div class="mb-3">
