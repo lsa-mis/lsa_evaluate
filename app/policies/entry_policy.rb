@@ -9,6 +9,7 @@ class EntryPolicy < ApplicationPolicy
 
   # Owners may edit while the contest is open; soft-deleted entries stay locked.
   # Axis Mundi can always update (e.g. to correct answers after the window closes).
+  # Controllers must target record.profile (not current_user.profile) for that path.
   def update?
     return true if axis_mundi?
     return false unless record.profile&.user == user
