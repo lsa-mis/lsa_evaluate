@@ -42,6 +42,13 @@
             <% end %>
           <% end %>
 
+          <% if policy(@container).access_contest_instances? %>
+            <%= link_to new_container_bulk_contest_instance_activation_path(@container),
+                        class: 'btn btn-sm btn-outline-primary' do %>
+              <i class="bi bi-toggle-on me-1" aria-hidden="true"></i> Bulk Activate Contest Instances
+            <% end %>
+          <% end %>
+
           <% if policy(@container).manage_judging? %>
             <%= link_to new_container_bulk_judging_window_path(@container),
                         class: 'btn btn-sm btn-outline-primary' do %>

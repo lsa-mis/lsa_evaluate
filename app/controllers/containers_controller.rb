@@ -17,6 +17,7 @@ class ContainersController < ApplicationController
     @container_contest_descriptions = @container.contest_descriptions
                                                 .includes(contest_instances: :entries)
                                                 .reorder('contest_descriptions.name ASC')
+    @bulk_activation_report = session.delete(:bulk_activation_report)
   end
 
   def new

@@ -25,10 +25,13 @@ class BulkContestInstancesController < ApplicationController
       return render :new, status: :unprocessable_entity
     end
 
-    success = create_contest_instances
+    success, season_date_open = create_contest_instances
 
     if success
-      redirect_to container_path(@container), notice: 'Contest instances were successfully created.'
+      redirect_to new_container_bulk_contest_instance_activation_path(
+        @container,
+        date_open: season_date_open&.iso8601
+      ), notice: 'Contest instances were successfully created. Review and activate the new season when ready.'
     else
       setup_error_for_failed_creation
       render :new, status: :unprocessable_entity
@@ -47,6 +50,7 @@ class BulkContestInstancesController < ApplicationController
 
   def create_contest_instances
     success = true
+    season_date_open = nil
     description_ids = params[:contest_description_ids]&.keys || []
     selected_descriptions = @container.contest_descriptions.where(id: description_ids)
 
@@ -85,6 +89,8 @@ class BulkContestInstancesController < ApplicationController
           raise ActiveRecord::Rollback
         end
 
+        season_date_open ||= new_instance.date_open
+
         if last_instance
           last_instance.application_question_requirements.find_each do |requirement|
             new_instance.application_question_requirements.create!(
@@ -96,7 +102,7 @@ class BulkContestInstancesController < ApplicationController
         end
       end
     end
-    success
+    [success, season_date_open]
   end
 
   def setup_error_for_missing_dates

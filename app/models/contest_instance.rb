@@ -114,6 +114,15 @@ class ContestInstance < ApplicationRecord
     where(contest_description_id: contest_description_id)
   }
 
+  scope :inactive, -> { where(active: false) }
+  scope :not_archived, -> { where(archived: false) }
+  scope :for_date_open, ->(date_open) { where(date_open: date_open) }
+  scope :newest_first, -> { order(created_at: :desc, id: :desc) }
+
+  scope :for_container, ->(container) {
+    joins(:contest_description).where(contest_descriptions: { container_id: container.id })
+  }
+
   def open?
     active && Time.current.between?(date_open, date_closed)
   end

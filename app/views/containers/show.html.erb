@@ -3,6 +3,9 @@
     <%= link_to "Return to Collections", containers_path, class: "link_to text-nowrap" %>
   </div>
 </div>
+<% if @bulk_activation_report.present? %>
+  <%= render 'containers/bulk_activation_report', report: @bulk_activation_report %>
+<% end %>
 <% if (content = render_editable_content('container', 'information')) %>
   <%= render 'shared/collapsible_instructions',
              heading: 'Collection instructions',
