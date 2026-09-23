@@ -33,9 +33,15 @@ class JudgingRoundDateUpdater
 
     cascaded = []
     ActiveRecord::Base.transaction do
-      plan[:affected_rounds].each do |change|
-        change.round.update!(change.field => change.to)
-        cascaded << change if change.round.id != @round.id
+      # Apply all field changes for a round in one update so validations
+      # see the full intended state (e.g. fixing start_date while also
+      # changing end_date). Field-by-field updates re-validate against
+      # stale attributes and can falsely fail.
+      changes_by_round = plan[:affected_rounds].group_by(&:round)
+      changes_by_round.each do |round, changes|
+        attributes = changes.to_h { |change| [ change.field, change.to ] }
+        round.update!(attributes)
+        cascaded.concat(changes) if round.id != @round.id
       end
     end
 

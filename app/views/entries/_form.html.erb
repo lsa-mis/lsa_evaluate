@@ -52,7 +52,7 @@
         Changing class level updates your profile and which contests you see on your dashboard.
       </p>
       <%= select_tag 'entry[confirmed_class_level_id]',
-                     options_from_collection_for_select(ClassLevel.all, :id, :name, @confirmed_class_level_id || current_user.profile.class_level_id),
+                     options_from_collection_for_select(ClassLevel.all, :id, :name, @confirmed_class_level_id || @entry.profile&.class_level_id),
                      class: 'form-select',
                      required: true,
                      data: {

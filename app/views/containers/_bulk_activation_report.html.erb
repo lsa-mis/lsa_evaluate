@@ -1,0 +1,77 @@
+<%# locals: report %>
+<% report = report.with_indifferent_access %>
+<div class="alert alert-secondary" role="status">
+  <h2 class="h5">Bulk activation report</h2>
+
+  <% if report[:activated].present? %>
+    <p class="mb-1 fw-semibold">Activated (<%= report[:activated].size %>)</p>
+    <ul>
+      <% report[:activated].each do |entry| %>
+        <li>
+          <%= entry['contest_name'] || entry[:contest_name] %>
+          (instance #<%= entry['instance_id'] || entry[:instance_id] %>)
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if report[:deactivated].present? %>
+    <p class="mb-1 fw-semibold">Deactivated predecessors (<%= report[:deactivated].size %>)</p>
+    <ul>
+      <% report[:deactivated].each do |entry| %>
+        <li>
+          <%= entry['contest_name'] || entry[:contest_name] %>
+          (instance #<%= entry['instance_id'] || entry[:instance_id] %>)
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if report[:rounds_completed].present? %>
+    <p class="mb-1 fw-semibold">Judging rounds completed (<%= report[:rounds_completed].size %>)</p>
+    <ul>
+      <% report[:rounds_completed].each do |entry| %>
+        <li>
+          <%= entry['contest_name'] || entry[:contest_name] %>:
+          round <%= entry['round_number'] || entry[:round_number] %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if report[:unchanged].present? %>
+    <p class="mb-1 fw-semibold">Already active (<%= report[:unchanged].size %>)</p>
+    <ul>
+      <% report[:unchanged].each do |entry| %>
+        <li>
+          <%= entry['contest_name'] || entry[:contest_name] %>
+          — <%= entry['reason'] || entry[:reason] %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if report[:skipped].present? %>
+    <p class="mb-1 fw-semibold">Skipped (<%= report[:skipped].size %>)</p>
+    <ul>
+      <% report[:skipped].each do |entry| %>
+        <li>
+          <%= entry['contest_name'] || entry[:contest_name] %>
+          — <%= entry['reason'] || entry[:reason] %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+
+  <% if report[:failed].present? %>
+    <p class="mb-1 fw-semibold text-danger">Failed (<%= report[:failed].size %>)</p>
+    <ul>
+      <% report[:failed].each do |entry| %>
+        <li>
+          <%= entry['contest_name'] || entry[:contest_name] %>:
+          <%= Array(entry['errors'] || entry[:errors]).join(', ') %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

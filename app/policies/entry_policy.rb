@@ -7,6 +7,17 @@ class EntryPolicy < ApplicationPolicy
     private_access_allowed?
   end
 
+  # Owners may edit while the contest is open; soft-deleted entries stay locked.
+  # Axis Mundi can always update (e.g. to correct answers after the window closes).
+  # Controllers must target record.profile (not current_user.profile) for that path.
+  def update?
+    return true if axis_mundi?
+    return false unless record.profile&.user == user
+    return false if record.deleted?
+
+    record.contest_instance.open?
+  end
+
   def soft_delete?
     (record.profile.user == user && record.contest_instance.open?) || axis_mundi?
   end

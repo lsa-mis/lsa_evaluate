@@ -78,6 +78,48 @@ RSpec.describe "Containers", type: :request do
         get container_path(container)
 
         expect(response).to have_http_status(:ok)
+
+        page = Nokogiri::HTML(response.body)
+        configure_section = page.at_css('section[aria-labelledby="collection-configuration-heading"]')
+        review_section = page.at_css('section[aria-labelledby="collection-activity-heading"]')
+        configure_nav = page.at_css('nav[aria-label="Configure collection"]')
+        review_nav = page.at_css('nav[aria-label="Review activity"]')
+
+        expect(page.at_css('#collection-configuration-heading').text).to include('Configure collection')
+        expect(page.at_css('#collection-activity-heading').text).to include('Review activity')
+        expect(configure_section).to be_present
+        expect(review_section).to be_present
+        expect(review_section['class']).to include('bg-light')
+        expect(configure_section.at_css('p').text).to include(
+          'Set up questions, categories, awards, and collection-wide contest settings.'
+        )
+        expect(review_section.at_css('p').text).to include(
+          'See applicants, reports, and winners from this collection.'
+        )
+        expect(configure_nav).to be_present
+        expect(review_nav).to be_present
+
+        configure_labels = [
+          'Application Questions',
+          'Categories',
+          'Awards',
+          'Bulk Activate Contest Instances',
+          'Bulk Update Judging Windows',
+          'Edit Collection Settings'
+        ]
+        configure_labels.each do |label|
+          link = configure_nav.css('a').find { |a| a.text.include?(label) }
+          expect(link).to be_present, "expected configure nav to include #{label}"
+          expect(link['class']).to include('btn-outline-primary')
+        end
+
+        review_labels = ['Applicants', 'Generate Reports', 'Winners']
+        review_labels.each do |label|
+          link = review_nav.css('a').find { |a| a.text.include?(label) }
+          expect(link).to be_present, "expected review nav to include #{label}"
+          expect(link['class']).to include('btn-outline-secondary')
+        end
+
         expect(response.body).to include('Application Questions')
         expect(response.body).to include('Generate Reports')
         expect(response.body).to include(reports_container_path(container))

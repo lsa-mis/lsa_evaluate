@@ -1,0 +1,120 @@
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Bulk Activate Contest Instances</h1>
+    <%= link_to 'Return to Collection', container_path(@container), class: 'link_to' %>
+  </div>
+
+  <% if @seasons.empty? && @season_instances.empty? %>
+    <div class="alert alert-info">
+      <p class="mb-0">
+        There are no inactive contest instances available to activate.
+        Create a new season with
+        <%= link_to 'bulk create contest instances', new_container_bulk_contest_instance_path(@container) %>
+        first, then return here when you are ready to activate.
+      </p>
+    </div>
+  <% else %>
+    <%= simple_form_for(
+          @bulk_activation,
+          url: container_bulk_contest_instance_activations_path(@container),
+          method: :post,
+          as: :bulk_contest_instance_activation_form
+        ) do |f| %>
+
+      <div class="alert alert-warning">
+        <p class="mb-2">
+          Activating a season will make the <strong>newest</strong> instance the only active
+          instance for each contest. Any currently active predecessor will be set inactive,
+          its entry window will close, and its incomplete judging rounds will be marked completed.
+        </p>
+        <p class="mb-0">
+          Awards on predecessor instances are not changed. Finish judging and awards on the
+          current season before activating when possible.
+        </p>
+      </div>
+
+      <div class="mb-4">
+        <h3>Select season by open date</h3>
+        <p class="text-muted small">
+          Instances in a season share the same open date. Close dates may differ.
+        </p>
+
+        <% if @seasons.any? %>
+          <div class="mb-3">
+            <%= f.label :date_open, 'Season open date', class: 'form-label' %>
+            <%= f.select :date_open,
+                         options_for_select(
+                           @seasons.map { |season|
+                             label = "#{l(season.date_open, format: :long)} (#{pluralize(season.description_count, 'contest')}"
+                             if season.earliest_close.to_i == season.latest_close.to_i
+                               label += "; closes #{l(season.earliest_close, format: :short)}"
+                             else
+                               label += "; closes #{l(season.earliest_close, format: :short)} – #{l(season.latest_close, format: :short)}"
+                             end
+                             label += ')'
+                             [label, season.date_open.iso8601]
+                           },
+                           @bulk_activation.parsed_date_open&.iso8601
+                         ),
+                         { include_blank: 'Select a season…' },
+                         {
+                           class: 'form-select',
+                           required: true,
+                           onchange: "window.location = '#{new_container_bulk_contest_instance_activation_path(@container)}?date_open=' + encodeURIComponent(this.value)"
+                         } %>
+          </div>
+        <% elsif @bulk_activation.date_open.present? %>
+          <%= f.hidden_field :date_open %>
+          <p class="mb-0">
+            Season open date:
+            <strong><%= l(@bulk_activation.parsed_date_open, format: :long) if @bulk_activation.parsed_date_open %></strong>
+          </p>
+        <% end %>
+      </div>
+
+      <% if @season_instances.any? %>
+        <div class="mb-4">
+          <h3>Instances to activate</h3>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle">
+              <thead>
+                <tr>
+                  <th>Contest</th>
+                  <th>Open</th>
+                  <th>Close</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @season_instances.each do |instance| %>
+                  <tr>
+                    <td><%= instance.contest_description.name %></td>
+                    <td><%= l(instance.date_open, format: :short) %></td>
+                    <td><%= l(instance.date_closed, format: :short) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="form-check mb-4">
+          <%= f.check_box :confirmed, class: 'form-check-input', id: 'bulk_activation_confirmed' %>
+          <%= f.label :confirmed,
+                      'I understand this will activate the newest instance for each contest and close activity on any predecessor instance.',
+                      class: 'form-check-label',
+                      for: 'bulk_activation_confirmed' %>
+        </div>
+
+        <div class="mt-4">
+          <%= f.button :submit, 'Activate season', class: 'btn btn-primary' %>
+          <%= link_to 'Skip / return to collection', container_path(@container), class: 'btn btn-link text-danger' %>
+        </div>
+      <% elsif @bulk_activation.date_open.present? %>
+        <div class="alert alert-info">
+          No inactive instances were found for the selected open date.
+        </div>
+        <%= link_to 'Return to Collection', container_path(@container), class: 'btn btn-link' %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
