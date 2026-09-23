@@ -17,6 +17,7 @@ class ContainersController < ApplicationController
     @container_contest_descriptions = @container.contest_descriptions
                                                 .includes(contest_instances: :entries)
                                                 .reorder('contest_descriptions.name ASC')
+    @bulk_activation_report = load_bulk_activation_report
   end
 
   def new
@@ -196,5 +197,14 @@ class ContainersController < ApplicationController
   def load_permission_assignments
     @assignments = @container.collection_staff_assignments
     @assignment = @container.assignments.build
+  end
+
+  def load_bulk_activation_report
+    key = session.delete(:bulk_activation_report_key)
+    return if key.blank?
+
+    report = Rails.cache.read(key)
+    Rails.cache.delete(key)
+    report
   end
 end
