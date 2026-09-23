@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class BulkContestInstanceActivationsController < ApplicationController
+  REPORT_CACHE_TTL = 15.minutes
+
   before_action :set_container
   before_action :authorize_container_access
 
@@ -13,12 +15,14 @@ class BulkContestInstanceActivationsController < ApplicationController
   def create
     @bulk_activation = BulkContestInstanceActivationForm.new(form_params)
     @seasons = BulkContestInstanceActivator.available_seasons_for(@container)
-    @season_instances = season_instances_for(@bulk_activation.parsed_date_open)
 
     unless @bulk_activation.valid?
+      @season_instances = season_instances_for(@bulk_activation.parsed_date_open)
       flash.now[:alert] = @bulk_activation.errors.full_messages.to_sentence
       return render :new, status: :unprocessable_entity
     end
+
+    @season_instances = season_instances_for(@bulk_activation.parsed_date_open)
 
     if @season_instances.empty?
       flash.now[:alert] = 'No inactive contest instances found for the selected open date.'
@@ -30,7 +34,7 @@ class BulkContestInstanceActivationsController < ApplicationController
       date_open: @bulk_activation.parsed_date_open
     ).call
 
-    session[:bulk_activation_report] = serialize_report(result)
+    store_activation_report(serialize_report(result))
 
     if result.failed.any? && result.activated.empty? && result.unchanged.empty?
       flash[:alert] = 'Bulk activation could not be completed. See the report for details.'
@@ -73,6 +77,12 @@ class BulkContestInstanceActivationsController < ApplicationController
                    .for_date_open(date_open)
                    .includes(:contest_description)
                    .order('contest_descriptions.name')
+  end
+
+  def store_activation_report(report)
+    key = "bulk_activation_report/#{current_user.id}/#{SecureRandom.uuid}"
+    Rails.cache.write(key, report, expires_in: REPORT_CACHE_TTL)
+    session[:bulk_activation_report_key] = key
   end
 
   def serialize_report(result)

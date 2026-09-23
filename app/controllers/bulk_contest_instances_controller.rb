@@ -54,6 +54,10 @@ class BulkContestInstancesController < ApplicationController
     description_ids = params[:contest_description_ids]&.keys || []
     selected_descriptions = @container.contest_descriptions.where(id: description_ids)
 
+    if selected_descriptions.empty?
+      return [false, nil]
+    end
+
     ActiveRecord::Base.transaction do
       selected_descriptions.each do |description|
         last_instance = description.contest_instances.order(created_at: :desc).first

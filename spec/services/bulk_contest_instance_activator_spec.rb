@@ -110,7 +110,7 @@ RSpec.describe BulkContestInstanceActivator do
       expect(inactive_description.contest_instances.where(active: true)).to be_empty
     end
 
-    it 'records unchanged when the newest instance is already active' do
+    it 'records unchanged when the season instance is already active' do
       predecessor.update!(active: false)
       newest.update!(active: true)
 
@@ -118,6 +118,24 @@ RSpec.describe BulkContestInstanceActivator do
 
       expect(result.unchanged.map { |entry| entry[:contest_instance] }).to include(newest)
       expect(result.activated).to be_empty
+    end
+
+    it 'activates the selected season instance, not a newer instance with a different open date' do
+      later_open = season_open + 1.year
+      later_instance = create(
+        :contest_instance,
+        contest_description: description,
+        active: false,
+        date_open: later_open,
+        date_closed: later_open + 1.month
+      )
+
+      result = described_class.new(container: container, date_open: season_open).call
+
+      expect(result.failed).to be_empty
+      expect(newest.reload).to be_active
+      expect(later_instance.reload).not_to be_active
+      expect(predecessor.reload).not_to be_active
     end
 
     it 'activates future-dated instances' do

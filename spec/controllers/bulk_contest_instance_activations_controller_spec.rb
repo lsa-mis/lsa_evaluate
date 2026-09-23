@@ -27,6 +27,14 @@ RSpec.describe BulkContestInstanceActivationsController, type: :controller do
     )
   end
 
+  around do |example|
+    original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    example.run
+  ensure
+    Rails.cache = original_cache
+  end
+
   before { sign_in user }
 
   describe 'GET #new' do
@@ -61,11 +69,26 @@ RSpec.describe BulkContestInstanceActivationsController, type: :controller do
       expect(newest.reload).to be_active
       expect(predecessor.reload).not_to be_active
 
-      report = session[:bulk_activation_report]
+      report_key = session[:bulk_activation_report_key]
+      expect(report_key).to be_present
+      report = Rails.cache.read(report_key)
       expect(report).to be_present
       activated = report.with_indifferent_access[:activated]
       expect(activated).to be_present
       expect(activated.first['contest_name']).to eq(contest_description.name)
+    end
+
+    it 'rejects malformed season dates without raising' do
+      post :create, params: {
+        container_id: container.id,
+        bulk_contest_instance_activation_form: {
+          date_open: '2026-99-99',
+          confirmed: '1'
+        }
+      }
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(newest.reload).not_to be_active
     end
 
     it 'requires confirmation' do

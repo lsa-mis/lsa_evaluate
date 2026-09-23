@@ -17,6 +17,14 @@ RSpec.describe 'Bulk Contest Instance Activation', type: :feature do
     )
   end
 
+  around do |example|
+    original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    example.run
+  ensure
+    Rails.cache = original_cache
+  end
+
   before do
     create(:assignment, container: container, user: admin, role: admin_role)
     login_as admin

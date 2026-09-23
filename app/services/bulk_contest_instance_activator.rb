@@ -76,22 +76,27 @@ class BulkContestInstanceActivator
       return
     end
 
-    target = newest_instance_for(description)
-    if target.nil?
-      result.skipped << skip_entry(description, 'No non-archived contest instance found')
-      return
-    end
-
-    if target.active?
-      result.unchanged << {
-        contest_description: description,
-        contest_instance: target,
-        reason: 'Newest instance is already active'
-      }
-      return
-    end
-
     ActiveRecord::Base.transaction do
+      description.lock!
+
+      target = season_target_for(description)
+      if target.nil?
+        result.skipped << skip_entry(description, 'No non-archived contest instance found for this season')
+        next
+      end
+
+      # Lock sibling rows so concurrent activations serialize on the same description.
+      description.contest_instances.lock.load
+
+      if target.active?
+        result.unchanged << {
+          contest_description: description,
+          contest_instance: target,
+          reason: 'Season instance is already active'
+        }
+        next
+      end
+
       predecessor = description.contest_instances
                                .where(active: true)
                                .where.not(id: target.id)
@@ -123,8 +128,12 @@ class BulkContestInstanceActivator
     result.failed << failure_entry(description, [e.message])
   end
 
-  def newest_instance_for(description)
-    description.contest_instances.not_archived.newest_first.first
+  def season_target_for(description)
+    description.contest_instances
+               .not_archived
+               .for_date_open(@date_open)
+               .newest_first
+               .first
   end
 
   def complete_judging_rounds!(predecessor)
