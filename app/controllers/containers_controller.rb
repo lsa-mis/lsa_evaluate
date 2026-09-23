@@ -200,11 +200,19 @@ class ContainersController < ApplicationController
   end
 
   def load_bulk_activation_report
-    key = session.delete(:bulk_activation_report_key)
+    key = session[:bulk_activation_report_key]
     return if key.blank?
 
     report = Rails.cache.read(key)
+    if report.blank?
+      session.delete(:bulk_activation_report_key)
+      return
+    end
+
+    return unless report['container_id'].to_i == @container.id
+
+    session.delete(:bulk_activation_report_key)
     Rails.cache.delete(key)
-    report
+    report.except('container_id')
   end
 end

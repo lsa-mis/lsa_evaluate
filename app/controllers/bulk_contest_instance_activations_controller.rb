@@ -40,8 +40,10 @@ class BulkContestInstanceActivationsController < ApplicationController
       flash[:alert] = 'Bulk activation could not be completed. See the report for details.'
     elsif result.failed.any?
       flash[:alert] = 'Bulk activation completed with some failures. See the report for details.'
-    else
+    elsif result.activated.any?
       flash[:notice] = 'Contest instances were successfully activated.'
+    else
+      flash[:alert] = 'No contest instances were activated. See the report for details.'
     end
 
     redirect_to container_path(@container)
@@ -80,8 +82,12 @@ class BulkContestInstanceActivationsController < ApplicationController
   end
 
   def store_activation_report(report)
-    key = "bulk_activation_report/#{current_user.id}/#{SecureRandom.uuid}"
-    Rails.cache.write(key, report, expires_in: REPORT_CACHE_TTL)
+    key = "bulk_activation_report/#{current_user.id}/#{@container.id}/#{SecureRandom.uuid}"
+    Rails.cache.write(
+      key,
+      report.merge('container_id' => @container.id),
+      expires_in: REPORT_CACHE_TTL
+    )
     session[:bulk_activation_report_key] = key
   end
 
