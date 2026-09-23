@@ -94,5 +94,27 @@ RSpec.describe JudgingRoundDateUpdater do
       expect(result.success).to be false
       expect(result.errors).to include('End date is invalid')
     end
+
+    it 'can fix a round one start_date that is before contest close in a single update' do
+      # Simulate a round whose start predates contest close (e.g. close date
+      # was moved later after the round was created). Updating end_date first
+      # alone would re-validate the stale start_date and fail.
+      round_one.update_columns(
+        start_date: Time.zone.parse('2026-02-15 00:00'),
+        end_date: Time.zone.parse('2026-03-15 17:00')
+      )
+
+      result = described_class.new(
+        round_one,
+        end_date: '2026-03-15 12:00',
+        start_date: '2026-03-10 00:00',
+        update_start_date: true,
+        cascade: false
+      ).call
+
+      expect(result.success).to be(true), -> { result.errors.inspect }
+      expect(round_one.reload.start_date).to eq(Time.zone.parse('2026-03-10 00:00'))
+      expect(round_one.end_date).to eq(Time.zone.parse('2026-03-15 12:00'))
+    end
   end
 end
