@@ -338,6 +338,34 @@ RSpec.describe EntriesController, type: :controller do
       expect(entry.entry_answers.find_by!(application_question: pen_name_question).value).to eq('Old Pen')
     end
 
+    it 'ignores contest_instance_id changes on update' do
+      other_description = create(:contest_description, :active, container: container)
+      other_contest = create(:contest_instance, contest_description: other_description).tap do |ci|
+        ci.class_levels = [ undergraduate, graduate ]
+        ci.save!
+      end
+
+      patch :update, params: {
+        id: entry.id,
+        entry: {
+          title: 'Still Same Contest',
+          contest_instance_id: other_contest.id,
+          category_id: category.id,
+          confirmed_class_level_id: undergraduate.id
+        },
+        entry_answers: {
+          pen_name_question.id => 'New Pen',
+          major_question.id => 'History'
+        }
+      }
+
+      entry.reload
+      expect(response).to redirect_to(applicant_dashboard_path)
+      expect(entry.title).to eq('Still Same Contest')
+      expect(entry.contest_instance_id).to eq(contest_instance.id)
+      expect(entry.contest_instance_id).not_to eq(other_contest.id)
+    end
+
     it 'denies updates from unrelated users' do
       sign_in create(:user)
 
@@ -347,6 +375,26 @@ RSpec.describe EntriesController, type: :controller do
 
       expect(flash[:alert]).to eq('!!! Not authorized !!!')
       expect(entry.reload.title).to eq('Original Title')
+    end
+
+    it 'updates the entry owner profile when axis mundi edits after close' do
+      contest_instance.update!(date_open: 2.days.ago, date_closed: 1.day.ago)
+      admin = create(:user, :axis_mundi)
+      admin_profile = create(:profile, user: admin, class_level: undergraduate)
+      sign_in admin
+
+      patch :update, params: update_params(
+        answers: {
+          pen_name_question.id => 'Admin Corrected',
+          department_question.id => { 'choice' => 'English Language and Literature' }
+        },
+        class_level_id: graduate.id
+      )
+
+      expect(response).to redirect_to(applicant_dashboard_path)
+      expect(profile.reload.class_level_id).to eq(graduate.id)
+      expect(admin_profile.reload.class_level_id).to eq(undergraduate.id)
+      expect(entry.entry_answers.find_by!(application_question: pen_name_question).value).to eq('Admin Corrected')
     end
   end
 

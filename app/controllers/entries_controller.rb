@@ -55,7 +55,7 @@ class EntriesController < ApplicationController
       raise ActiveRecord::Rollback unless valid_answers && @entry.save
 
       persist_entry_answers!(validator.built_answers)
-      ProfileCampusSync.call(profile: current_user.profile, answers: validator.built_answers)
+      ProfileCampusSync.call(profile: entry_applicant_profile, answers: validator.built_answers)
       saved = true
     end
 
@@ -81,10 +81,10 @@ class EntriesController < ApplicationController
       )
       valid_answers = validator.call
 
-      raise ActiveRecord::Rollback unless valid_answers && @entry.update(entry_params)
+      raise ActiveRecord::Rollback unless valid_answers && @entry.update(entry_update_params)
 
       persist_entry_answers!(validator.built_answers)
-      ProfileCampusSync.call(profile: current_user.profile, answers: validator.built_answers)
+      ProfileCampusSync.call(profile: entry_applicant_profile, answers: validator.built_answers)
       saved = true
     end
 
@@ -222,6 +222,15 @@ class EntriesController < ApplicationController
     )
   end
 
+  # Contest membership is fixed after create. Allowing contest_instance_id on
+  # update would let an owner reassign an open entry onto another contest
+  # without create-equivalent eligibility / private-access checks.
+  def entry_update_params
+    params.require(:entry).permit(
+      :title, :category_id, :entry_file, :confirmed_class_level_id
+    )
+  end
+
   def award_outcome_params
     params.require(:entry).permit(:award_status, :placement).tap do |permitted|
       permitted[:placement] = nil if permitted[:placement].blank?
@@ -237,17 +246,24 @@ class EntriesController < ApplicationController
     @catalog_awards = @container.awards.active.ordered
   end
 
+  # Prefer the entry owner's profile so Axis Mundi (or other non-owner editors)
+  # do not read/write their own profile when correcting an applicant entry.
+  def entry_applicant_profile
+    @entry.profile
+  end
+
   def prepare_application_questions
     return unless @entry&.contest_instance
 
+    profile = entry_applicant_profile
     @effective_questions = EffectiveApplicationQuestions.for(@entry.contest_instance)
     @prefill_values = EntryAnswerDisplayValues.for(
-      profile: current_user.profile,
+      profile: profile,
       questions: @effective_questions.map(&:question),
       submitted_answers: params[:entry_answers]
     )
     @confirmed_class_level_id = params.dig(:entry, :confirmed_class_level_id).presence ||
-                                current_user.profile.class_level_id
+                                profile.class_level_id
   end
 
   def update_confirmed_class_level!
@@ -258,7 +274,8 @@ class EntriesController < ApplicationController
     end
 
     # Reload profile so an in-memory built entry is not validated during update.
-    profile = Profile.find(current_user.profile.id)
+    # Always target the entry owner's profile — not the signed-in editor's.
+    profile = Profile.find(entry_applicant_profile.id)
     return if profile.class_level_id.to_s == class_level_id.to_s
 
     unless profile.update(class_level_id: class_level_id)
@@ -269,8 +286,10 @@ class EntriesController < ApplicationController
     # Keep request-scoped profile copies in sync. On update, @entry.profile is a
     # different AR instance than current_user.profile; without this, answer
     # validation still sees the previous class level.
-    current_user.profile.class_level_id = profile.class_level_id
-    @entry.profile.class_level_id = profile.class_level_id if @entry.profile
+    @entry.profile.class_level_id = profile.class_level_id
+    if current_user.profile&.id == profile.id
+      current_user.profile.class_level_id = profile.class_level_id
+    end
   end
 
   def persist_entry_answers!(built_answers)
