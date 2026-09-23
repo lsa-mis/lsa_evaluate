@@ -266,7 +266,11 @@ class EntriesController < ApplicationController
       raise ActiveRecord::Rollback
     end
 
+    # Keep request-scoped profile copies in sync. On update, @entry.profile is a
+    # different AR instance than current_user.profile; without this, answer
+    # validation still sees the previous class level.
     current_user.profile.class_level_id = profile.class_level_id
+    @entry.profile.class_level_id = profile.class_level_id if @entry.profile
   end
 
   def persist_entry_answers!(built_answers)

@@ -222,6 +222,134 @@ RSpec.describe EntriesController, type: :controller do
     end
   end
 
+  describe 'PATCH #update' do
+    let(:undergraduate) { create(:class_level, name: 'First year') }
+    let(:graduate) { create(:class_level, name: 'Graduate') }
+    let(:profile) { create(:profile, class_level: undergraduate) }
+    let(:user) { profile.user }
+    let(:container) { create(:container) }
+    let(:contest_description) { create(:contest_description, :active, container: container) }
+    let(:contest_instance) do
+      create(:contest_instance, contest_description: contest_description).tap do |ci|
+        ci.class_levels = [ undergraduate, graduate ]
+        ci.save!
+      end
+    end
+    let(:category) { contest_instance.categories.first }
+    let(:pen_name_question) { container.application_questions.find_by!(system_key: 'pen_name') }
+    let(:major_question) { container.application_questions.find_by!(system_key: 'major') }
+    let(:department_question) { container.application_questions.find_by!(system_key: 'department') }
+    let(:entry) do
+      create(:entry, profile: profile, contest_instance: contest_instance, category: category, title: 'Original Title')
+    end
+
+    before do
+      ApplicationQuestionRequirement.create!(
+        application_question: pen_name_question,
+        requireable: contest_instance,
+        status: 'required'
+      )
+      ApplicationQuestionRequirement.create!(
+        application_question: major_question,
+        requireable: contest_instance,
+        status: 'required'
+      )
+      ApplicationQuestionRequirement.create!(
+        application_question: department_question,
+        requireable: contest_instance,
+        status: 'required'
+      )
+      EntryAnswer.create!(entry: entry, application_question: pen_name_question, value: 'Old Pen')
+      EntryAnswer.create!(entry: entry, application_question: major_question, value: 'English')
+      sign_in user
+    end
+
+    def update_params(answers:, class_level_id: undergraduate.id, title: 'Revised Title')
+      {
+        id: entry.id,
+        entry: {
+          title: title,
+          contest_instance_id: contest_instance.id,
+          category_id: category.id,
+          confirmed_class_level_id: class_level_id
+        },
+        entry_answers: answers
+      }
+    end
+
+    it 'updates the entry title and upserts application answers' do
+      patch :update, params: update_params(
+        answers: {
+          pen_name_question.id => 'New Pen',
+          major_question.id => 'History'
+        }
+      )
+
+      expect(response).to redirect_to(applicant_dashboard_path)
+      expect(entry.reload.title).to eq('Revised Title')
+      expect(entry.entry_answers.find_by!(application_question: pen_name_question).value).to eq('New Pen')
+      expect(entry.entry_answers.find_by!(application_question: major_question).value).to eq('History')
+      expect(entry.entry_answers.count).to eq(2)
+    end
+
+    it 'updates the confirmed class level on the profile' do
+      patch :update, params: update_params(
+        answers: {
+          pen_name_question.id => 'Poet',
+          department_question.id => { 'choice' => 'English Language and Literature' }
+        },
+        class_level_id: graduate.id
+      )
+
+      expect(response).to redirect_to(applicant_dashboard_path)
+      expect(profile.reload.class_level_id).to eq(graduate.id)
+      expect(entry.entry_answers.find_by(application_question: department_question).value).to eq(
+        { 'choice' => 'English Language and Literature' }
+      )
+    end
+
+    it 'does not overwrite prior non-applicable answers with nil when class level changes' do
+      EntryAnswer.create!(
+        entry: entry,
+        application_question: department_question,
+        value: { 'choice' => 'History' }
+      )
+
+      patch :update, params: update_params(
+        answers: {
+          pen_name_question.id => 'Still Undergrad',
+          major_question.id => 'Philosophy'
+        },
+        class_level_id: undergraduate.id
+      )
+
+      expect(response).to redirect_to(applicant_dashboard_path)
+      expect(entry.entry_answers.find_by!(application_question: department_question).value).to eq(
+        { 'choice' => 'History' }
+      )
+      expect(entry.entry_answers.find_by!(application_question: major_question).value).to eq('Philosophy')
+    end
+
+    it 'does not update the entry when a required answer is missing' do
+      patch :update, params: update_params(answers: { pen_name_question.id => 'Lonely Pen' })
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(entry.reload.title).to eq('Original Title')
+      expect(entry.entry_answers.find_by!(application_question: pen_name_question).value).to eq('Old Pen')
+    end
+
+    it 'denies updates from unrelated users' do
+      sign_in create(:user)
+
+      patch :update, params: update_params(
+        answers: { pen_name_question.id => 'Hijacked', major_question.id => 'X' }
+      )
+
+      expect(flash[:alert]).to eq('!!! Not authorized !!!')
+      expect(entry.reload.title).to eq('Original Title')
+    end
+  end
+
   describe "GET #modal_details" do
     let(:profile) { create(:profile) }
     let(:contest_instance) { create(:contest_instance) }
