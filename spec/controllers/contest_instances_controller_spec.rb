@@ -999,6 +999,56 @@ RSpec.describe ContestInstancesController, type: :controller do
       )
     end
 
+    it 'queues award notices without amounts when the preference is off' do
+      mail = instance_double(ActionMailer::MessageDelivery, deliver_later: true)
+      allow(AwardsMailer).to receive(:award_notice).and_return(mail)
+
+      post :send_award_notices, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id,
+        include_amounts: '0'
+      }
+
+      expect(AwardsMailer).to have_received(:award_notice).with(kind_of(Entry), include_amounts: false)
+      expect(mail).to have_received(:deliver_later)
+    end
+
+    it 'alerts and does not queue mail when there are no awarded entries' do
+      entry.entry_awards.destroy_all
+      entry.update!(award_status: 'unawarded', placement: nil)
+
+      mail = instance_double(ActionMailer::MessageDelivery, deliver_later: true)
+      allow(AwardsMailer).to receive(:award_notice).and_return(mail)
+
+      post :send_award_notices, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id,
+        include_amounts: '1'
+      }
+
+      expect(AwardsMailer).not_to have_received(:award_notice)
+      expect(contest_instance.reload.award_emails_sent_count).to eq(0)
+      expect(flash[:alert]).to match(/No awarded entries to notify/i)
+      expect(response).to redirect_to(
+        container_contest_description_contest_instance_path(
+          container, contest_description, contest_instance, tab: 'awards'
+        )
+      )
+    end
+
+    it 'loads award notice recipients for the email preferences screen' do
+      get :award_email_preferences, params: {
+        container_id: container.id,
+        contest_description_id: contest_description.id,
+        id: contest_instance.id
+      }
+
+      expect(response).to have_http_status(:ok)
+      expect(assigns(:award_notice_entries)).to include(entry)
+    end
+
     it 'exports an award roster CSV' do
       get :export_awards_roster, params: {
         container_id: container.id,

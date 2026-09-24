@@ -416,5 +416,41 @@ RSpec.describe ContestInstance, type: :model do
       expect(contest_instance.awards_tab_entries).not_to include(deleted_entry)
     end
   end
+
+  describe '#award_notice_entries' do
+    let(:contest_description) { create(:contest_description, :active) }
+    let(:contest_instance) { create(:contest_instance, contest_description: contest_description) }
+    let!(:winner) do
+      create(:entry, contest_instance: contest_instance, profile: create(:profile), award_status: 'winner')
+    end
+    let!(:finalist) do
+      create(:entry, contest_instance: contest_instance, profile: create(:profile), award_status: 'finalist')
+    end
+    let!(:prize_only) do
+      create(:entry, contest_instance: contest_instance, profile: create(:profile), award_status: 'unawarded')
+    end
+    let!(:unawarded) do
+      create(:entry, contest_instance: contest_instance, profile: create(:profile), award_status: 'unawarded')
+    end
+    let!(:deleted_winner) do
+      create(
+        :entry,
+        contest_instance: contest_instance,
+        profile: create(:profile),
+        award_status: 'winner',
+        deleted: true
+      )
+    end
+
+    before { create(:entry_award, entry: prize_only) }
+
+    it 'includes winners, finalists, and entries with assigned prizes' do
+      expect(contest_instance.award_notice_entries).to contain_exactly(winner, finalist, prize_only)
+    end
+
+    it 'excludes unawarded entries without prizes and soft-deleted winners' do
+      expect(contest_instance.award_notice_entries).not_to include(unawarded, deleted_winner)
+    end
+  end
 end
 
