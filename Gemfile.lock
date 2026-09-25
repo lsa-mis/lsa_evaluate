@@ -407,6 +407,7 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.4.2)
+    rb-readline (0.5.5)
     rbs (4.1.2)
       logger
       prism (>= 1.6.0)
@@ -637,6 +638,7 @@ DEPENDENCIES
   pundit-matchers
   rails (~> 8.1)
   rails-controller-testing
+  rb-readline
   rspec-rails
   rubocop
   rubocop-capybara
