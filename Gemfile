@@ -72,6 +72,7 @@ group :development, :test do
   gem 'debug', platforms: %i[mri mingw x64_mingw]
   gem 'pry-rails'
   gem 'pundit-matchers'
+  gem 'rb-readline'
   gem 'rspec-rails'
   gem 'rubocop', require: false
   gem 'rubocop-capybara', require: false

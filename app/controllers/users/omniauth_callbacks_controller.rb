@@ -107,8 +107,8 @@ module Users
       params = {
         email: session[:raw_info_hash]['urn:oid:1.3.6.1.4.1.5923.1.1.1.6']&.first,
         uniqname: session[:raw_info_hash]['urn:oid:0.9.2342.19200300.100.1.1']&.first,
-        uid: session[:raw_info_hash]['http://www.itcs.umich.edu/identity/shibboleth/attributes/cosignPrincipalName']&.first,
-        principal_name: session[:raw_info_hash]['http://its.umich.edu/shibboleth/attributes/umichPrincipalName']&.first,
+        uid: session[:raw_info_hash]['uid']&.first,
+        principal_name: session[:raw_info_hash]['eduPersonPrincipalName']&.first,
         display_name: session[:raw_info_hash]['urn:oid:2.16.840.1.113730.3.1.241']&.first,
         password: Devise.friendly_token[0, 20]
       }
