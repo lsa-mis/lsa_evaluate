@@ -340,9 +340,10 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
-    pry (0.14.2)
+    pry (0.16.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
+      reline (>= 0.6.0)
     pry-rails (0.3.11)
       pry (>= 0.13.0)
     public_suffix (7.0.5)
@@ -407,7 +408,6 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.4.2)
-    rb-readline (0.5.5)
     rbs (4.1.2)
       logger
       prism (>= 1.6.0)
@@ -632,13 +632,13 @@ DEPENDENCIES
   omniauth-saml (~> 2.1)
   pagy (~> 43.0)
   propshaft
-  pry-rails
+  pry (>= 0.16.0)
+  pry-rails (>= 0.3.11)
   puma
   pundit
   pundit-matchers
   rails (~> 8.1)
   rails-controller-testing
-  rb-readline
   rspec-rails
   rubocop
   rubocop-capybara
