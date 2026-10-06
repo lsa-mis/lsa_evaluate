@@ -312,15 +312,12 @@ Devise.setup do |config|
     private_key: service_provider_private_key,
     certificate: service_provider_certificate,
     security: {want_assertions_signed: true, want_assertions_encrypted: true},
-    attribute_statements: {
-      email: ['email', 'mail', 'User.Email'],
-      first_name: ['first_name', 'givenName', 'User.FirstName'],
-      last_name: ['last_name', 'sn', 'User.LastName'],
-      uid: ['uid', 'uid', 'User.UID'],
-      principal_name: ['principal_name', 'eduPersonPrincipalName', 'User.PrincipalName'],
-      display_name: ['display_name', 'displayName', 'User.DisplayName'],
-      person_affiliation: ['person_affiliation', 'eduPersonAffiliation', 'User.PersonAffiliation']
-    }
+    attribute_statements: { 
+      email: [ 'urn:oid:0.9.2342.19200300.100.1.3' ],
+      display_name: [ 'urn:oid:2.16.840.1.113730.3.1.241' ],
+      uid: [ 'urn:oid:0.9.2342.19200300.100.1.1' ],
+      person_affiliation: [ 'urn:oid:1.3.6.1.4.1.5923.1.1.1.1' ],
+      principal_name: [ 'urn:oid:1.3.6.1.4.1.5923.1.1.1.6' ] },
   }.compact
 
   config.omniauth :saml, saml_options
