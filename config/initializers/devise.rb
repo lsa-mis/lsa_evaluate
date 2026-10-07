@@ -312,6 +312,7 @@ Devise.setup do |config|
     private_key: service_provider_private_key,
     certificate: service_provider_certificate,
     security: {want_assertions_signed: true, want_assertions_encrypted: true},
+    allowed_clock_drift: 10,
     attribute_statements: { 
       email: [ 'urn:oid:0.9.2342.19200300.100.1.3' ],
       display_name: [ 'urn:oid:2.16.840.1.113730.3.1.241' ],
