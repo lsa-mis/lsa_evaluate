@@ -25,8 +25,9 @@ RSpec.describe ApplicationPolicy, type: :policy do
     context 'with a nil user' do
       subject { described_class.new(nil, record) }
 
-      it { is_expected.not_to permit_action(:index) }
-      it { is_expected.not_to permit_action(:destroy) }
+      %i[index show create new update edit destroy].each do |action|
+        it { is_expected.not_to permit_action(action) }
+      end
     end
   end
 
@@ -36,9 +37,10 @@ RSpec.describe ApplicationPolicy, type: :policy do
 
     it 'returns all records for Axis Mundi users' do
       user = create(:user, :with_axis_mundi_role)
+      roles = Role.all.to_a
       scope = described_class::Scope.new(user, Role.all).resolve
 
-      expect(scope).to include(visible_role, hidden_role)
+      expect(scope).to match_array(roles)
     end
 
     it 'returns no records for regular users' do
