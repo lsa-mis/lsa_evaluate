@@ -70,7 +70,8 @@ end
 group :development, :test do
   gem 'capybara'
   gem 'debug', platforms: %i[mri mingw x64_mingw]
-  gem 'pry-rails'
+  gem 'pry', '>= 0.16.0'
+  gem 'pry-rails', '>= 0.3.11'
   gem 'pundit-matchers'
   gem 'rspec-rails'
   gem 'rubocop', require: false
