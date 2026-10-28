@@ -15,7 +15,7 @@ RSpec.describe 'Users::OmniauthCallbacks', type: :request do
     it 'creates a user from SAML attributes and syncs affiliations' do
       mock_login(
         email: 'newuser@umich.edu',
-        name: 'New User',
+        display_name: 'New User',
         uniqname: 'newuser',
         first_name: 'New',
         last_name: 'User',
@@ -30,6 +30,8 @@ RSpec.describe 'Users::OmniauthCallbacks', type: :request do
 
       user = User.find_by!(email: 'newuser@umich.edu')
       expect(user.uniqname).to eq('newuser')
+      expect(user.uid).to eq('newuser')
+      expect(user.principal_name).to eq('newuser@umich.edu')
       expect(user.first_name).to eq('New')
       expect(user.last_name).to eq('User')
       expect(user.display_name).to eq('New User')
@@ -50,7 +52,7 @@ RSpec.describe 'Users::OmniauthCallbacks', type: :request do
 
       mock_login(
         email: 'returning@umich.edu',
-        name: 'Returning User',
+        display_name: 'Returning User',
         uniqname: 'returning',
         first_name: 'Returning',
         last_name: 'User',
@@ -64,6 +66,8 @@ RSpec.describe 'Users::OmniauthCallbacks', type: :request do
       expect(response).to redirect_to(root_path)
 
       user.reload
+      expect(user.uid).to eq('returning')
+      expect(user.principal_name).to eq('returning@umich.edu')
       expect(user.first_name).to eq('Returning')
       expect(user.last_name).to eq('User')
       expect(user.display_name).to eq('Returning User')
@@ -77,7 +81,7 @@ RSpec.describe 'Users::OmniauthCallbacks', type: :request do
 
       mock_login(
         email: 'signedin@umich.edu',
-        name: user.display_name,
+        display_name: user.display_name,
         uniqname: user.uniqname,
         first_name: user.first_name,
         last_name: user.last_name,
@@ -93,7 +97,7 @@ RSpec.describe 'Users::OmniauthCallbacks', type: :request do
     it 'redirects to sign in when user save fails' do
       mock_login(
         email: 'broken@umich.edu',
-        name: 'Broken User',
+        display_name: 'Broken User',
         uniqname: 'broken',
         first_name: 'Broken',
         last_name: 'User',

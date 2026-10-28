@@ -340,9 +340,10 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
-    pry (0.14.2)
+    pry (0.16.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
+      reline (>= 0.6.0)
     pry-rails (0.3.11)
       pry (>= 0.13.0)
     public_suffix (7.0.5)
@@ -631,7 +632,8 @@ DEPENDENCIES
   omniauth-saml (~> 2.1)
   pagy (~> 43.0)
   propshaft
-  pry-rails
+  pry (>= 0.16.0)
+  pry-rails (>= 0.3.11)
   puma
   pundit
   pundit-matchers
