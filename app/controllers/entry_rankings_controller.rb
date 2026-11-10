@@ -27,7 +27,7 @@ class EntryRankingsController < ApplicationController
     if @entry_ranking.save
       redirect_to judge_dashboard_path, notice: 'Entry ranking was successfully created.'
     else
-      render json: { errors: @entry_ranking.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @entry_ranking.errors.full_messages }, status: :unprocessable_content
     end
   end
 
@@ -128,12 +128,12 @@ class EntryRankingsController < ApplicationController
     end
 
     if @judging_round.nil?
-      render json: { errors: [ 'Judging round not found' ] }, status: :unprocessable_entity
+      render json: { errors: [ 'Judging round not found' ] }, status: :unprocessable_content
       return false
     end
     true
   rescue ActiveRecord::RecordNotFound => e
-    render json: { errors: [ 'Judging round not found' ] }, status: :unprocessable_entity
+    render json: { errors: [ 'Judging round not found' ] }, status: :unprocessable_content
     false
   end
 
@@ -143,7 +143,7 @@ class EntryRankingsController < ApplicationController
     @contest_instance = @contest_description.contest_instances.find(params[:contest_instance_id])
     true
   rescue ActiveRecord::RecordNotFound => e
-    render json: { errors: [ 'Contest instance not found' ] }, status: :unprocessable_entity
+    render json: { errors: [ 'Contest instance not found' ] }, status: :unprocessable_content
     false
   end
 
@@ -160,7 +160,7 @@ class EntryRankingsController < ApplicationController
     return false if action_name == 'update' && !authorize_entry_ranking
 
     unless @judging_round.contest_instance.judge_assigned?(current_user)
-      render json: { errors: [ 'You are not assigned to this contest' ] }, status: :unprocessable_entity
+      render json: { errors: [ 'You are not assigned to this contest' ] }, status: :unprocessable_content
       return false
     end
     true
@@ -171,7 +171,7 @@ class EntryRankingsController < ApplicationController
     return false if action_name == 'update' && !authorize_entry_ranking
 
     unless @judging_round.round_judge_assignments.active.exists?(user: current_user)
-      render json: { errors: [ 'You are not assigned to this judging round' ] }, status: :unprocessable_entity
+      render json: { errors: [ 'You are not assigned to this judging round' ] }, status: :unprocessable_content
       return false
     end
     true

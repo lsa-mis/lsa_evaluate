@@ -19,14 +19,14 @@ class BulkContestInstanceActivationsController < ApplicationController
     unless @bulk_activation.valid?
       @season_instances = season_instances_for(@bulk_activation.parsed_date_open)
       flash.now[:alert] = @bulk_activation.errors.full_messages.to_sentence
-      return render :new, status: :unprocessable_entity
+      return render :new, status: :unprocessable_content
     end
 
     @season_instances = season_instances_for(@bulk_activation.parsed_date_open)
 
     if @season_instances.empty?
       flash.now[:alert] = 'No inactive contest instances found for the selected open date.'
-      return render :new, status: :unprocessable_entity
+      return render :new, status: :unprocessable_content
     end
 
     result = BulkContestInstanceActivator.new(

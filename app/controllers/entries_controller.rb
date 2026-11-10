@@ -63,7 +63,7 @@ class EntriesController < ApplicationController
       redirect_to applicant_dashboard_path, notice: 'Entry was successfully created.'
     else
       prepare_application_questions
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -94,8 +94,8 @@ class EntriesController < ApplicationController
         format.json { render :show, status: :ok, location: @entry }
       else
         prepare_application_questions
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @entry.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @entry.errors, status: :unprocessable_content }
       end
     end
   end
@@ -168,7 +168,7 @@ class EntriesController < ApplicationController
         format.turbo_stream do
           flash.now[:alert] = @entry.errors.full_messages.to_sentence
           prepare_award_outcome_frame
-          render 'entry_awards/upsert', status: :unprocessable_entity
+          render 'entry_awards/upsert', status: :unprocessable_content
         end
         format.html { redirect_to redirect_path, alert: @entry.errors.full_messages.to_sentence }
       end

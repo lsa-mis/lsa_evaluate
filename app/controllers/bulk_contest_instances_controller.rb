@@ -17,12 +17,12 @@ class BulkContestInstancesController < ApplicationController
 
     if @bulk_contest_instance.date_open.blank? || @bulk_contest_instance.date_closed.blank?
       setup_error_for_missing_dates
-      return render :new, status: :unprocessable_entity
+      return render :new, status: :unprocessable_content
     end
 
     if Date.parse(@bulk_contest_instance.date_closed) < Date.parse(@bulk_contest_instance.date_open)
       setup_error_for_invalid_dates
-      return render :new, status: :unprocessable_entity
+      return render :new, status: :unprocessable_content
     end
 
     success, season_date_open = create_contest_instances
@@ -34,7 +34,7 @@ class BulkContestInstancesController < ApplicationController
       ), notice: 'Contest instances were successfully created. Review and activate the new season when ready.'
     else
       setup_error_for_failed_creation
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 

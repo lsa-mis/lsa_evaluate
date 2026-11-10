@@ -28,7 +28,7 @@ class AddressTypesController < ApplicationController
       if @address_type.save
         format.html { redirect_to @address_type, notice: 'Address type was successfully created.' }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -39,7 +39,7 @@ class AddressTypesController < ApplicationController
       if @address_type.update(address_type_params)
         format.html { redirect_to @address_type, notice: 'Address type was successfully updated.' }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
       end
     end
   end
