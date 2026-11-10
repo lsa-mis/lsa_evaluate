@@ -27,7 +27,7 @@ class CampusesController < ApplicationController
       if @campus.save
         format.html { redirect_to @campus, notice: 'Campus was successfully created.' }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -38,7 +38,7 @@ class CampusesController < ApplicationController
       if @campus.update(campus_params)
         format.html { redirect_to @campus, notice: 'Campus was successfully updated.' }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
       end
     end
   end

@@ -44,7 +44,7 @@ RSpec.describe BulkJudgingWindowsController, type: :controller do
         }
       }
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(flash.now[:alert]).to include('select at least one')
     end
 
@@ -61,7 +61,7 @@ RSpec.describe BulkJudgingWindowsController, type: :controller do
         }
       }
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response).to render_template(:new)
       expect(judging_round.reload.end_date).to eq(original_end_date)
     end
@@ -92,7 +92,7 @@ RSpec.describe BulkJudgingWindowsController, type: :controller do
         }
       }
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(flash.now[:alert]).to include(contest_description.name)
       expect(flash.now[:alert]).to include("Round #{judging_round.round_number}")
       expect(flash.now[:alert]).to include('End date must be after start date')
@@ -177,7 +177,7 @@ RSpec.describe BulkJudgingWindowsController, type: :controller do
         }
       }
 
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(other_round.reload.end_date).to eq(original_end_date)
       expect(flash.now[:alert]).to include('select at least one')
     end

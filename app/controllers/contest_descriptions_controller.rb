@@ -42,9 +42,9 @@ class ContestDescriptionsController < ApplicationController
           render turbo_stream: [
             turbo_stream.replace('flash', partial: 'shared/flash_messages'),
             turbo_stream.replace('contest_description_form', partial: 'contest_descriptions/form', locals: { contest_description: @contest_description })
-          ], status: :unprocessable_entity
+          ], status: :unprocessable_content
         }
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
       end
     else
       success = false
@@ -98,11 +98,11 @@ class ContestDescriptionsController < ApplicationController
         format.html { redirect_to container_path(@container), notice: I18n.t("notices.contest_description.#{action}") }
       else
         format.turbo_stream {
-          render turbo_stream: turbo_stream.replace('contest_description_form', partial: 'contest_descriptions/form', locals: { contest_description: @contest_description }), status: :unprocessable_entity
+          render turbo_stream: turbo_stream.replace('contest_description_form', partial: 'contest_descriptions/form', locals: { contest_description: @contest_description }), status: :unprocessable_content
         }
         format.html {
           template = action_name == 'create' ? :new : :edit
-          render template, status: :unprocessable_entity
+          render template, status: :unprocessable_content
         }
       end
     end

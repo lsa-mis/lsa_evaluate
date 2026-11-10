@@ -27,7 +27,7 @@ class ClassLevelsController < ApplicationController
       if @class_level.save
         format.html { redirect_to @class_level, notice: 'Class Level was successfully created.' }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -38,7 +38,7 @@ class ClassLevelsController < ApplicationController
       if @class_level.update(class_level_params)
         format.html { redirect_to @class_level, notice: 'Class Level was successfully updated.' }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
       end
     end
   end

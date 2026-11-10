@@ -18,7 +18,7 @@ class AwardsController < ApplicationController
     if @award.save
       redirect_to container_awards_path(@container), notice: 'Award was successfully created.'
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -28,7 +28,7 @@ class AwardsController < ApplicationController
     if @award.update(award_params)
       redirect_to container_awards_path(@container), notice: 'Award was successfully updated.'
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
