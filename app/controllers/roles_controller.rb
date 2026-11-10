@@ -30,7 +30,7 @@ class RolesController < ApplicationController
     if @role.save
       redirect_to @role, notice: 'Role was successfully created.'
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -40,7 +40,7 @@ class RolesController < ApplicationController
     if @role.update(role_params)
       redirect_to @role, notice: 'Role was successfully updated.'
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

@@ -67,7 +67,7 @@ class ContestInstancesController < ApplicationController
         @container, @contest_description, @contest_instance
       ), notice: 'Contest instance was successfully created.'
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -76,7 +76,7 @@ class ContestInstancesController < ApplicationController
       sync_application_question_requirements!(@contest_instance, params[:requirements])
       redirect_to_contest_instance_path
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

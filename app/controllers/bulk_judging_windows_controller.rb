@@ -21,12 +21,12 @@ class BulkJudgingWindowsController < ApplicationController
     if scoped_round_ids.blank?
       @judging_rounds = load_judging_rounds
       flash.now[:alert] = 'Please select at least one judging round.'
-      return render :new, status: :unprocessable_entity
+      return render :new, status: :unprocessable_content
     end
 
     unless @bulk_judging_window.valid?
       @judging_rounds = load_judging_rounds
-      return render :new, status: :unprocessable_entity
+      return render :new, status: :unprocessable_content
     end
 
     result = BulkJudgingWindowUpdater.new(
@@ -42,7 +42,7 @@ class BulkJudgingWindowsController < ApplicationController
     if result.failed.any?
       @judging_rounds = load_judging_rounds
       flash.now[:alert] = build_failure_message(result)
-      return render :new, status: :unprocessable_entity
+      return render :new, status: :unprocessable_content
     end
 
     redirect_to container_path(@container), notice: build_success_message(result)

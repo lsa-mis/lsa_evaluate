@@ -27,7 +27,7 @@ class VisibilitiesController < ApplicationController
       if @visibility.save
         format.html { redirect_to visibility_url(@visibility), notice: 'Visibility was successfully created.' }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -38,7 +38,7 @@ class VisibilitiesController < ApplicationController
       if @visibility.update(visibility_params)
         format.html { redirect_to visibility_url(@visibility), notice: 'Visibility was successfully updated.' }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
       end
     end
   end

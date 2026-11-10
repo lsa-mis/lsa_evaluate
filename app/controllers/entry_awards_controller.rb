@@ -20,7 +20,7 @@ class EntryAwardsController < ApplicationController
     else
       respond_with_entry_frame(
         alert: @entry_award.errors.full_messages.to_sentence,
-        status: :unprocessable_entity
+        status: :unprocessable_content
       )
     end
   end
@@ -34,7 +34,7 @@ class EntryAwardsController < ApplicationController
     else
       respond_with_entry_frame(
         alert: @entry_award.errors.full_messages.to_sentence,
-        status: :unprocessable_entity
+        status: :unprocessable_content
       )
     end
   end

@@ -40,9 +40,9 @@ class ContainersController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
         format.turbo_stream {
-          render turbo_stream: turbo_stream.replace('container_form', partial: 'containers/form', locals: { container: @container }), status: :unprocessable_entity
+          render turbo_stream: turbo_stream.replace('container_form', partial: 'containers/form', locals: { container: @container }), status: :unprocessable_content
         }
       end
     end
@@ -60,10 +60,10 @@ class ContainersController < ApplicationController
       respond_to do |format|
         format.html do
           load_permission_assignments
-          render :edit, status: :unprocessable_entity
+          render :edit, status: :unprocessable_content
         end
         format.turbo_stream {
-          render turbo_stream: turbo_stream.replace('container_form', partial: 'containers/form', locals: { container: @container }), status: :unprocessable_entity
+          render turbo_stream: turbo_stream.replace('container_form', partial: 'containers/form', locals: { container: @container }), status: :unprocessable_content
         }
       end
     end

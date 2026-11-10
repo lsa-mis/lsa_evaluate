@@ -27,7 +27,7 @@ class SchoolsController < ApplicationController
       if @school.save
         format.html { redirect_to @school, notice: 'School was successfully created.' }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -38,7 +38,7 @@ class SchoolsController < ApplicationController
       if @school.update(school_params)
         format.html { redirect_to @school, notice: 'School was successfully updated.' }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
       end
     end
   end

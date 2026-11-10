@@ -25,7 +25,7 @@ class ApplicationQuestionsController < ApplicationController
     if @application_question.save
       redirect_to container_application_questions_path(@container), notice: 'Question was successfully created.'
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -35,7 +35,7 @@ class ApplicationQuestionsController < ApplicationController
     if @application_question.update(application_question_update_params)
       redirect_to container_application_questions_path(@container), notice: 'Question was successfully updated.'
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
@@ -61,7 +61,7 @@ class ApplicationQuestionsController < ApplicationController
 
     unless ordered_ids.any? && ordered_ids.sort == current_ids.sort
       respond_to do |format|
-        format.json { head :unprocessable_entity }
+        format.json { head :unprocessable_content }
         format.html { redirect_to container_application_questions_path(@container), alert: 'Could not reorder questions.' }
       end
       return

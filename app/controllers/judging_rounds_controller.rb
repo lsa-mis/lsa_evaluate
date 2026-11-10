@@ -31,9 +31,9 @@ class JudgingRoundsController < ApplicationController
       flash.now[:alert] = @judging_round.errors.full_messages
       if from_setup?
         @round_number = @contest_instance.judging_rounds.count + 1
-        render template: 'contest_instances/setup_review_process', status: :unprocessable_entity
+        render template: 'contest_instances/setup_review_process', status: :unprocessable_content
       else
-        render :new, status: :unprocessable_entity
+        render :new, status: :unprocessable_content
       end
     end
   end
@@ -57,7 +57,7 @@ class JudgingRoundsController < ApplicationController
       unless date_result.success
         @show_warning = @judging_round.start_date <= Time.current
         flash.now[:alert] = date_result.errors
-        return render :edit, status: :unprocessable_entity
+        return render :edit, status: :unprocessable_content
       end
 
       permitted = permitted.except(:start_date, :end_date)
@@ -65,12 +65,12 @@ class JudgingRoundsController < ApplicationController
 
     if permitted.present? && !@judging_round.update(permitted)
       flash.now[:alert] = @judging_round.errors.full_messages
-      return render :edit, status: :unprocessable_entity
+      return render :edit, status: :unprocessable_content
     end
 
     if permitted.blank? && date_result.nil? && !@judging_round.update(judging_round_params)
       flash.now[:alert] = @judging_round.errors.full_messages
-      return render :edit, status: :unprocessable_entity
+      return render :edit, status: :unprocessable_content
     end
 
     notice = 'Judging round was successfully updated.'
@@ -320,7 +320,7 @@ class JudgingRoundsController < ApplicationController
             locals: { message: e.message, type: 'danger' }
           )
         end
-        format.json { render json: { error: e.message }, status: :unprocessable_entity }
+        format.json { render json: { error: e.message }, status: :unprocessable_content }
       end
     end
   end

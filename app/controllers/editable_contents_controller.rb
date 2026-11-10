@@ -19,7 +19,7 @@ class EditableContentsController < ApplicationController
       flash[:notice] = 'Content was successfully updated.'
       redirect_back_or_default
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

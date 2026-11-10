@@ -43,7 +43,7 @@ class ProfilesController < ApplicationController
       if @profile.save
         format.html { redirect_to profile_created_redirect_path, notice: 'Profile was successfully created.' }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -54,7 +54,7 @@ class ProfilesController < ApplicationController
       if @profile.update(profile_params)
         format.html { redirect_to applicant_dashboard_path, notice: 'Profile was successfully updated.' }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
       end
     end
   end

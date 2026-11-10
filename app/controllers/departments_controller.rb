@@ -27,7 +27,7 @@ class DepartmentsController < ApplicationController
       if @department.save
         format.html { redirect_to department_url(@department), notice: 'Department was successfully created.' }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
       end
     end
   end
@@ -38,7 +38,7 @@ class DepartmentsController < ApplicationController
       if @department.update(department_params)
         format.html { redirect_to department_url(@department), notice: 'Department was successfully updated.' }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
       end
     end
   end
