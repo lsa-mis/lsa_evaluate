@@ -27,6 +27,11 @@ module LsaEvaluate
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
 
+    # load_defaults 7.0+ selects :vips. This app never calls libvips; the only
+    # resize is Action Text's resize_to_limit. MiniMagick keeps that working
+    # without loading ruby-vips, which aborts boot on libvips < 8.13.
+    config.active_storage.variant_processor = :mini_magick
+
     # Autoload lib/ (ignore non-Ruby dirs). Rack::Defense is also required above for boot.
     config.autoload_lib(ignore: %w[assets tasks capistrano])
 

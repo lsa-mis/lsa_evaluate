@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'rails', '~> 8.1'
+gem 'rails', '~> 8.1', '>= 8.1.4.1'
 ruby '4.0.6'
 
 gem 'actiontext'
@@ -17,7 +17,14 @@ gem 'logger'
 gem 'tsort'
 gem 'devise', '~> 5.0'
 gem 'google-cloud-storage', '~> 1.52'
-gem 'image_processing', '~> 1.2'
+# image_processing 2 treats ruby-vips and mini_magick as optional.
+# ruby-vips stays out of the bundle: Active Storage aborts boot when it is
+# installed and libvips is older than 8.13 (Vips.block_untrusted is missing).
+# Action Text image previews resize with MiniMagick instead.
+# mini_magick 5.1+ lets Active Storage apply its ImageMagick policy at
+# attachment analysis (GHSA-f3w6-w445-fwh9). Older versions raise at boot.
+gem 'image_processing', '~> 2.0'
+gem 'mini_magick', '~> 5.1'
 gem 'jbuilder'
 gem 'jsbundling-rails'
 gem 'lsa_tdx_feedback', '~> 2.0.2'
